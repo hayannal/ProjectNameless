@@ -1,0 +1,107 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1142985395837169725
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6039725341937309381}
+  - component: {fileID: 3582247868656777703}
+  m_Layer: 0
+  m_Name: BattleManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6039725341937309381
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1142985395837169725}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3582247868656777703
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1142985395837169725}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e6d4b9a7a6c35144bdd93879ee1b2ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetCircleObject: {fileID: 6849358414342877951, guid: c1fbbbab39576d742845dd7d0bd0e50a,
+    type: 3}
+  targetCircleSleepObject: {fileID: 6849358414342877951, guid: a1d27558dd8b7824ebbb475efb7fa011,
+    type: 3}
+  monsterDieAshParticlePrefab: {fileID: 6056034208093697564, guid: 61e0b74a21078534487535c1eee12726,
+    type: 3}
+  monsterDieDissolveCurve: {fileID: 11400000, guid: 81890689e66ed3348b9359239847382e,
+    type: 2}
+  bossMonsterDieDissolveCurve: {fileID: 11400000, guid: 99fb3171c732bfa4da8bd126fa957f1e,
+    type: 2}
+  playerSpawnEffectPrefab: {fileID: 1000011452133030, guid: b26ae8955a4dd432aa7cfb149a2cc76f,
+    type: 3}
+  rangeIndicatorPrefab: {fileID: 773287042713651345, guid: a88e40bc452d3274b9fdd46db3596b79,
+    type: 3}
+  monsterHPGaugeRootCanvasPrefab: {fileID: 1482024081311711246, guid: 677f4657fb09e4045b06bab1f843742b,
+    type: 3}
+  monsterHPGaugePrefab: {fileID: 3507225587321417268, guid: e202665add3b8e049a3c1750ba4f643d,
+    type: 3}
+  bossMonsterHPGaugePrefab: {fileID: 3654202485033465938, guid: 59ee7edf6ff5c6d4a8d11452265cb9bf,
+    type: 3}
+  playerHPGaugePrefab: {fileID: 7252088630475513637, guid: b978e9ebf6b6ac24e90f6e8a698ed344,
+    type: 3}
+  playerIgnoreEvadeCanvasPrefab: {fileID: 4356273315645413913, guid: 9bb2040845709cf419cd072e4decc3e6,
+    type: 3}
+  skillSlotCanvasPrefab: {fileID: 2912271825967916095, guid: e7896afafe2474c4b876e625aa1bcc71,
+    type: 3}
+  ultimateCirclePrefab: {fileID: 6849358414342877951, guid: 47dde8739e54f9849a77c7a7f4862e71,
+    type: 3}
+  battleToastCanvasPrefab: {fileID: 905964507000219248, guid: ae9f22d3a6078554fbf3fd1bd3fd0258,
+    type: 3}
+  playerIndicatorPrefab: {fileID: 4637444971815004563, guid: a04cacfe13c3d9a40a3cd590caee9c01,
+    type: 3}
+  levelUpIndicatorPrefab: {fileID: 4637444971815004563, guid: 5770dff6cec2e6545b182746c46cd2ad,
+    type: 3}
+  playerLevelUpEffectPrefab: {fileID: 8633844617401341282, guid: 3062f303c929a9e4ab55234e5bf3a589,
+    type: 3}
+  levelPackGainEffectPrefab: {fileID: 5868977120264193606, guid: bda0737459b1b0c4e845953a756aa32a,
+    type: 3}
+  healEffectPrefab: {fileID: 1891862278598358, guid: 5eb1647922cab5249a12f23136bb238e,
+    type: 3}
+  damageCanvasPrefab: {fileID: 804563287768977467, guid: d3a8832014c229d44b55ddd913508e4a,
+    type: 3}
+  floatingDamageTextRootCanvasPrefab: {fileID: 1482024081311711246, guid: 6815da9e1248f3f448b7219102e23460,
+    type: 3}
+  pauseCanvasPrefab: {fileID: 7414219327825158667, guid: b50b43ad9f8659d46a8db6deefe27c0b,
+    type: 3}
+  battleResultPrefab: {fileID: 5399947005989350292, guid: 3196677104d5c264bb818c8aa901abe7,
+    type: 3}
+  portalPrefab: {fileID: 4491464612349242698, guid: 6ab4bacd09ea0084f8a0ff067e04b982,
+    type: 3}
+  portalMoveEffectPrefab: {fileID: 1627529331328210, guid: 58ac65c2341d46e4ca758fe4689fd06b,
+    type: 3}
+  portalGaugePrefab: {fileID: 7997762279286278467, guid: bc12a51da65c4dd4c9e07f4fc770747f,
+    type: 3}
+  onOffColliderAreaPrefab: {fileID: 102475661022230883, guid: c1bcaf3b33bb7a84092fbf898fb79382,
+    type: 3}
+  diagonalNwayGeneratorPrefab: {fileID: 4387409958921123890, guid: 3f1c1c971ff9c9649a1fa191b0627227,
+    type: 3}
+  leftRightNwayGeneratorPrefab: {fileID: 6271681383087737427, guid: b4a2889ece672534aba024df89d36fc1,
+    type: 3}
+  backNwayGeneratorPrefab: {fileID: 3921652751528181038, guid: abbb336f0988610479ad801006f546bc,
+    type: 3}
