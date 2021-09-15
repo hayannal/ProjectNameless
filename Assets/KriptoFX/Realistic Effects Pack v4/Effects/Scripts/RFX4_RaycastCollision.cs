@@ -84,15 +84,15 @@ public class RFX4_RaycastCollision : MonoBehaviour
 				break;
 
 			bool applyPlaneCollider = false;
-			//if (BattleInstanceManager.instance.planeCollider != null && BattleInstanceManager.instance.planeCollider == _raycastHitList[i].collider)
-			//{
-			//	applyPlaneCollider = true;
-			//}
+			if (BattleInstanceManager.instance.planeCollider != null && BattleInstanceManager.instance.planeCollider == _raycastHitList[i].collider)
+			{
+				applyPlaneCollider = true;
+			}
 
-			//if (NodeWarGround.instance != null && NodeWarGround.instance.CheckPlaneCollider(_raycastHitList[i].collider))
-			//{
-			//	applyPlaneCollider = true;	
-			//}
+			if (NodeWarGround.instance != null && NodeWarGround.instance.CheckPlaneCollider(_raycastHitList[i].collider))
+			{
+				applyPlaneCollider = true;	
+			}
 
 			if (applyPlaneCollider)
 			{
