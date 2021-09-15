@@ -63,8 +63,10 @@ public class EnvironmentSetting : MonoBehaviour
 		SetBloomBrightnessMax();
 		SetDirtIntensity();
 
-		//if (StageManager.instance != null)
-		//	StageManager.instance.OnEnableEnvironmentSetting(gameObject);
+		/*
+		if (StageManager.instance != null)
+			StageManager.instance.OnEnableEnvironmentSetting(gameObject);
+		*/
 	}
 
 	void SetSun()

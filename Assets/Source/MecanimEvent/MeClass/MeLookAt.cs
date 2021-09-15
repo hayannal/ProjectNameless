@@ -1,0 +1,256 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.AI;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+using ECM.Controllers;
+
+public class MeLookAt : MecanimEventBase
+{
+	override public bool RangeSignal { get { return true; } }
+	public bool lookAtTarget;
+	public float leftRightRandomAngle;
+	public float lootAtTargetOffsetAngle;
+	public bool lookAtRandom;
+	public float desireDistance = 5.0f;
+	public float minimumDistance = 0.0f;
+	public bool lookAtWorldPosition;
+	public Vector3 worldPosition;
+	public bool lookAtHighestMonster;
+	public float lerpPower = 60.0f;
+	public string boneName;
+
+#if UNITY_EDITOR
+	override public void OnGUI_PropertyWindow()
+	{
+		lookAtTarget = EditorGUILayout.Toggle("LookAt Target :", lookAtTarget);
+		if (lookAtTarget)
+		{
+			lookAtRandom = false;
+			leftRightRandomAngle = EditorGUILayout.FloatField("LeftRight Random Angle :", leftRightRandomAngle);
+			if (leftRightRandomAngle > 0.0f) lootAtTargetOffsetAngle = 0.0f;
+			lootAtTargetOffsetAngle = EditorGUILayout.FloatField("Offset Angle :", lootAtTargetOffsetAngle);
+			if (lootAtTargetOffsetAngle != 0.0f) leftRightRandomAngle = 0.0f;
+		}
+		lookAtRandom = EditorGUILayout.Toggle("LookAt Random :", lookAtRandom);
+		if (lookAtRandom)
+		{
+			lookAtTarget = false;
+			desireDistance = EditorGUILayout.FloatField("Desire Distance :", desireDistance);
+			minimumDistance = EditorGUILayout.FloatField("Minimum Distance :", minimumDistance);
+		}
+		lookAtWorldPosition = EditorGUILayout.Toggle("LookAt World Position :", lookAtWorldPosition);
+		if (lookAtWorldPosition)
+		{
+			worldPosition = EditorGUILayout.Vector3Field("World Position :", worldPosition);
+		}
+		lookAtHighestMonster = EditorGUILayout.Toggle("LookAt Highest Monster :", lookAtHighestMonster);
+		lerpPower = EditorGUILayout.FloatField("Lerp Power :", lerpPower);
+		boneName = EditorGUILayout.TextField("Bone Name :", boneName);
+	}
+#endif
+
+	Actor _actor = null;
+	bool _initializedRandom = false;
+	float _randomAngle;
+	Vector3 _randomPosition;
+	DummyFinder _dummyFinder = null;
+	Transform _boneTransform;
+	MonsterActor _highestMonsterActor = null;
+	override public void OnRangeSignalStart(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+	{
+		if (_actor == null)
+		{
+			if (animator.transform.parent != null)
+				_actor = animator.transform.parent.GetComponent<Actor>();
+			if (_actor == null)
+				_actor = animator.GetComponent<Actor>();
+		}
+
+		if (string.IsNullOrEmpty(boneName) == false)
+		{
+			if (_dummyFinder == null) _dummyFinder = animator.GetComponent<DummyFinder>();
+			if (_dummyFinder == null) _dummyFinder = animator.gameObject.AddComponent<DummyFinder>();
+			if (_boneTransform == null) _boneTransform = _dummyFinder.FindTransform(boneName);
+		}
+
+#if UNITY_EDITOR
+		if (_actor.affectorProcessor.IsContinuousAffectorType(eAffectorType.Rush))
+		{
+			// 원래라면 절대 들어오지 말아야하는데 러쉬 어펙터 실행 중에 LookAt이 실행된거다.
+			//Debug.Break();
+			Debug.LogError("Invalid call. Rush Affector is being applied.");
+		}
+#endif
+
+		if (leftRightRandomAngle > 0.0f && _actor != null)
+		{
+			_randomAngle = Random.Range(-leftRightRandomAngle, leftRightRandomAngle);
+			_initializedRandom = true;
+		}
+
+		if (lookAtRandom && _actor != null)
+		{
+			_randomPosition = GetRandomPosition();
+			_initializedRandom = true;
+			//_actor.baseCharacterController.movement.rotation = Quaternion.Euler(new Vector3(0.0f, Random.Range(0.0f, 360.0f), 0.0f));
+		}
+
+		if (lookAtHighestMonster && _actor != null)
+		{
+			_highestMonsterActor = null;
+			float highestHp = 0.0f;
+			List<MonsterActor> listMonsterActor = BattleInstanceManager.instance.GetLiveMonsterList();
+			for (int i = 0; i < listMonsterActor.Count; ++i)
+			{
+				if (listMonsterActor[i].actorStatus.IsDie())
+					continue;
+				if (listMonsterActor[i].team.teamId != (int)Team.eTeamID.DefaultMonster || listMonsterActor[i].excludeMonsterCount)
+					continue;
+				if (listMonsterActor[i].actorStatus.GetHP() > highestHp)
+				{
+					_highestMonsterActor = listMonsterActor[i];
+					highestHp = listMonsterActor[i].actorStatus.GetHP();
+				}
+			}
+		}
+	}
+
+	override public void OnRangeSignalEnd(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+	{
+		_initializedRandom = false;
+	}
+
+	override public void OnRangeSignal(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+	{
+		Vector3 targetPosition = Vector3.zero;
+		if (lookAtTarget && _actor != null && _actor != null)
+		{
+			if (_actor.targetingProcessor.GetTargetCount() > 0)
+				targetPosition = _actor.targetingProcessor.GetTargetPosition(0);
+			else
+				return;
+		}
+
+		if (lookAtRandom && _initializedRandom)
+			targetPosition = _randomPosition;
+		if (lookAtWorldPosition)
+			targetPosition = worldPosition;
+		if (lookAtHighestMonster && _actor != null)
+		{
+			if (_highestMonsterActor != null && _highestMonsterActor.actorStatus.IsDie() == false)
+				targetPosition = _highestMonsterActor.cachedTransform.position;
+			else
+				return;
+		}
+
+		Vector3 basePosition = _actor.cachedTransform.position;
+		if (_boneTransform != null) basePosition = _boneTransform.position;
+		Vector3 diff = targetPosition - basePosition;
+		diff.y = 0.0f;
+		Quaternion lookRotation = Quaternion.LookRotation(diff);
+		if (lookAtTarget && leftRightRandomAngle > 0.0f && _initializedRandom)
+		{
+			Quaternion rotation = Quaternion.AngleAxis(_randomAngle, Vector3.up);
+			lookRotation *= rotation;
+		}
+		if (lootAtTargetOffsetAngle != 0.0f)
+		{
+			Quaternion rotation = Quaternion.AngleAxis(lootAtTargetOffsetAngle, Vector3.up);
+			lookRotation *= rotation;
+		}
+
+		// bone이 설정되어있다면 bone에다가 적용한다.
+		if (_boneTransform != null)
+		{
+			if (lerpPower >= 60.0f)
+				_boneTransform.rotation = lookRotation;
+			else
+				_boneTransform.rotation = Quaternion.Slerp(_boneTransform.rotation, lookRotation, lerpPower * Time.deltaTime);
+			return;
+		}
+
+		if (lerpPower >= 60.0f)
+			_actor.baseCharacterController.movement.rotation = lookRotation;
+		else
+			_actor.baseCharacterController.movement.rotation = Quaternion.Slerp(_actor.baseCharacterController.movement.rotation, lookRotation, lerpPower * Time.deltaTime);
+	}
+
+
+
+	int _agentTypeID = -1;
+	Vector3 GetRandomPosition()
+	{
+		Vector3 randomPosition = Vector3.zero;
+		Vector3 result = Vector3.zero;
+		float maxDistance = 1.0f;
+		int tryCount = 0;
+		int tryBreakCount = 0;
+		if (_agentTypeID == -1) _agentTypeID = GetAgentTypeID(_actor);
+		while (true)
+		{
+			Vector2 randomCircle = Random.insideUnitCircle.normalized;
+			Vector3 randomOffset = new Vector3(randomCircle.x * desireDistance, 0.0f, randomCircle.y * desireDistance);
+			randomPosition = _actor.cachedTransform.position + randomOffset;
+
+			// AI쪽 코드에서 가져와본다.
+			randomPosition.y = 0.0f;
+
+			NavMeshHit hit;
+			NavMeshQueryFilter navMeshQueryFilter = new NavMeshQueryFilter();
+			navMeshQueryFilter.areaMask = NavMesh.AllAreas;
+			navMeshQueryFilter.agentTypeID = _agentTypeID;
+			if (BattleManager.instance != null && BattleManager.instance.IsNodeWar())
+			{
+				result = randomPosition;
+				break;
+			}
+			if (NavMesh.SamplePosition(randomPosition, out hit, maxDistance, navMeshQueryFilter))
+			{
+				if (minimumDistance == 0.0f)
+				{
+					result = hit.position;
+					break;
+				}
+				else
+				{
+					Vector3 diff = _actor.cachedTransform.position - hit.position;
+					if (diff.x * diff.x + diff.z * diff.z >= minimumDistance * minimumDistance)
+					{
+						result = hit.position;
+						break;
+					}
+				}
+			}
+
+			// exception handling
+			++tryCount;
+			if (tryCount > 20)
+			{
+				tryCount = 0;
+				maxDistance += 1.0f;
+			}
+
+			++tryBreakCount;
+			if (tryBreakCount > 400)
+			{
+				Debug.LogError("LookAtSignal RandomPosition Error. Not found valid random position.");
+				return randomPosition;
+			}
+		}
+		return result;
+	}
+
+	public static int GetAgentTypeID(Actor actor)
+	{
+		if (actor.IsMonsterActor())
+		{
+			MonsterActor monsterActor = actor as MonsterActor;
+			if (monsterActor != null)
+				return monsterActor.pathFinderController.agent.agentTypeID;
+		}
+		return 0;
+	}
+}

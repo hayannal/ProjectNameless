@@ -25,7 +25,7 @@ public class InputProcessor
 	const float _doubleTabInterval = 0.25f;
 
 	bool _enabled = true;
-	public bool enabled { set { _enabled = value; } get { return _enabled; } }
+	public bool enabled { set { _enabled = value; } }
 
 	public void OnPointerDown(PointerEventData eventData)
 	{
