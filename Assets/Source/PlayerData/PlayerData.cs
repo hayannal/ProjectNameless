@@ -48,4 +48,91 @@ public class PlayerData : MonoBehaviour
 		checkRestartScene = true;
 		*/
 	}
+
+	public void OnRecvPlayerStatistics(List<StatisticValue> playerStatistics)
+	{
+		/*
+		// nodeWarClearLevel은 디비에 없을 수 있으므로 초기화가 필요.
+		nodeWarClearLevel = 0;
+		chaosFragmentCount = 0;
+		for (int i = 0; i < playerStatistics.Count; ++i)
+		{
+			switch (playerStatistics[i].StatisticName)
+			{
+				case "highestPlayChapter": highestPlayChapter = playerStatistics[i].Value; break;
+				case "highestClearStage": highestClearStage = playerStatistics[i].Value; break;
+				case "highestValue": highestValue = playerStatistics[i].Value; break;
+				case "nodClLv": nodeWarClearLevel = playerStatistics[i].Value; break;
+				case "chaosFragment": chaosFragmentCount = playerStatistics[i].Value; break;
+				case "chtRnkSus": cheatRankSus = playerStatistics[i].Value; break;
+			}
+		}
+		*/
+	}
+
+	public void OnRecvPlayerData(Dictionary<string, UserDataRecord> userData, Dictionary<string, UserDataRecord> userReadOnlyData, List<CharacterResult> characterList, PlayerProfileModel playerProfile)
+	{
+		/*
+		if (userData.ContainsKey("mainCharacterId"))
+		{
+			string actorId = userData["mainCharacterId"].Value;
+			bool find = false;
+			for (int i = 0; i < characterList.Count; ++i)
+			{
+				if (characterList[i].CharacterName == actorId)
+				{
+					find = true;
+					break;
+				}
+			}
+			if (find)
+				_mainCharacterId = actorId;
+			else
+			{
+				_mainCharacterId = "Actor0201";
+				PlayFabApiManager.instance.RequestIncCliSus(ClientSuspect.eClientSuspectCode.InvalidMainCharacter);
+			}
+		}
+
+		if (userData.ContainsKey("selectedChapter"))
+		{
+			int intValue = 0;
+			if (int.TryParse(userData["selectedChapter"].Value, out intValue))
+				selectedChapter = intValue;
+			if (selectedChapter > highestPlayChapter)
+			{
+				selectedChapter = highestPlayChapter;
+				PlayFabApiManager.instance.RequestIncCliSus(ClientSuspect.eClientSuspectCode.InvalidSelectedChapter);
+			}
+		}
+
+		// 만약 디비에 정보가 없을 수 있다면(나중에 추가됐거나 하는 이유 등등) 이렇게 직접 초기화 하는게 안전하다.
+		// 이 SHcha값은 항상 들어있을테지만 샘플로 이렇게 초기화 하는 형태를 보여주기 위해 남겨둔다.
+		chaosMode = false;
+		if (userData.ContainsKey("SHcha"))
+		{
+			int intValue = 0;
+			if (int.TryParse(userData["SHcha"].Value, out intValue))
+				chaosMode = (intValue == 1);
+		}
+		*/
+
+		/*
+		termsConfirmed = false;
+		if (userReadOnlyData.ContainsKey("termsDat"))
+		{
+			if (string.IsNullOrEmpty(userReadOnlyData["termsDat"].Value) == false)
+				termsConfirmed = true;
+		}
+
+		ContentsData.instance.OnRecvContentsData(userData, userReadOnlyData);
+
+		displayName = "";
+		if (string.IsNullOrEmpty(playerProfile.DisplayName) == false)
+			displayName = playerProfile.DisplayName;
+		*/
+
+		newlyCreated = false;
+		loginned = true;
+	}
 }

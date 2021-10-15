@@ -71,7 +71,7 @@ public class UIInstanceManager : MonoBehaviour
 	MonsterHPGaugeRootCanvas GetCachedMonsterHPGaugeRootCanvas()
 	{
 		if (_cachedMonsterHPGaugeRootCanvas == null)
-			_cachedMonsterHPGaugeRootCanvas = Instantiate<GameObject>(BattleManager.instance.monsterHPGaugeRootCanvasPrefab).GetComponent<MonsterHPGaugeRootCanvas>();
+			_cachedMonsterHPGaugeRootCanvas = Instantiate<GameObject>(CommonBattleGroup.instance.monsterHPGaugeRootCanvasPrefab).GetComponent<MonsterHPGaugeRootCanvas>();
 		return _cachedMonsterHPGaugeRootCanvas;
 	}
 

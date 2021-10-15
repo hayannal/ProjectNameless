@@ -113,6 +113,7 @@ public class SpawnFlag : MonoBehaviour
 
 			bool showSpawnEffect = true;
 			if (MainSceneBuilder.instance != null && MainSceneBuilder.instance.mainSceneBuilding) showSpawnEffect = false;
+			/*
 			if (BattleManager.instance != null && BattleManager.instance.IsInvasion())
 			{
 				showSpawnEffect = false;
@@ -120,18 +121,18 @@ public class SpawnFlag : MonoBehaviour
 			}
 			if (showSpawnEffect)
 				BattleInstanceManager.instance.GetCachedObject(BattleManager.instance.playerSpawnEffectPrefab, spawnTransform.position, Quaternion.identity);
+			*/
 			if (BattleInstanceManager.instance.playerActor != null)
 				BattleInstanceManager.instance.playerActor.cachedTransform.position = spawnTransform.position;
 			CustomFollowCamera.instance.immediatelyUpdate = true;
 
+			/*
 			StageManager.instance.currentGatePillarSpawnPosition = gatePillarSpawnTransform.position;
 			StageManager.instance.spawnPowerSourcePrefab = powerSourceSpawnTransform.gameObject.activeSelf;
 			if (StageManager.instance.spawnPowerSourcePrefab)
 				StageManager.instance.currentPowerSourceSpawnPosition = powerSourceSpawnTransform.position;
 			if (returnScrollSpawnTransform != null)
 				StageManager.instance.currentReturnScrollSpawnPosition = returnScrollSpawnTransform.position;
-
-			/*
 			if (BattleManager.instance != null)
 				BattleManager.instance.OnSpawnFlag();
 			*/

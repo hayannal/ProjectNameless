@@ -15,7 +15,7 @@ public class PlayerIgnoreEvadeCanvas : MonoBehaviour
 		{
 			if (_instance == null)
 			{
-				_instance = Instantiate<GameObject>(BattleManager.instance.playerIgnoreEvadeCanvasPrefab).GetComponent<PlayerIgnoreEvadeCanvas>();
+				_instance = Instantiate<GameObject>(CommonBattleGroup.instance.playerIgnoreEvadeCanvasPrefab).GetComponent<PlayerIgnoreEvadeCanvas>();
 #if UNITY_EDITOR
 				AddressableAssetSettings settings = AddressableAssetSettingsDefaultObject.Settings;
 				if (settings.ActivePlayModeDataBuilderIndex == 2)

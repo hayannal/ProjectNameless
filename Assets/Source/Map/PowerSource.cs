@@ -135,7 +135,9 @@ public class PowerSource : MonoBehaviour
 			PlayerActor playerActor = affectorProcessor.actor as PlayerActor;
 			if (playerActor != null)
 			{
+				/*
 				LevelPackDataManager.instance.AddLevelPack(playerActor, "MaxHpPowerSource");
+				*/
 				playerActor.skillProcessor.AddLevelPack("MaxHpPowerSource", false, 0);
 				/*
 				ClientSaveData.instance.OnChangedLevelPackData(LevelPackDataManager.instance.GetCachedLevelPackData());
@@ -149,7 +151,10 @@ public class PowerSource : MonoBehaviour
 		healAffectorValue.fValue3 += affectorProcessor.actor.actorStatus.GetValue(eActorStatus.PowerSourceHealAddRate);
 		affectorProcessor.ExecuteAffectorValueWithoutTable(eAffectorType.Heal, healAffectorValue, affectorProcessor.actor, false);
 		affectorProcessor.actor.actorStatus.AddSP(affectorProcessor.actor.actorStatus.GetValue(eActorStatus.MaxSp) * BattleInstanceManager.instance.GetCachedGlobalConstantFloat("PowerSourceSpHeal"));
+
+		/*
 		BattleInstanceManager.instance.GetCachedObject(BattleManager.instance.healEffectPrefab, affectorProcessor.actor.cachedTransform.position, Quaternion.identity, affectorProcessor.actor.cachedTransform);
+		*/
 
 		/*
 		BattleManager.instance.OnClearStage();
@@ -198,7 +203,9 @@ public class PowerSource : MonoBehaviour
 
 				AddressableAssetLoadManager.GetAddressableGameObject("ReturnScrollPoint", "Map", (prefab) =>
 				{
+					/*
 					_returnScrollObject = BattleInstanceManager.instance.GetCachedObject(prefab, StageManager.instance.currentReturnScrollSpawnPosition, Quaternion.identity);
+					*/
 				});
 			}
 		}

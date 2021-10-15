@@ -25,11 +25,12 @@ public class StageManager : MonoBehaviour
 	public GameObject defaultGroundSceneObject;
 #endif
 
+	/*
 	public GameObject gatePillarPrefab;
 	public GameObject bossGatePillarPrefab;
 	public GameObject challengeGatePillarPrefab;
-	public GameObject fadeCanvasPrefab;
 	public GameObject characterInfoGroundPrefab;
+	*/
 
 #if USE_MAIN_SCENE
 #else
@@ -272,7 +273,6 @@ public class StageManager : MonoBehaviour
 	{
 		return GetMaxStage(playChapter, PlayerData.instance.currentChaosMode);
 	}
-	*/
 
 	public float currentMonstrStandardHp { get { return 1.0f; } }// _currentStageTableData.standardHp; } }
 	public float currentMonstrStandardAtk { get { return 1.0f; } }// _currentStageTableData.standardAtk; } }
@@ -280,7 +280,6 @@ public class StageManager : MonoBehaviour
 	public bool bossStage { get { return currentMapBossHpRatioPer1Line != 0.0f; } }
 	public int addDropExp { get; private set; }
 
-	/*
 	StageTableData _currentStageTableData = null;
 	public StageTableData currentStageTableData { get { return _currentStageTableData; } set { _currentStageTableData = value; } }
 	public void MoveToNextStage(bool ignorePlus = false)
@@ -399,6 +398,7 @@ public class StageManager : MonoBehaviour
 #endif
 */
 
+	/*
 	GameObject _currentPlaneObject;
 	GameObject _currentGroundObject;
 	GameObject _currentWallObject;
@@ -406,7 +406,6 @@ public class StageManager : MonoBehaviour
 	GameObject _currentPortalFlagObject;
 	GameObject _currentEnvironmentSettingObject;
 	float currentMapBossHpRatioPer1Line = 0.0f;
-	/*
 	void InstantiateMap(MapTableData mapTableData, bool ignoreSpawnFlag = false)
 	{
 #if USE_MAIN_SCENE
@@ -530,7 +529,7 @@ public class StageManager : MonoBehaviour
 		}
 	}
 	*/
-
+	/*
 	public string GetCurrentSpawnFlagName()
 	{
 		if (_currentSpawnFlagObject != null)
@@ -547,6 +546,7 @@ public class StageManager : MonoBehaviour
 	public bool spawnPowerSourcePrefab { get; set; }
 	public Vector3 currentPowerSourceSpawnPosition { get; set; }
 	public Vector3 currentReturnScrollSpawnPosition { get; set; }
+	*/
 
 	/*
 	#region For Canvas EnvironmentSetting

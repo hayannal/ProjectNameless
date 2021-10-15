@@ -11,7 +11,7 @@ public class SkillSlotCanvas : MonoBehaviour
 		{
 			if (_instance == null)
 			{
-				_instance = Instantiate<GameObject>(BattleManager.instance.skillSlotCanvasPrefab).GetComponent<SkillSlotCanvas>();
+				_instance = Instantiate<GameObject>(CommonBattleGroup.instance.skillSlotCanvasPrefab).GetComponent<SkillSlotCanvas>();
 			}
 			return _instance;
 		}

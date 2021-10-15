@@ -14,7 +14,7 @@ public class DamageCanvas : MonoBehaviour
 		{
 			if (_instance == null)
 			{
-				_instance = Instantiate<GameObject>(BattleManager.instance.damageCanvasPrefab).GetComponent<DamageCanvas>();
+				_instance = Instantiate<GameObject>(CommonBattleGroup.instance.damageCanvasPrefab).GetComponent<DamageCanvas>();
 			}
 			return _instance;
 		}

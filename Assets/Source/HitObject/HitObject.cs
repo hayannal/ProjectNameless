@@ -270,6 +270,7 @@ public class HitObject : MonoBehaviour
 		}
 
 		// 대각샷 좌우샷 후방샷 레벨팩
+		/*
 		int diagonalNwayAddCount = normalAttack ? DiagonalNwayGeneratorAffector.GetAddCount(parentActor.affectorProcessor) : 0;
 		if (diagonalNwayAddCount > 0)
 		{
@@ -296,6 +297,7 @@ public class HitObject : MonoBehaviour
 			continuousHitObjectGenerator.createCount = backNwayAddCount;
 			continuousHitObjectGenerator.InitializeGenerator(meHit, parentActor, statusBase, hitSignalIndexInAction, repeatIndex, repeatAddCountByLevelPack, spawnTransform);
 		}
+		*/
 
 		bool createMainHitObject = true;
 		if (meHit.ignoreMainHitObjectByParallel || meHit.ignoreMainHitObjectByCircularSector || ignoreMainHitObjectByGenerator)

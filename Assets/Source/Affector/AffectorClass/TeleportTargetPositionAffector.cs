@@ -152,7 +152,7 @@ public class TeleportTargetPositionAffector : AffectorBase
 			++tryBreakCount;
 			if (tryBreakCount > 200)
 			{
-				Debug.LogErrorFormat("Teleport Position Error. {0}. Not found valid random position.", StageManager.instance.GetCurrentSpawnFlagName());
+				//Debug.LogErrorFormat("Teleport Position Error. {0}. Not found valid random position.", StageManager.instance.GetCurrentSpawnFlagName());
 				return _origPosition;
 			}
 		}

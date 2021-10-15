@@ -9,7 +9,6 @@ using MEC;
 public class PlayerActor : Actor
 {
 	public override bool IsPlayerActor() { return true; }
-	public override bool IsMercenary() { return mercenary; }
 
 	public GameObject[] cachingObjectList;
 	public Transform wingRootTransform;
@@ -19,17 +18,6 @@ public class PlayerActor : Actor
 	//public CastingProcessor castingProcessor { get; private set; }
 	public float actorRadius { get; private set; }
 	public bool flying { get; private set; }
-
-	public bool mercenary { get; set; }
-	public string GetActorIdWithMercenary()
-	{
-		return actorId;
-		/*
-		if (mercenary == false)
-			return actorId;
-		return MercenaryData.ToMercenaryActorId(actorId);
-		*/
-	}
 
 	void Awake()
 	{
@@ -108,7 +96,11 @@ public class PlayerActor : Actor
 
 	void RegisterBattleInstance()
 	{
-		string addActorId = GetActorIdWithMercenary();
+		// 등록하는 로직이 달라질거 같다.
+		OnChangedMainCharacter();
+
+		/*
+		string addActorId = actorId;
 		BattleInstanceManager.instance.OnInitializePlayerActor(this, addActorId);
 
 		bool lobby = (MainSceneBuilder.instance != null && MainSceneBuilder.instance.lobby);
@@ -124,10 +116,8 @@ public class PlayerActor : Actor
 				{
 					if (BattleManager.instance != null && BattleManager.instance.IsNodeWar())
 					{
-						/*
 						// 바꾼 캐릭터에도 NodeWar용 레벨팩 적용
 						NodeWarProcessor.ApplyNodeWarLevelPack(this);
-						*/
 					}
 					else if (BattleManager.instance != null && BattleManager.instance.IsDefaultBattle())
 					{
@@ -161,19 +151,15 @@ public class PlayerActor : Actor
 							affectorProcessor.ExecuteAffectorValueWithoutTable(eAffectorType.Heal, healAffectorValue, affectorProcessor.actor, false);
 							BattleInstanceManager.instance.GetCachedObject(BattleManager.instance.healEffectPrefab, cachedTransform.position, Quaternion.identity, cachedTransform);
 
-							/*
 							ClientSaveData.instance.OnChangedHpRatio(affectorProcessor.actor.actorStatus.GetHPRatio());
 							ClientSaveData.instance.OnChangedSpRatio(affectorProcessor.actor.actorStatus.GetSPRatio());
-							*/
 
 							Timing.RunCoroutine(ScreenHealEffectProcess());
 						}
 
-						/*
 						// 스테이지 디버프
 						if (BattleInstanceManager.instance.playerActor.currentStagePenaltyTableData != null)
 							RefreshStagePenaltyAffector(BattleInstanceManager.instance.playerActor.currentStagePenaltyTableData.stagePenaltyId, false);
-						*/
 					}
 				}
 
@@ -194,6 +180,7 @@ public class PlayerActor : Actor
 			if (BattleInstanceManager.instance.playerActor == null)
 				OnChangedMainCharacter();
 		}
+		*/
 	}
 
 	IEnumerator<float> ScreenHealEffectProcess()
@@ -218,7 +205,7 @@ public class PlayerActor : Actor
 			/*
 			BattleInstanceManager.instance.AddBattlePlayer(GetActorIdWithMercenary());
 			*/
-			SoundManager.instance.PlayBattleBgm(GetActorIdWithMercenary());
+			SoundManager.instance.PlayBattleBgm(actorId);
 		}
 
 		BattleInstanceManager.instance.playerActor = this;
@@ -248,127 +235,8 @@ public class PlayerActor : Actor
 	void Update()
 	{
 		UpdateUltimateIndicator();
-		UpdateStagePaneltyEffect();
 		UpdateSpRegenOnBoss();
 	}
-
-	#region Stage Penalty Affector
-	// 메인캐릭터로 바뀌거나 진입 직전에 한번씩만 호출해주면 알아서 최신 어펙터로 적용한다.
-	List<AffectorBase> _listStagePenaltyAffector = null;
-	/*
-	public StagePenaltyTableData currentStagePenaltyTableData { get; set; }
-	*/
-	public void RefreshStagePenaltyAffector(string stagePenaltyId, bool showAlarm)
-	{
-		/*
-		currentStagePenaltyTableData = null;
-
-		StagePenaltyTableData stagePenaltyTableData = TableDataManager.instance.FindStagePenaltyTableData(stagePenaltyId);
-		if (stagePenaltyTableData == null)
-			return;
-
-		if (_listStagePenaltyAffector == null)
-			_listStagePenaltyAffector = new List<AffectorBase>();
-
-		for (int i = 0; i < _listStagePenaltyAffector.Count; ++i)
-			_listStagePenaltyAffector[i].finalized = true;
-		_listStagePenaltyAffector.Clear();
-
-		HitParameter hitParameter = new HitParameter();
-		hitParameter.statusBase = actorStatus.statusBase;
-		SkillProcessor.CopyEtcStatus(ref hitParameter.statusStructForHitObject, this);
-
-		for (int i = 0; i < stagePenaltyTableData.affectorValueId.Length; ++i)
-		{
-			AffectorBase newAffector = affectorProcessor.ApplyAffectorValue(stagePenaltyTableData.affectorValueId[i], hitParameter, true);
-			if (newAffector == null)
-				continue;
-
-			if (AffectorCustomCreator.IsContinuousAffector(newAffector.affectorType))
-				_listStagePenaltyAffector.Add(newAffector);
-			else
-				Debug.LogErrorFormat("Non-continuous affector in a Stage Penalty! / StagePenaltyId = {0} / AffectorValueId = {1}", stagePenaltyId, stagePenaltyTableData.affectorValueId[i]);
-		}
-
-		currentStagePenaltyTableData = stagePenaltyTableData;
-
-		if (!showAlarm)
-			return;
-
-		ClientSaveData.instance.OnChangedStagePenalty(stagePenaltyId);
-
-		Timing.RunCoroutine(DelayedShowPaneltyEffect(0.2f, stagePenaltyTableData));
-		*/
-	}
-
-	/*
-	IEnumerator<float> DelayedShowPaneltyEffect(float delay, StagePenaltyTableData stagePenaltyTableData)
-	{
-		// 스테이지 패널티가 적용되는 상황에서 알람 텍스트를 보여야하는 타이밍에 이펙트도 보여줘야하는데
-		// 한가지 추가로 검사할게 있다.
-		// 자신이 현재의 패널티에 걸리는지 체크하는거다. 이게 카오스에서는 랜덤으로 결정되기 때문에 텍스트 말고도 이거로 표현하는거다.
-		// 아래 코드는 SwapCanvas 열릴때 하던 코드 가져와서 변경해서 쓴다.
-		ActorTableData actorTableData = TableDataManager.instance.FindActorTableData(actorId);
-		bool showStagePaneltyEffect = false;
-		for (int i = 0; i < stagePenaltyTableData.affectorValueId.Length; ++i)
-		{
-			AffectorValueLevelTableData affectorValueLevelTableData = TableDataManager.instance.FindAffectorValueLevelTableData(stagePenaltyTableData.affectorValueId[i], 1);
-			if (affectorValueLevelTableData == null)
-				continue;
-
-			for (int j = 0; j < affectorValueLevelTableData.conditionValueId.Length; ++j)
-			{
-				ConditionValueTableData conditionValueTableData = TableDataManager.instance.FindConditionValueTableData(affectorValueLevelTableData.conditionValueId[j]);
-				if (conditionValueTableData == null)
-					continue;
-
-				if ((Condition.eConditionType)conditionValueTableData.conditionId == Condition.eConditionType.DefenderPowerSource && (Condition.eCompareType)conditionValueTableData.compareType == Condition.eCompareType.Equal)
-				{
-					int.TryParse(conditionValueTableData.value, out int intValue);
-					if (actorTableData.powerSource == intValue)
-						showStagePaneltyEffect = true;
-				}
-			}
-		}
-
-		if (showStagePaneltyEffect)
-		{
-			AddressableAssetLoadManager.GetAddressableGameObject("StagePaneltyEffect", "CommonEffect");
-		}
-
-		yield return Timing.WaitForSeconds(delay);
-
-		if (this == null)
-			yield break;
-		if (gameObject.activeSelf == false)
-			yield break;
-
-		string[] penaltyMindParameterList = UIString.instance.ParseParameterString(stagePenaltyTableData.mindParameter);
-		BattleToastCanvas.instance.ShowToast(UIString.instance.GetString(stagePenaltyTableData.penaltyMindText, penaltyMindParameterList), 2.5f);
-
-		if (showStagePaneltyEffect)
-		{
-			AddressableAssetLoadManager.GetAddressableGameObject("StagePaneltyEffect", "CommonEffect", (prefab) =>
-			{
-				_cachedStagePaneltyEffectTransform = BattleInstanceManager.instance.GetCachedObject(prefab, cachedTransform.position, Quaternion.identity).transform;
-			});
-		}
-	}
-	*/
-
-	Transform _cachedStagePaneltyEffectTransform;
-	void UpdateStagePaneltyEffect()
-	{
-		if (_cachedStagePaneltyEffectTransform == null)
-			return;
-		if (_cachedStagePaneltyEffectTransform.gameObject == null)
-			return;
-		if (_cachedStagePaneltyEffectTransform.gameObject.activeSelf == false)
-			return;
-
-		_cachedStagePaneltyEffectTransform.position = cachedTransform.position;
-	}
-	#endregion
 
 	public override void OnChangedHP()
 	{
@@ -423,7 +291,7 @@ public class PlayerActor : Actor
 		if (show)
 		{
 			if (_cachedUltimateIndicatorTransform == null)
-				_cachedUltimateIndicatorTransform = BattleInstanceManager.instance.GetCachedObject(BattleManager.instance.ultimateCirclePrefab, cachedTransform.position, Quaternion.identity).transform;
+				_cachedUltimateIndicatorTransform = BattleInstanceManager.instance.GetCachedObject(CommonBattleGroup.instance.ultimateCirclePrefab, cachedTransform.position, Quaternion.identity).transform;
 			if (_cachedUltimateIndicatorTransform != null)
 				_cachedUltimateIndicatorTransform.gameObject.SetActive(true);
 		}

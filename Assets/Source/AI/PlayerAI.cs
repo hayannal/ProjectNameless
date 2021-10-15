@@ -122,7 +122,7 @@ public class PlayerAI : MonoBehaviour
 				_cachedTargetingObjectTransform.gameObject.SetActive(false);
 				_cachedTargetingObjectTransform = null;
 			}
-			GameObject newObject = BattleInstanceManager.instance.GetCachedObject(useSleepObject ? BattleManager.instance.targetCircleSleepObject : BattleManager.instance.targetCircleObject, null);
+			GameObject newObject = BattleInstanceManager.instance.GetCachedObject(useSleepObject ? CommonBattleGroup.instance.targetCircleSleepObject : CommonBattleGroup.instance.targetCircleObject, null);
 			_cachedTargetingObjectTransform = newObject.transform;
 			_lastUseSleepObject = useSleepObject;
 		}

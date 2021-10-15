@@ -21,7 +21,9 @@ public class OnOffColliderAreaSpawn : MonoBehaviour
 
 	void InitializeOnOffColliderArea()
 	{
+		/*
 		_onOffColliderArea = BattleInstanceManager.instance.GetCachedOnOffColliderArea(cachedTransform.position, Quaternion.identity);
+		*/
 	}
 
 	void OnDisable()

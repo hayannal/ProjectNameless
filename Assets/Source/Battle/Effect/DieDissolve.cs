@@ -65,7 +65,7 @@ public class DieDissolve : MonoBehaviour
 
 		float fTime = Time.time - _dissolveStartTime;
 
-		AnimationCurveAsset curveAsset = _bossMonster ? BattleManager.instance.bossMonsterDieDissolveCurve : BattleManager.instance.monsterDieDissolveCurve;
+		AnimationCurveAsset curveAsset = _bossMonster ? CommonBattleGroup.instance.bossMonsterDieDissolveCurve : CommonBattleGroup.instance.monsterDieDissolveCurve;
 		if (fTime > curveAsset.curve.keys[curveAsset.curve.length - 1].time)
 		{
 			ResetDissolve();

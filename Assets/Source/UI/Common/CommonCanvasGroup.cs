@@ -6,6 +6,7 @@ public class CommonCanvasGroup : MonoBehaviour
 {
 	public static CommonCanvasGroup instance = null;
 
+	public GameObject fadeCanvasPrefab;
 	public GameObject toastCanvasPrefab;
 	public GameObject fullscreenYesNoCanvasPrefab;
 	public GameObject yesNoCanvasPrefab;

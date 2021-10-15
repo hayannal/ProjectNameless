@@ -14,7 +14,7 @@ public class FloatingDamageTextRootCanvas : MonoBehaviour
 		{
 			if (_instance == null)
 			{
-				_instance = Instantiate<GameObject>(BattleManager.instance.floatingDamageTextRootCanvasPrefab).GetComponent<FloatingDamageTextRootCanvas>();
+				_instance = Instantiate<GameObject>(CommonBattleGroup.instance.floatingDamageTextRootCanvasPrefab).GetComponent<FloatingDamageTextRootCanvas>();
 #if UNITY_EDITOR
 				AddressableAssetSettings settings = AddressableAssetSettingsDefaultObject.Settings;
 				if (settings.ActivePlayModeDataBuilderIndex == 2)

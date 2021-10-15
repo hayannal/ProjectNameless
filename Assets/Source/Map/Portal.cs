@@ -67,15 +67,19 @@ public class Portal : MonoBehaviour
 
 		if (_portalGauge == null)
 		{
+			/*
 			_portalGauge = UIInstanceManager.instance.GetCachedPortalGauge(BattleManager.instance.portalGaugePrefab);
 			_portalGauge.InitializeGauge(cachedTransform.position);
+			*/
 		}
 		_portalGauge.OnChanged(_currentGaugeRatio);
 
 		if (_currentGaugeRatio >= 1.0f)
 		{
 			_currentGaugeRatio = 1.0f;
+			/*
 			BattleInstanceManager.instance.OnOpenedPortal(this);
+			*/
 			Color peakColor = onColor;
 			peakColor.a = (peakColor.a + 1.0f) * 0.4f;
 			_targetColor = peakColor;
@@ -145,7 +149,9 @@ public class Portal : MonoBehaviour
 		if (BattleInstanceManager.instance.playerActor == affectorProcessor.actor)
 			TailAnimatorUpdater.UpdateAnimator(affectorProcessor.actor.cachedTransform, 5);
 
+		/*
 		BattleInstanceManager.instance.GetCachedObject(BattleManager.instance.portalMoveEffectPrefab, targetPosition, Quaternion.identity);
+		*/
 
 		ClosePortal();
 	}

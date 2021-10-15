@@ -238,7 +238,6 @@ public class MonsterActor : Actor
 				ClientSaveData.instance.OnAddedEliteMonsterIndex(BattleInstanceManager.instance.monsterIndex);
 			}
 		}
-		*/
 
 		// 인덱스는 선별되지 않은 몹이더라도 항상 증가시켜야한다.
 		++BattleInstanceManager.instance.monsterIndex;
@@ -248,6 +247,7 @@ public class MonsterActor : Actor
 
 		// 마테리얼을 바꾸는 컴포넌트 적용하고(리셋도 이 스크립트가 담당한다.)
 		EliteMonsterRim.ShowRim(cachedTransform);
+		*/
 	}
 
 	bool _needNavMeshAgentWarp = false;
@@ -287,7 +287,7 @@ public class MonsterActor : Actor
 		{
 			if (_monsterHPGauge == null)
 			{
-				_monsterHPGauge = UIInstanceManager.instance.GetCachedMonsterHPgauge(BattleManager.instance.monsterHPGaugePrefab);
+				_monsterHPGauge = UIInstanceManager.instance.GetCachedMonsterHPgauge(CommonBattleGroup.instance.monsterHPGaugePrefab);
 				_monsterHPGauge.InitializeGauge(this);
 			}
 			_monsterHPGauge.OnChangedHP(actorStatus.GetHPRatio());

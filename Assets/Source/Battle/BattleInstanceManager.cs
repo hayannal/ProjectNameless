@@ -718,6 +718,8 @@ public class BattleInstanceManager : MonoBehaviour
 	}
 	#endregion
 
+
+
 	#region PlayerActor
 	public PlayerActor playerActor { get; set; }
 	public bool standbySwapPlayerActor { get; set; }
@@ -727,16 +729,20 @@ public class BattleInstanceManager : MonoBehaviour
 	Dictionary<string, PlayerActor> _dicCachedPlayerActor = new Dictionary<string, PlayerActor>();
 	public void OnInitializePlayerActor(PlayerActor playerActor, string actorId)
 	{
+		/*
 		if (_dicCachedPlayerActor.ContainsKey(actorId))
 			return;
 
 		_dicCachedPlayerActor.Add(actorId, playerActor);
+		*/
 	}
 
 	public PlayerActor GetCachedPlayerActor(string actorId)
 	{
+		/*
 		if (_dicCachedPlayerActor.ContainsKey(actorId))
 			return _dicCachedPlayerActor[actorId];
+		*/
 		return null;
 	}
 	#endregion
@@ -930,6 +936,7 @@ public class BattleInstanceManager : MonoBehaviour
 	}
 	#endregion
 
+	/*
 	#region Portal
 	List<Portal> _listCachedPortal = new List<Portal>();
 	public Portal GetCachedPortal(Vector3 position, Quaternion rotation)
@@ -973,7 +980,9 @@ public class BattleInstanceManager : MonoBehaviour
 		_listOpenedPortal.Add(portal);
 	}
 	#endregion
+	*/
 
+	/*
 	#region OnOffColliderArea
 	List<OnOffColliderArea> _listCachedOnOffColliderArea = new List<OnOffColliderArea>();
 	public OnOffColliderArea GetCachedOnOffColliderArea(Vector3 position, Quaternion rotation)
@@ -1001,6 +1010,7 @@ public class BattleInstanceManager : MonoBehaviour
 		return onOffColliderArea;
 	}
 	#endregion
+	*/
 
 	#region Sequential Monster
 	List<SequentialMonster> _listSequentialMonster;

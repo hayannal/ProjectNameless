@@ -47,6 +47,21 @@ public class MainSceneBuilder : MonoBehaviour
 #endif
 
 		// 서버오류로 인해 접속못했을 경우 대비해서 체크해둔다.
+		if (_handleStartCharacter.IsValid() == false && mainSceneBuilding) return;
+
+#if !UNITY_EDITOR
+		Debug.LogWarning("MainSceneBuilder OnDestroy 2");
+#endif
+
+		Addressables.Release<GameObject>(_handleCommonCanvasGroup);
+		Addressables.Release<GameObject>(_handleCommonBattleGroup);
+
+#if !UNITY_EDITOR
+		Debug.LogWarning("MainSceneBuilder OnDestroy 3");
+#endif
+
+		/*
+		// 서버오류로 인해 접속못했을 경우 대비해서 체크해둔다.
 		if (_handleStageManager.IsValid() == false && mainSceneBuilding) return;
 
 #if !UNITY_EDITOR
@@ -80,6 +95,7 @@ public class MainSceneBuilder : MonoBehaviour
 			Addressables.Release<GameObject>(_handleBattleManager);
 		if (_handleDropObjectGroup.IsValid())
 			Addressables.Release<GameObject>(_handleDropObjectGroup);
+		*/
 
 #if !UNITY_EDITOR
 		Debug.LogWarning("MainSceneBuilder OnDestroy 4");
@@ -98,18 +114,26 @@ public class MainSceneBuilder : MonoBehaviour
 	}
 
 	AsyncOperationHandle<GameObject> _handleTableDataManager;
+	AsyncOperationHandle<GameObject> _handleStartCharacter;
+	AsyncOperationHandle<GameObject> _handleCommonBattleGroup;
+	AsyncOperationHandle<GameObject> _handleCommonCanvasGroup;
+	
+
+	/*
 	AsyncOperationHandle<GameObject> _handleStageManager;
 	AsyncOperationHandle<GameObject> _handleBattleManager;
 	AsyncOperationHandle<GameObject> _handleDropObjectGroup;
-	AsyncOperationHandle<GameObject> _handleStartCharacter;
+	
 	AsyncOperationHandle<GameObject> _handleTitleCanvas;
 	AsyncOperationHandle<GameObject> _handleLobbyCanvas;
-	AsyncOperationHandle<GameObject> _handleCommonCanvasGroup;
+
 	AsyncOperationHandle<GameObject> _handleTreasureChest;
 	AsyncOperationHandle<GameObject> _handleEventGatePillar;
 	AsyncOperationHandle<GameObject> _handleTimeSpacePortal;
 	AsyncOperationHandle<GameObject> _handleNodeWarPortal;
 	AsyncOperationHandle<GameObject> _handleEventBoard;
+	*/
+
 	IEnumerator Start()
     {
 #if !UNITY_EDITOR
@@ -269,7 +293,6 @@ public class MainSceneBuilder : MonoBehaviour
 #endif
 		}
 
-		/*
 		if (PlayerData.instance.loginned == false)
 		{
 			float serverLoginStartTime = Time.time;
@@ -296,37 +319,23 @@ public class MainSceneBuilder : MonoBehaviour
 		// IAP로부터 상품 가격을 받아와서 처리하는 방식으로 바꾸다보니 이 초기화가 늦어지면 캐시샵 뜨는게 느려지게 된다.
 		// 그래서 로그인 후 즉시 하는거로 시점을 바꾸기로 한다.
 		// 이쯤되서 로딩시켜두면 느릴일도 없을거 같다.
-		if (ContentsManager.IsTutorialChapter() == false)
+		//if (ContentsManager.IsTutorialChapter() == false)
 			IAPListenerWrapper.instance.EnableListener(true);
-
-		// 서버와 연동 후 64비트 빌드를 뽑아봤는데 하필 요 부분쯤부터-40% 근처 프로그래스바가 올라가지 않으면서 프리징 되는 현상이 발생했다.
-		// 이상하게도 32비트도 정상이고 64비트인데 PLAYFAB디파인을 주석처리한 빌드도 정상인데
-		// PLAYFAB 디파인 켠 빌드에서만 거의 0.5%? 수준으로 프리징이 발생한다.
-		// 아무리봐도 네트워크 문제는 아닌거 같은게
-		// 딱 한번 70%쯤에서 멈췄었고 한번은 100% 다 차고 로딩화면 없어지려는 알파 반투명쯤에서 프리징이 걸렸기에
-		// 아무래도 Addressables.LoadAssetAsync의 문제로 의심하고 있다.
-		// 로그캣으로 로그도 찍어봤는데
-		// 유니티 로그는 멈추고나서 한참 후 Timeout while trying to pause the Unity Engine. 뜨는게 전부고
-		// 일반 로그로 찍어봐도 정상일때랑 아닐때랑 별다른 차이가 없다.
-		// 그러다가 유니티에 Addressables.LoadAssetAsync 함수 프리징 된다는 글이 있어서 보니
-		// 엔진팀에서 수정중이라 한다.
-		// 우선은 버전업을 해서 고쳐지길 기대하는 수밖에 없을 듯 하다.
 
 		// step 4. set lobby
 		lobby = true;
 #if !UNITY_EDITOR
-		Debug.LogWarning("111111111");
-#endif
-		_handleLobbyCanvas = Addressables.LoadAssetAsync<GameObject>("LobbyCanvas");
-#if !UNITY_EDITOR
 		Debug.LogWarning("222222222");
 #endif
+		_handleCommonBattleGroup = Addressables.LoadAssetAsync<GameObject>("CommonBattleGroup");
 		_handleCommonCanvasGroup = Addressables.LoadAssetAsync<GameObject>("CommonCanvasGroup");
 #if !UNITY_EDITOR
 		Debug.LogWarning("333333333");
 #endif
+		/*
 		if (s_firstTimeAfterLaunch)
 			_handleTitleCanvas = Addressables.LoadAssetAsync<GameObject>("TitleCanvas");
+		*/
 #if !UNITY_EDITOR
 		Debug.LogWarning("444444444");
 #endif
@@ -336,11 +345,13 @@ public class MainSceneBuilder : MonoBehaviour
 #if !UNITY_EDITOR
 		Debug.LogWarning("555555555");
 #endif
+		/*
 		_handleStageManager = Addressables.LoadAssetAsync<GameObject>("StageManager");
+		*/
 #if !UNITY_EDITOR
 		Debug.LogWarning("666666666");
 #endif
-		_handleStartCharacter = Addressables.LoadAssetAsync<GameObject>(CharacterData.GetAddressByActorId(PlayerData.instance.mainCharacterId));
+		_handleStartCharacter = Addressables.LoadAssetAsync<GameObject>("Ganfaul");  // CharacterData.GetAddressByActorId(PlayerData.instance.mainCharacterId)
 #if !UNITY_EDITOR
 		Debug.LogWarning("777777777");
 #endif
@@ -361,14 +372,18 @@ public class MainSceneBuilder : MonoBehaviour
 		// 이 방법이다. 이건 기존 코루틴 코드를 그대로 유지하면서 핸들이 릴리즈 되더라도 익셉션이 뜨지 않을거라 해서 테스트 해보기로 한다.
 		//yield return _handleStageManager;
 		//yield return _handleStartCharacter;
+		/*
 		while (_handleStageManager.IsValid() && !_handleStageManager.IsDone)
 			yield return null;
+		*/
 		while (_handleStartCharacter.IsValid() && !_handleStartCharacter.IsDone)
 			yield return null;
 #if !UNITY_EDITOR
 		Debug.LogWarning("888888888");
 #endif
+		/*
 		Instantiate<GameObject>(_handleStageManager.Result);
+		*/
 #if !UNITY_EDITOR
 		Debug.LogWarning("888888888-1");
 #endif
@@ -404,6 +419,8 @@ public class MainSceneBuilder : MonoBehaviour
 #if !UNITY_EDITOR
 		Debug.LogWarning("AAAAAAAAA");
 #endif
+
+		/*
 		_handleTreasureChest = Addressables.LoadAssetAsync<GameObject>("TreasureChest");
 #if !UNITY_EDITOR
 		Debug.LogWarning("BBBBBBBBB");
@@ -557,6 +574,8 @@ public class MainSceneBuilder : MonoBehaviour
 #if !UNITY_EDITOR
 		Debug.LogWarning("IIIIIIIII");
 #endif
+		*/
+
 		// step 9-1. 첫번재 UI를 소환하기 전에 UIString Font의 로드가 완료되어있는지 체크해야하고 StringTable을 캐싱해둔다.
 		while (UIString.instance.IsDoneLoadAsyncStringData() == false)
 			yield return null;
@@ -568,15 +587,22 @@ public class MainSceneBuilder : MonoBehaviour
 		// step 9-2. lobby ui
 		//yield return _handleLobbyCanvas;
 		//yield return _handleCommonCanvasGroup;
+		/*
 		while (_handleLobbyCanvas.IsValid() && !_handleLobbyCanvas.IsDone)
 			yield return null;
+		*/
 		while (_handleCommonCanvasGroup.IsValid() && !_handleCommonCanvasGroup.IsDone)
+			yield return null;
+		while (_handleCommonBattleGroup.IsValid() && !_handleCommonBattleGroup.IsDone)
 			yield return null;
 #if !UNITY_EDITOR
 		Debug.LogWarning("KKKKKKKKK");
 #endif
+		/*
 		Instantiate<GameObject>(_handleLobbyCanvas.Result);
+		*/
 		Instantiate<GameObject>(_handleCommonCanvasGroup.Result);
+		Instantiate<GameObject>(_handleCommonBattleGroup.Result);
 #if !UNITY_EDITOR
 		Debug.LogWarning("LLLLLLLLL");
 #endif
@@ -609,6 +635,7 @@ public class MainSceneBuilder : MonoBehaviour
 		Debug.LogWarning("OOOOOOOOO");
 #endif
 
+		/*
 		// step 11. title ui
 		if (s_firstTimeAfterLaunch)
 		{
@@ -618,6 +645,7 @@ public class MainSceneBuilder : MonoBehaviour
 				yield return null;
 			Instantiate<GameObject>(_handleTitleCanvas.Result);
 		}
+		*/
 
 		// 마무리 셋팅
 		_waitUpdateRemainCount = 2;
@@ -626,12 +654,14 @@ public class MainSceneBuilder : MonoBehaviour
 		s_firstTimeAfterLaunch = false;
 	}
 
+	/*
 	GameObject GetCurrentGatePillarPrefab()
 	{
 		if (PlayerData.instance.currentChallengeMode && EventManager.instance.IsCompleteServerEvent(EventManager.eServerEvent.chaos))
 			return StageManager.instance.challengeGatePillarPrefab;
 		return StageManager.instance.gatePillarPrefab;
 	}
+	*/                                                                                                                                                                                                                                                                                               
 
 	// Update is called once per frame
 	List<GameObject> _listCachingObject = null;
@@ -681,6 +711,7 @@ public class MainSceneBuilder : MonoBehaviour
 		bool battleScene = (buildTutorialScene || s_buildReturnScrollUsedScene);
 		if (battleScene == false)
 		{
+			/*
 			LobbyCanvas.instance.RefreshAlarmObject();
 			if (EventBoard.instance != null)
 				EventBoard.instance.RefreshBoardOnOff();
@@ -691,8 +722,10 @@ public class MainSceneBuilder : MonoBehaviour
 			QuestData.instance.LateInitialize();
 			CumulativeEventData.instance.LateInitialize();
 			RankingData.instance.LateInitialize();
+			*/
 		}
 
+		/*
 		if (ContentsData.instance.readyToReopenBossEnterCanvas)
 		{
 			BossBattleEnterCanvas.PreloadReadyToReopen();
@@ -703,6 +736,7 @@ public class MainSceneBuilder : MonoBehaviour
 			InvasionEnterCanvas.PreloadReadyToReopen();
 			ContentsData.instance.readyToReopenInvasionEnterCanvas = false;
 		}
+		*/
 
 		// 캐릭터는 언제나 같은 번들안에 있을테니 마지막 번호 하나만 검사하기로 한다.
 		// 다운로드 되어있어서 캐싱할 수 있을때만 프리로드를 걸어둔다.
@@ -715,8 +749,10 @@ public class MainSceneBuilder : MonoBehaviour
 		{
 			for (int i = 0; i < TableDataManager.instance.actorTable.dataArray.Length; ++i)
 			{
+				/*
 				if (MercenaryData.IsMercenaryActor(TableDataManager.instance.actorTable.dataArray[i].actorId))
 					continue;
+				*/
 				AddressableAssetLoadManager.GetAddressableSprite(TableDataManager.instance.actorTable.dataArray[i].portraitAddress, "Icon", null);
 			}
 		}
@@ -726,6 +762,7 @@ public class MainSceneBuilder : MonoBehaviour
 		// 워낙 크기가 작으니 LateInitialize에서 해도 문제없을거다.
 		SoundManager.instance.LoadInApkSFXContainer();
 
+		/*
 		// DropObject의 크기도 커지고 로비뽑기에서 써야해서 BattleManager에서 분리한다.
 		_handleDropObjectGroup = Addressables.LoadAssetAsync<GameObject>("DropObjectGroup");
 		//yield return _handleDropObjectGroup;
@@ -744,12 +781,12 @@ public class MainSceneBuilder : MonoBehaviour
 			LoadingCanvas.instance.FadeOutObject();
 			BattleInstanceManager.instance.playerActor.InitializeCanvas();
 		}
-
-	*/
+		*/
 	}
 
 	public bool IsDoneLateInitialized(bool onlyDropObjectGroup = false)
 	{
+		/*
 		if (_handleDropObjectGroup.IsValid() == false)
 			return false;
 
@@ -757,11 +794,15 @@ public class MainSceneBuilder : MonoBehaviour
 			return true;
 
 		return _handleBattleManager.IsValid();
+		*/
+		return true;
 	}
 
 	public void OnFinishTitleCanvas()
 	{
+		/*
 		Addressables.Release<GameObject>(_handleTitleCanvas);
+		*/
 	}
 
 	public void OnExitLobby()
@@ -794,7 +835,9 @@ public class MainSceneBuilder : MonoBehaviour
 	IEnumerator BuildTutorialSceneCoroutine()
 	{
 		buildTutorialScene = true;
+		yield break;
 
+		/*
 		// step 4. set lobby
 		_handleLobbyCanvas = Addressables.LoadAssetAsync<GameObject>("LobbyCanvas");
 		_handleCommonCanvasGroup = Addressables.LoadAssetAsync<GameObject>("CommonCanvasGroup");
@@ -804,9 +847,7 @@ public class MainSceneBuilder : MonoBehaviour
 
 		
 		_handleStageManager = Addressables.LoadAssetAsync<GameObject>("StageManager");
-		/*
 		_handleStartCharacter = Addressables.LoadAssetAsync<GameObject>(CharacterData.GetAddressByActorId(PlayerData.instance.mainCharacterId));
-		*/
 		while (_handleStageManager.IsValid() && !_handleStageManager.IsDone)
 			yield return null;
 		while (_handleStartCharacter.IsValid() && !_handleStartCharacter.IsDone)
@@ -876,6 +917,9 @@ public class MainSceneBuilder : MonoBehaviour
 	public static string s_lastPowerSourceEnvironmentSettingAddress;
 	IEnumerator BuildReturnScrollSceneCoroutine()
 	{
+		yield break;
+
+		/*
 		// step 4. set lobby
 		_handleLobbyCanvas = Addressables.LoadAssetAsync<GameObject>("LobbyCanvas");
 		_handleCommonCanvasGroup = Addressables.LoadAssetAsync<GameObject>("CommonCanvasGroup");
@@ -883,9 +927,8 @@ public class MainSceneBuilder : MonoBehaviour
 		// step 5, 6
 		LoadingCanvas.instance.SetProgressBarPoint(0.6f);
 		_handleStageManager = Addressables.LoadAssetAsync<GameObject>("StageManager");
-		/*
 		_handleStartCharacter = Addressables.LoadAssetAsync<GameObject>(CharacterData.GetAddressByActorId(ClientSaveData.instance.GetCachedBattleActor()));
-		*/
+
 		while (_handleStageManager.IsValid() && !_handleStageManager.IsDone)
 			yield return null;
 		while (_handleStartCharacter.IsValid() && !_handleStartCharacter.IsDone)
@@ -958,4 +1001,3 @@ public class MainSceneBuilder : MonoBehaviour
 #endregion
 #endif
 }
-#endif

@@ -15,7 +15,7 @@ public class PlayerGaugeCanvas : MonoBehaviour
 		{
 			if (_instance == null)
 			{
-				_instance = Instantiate<GameObject>(BattleManager.instance.playerHPGaugePrefab).GetComponent<PlayerGaugeCanvas>();
+				_instance = Instantiate<GameObject>(CommonBattleGroup.instance.playerHPGaugePrefab).GetComponent<PlayerGaugeCanvas>();
 #if UNITY_EDITOR
 				AddressableAssetSettings settings = AddressableAssetSettingsDefaultObject.Settings;
 				if (settings.ActivePlayModeDataBuilderIndex == 2)

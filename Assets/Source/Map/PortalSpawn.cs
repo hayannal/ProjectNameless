@@ -25,9 +25,11 @@ public class PortalSpawn : MonoBehaviour
 
 	void InitializePortal()
 	{
+		/*
 		_portal = BattleInstanceManager.instance.GetCachedPortal(cachedTransform.position, Quaternion.identity);
 		_portal.targetPosition = targetTransform.position;
 		_portal.checkWall = checkWall;
+		*/
 	}
 
 	void OnDisable()

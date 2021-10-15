@@ -15,7 +15,7 @@ public class PauseCanvas : MonoBehaviour
 		{
 			if (_instance == null)
 			{
-				_instance = Instantiate<GameObject>(BattleManager.instance.pauseCanvasPrefab).GetComponent<PauseCanvas>();
+				_instance = Instantiate<GameObject>(CommonBattleGroup.instance.pauseCanvasPrefab).GetComponent<PauseCanvas>();
 			}
 			return _instance;
 		}

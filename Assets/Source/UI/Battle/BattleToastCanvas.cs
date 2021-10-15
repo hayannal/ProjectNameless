@@ -11,7 +11,7 @@ public class BattleToastCanvas : MonoBehaviour
 		{
 			if (_instance == null)
 			{
-				_instance = Instantiate<GameObject>(BattleManager.instance.battleToastCanvasPrefab).GetComponent<BattleToastCanvas>();
+				_instance = Instantiate<GameObject>(CommonBattleGroup.instance.battleToastCanvasPrefab).GetComponent<BattleToastCanvas>();
 			}
 			return _instance;
 		}

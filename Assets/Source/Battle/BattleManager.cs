@@ -6,6 +6,7 @@ public class BattleManager : MonoBehaviour
 {
 	public static BattleManager instance;
 
+	/*
 	public GameObject targetCircleObject;
 	public GameObject targetCircleSleepObject;
 	public GameObject monsterDieAshParticlePrefab;
@@ -44,6 +45,33 @@ public class BattleManager : MonoBehaviour
 	public GameObject diagonalNwayGeneratorPrefab;
 	public GameObject leftRightNwayGeneratorPrefab;
 	public GameObject backNwayGeneratorPrefab;
+	*/
+
+
+	/*
+	public GameObject battleResultPrefab;
+
+	
+
+	// reserve
+	public GameObject playerIndicatorPrefab;
+	public GameObject levelUpIndicatorPrefab;
+	
+	public GameObject playerLevelUpEffectPrefab;
+	public GameObject levelPackGainEffectPrefab;
+	public GameObject healEffectPrefab;
+
+	public GameObject portalPrefab;
+	public GameObject portalMoveEffectPrefab;
+	public GameObject portalGaugePrefab;
+
+	public GameObject onOffColliderAreaPrefab;
+
+	// for level pack
+	public GameObject diagonalNwayGeneratorPrefab;
+	public GameObject leftRightNwayGeneratorPrefab;
+	public GameObject backNwayGeneratorPrefab;
+	*/
 
 	void Awake()
 	{

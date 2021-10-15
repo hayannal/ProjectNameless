@@ -12,7 +12,7 @@ public class FadeCanvas : MonoBehaviour
 		{
 			if (_instance == null)
 			{
-				_instance = Instantiate<GameObject>(StageManager.instance.fadeCanvasPrefab).GetComponent<FadeCanvas>();			
+				_instance = Instantiate<GameObject>(CommonCanvasGroup.instance.fadeCanvasPrefab).GetComponent<FadeCanvas>();			
 			}
 			return _instance;
 		}

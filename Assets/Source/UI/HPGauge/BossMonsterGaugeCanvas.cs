@@ -12,7 +12,7 @@ public class BossMonsterGaugeCanvas : MonoBehaviour
 		{
 			if (_instance == null)
 			{
-				_instance = Instantiate<GameObject>(BattleManager.instance.bossMonsterHPGaugePrefab).GetComponent<BossMonsterGaugeCanvas>();
+				_instance = Instantiate<GameObject>(CommonBattleGroup.instance.bossMonsterHPGaugePrefab).GetComponent<BossMonsterGaugeCanvas>();
 			}
 			return _instance;
 		}
@@ -90,7 +90,8 @@ public class BossMonsterGaugeCanvas : MonoBehaviour
 
 		_listMonsterActor.Add(monsterActor);
 
-		if (StageManager.instance.currentBossHpPer1Line == 0.0f)
+		float currentBossHpPer1Line = 255.0f;// StageManager.instance.currentBossHpPer1Line;
+		if (currentBossHpPer1Line == 0.0f)
 		{
 			Debug.LogError("Invalid Data! BossHpPer1Line is 0.");
 			return;
@@ -99,7 +100,7 @@ public class BossMonsterGaugeCanvas : MonoBehaviour
 		float sumHp = 0.0f;
 		for (int i = 0; i < _listMonsterActor.Count; ++i)
 			sumHp += _listMonsterActor[i].actorStatus.GetHP();
-		float hpLineRatio = sumHp / StageManager.instance.currentBossHpPer1Line;
+		float hpLineRatio = sumHp / currentBossHpPer1Line;
 		_lastHpLineRatio = hpLineRatio;
 		RefreshBossHpGauge(hpLineRatio, true);
 	}
@@ -112,14 +113,15 @@ public class BossMonsterGaugeCanvas : MonoBehaviour
 		if (_initializedSequentialGauge)
 			return;
 
-		if (StageManager.instance.currentBossHpPer1Line == 0.0f)
+		float currentBossHpPer1Line = 255.0f;// StageManager.instance.currentBossHpPer1Line;
+		if (currentBossHpPer1Line == 0.0f)
 		{
 			Debug.LogError("Invalid Data! BossHpPer1Line is 0.");
 			return;
 		}
 
 		float sumHp = sequentialMonster.GetSumBossCurrentHp();
-		float hpLineRatio = sumHp / StageManager.instance.currentBossHpPer1Line;
+		float hpLineRatio = sumHp / currentBossHpPer1Line;
 		_lastHpLineRatio = hpLineRatio;
 		RefreshBossHpGauge(hpLineRatio, true);
 		_initializedSequentialGauge = true;
@@ -207,7 +209,8 @@ public class BossMonsterGaugeCanvas : MonoBehaviour
 				sumHp += _listMonsterActor[i].actorStatus.GetHP();
 		}
 
-		float hpLineRatio = sumHp / StageManager.instance.currentBossHpPer1Line;
+		float currentBossHpPer1Line = 255.0f;// StageManager.instance.currentBossHpPer1Line;
+		float hpLineRatio = sumHp / currentBossHpPer1Line;
 		if (_lastHpLineRatio < hpLineRatio)
 		{
 			RefreshBossHpGauge(hpLineRatio, true);

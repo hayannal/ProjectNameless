@@ -15,7 +15,7 @@ public class RangeIndicator : MonoBehaviour
 		{
 			if (_instance == null)
 			{
-				_instance = Instantiate<GameObject>(BattleManager.instance.rangeIndicatorPrefab).GetComponent<RangeIndicator>();
+				_instance = Instantiate<GameObject>(CommonBattleGroup.instance.rangeIndicatorPrefab).GetComponent<RangeIndicator>();
 #if UNITY_EDITOR
 				AddressableAssetSettings settings = AddressableAssetSettingsDefaultObject.Settings;
 				if (settings.ActivePlayModeDataBuilderIndex == 2)

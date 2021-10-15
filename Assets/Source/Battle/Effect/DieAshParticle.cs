@@ -23,12 +23,12 @@ public class DieAshParticle : MonoBehaviour
 			float duration = 0.0f;
 			if (skinnedMeshRendererList.Length > 0)
 			{
-				AnimationCurveAsset curveAsset = bossMonster ? BattleManager.instance.bossMonsterDieDissolveCurve : BattleManager.instance.monsterDieDissolveCurve;
+				AnimationCurveAsset curveAsset = bossMonster ? CommonBattleGroup.instance.bossMonsterDieDissolveCurve : CommonBattleGroup.instance.monsterDieDissolveCurve;
 				duration = curveAsset.curve.keys[curveAsset.curve.length - 1].time;
 			}
 			for (int i = 0; i < skinnedMeshRendererList.Length; ++i)
 			{
-				GameObject newObject = BattleInstanceManager.instance.GetCachedObject(BattleManager.instance.monsterDieAshParticlePrefab, skinnedMeshRendererList[i].transform);
+				GameObject newObject = BattleInstanceManager.instance.GetCachedObject(CommonBattleGroup.instance.monsterDieAshParticlePrefab, skinnedMeshRendererList[i].transform);
 				AshParticle ashParticle = newObject.GetComponent<AshParticle>();
 				ashParticle.SetParticleInfo(skinnedMeshRendererList[i], duration, flakeMultiplier);
 				_listAshParticle.Add(ashParticle);
@@ -39,12 +39,12 @@ public class DieAshParticle : MonoBehaviour
 				MeshRenderer[] meshRendererList = GetComponentsInChildren<MeshRenderer>();
 				if (meshRendererList.Length > 0)
 				{
-					AnimationCurveAsset curveAsset = bossMonster ? BattleManager.instance.bossMonsterDieDissolveCurve : BattleManager.instance.monsterDieDissolveCurve;
+					AnimationCurveAsset curveAsset = bossMonster ? CommonBattleGroup.instance.bossMonsterDieDissolveCurve : CommonBattleGroup.instance.monsterDieDissolveCurve;
 					duration = curveAsset.curve.keys[curveAsset.curve.length - 1].time;
 
 					for (int i = 0; i < meshRendererList.Length; ++i)
 					{
-						GameObject newObject = BattleInstanceManager.instance.GetCachedObject(BattleManager.instance.monsterDieAshParticlePrefab, meshRendererList[i].transform);
+						GameObject newObject = BattleInstanceManager.instance.GetCachedObject(CommonBattleGroup.instance.monsterDieAshParticlePrefab, meshRendererList[i].transform);
 						AshParticle ashParticle = newObject.GetComponent<AshParticle>();
 						ashParticle.SetParticleInfo(meshRendererList[i], duration, flakeMultiplier);
 						_listAshParticle.Add(ashParticle);
