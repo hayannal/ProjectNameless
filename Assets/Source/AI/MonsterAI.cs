@@ -111,6 +111,9 @@ public class MonsterAI : MonoBehaviour
 		if (useStateList[(int)_currentState] == false)
 			_currentState = eStateType.TypeAmount;
 
+		// force setting
+		_currentState = eStateType.Chase;
+
 		ResetRandomMoveStateInfo();
 		ResetStraightMoveStateInfo();
 		ResetCustomActionStateInfo();
@@ -123,10 +126,10 @@ public class MonsterAI : MonoBehaviour
 		_initialized = true;
 	}
 
-	void Update()
-    {
-		UpdateTargeting();
-	}
+	//void Update()
+    //{
+	//	UpdateTargeting();
+	//}
 
 	// 다른 클래스들의 Update에서 PlayAction 한게 있어도 덮어야하므로 LateUpdate에서 처리한다.
 	// 대표적으로 PathFinderController의 Animate 함수.
@@ -639,6 +642,10 @@ public class MonsterAI : MonoBehaviour
 	#endregion
 	void UpdateChase()
 	{
+		if (pathFinderController.agent.destination != StageManager.instance.monsterTargetPosition)
+			pathFinderController.agent.destination = StageManager.instance.monsterTargetPosition;
+
+		/*
 		if (targetActor == null)
 		{
 			ResetPath();
@@ -723,6 +730,7 @@ public class MonsterAI : MonoBehaviour
 			}
 			_lastGoalPosition = targetActor.cachedTransform.position;
 		}
+		*/
 	}
 
 	void ResetChaseStateInfo()

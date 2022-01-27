@@ -18,7 +18,9 @@ public class MainSceneBuilder : MonoBehaviour
 	public static MainSceneBuilder instance;
 	public static bool s_initializedAddressable;
 	public static bool s_firstTimeAfterLaunch = true;
+	/*
 	public static bool s_buildReturnScrollUsedScene = false;
+	*/
 
 	void Awake()
 	{
@@ -46,32 +48,25 @@ public class MainSceneBuilder : MonoBehaviour
 		Debug.LogWarning("MainSceneBuilder OnDestroy 1");
 #endif
 
-		// 서버오류로 인해 접속못했을 경우 대비해서 체크해둔다.
-		if (_handleStartCharacter.IsValid() == false && mainSceneBuilding) return;
+		Addressables.Release<GameObject>(_handleCommonCanvasGroup);
 
 #if !UNITY_EDITOR
 		Debug.LogWarning("MainSceneBuilder OnDestroy 2");
 #endif
 
-		Addressables.Release<GameObject>(_handleCommonCanvasGroup);
-		Addressables.Release<GameObject>(_handleCommonBattleGroup);
+		// 서버오류로 인해 접속못했을 경우 대비해서 체크해둔다.
+		if (_handleStageManager.IsValid() == false && mainSceneBuilding) return;
 
 #if !UNITY_EDITOR
 		Debug.LogWarning("MainSceneBuilder OnDestroy 3");
 #endif
 
-		/*
-		// 서버오류로 인해 접속못했을 경우 대비해서 체크해둔다.
-		if (_handleStageManager.IsValid() == false && mainSceneBuilding) return;
-
-#if !UNITY_EDITOR
-		Debug.LogWarning("MainSceneBuilder OnDestroy 2");
-#endif
-
 		Addressables.Release<GameObject>(_handleStageManager);
 		Addressables.Release<GameObject>(_handleStartCharacter);
+		Addressables.Release<GameObject>(_handleCommonBattleGroup);
+
+		/*
 		Addressables.Release<GameObject>(_handleLobbyCanvas);
-		Addressables.Release<GameObject>(_handleCommonCanvasGroup);
 		Addressables.Release<GameObject>(_handleTreasureChest);
 
 #if !UNITY_EDITOR
@@ -114,13 +109,12 @@ public class MainSceneBuilder : MonoBehaviour
 	}
 
 	AsyncOperationHandle<GameObject> _handleTableDataManager;
+	AsyncOperationHandle<GameObject> _handleCommonCanvasGroup;
+
+	AsyncOperationHandle<GameObject> _handleStageManager;
 	AsyncOperationHandle<GameObject> _handleStartCharacter;
 	AsyncOperationHandle<GameObject> _handleCommonBattleGroup;
-	AsyncOperationHandle<GameObject> _handleCommonCanvasGroup;
-	
-
 	/*
-	AsyncOperationHandle<GameObject> _handleStageManager;
 	AsyncOperationHandle<GameObject> _handleBattleManager;
 	AsyncOperationHandle<GameObject> _handleDropObjectGroup;
 	
@@ -254,6 +248,19 @@ public class MainSceneBuilder : MonoBehaviour
 		Debug.LogWarning("MainSceneBuilder Start 6");
 #endif
 
+		// step 3-1. common ui
+		// 오류가 날걸 대비해서라도 UI 로딩은 필요했다. 테이블 로드 후 바로 로딩해둔다.
+		_handleCommonCanvasGroup = Addressables.LoadAssetAsync<GameObject>("CommonCanvasGroup");
+		//yield return _handleCommonCanvasGroup;
+		while (_handleCommonCanvasGroup.IsValid() && !_handleCommonCanvasGroup.IsDone)
+			yield return null;
+		Instantiate<GameObject>(_handleCommonCanvasGroup.Result);
+
+#if !UNITY_EDITOR
+		Debug.LogWarning("MainSceneBuilder Start 7");
+#endif
+
+		/*
 		// step 3-0. return scroll
 		// 로그인 하기 전에 귀환 스크롤 사용인지 확인해서 마지막 파워소스로 되돌리는 상황인지 확인해야한다.
 		if (s_buildReturnScrollUsedScene)
@@ -261,6 +268,7 @@ public class MainSceneBuilder : MonoBehaviour
 			yield return BuildReturnScrollSceneCoroutine();
 			yield break;
 		}
+		*/
 
 		// step 3. login
 #if PLAYFAB
@@ -328,7 +336,7 @@ public class MainSceneBuilder : MonoBehaviour
 		Debug.LogWarning("222222222");
 #endif
 		_handleCommonBattleGroup = Addressables.LoadAssetAsync<GameObject>("CommonBattleGroup");
-		_handleCommonCanvasGroup = Addressables.LoadAssetAsync<GameObject>("CommonCanvasGroup");
+		
 #if !UNITY_EDITOR
 		Debug.LogWarning("333333333");
 #endif
@@ -345,9 +353,8 @@ public class MainSceneBuilder : MonoBehaviour
 #if !UNITY_EDITOR
 		Debug.LogWarning("555555555");
 #endif
-		/*
+
 		_handleStageManager = Addressables.LoadAssetAsync<GameObject>("StageManager");
-		*/
 #if !UNITY_EDITOR
 		Debug.LogWarning("666666666");
 #endif
@@ -372,29 +379,31 @@ public class MainSceneBuilder : MonoBehaviour
 		// 이 방법이다. 이건 기존 코루틴 코드를 그대로 유지하면서 핸들이 릴리즈 되더라도 익셉션이 뜨지 않을거라 해서 테스트 해보기로 한다.
 		//yield return _handleStageManager;
 		//yield return _handleStartCharacter;
-		/*
 		while (_handleStageManager.IsValid() && !_handleStageManager.IsDone)
-			yield return null;
-		*/
-		while (_handleStartCharacter.IsValid() && !_handleStartCharacter.IsDone)
 			yield return null;
 #if !UNITY_EDITOR
 		Debug.LogWarning("888888888");
 #endif
-		/*
 		Instantiate<GameObject>(_handleStageManager.Result);
-		*/
 #if !UNITY_EDITOR
 		Debug.LogWarning("888888888-1");
 #endif
-#if UNITY_EDITOR
-		GameObject newObject = Instantiate<GameObject>(_handleStartCharacter.Result);
-		AddressableAssetSettings settings = AddressableAssetSettingsDefaultObject.Settings;
-		if (settings.ActivePlayModeDataBuilderIndex == 2)
-			ObjectUtil.ReloadShader(newObject);
-#else
-		Instantiate<GameObject>(_handleStartCharacter.Result);
+		StageManager.instance.InitializeStage(10002);
+
+		/*
+		while (StageManager.instance.IsDoneLoadAsyncNextStage() == false)
+			yield return null;
+#if !UNITY_EDITOR
+		Debug.LogWarning("DDDDDDDDD");
 #endif
+		StageManager.instance.MoveToNextStage(true);
+#if !UNITY_EDITOR
+		Debug.LogWarning("EEEEEEEEE");
+#endif
+		*/
+
+		// step 8. gate pillar & TreasureChest
+		yield return new WaitUntil(() => waitSpawnFlag);
 
 		// 흠.. 어드레서블 에셋으로 뺐더니 5.7초까지 늘어났다. 번들에서 읽으니 어쩔 수 없는건가.
 
@@ -454,30 +463,31 @@ public class MainSceneBuilder : MonoBehaviour
 			_handleEventBoard = Addressables.LoadAssetAsync<GameObject>("EventBoard");
 			useEventBoard = true;
 		}
+		*/
 #if !UNITY_EDITOR
 		Debug.LogWarning("BBBBBBBBB-3");
 #endif
-		StageManager.instance.InitializeStage(PlayerData.instance.selectedChapter, 0);
+		while (_handleStartCharacter.IsValid() && !_handleStartCharacter.IsDone)
+			yield return null;
 #if !UNITY_EDITOR
 		Debug.LogWarning("CCCCCCCCC");
 #endif
-		while (StageManager.instance.IsDoneLoadAsyncNextStage() == false)
-			yield return null;
-#if !UNITY_EDITOR
-		Debug.LogWarning("DDDDDDDDD");
-#endif
-		StageManager.instance.MoveToNextStage(true);
-#if !UNITY_EDITOR
-		Debug.LogWarning("EEEEEEEEE");
+
+#if UNITY_EDITOR
+		GameObject newObject = Instantiate<GameObject>(_handleStartCharacter.Result);
+		AddressableAssetSettings settings = AddressableAssetSettingsDefaultObject.Settings;
+		if (settings.ActivePlayModeDataBuilderIndex == 2)
+			ObjectUtil.ReloadShader(newObject);
+#else
+		Instantiate<GameObject>(_handleStartCharacter.Result);
 #endif
 
-		// step 8. gate pillar & TreasureChest
-		yield return new WaitUntil(() => waitSpawnFlag);
 #if !UNITY_EDITOR
 		Debug.LogWarning("FFFFFFFFF");
 #endif
 		SoundManager.instance.PlayLobbyBgm();
 
+		/*
 		if (EventManager.instance.IsStandbyOpenChaosEvent())
 		{
 			_handleEventGatePillar = Addressables.LoadAssetAsync<GameObject>("OpenChaosGatePillar");
@@ -590,9 +600,9 @@ public class MainSceneBuilder : MonoBehaviour
 		/*
 		while (_handleLobbyCanvas.IsValid() && !_handleLobbyCanvas.IsDone)
 			yield return null;
-		*/
 		while (_handleCommonCanvasGroup.IsValid() && !_handleCommonCanvasGroup.IsDone)
 			yield return null;
+		*/
 		while (_handleCommonBattleGroup.IsValid() && !_handleCommonBattleGroup.IsDone)
 			yield return null;
 #if !UNITY_EDITOR
@@ -601,7 +611,6 @@ public class MainSceneBuilder : MonoBehaviour
 		/*
 		Instantiate<GameObject>(_handleLobbyCanvas.Result);
 		*/
-		Instantiate<GameObject>(_handleCommonCanvasGroup.Result);
 		Instantiate<GameObject>(_handleCommonBattleGroup.Result);
 #if !UNITY_EDITOR
 		Debug.LogWarning("LLLLLLLLL");
@@ -684,7 +693,7 @@ public class MainSceneBuilder : MonoBehaviour
 				SoundManager.instance.SetUiVolume(OptionManager.instance.systemVolume);
 
 				// step 12. fade out
-				if (buildTutorialScene || s_buildReturnScrollUsedScene)
+				if (buildTutorialScene)// || s_buildReturnScrollUsedScene)
 				{
 					// 0챕터 1스테이지에서 시작하는거라 강제로 전투모드로 바꿔준다.
 					StartCoroutine(LateInitialize());
@@ -708,7 +717,7 @@ public class MainSceneBuilder : MonoBehaviour
 
 	IEnumerator LateInitialize()
 	{
-		bool battleScene = (buildTutorialScene || s_buildReturnScrollUsedScene);
+		bool battleScene = (buildTutorialScene);// || s_buildReturnScrollUsedScene);
 		if (battleScene == false)
 		{
 			/*

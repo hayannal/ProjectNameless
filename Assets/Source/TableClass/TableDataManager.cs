@@ -14,6 +14,7 @@ public class TableDataManager : MonoBehaviour
 	public ActorStateTable actorStateTable;
 	
 	public MonsterTable monsterTable;
+	public MonsterGroupTable monsterGroupTable;
 	public ActorTable actorTable;
 	public PowerLevelTable powerLevelTable;
 	public SkillTable skillTable;
@@ -26,6 +27,8 @@ public class TableDataManager : MonoBehaviour
 	public GlobalConstantStringTable globalConstantStringTable;
 	public DropTable dropTable;
 	public DamageRateTable damageRateTable;
+
+	public StageTable stageTable;
 
 	void Awake()
 	{
@@ -88,6 +91,26 @@ public class TableDataManager : MonoBehaviour
 		{
 			if (monsterTable.dataArray[i].monsterId == monsterId)
 				return monsterTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public MonsterTableData FindMonsterTableData(int simpleId)
+	{
+		for (int i = 0; i < monsterTable.dataArray.Length; ++i)
+		{
+			if (monsterTable.dataArray[i].simpleId == simpleId)
+				return monsterTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public MonsterGroupTableData FindMonsterGroupTableData(string groupMonsterId)
+	{
+		for (int i = 0; i < monsterGroupTable.dataArray.Length; ++i)
+		{
+			if (monsterGroupTable.dataArray[i].groupMonsterId == groupMonsterId)
+				return monsterGroupTable.dataArray[i];
 		}
 		return null;
 	}
@@ -213,6 +236,16 @@ public class TableDataManager : MonoBehaviour
 		{
 			if (damageRateTable.dataArray[i].number == addCount && damageRateTable.dataArray[i].id == type)
 				return damageRateTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public StageTableData FindStageTableData(int stage)
+	{
+		for (int i = 0; i < stageTable.dataArray.Length; ++i)
+		{
+			if (stageTable.dataArray[i].stage == stage)
+				return stageTable.dataArray[i];
 		}
 		return null;
 	}

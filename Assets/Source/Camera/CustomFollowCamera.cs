@@ -44,7 +44,8 @@ public class CustomFollowCamera : MonoBehaviour
 	{
 		get
 		{
-			Vector3 result = targetTransform.position - cachedTransform.forward * distanceToTarget;
+			//Vector3 result = targetTransform.position - cachedTransform.forward * distanceToTarget;
+			Vector3 result = Vector3.zero - cachedTransform.forward * distanceToTarget;
 			if (_quadLoaded && checkPlaneLeftRightQuad)
 			{
 				if (result.x < _quadLeft - LEFT_LIMIT)

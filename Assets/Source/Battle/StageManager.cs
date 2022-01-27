@@ -32,6 +32,8 @@ public class StageManager : MonoBehaviour
 	public GameObject characterInfoGroundPrefab;
 	*/
 
+	public GameObject stageGroundPrefab;
+
 #if USE_MAIN_SCENE
 #else
 	[Reorderable] public GameObject[] planePrefabList;
@@ -46,6 +48,295 @@ public class StageManager : MonoBehaviour
 	void Awake()
 	{
 		instance = this;
+	}
+
+	void Update()
+	{
+		UpdateSpawn();
+	}
+
+	public void InitializeStage(int stage)
+	{
+		StageTableData stageTableData = TableDataManager.instance.FindStageTableData(stage);
+		if (stageTableData == null)
+			return;
+
+		// StageGround가 심리스 형태의 로드를 관리하기 때문에 지형 로딩에 대해서는 일임한다.
+		StageGround.instance.InitializeGround(stageTableData);
+	}
+
+	public void OnInstantiateMap(StageTableData stageTableData)
+	{
+		// 해당 맵의 몬스터들을 프리로드 해야한다.
+		// 로드가 끝나면 스폰을 시작
+		Timing.RunCoroutine(LoadMonsterProcess(stageTableData));
+	}
+
+	bool _processing = false;
+	public bool processing { get { return _processing; } }
+	IEnumerator<float> LoadMonsterProcess(StageTableData stageTableData)
+	{
+		if (_processing)
+			yield break;
+		_processing = true;
+
+		// 제일 먼저 스폰 정보를 파싱
+		ParseSpawnInfo(stageTableData.spawnInfo);
+		_monsterSpawnPosition.x = stageTableData.monsterSpawnx;
+		_monsterSpawnPosition.z = stageTableData.monsterSpawnz;
+		_monsterTargetPosition.x = stageTableData.monsterTargetx;
+		_monsterTargetPosition.z = stageTableData.monsterTargetz;
+
+		// 몬스터 로딩까지 시켜놨으면 플레이어 포지션을 수정하고
+		while (BattleInstanceManager.instance.playerActor == null)
+			yield return Timing.WaitForOneFrame;
+		BattleInstanceManager.instance.playerActor.cachedTransform.position = new Vector3(stageTableData.playerSpawnx, 0.0f, stageTableData.playerSpawnz);
+
+		// 몬스터 로딩이 완료되면
+		while (IsDoneLoadedMonsterList() == false)
+			yield return Timing.WaitForOneFrame;
+
+		// 스폰 준비완료를 켜둔다.
+		_waitLoadedComplete = false;
+
+		_processing = false;
+	}
+
+	public class MonsterSpawnInfoBase
+	{
+		public virtual bool IsGroupInfo() { return false; }
+	}
+
+	public class MonsterSpawnInfo : MonsterSpawnInfoBase
+	{
+		public string monsterId;
+		public int monsterSimpleId;
+		public GameObject monsterPrefab;
+		public int count;
+		public float delay;
+	}
+
+	public class GroupMonsterSpawnInfo : MonsterSpawnInfoBase
+	{
+		public override bool IsGroupInfo() { return true; }
+
+		public string groupId;
+		public int count;
+	}
+
+	List<MonsterSpawnInfoBase> _listMonsterSpawnInfo = new List<MonsterSpawnInfoBase>();
+	Dictionary<string, List<MonsterSpawnInfo>> _dicGroupMonsterSpawnInfo = new Dictionary<string, List<MonsterSpawnInfo>>();
+
+	Vector3 _monsterSpawnPosition = Vector3.zero;
+	Vector3 _monsterTargetPosition = Vector3.zero;
+	public Vector3 monsterTargetPosition { get { return _monsterTargetPosition; } }
+	void ParseSpawnInfo(string spawnInfo)
+	{
+		_listMonsterSpawnInfo.Clear();
+		_dicGroupMonsterSpawnInfo.Clear();
+
+		string[] split = spawnInfo.Split(',');
+		int currentIndex = 0;
+		while (currentIndex < split.Length)
+		{
+			string id = split[currentIndex];
+			if (id.Length > 0)
+			{
+				bool useGroupMonsterId = (id[0] == 'g');
+				if (useGroupMonsterId)
+				{
+					// 그룹몹 아이디일땐 뒤에꺼 하나만 더 파싱하면 된다.
+					GroupMonsterSpawnInfo groupMonsterSpawnInfo = new GroupMonsterSpawnInfo();
+					groupMonsterSpawnInfo.groupId = id;
+					int.TryParse(split[currentIndex + 1], out groupMonsterSpawnInfo.count);
+					currentIndex += 2;
+
+					// 대신 그룹몹은 그룹몹 정보를 따로 파싱해서 들고있어야한다.
+					if (_dicGroupMonsterSpawnInfo.ContainsKey(id) == false)
+					{
+						MonsterGroupTableData monsterGroupTableData = TableDataManager.instance.FindMonsterGroupTableData(id);
+						if (monsterGroupTableData != null)
+						{
+							List<MonsterSpawnInfo> listInfo = new List<MonsterSpawnInfo>();
+							ParseGroupMonsterSpawnInfo(monsterGroupTableData.spawnInfo, listInfo);
+							_dicGroupMonsterSpawnInfo.Add(id, listInfo);
+						}
+					}
+					_listMonsterSpawnInfo.Add(groupMonsterSpawnInfo);
+				}
+				else
+				{
+					// 일반몹 아이디일땐 개수에 딜레이까지 들어있을거다. 두개 더 파싱해야한다.
+					MonsterSpawnInfo monsterSpawnInfo = new MonsterSpawnInfo();
+					int.TryParse(id, out monsterSpawnInfo.monsterSimpleId);
+					int.TryParse(split[currentIndex + 1], out monsterSpawnInfo.count);
+					float.TryParse(split[currentIndex + 2], out monsterSpawnInfo.delay);
+
+					MonsterTableData monsterTableData = TableDataManager.instance.FindMonsterTableData(monsterSpawnInfo.monsterSimpleId);
+					if (monsterTableData != null)
+					{
+						monsterSpawnInfo.monsterId = monsterTableData.monsterId;
+						AddressableAssetLoadManager.GetAddressableGameObject(monsterTableData.monsterId, "Monster", (prefab) =>
+						{
+							monsterSpawnInfo.monsterPrefab = prefab;
+						});
+						_listMonsterSpawnInfo.Add(monsterSpawnInfo);
+					}
+					currentIndex += 3;
+				}
+			}
+		}
+
+		// reset info
+		_currentSpawnIndex = 0;
+		_currentSpawnCount = 0;
+		_remainDelayTime = 0.0f;
+		_waitLoadedComplete = true;
+		_spawnFinished = false;
+	}
+
+	void ParseGroupMonsterSpawnInfo(string spawnInfo, List<MonsterSpawnInfo> listInfo)
+	{
+		string[] split = spawnInfo.Split(',');
+		int currentIndex = 0;
+		while (currentIndex < split.Length)
+		{
+			string id = split[currentIndex];
+
+			// 그룹몹 파싱할땐 일반몹만 있을테니
+			MonsterSpawnInfo monsterSpawnInfo = new MonsterSpawnInfo();
+			int.TryParse(id, out monsterSpawnInfo.monsterSimpleId);
+			int.TryParse(split[currentIndex + 1], out monsterSpawnInfo.count);
+			float.TryParse(split[currentIndex + 2], out monsterSpawnInfo.delay);
+
+			MonsterTableData monsterTableData = TableDataManager.instance.FindMonsterTableData(monsterSpawnInfo.monsterSimpleId);
+			if (monsterTableData != null)
+			{
+				monsterSpawnInfo.monsterId = monsterTableData.monsterId;
+				AddressableAssetLoadManager.GetAddressableGameObject(monsterTableData.monsterId, "Monster", (prefab) =>
+				{
+					monsterSpawnInfo.monsterPrefab = prefab;
+				});
+				listInfo.Add(monsterSpawnInfo);
+			}
+			currentIndex += 3;
+		}
+	}
+
+	// 
+	bool IsDoneLoadedMonsterList()
+	{
+		// 파싱도 안됐는데 물어보는게 말이 되나?
+		if (_listMonsterSpawnInfo.Count == 0)
+			return false;
+		
+		for (int i = 0; i < _listMonsterSpawnInfo.Count; ++i)
+		{
+			if (_listMonsterSpawnInfo[i].IsGroupInfo())
+			{
+				GroupMonsterSpawnInfo groupMonsterSpawnInfo = _listMonsterSpawnInfo[i] as GroupMonsterSpawnInfo;
+				if (_dicGroupMonsterSpawnInfo.ContainsKey(groupMonsterSpawnInfo.groupId) == false)
+					return false;
+				List<MonsterSpawnInfo> listInfo = _dicGroupMonsterSpawnInfo[groupMonsterSpawnInfo.groupId];
+				for (int j = 0; j < listInfo.Count; ++j)
+				{
+					if (listInfo[j].monsterPrefab == null)
+						return false;
+				}
+			}
+			else
+			{
+				MonsterSpawnInfo monsterSpawnInfo = _listMonsterSpawnInfo[i] as MonsterSpawnInfo;
+				if (monsterSpawnInfo.monsterPrefab == null)
+					return false;
+			}
+		}
+		return true;
+	}
+
+	bool _waitLoadedComplete;
+	int _currentSpawnIndex;
+	int _currentSpawnIndexInGroup;
+	int _currentSpawnCount;
+	int _currentGroupCount;
+	float _remainDelayTime;
+	bool _spawnFinished;
+	void UpdateSpawn()
+	{
+		// 씬구축이 다 끝나고 화면 페이드까지 끝난다음에 몬스터가 나오는게 더 자연스러워보인다.
+		if (LoadingCanvas.instance != null && LoadingCanvas.instance.gameObject.activeSelf)
+			return;
+
+		if (_waitLoadedComplete)
+			return;
+		if (_spawnFinished)
+			return;
+		if (_listMonsterSpawnInfo.Count == 0)
+			return;
+
+		_remainDelayTime -= Time.deltaTime;
+		if (_remainDelayTime >= 0.0f)
+			return;
+
+		// 리스트에 있는거대로 쭉 돌리면 된다.
+		bool nextStep = false;
+		MonsterSpawnInfoBase infoBase = _listMonsterSpawnInfo[_currentSpawnIndex];
+		if (infoBase.IsGroupInfo())
+		{
+			GroupMonsterSpawnInfo groupMonsterSpawnInfo = infoBase as GroupMonsterSpawnInfo;
+
+			// 그룹일땐 그룹 정보 구해다가
+			if (_dicGroupMonsterSpawnInfo.ContainsKey(groupMonsterSpawnInfo.groupId))
+			{
+				List<MonsterSpawnInfo> listGroupInfo = _dicGroupMonsterSpawnInfo[groupMonsterSpawnInfo.groupId];
+				MonsterSpawnInfo monsterSpawnInfo = listGroupInfo[_currentSpawnIndexInGroup];
+				_remainDelayTime += monsterSpawnInfo.delay;
+				GameObject newObject = BattleInstanceManager.instance.GetCachedObject(monsterSpawnInfo.monsterPrefab, _monsterSpawnPosition + new Vector3(Random.value * 0.01f, 0.0f, Random.value * 0.01f), Quaternion.LookRotation(Vector3.back), cachedTransform);
+				++_currentSpawnCount;
+				if (_currentSpawnCount >= monsterSpawnInfo.count)
+				{
+					++_currentSpawnIndexInGroup;
+					_currentSpawnCount = 0;
+					if (_currentSpawnIndexInGroup >= listGroupInfo.Count)
+					{
+						_currentSpawnIndexInGroup = 0;
+
+						// 그룹이 1회 마무리된거다. 그룹의 카운트를 올려두고 이게 다 차면 다음 스텝으로 넘어가게 해야한다.
+						++_currentGroupCount;
+						if (_currentGroupCount >= groupMonsterSpawnInfo.count)
+						{
+							_currentGroupCount = 0;
+							nextStep = true;
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+			MonsterSpawnInfo monsterSpawnInfo = infoBase as MonsterSpawnInfo;
+			_remainDelayTime += monsterSpawnInfo.delay;
+			GameObject newObject = BattleInstanceManager.instance.GetCachedObject(monsterSpawnInfo.monsterPrefab, _monsterSpawnPosition + new Vector3(Random.value * 0.01f, 0.0f, Random.value * 0.01f), Quaternion.LookRotation(Vector3.back), cachedTransform);
+			//MonsterActor monsterActor = newObject.GetComponent<MonsterActor>();
+			//if (monsterActor != null)
+			//	monsterActor.checkOverlapPositionFrameCount = 100;
+			++_currentSpawnCount;
+			if (_currentSpawnCount >= monsterSpawnInfo.count)
+			{
+				_currentSpawnCount = 0;
+				nextStep = true;
+			}
+		}
+
+		if (nextStep)
+		{
+			++_currentSpawnIndex;
+			if (_currentSpawnIndex >= _listMonsterSpawnInfo.Count)
+			{
+				_currentSpawnIndex = 0;
+				_spawnFinished = true;
+			}
+		}
 	}
 
 	/*
@@ -873,4 +1164,16 @@ public class StageManager : MonoBehaviour
 	#endregion
 
 	*/
+
+
+	Transform _transform;
+	public Transform cachedTransform
+	{
+		get
+		{
+			if (_transform == null)
+				_transform = GetComponent<Transform>();
+			return _transform;
+		}
+	}
 }

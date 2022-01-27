@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &809980504238026746
+--- !u!1 &9028461494553162419
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,22 +8,22 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 809980504238026748}
-  - component: {fileID: 809980504238026749}
+  - component: {fileID: 208227632823961708}
+  - component: {fileID: 7440296218596224012}
   m_Layer: 0
-  m_Name: StageManager
+  m_Name: StageGround
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &809980504238026748
+--- !u!4 &208227632823961708
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 809980504238026746}
+  m_GameObject: {fileID: 9028461494553162419}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -31,17 +31,16 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &809980504238026749
+--- !u!114 &7440296218596224012
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 809980504238026746}
+  m_GameObject: {fileID: 9028461494553162419}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb494d5547fb8f340819242ba7f44115, type: 3}
+  m_Script: {fileID: 11500000, guid: 26b99348c421e2547bb3b9f650468851, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stageGroundPrefab: {fileID: 9028461494553162419, guid: eddfcb5b5b59d3c4ca162f9c7c9a43d5,
-    type: 3}
+  planeSize: 40

@@ -46,20 +46,19 @@ public class PowerSource : MonoBehaviour
 	{
 		_spawnedGatePillar = false;
 
+		/*
 		if (MainSceneBuilder.s_buildReturnScrollUsedScene)
 		{
 			// 귀환중이라면 예외처리
 			_spawnedGatePillar = true;
 
-			/*
+			
 			if (StageManager.IsChapter1NewbieUser())
 			{
 				// 초보자 특전으로 귀환한거라면 메세지박스를 띄워서 알려줘야한다.
 				OkCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("GameUI_ReturnForChapter1"));
 			}
-			*/
 		}
-		/*
 		else if (ClientSaveData.instance.IsLoadingInProgressGame())
 		{
 			if (ClientSaveData.instance.GetCachedPowerSource())
