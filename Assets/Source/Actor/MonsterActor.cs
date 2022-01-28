@@ -117,7 +117,7 @@ public class MonsterActor : Actor
 		monsterAI.OnEventAnimatorParameter(MonsterAI.eAnimatorParameterForAI.fHpRatio, actorStatus.GetHPRatio());
 
 		#region Drop SP
-		_dropSpValue = cachedMonsterTableData.initialDropSp;
+		_dropSpValue = 0.0f;    // cachedMonsterTableData.initialDropSp;
 		if (BattleManager.instance != null && BattleManager.instance.IsDefaultBattle())
 		{
 			/*
@@ -489,7 +489,7 @@ public class MonsterActor : Actor
 		{
 			eAffectorType affectorType = eAffectorType.BaseDamage;
 			AffectorValueLevelTableData baseDamageAffectorValue = new AffectorValueLevelTableData();
-			baseDamageAffectorValue.fValue1 = cachedMonsterTableData.collisionDamageRate * rushAffector.GetCollisionDamageRate();
+			//baseDamageAffectorValue.fValue1 = cachedMonsterTableData.collisionDamageRate * rushAffector.GetCollisionDamageRate();
 			baseDamageAffectorValue.fValue4 = 1.0f;
 			defenderAffectorProcessor.ExecuteAffectorValueWithoutTable(affectorType, baseDamageAffectorValue, this, false);
 		}
@@ -501,7 +501,7 @@ public class MonsterActor : Actor
 		{
 			eAffectorType affectorType = eAffectorType.CollisionDamage;
 			AffectorValueLevelTableData collisionDamageAffectorValue = new AffectorValueLevelTableData();
-			collisionDamageAffectorValue.fValue1 = cachedMonsterTableData.collisionDamageRate;
+			//collisionDamageAffectorValue.fValue1 = cachedMonsterTableData.collisionDamageRate;
 			collisionDamageAffectorValue.iValue1 = 0;
 			defenderAffectorProcessor.ExecuteAffectorValueWithoutTable(affectorType, collisionDamageAffectorValue, this, false);
 		}
@@ -604,9 +604,9 @@ public class MonsterActor : Actor
 		}
 
 		string dropId = "";
+		/*
 		if (cachedMonsterTableData.defaultDropUse)
 		{
-			/*
 			if (BattleManager.instance != null && BattleManager.instance.IsBossBattle())
 			{
 				if (bossMonster) dropId = BattleManager.instance.GetCachedBossRewardTableData().bossDropId;
@@ -617,9 +617,9 @@ public class MonsterActor : Actor
 				if (bossMonster) dropId = StageManager.instance.currentStageTableData.defaultBossDropId;
 				else dropId = StageManager.instance.currentStageTableData.defaultNormalDropId;
 			}
-			*/
 		}
-		string addDropId = cachedMonsterTableData.addDropId;
+		*/
+		string addDropId = ""; //cachedMonsterTableData.addDropId;
 		DropProcessor.Drop(cachedTransform, dropId, addDropId, lastMonsterInStage, false);
 
 		// sp drop

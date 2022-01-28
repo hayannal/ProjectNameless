@@ -93,8 +93,8 @@ public class ActorStatus : MonoBehaviour
 		}
 		_statusBase.valueList[(int)eActorStatus.MaxHp] = standardHp * monsterTableData.multiHp;
 		_statusBase.valueList[(int)eActorStatus.Attack] = standardAtk * monsterTableData.multiAtk;
-		_statusBase.valueList[(int)eActorStatus.AttackDelay] = monsterTableData.attackDelay;
-		_statusBase.valueList[(int)eActorStatus.EvadeRate] = monsterTableData.evadeRate;
+		//_statusBase.valueList[(int)eActorStatus.AttackDelay] = monsterTableData.attackDelay;
+		//_statusBase.valueList[(int)eActorStatus.EvadeRate] = monsterTableData.evadeRate;
 		_statusBase.valueList[(int)eActorStatus.MoveSpeed] = monsterTableData.moveSpeed;
 
 		//if (isServer)
