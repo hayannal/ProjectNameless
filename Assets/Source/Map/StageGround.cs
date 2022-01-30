@@ -18,6 +18,9 @@ public class StageGround : MonoBehaviour
 	}
 	static StageGround _instance = null;
 
+	public GameObject monsterSpawnPortalPrefab;
+	public GameObject endLinePrefab;
+
 	public void InitializeGround(StageTableData stageTableData)
 	{
 		Timing.RunCoroutine(LoadStageProcess(stageTableData));
@@ -55,6 +58,8 @@ public class StageGround : MonoBehaviour
 	GameObject _currentGroundObject;
 	GameObject _currentWallObject;
 	GameObject _currentEnvironmentSettingObject;
+	GameObject _monsterSpawnPortalObject;
+	GameObject _endLineObject;
 	void InstantiateMap(StageTableData stageTableData)
 	{
 		if (_currentPlaneObject != null)
@@ -74,6 +79,13 @@ public class StageGround : MonoBehaviour
 			_currentEnvironmentSettingObject.SetActive(false);
 		_currentEnvironmentSettingObject = BattleInstanceManager.instance.GetCachedObject(_stageEnvPrefab, null);
 
+		if (_monsterSpawnPortalObject != null)
+			_monsterSpawnPortalObject.SetActive(false);
+		_monsterSpawnPortalObject = BattleInstanceManager.instance.GetCachedObject(monsterSpawnPortalPrefab, new Vector3(stageTableData.monsterSpawnx, 0.0f, stageTableData.monsterSpawnz), Quaternion.identity);
+
+		if (_endLineObject != null)
+			_endLineObject.SetActive(false);
+		_endLineObject = BattleInstanceManager.instance.GetCachedObject(endLinePrefab, new Vector3(stageTableData.redLinex, 0.0f, stageTableData.redLinez), Quaternion.identity);
 
 		// create callback
 		if (StageManager.instance != null)

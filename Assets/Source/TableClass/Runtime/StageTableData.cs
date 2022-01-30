@@ -9,6 +9,10 @@ using System.Collections;
 public class StageTableData
 {
   [SerializeField]
+  int _type;
+  public int type { get { return _type; } set { _type = value; } }
+  
+  [SerializeField]
   int _stage;
   public int stage { get { return _stage; } set { _stage = value; } }
   
@@ -59,6 +63,14 @@ public class StageTableData
   [SerializeField]
   float _monsterTargetz;
   public float monsterTargetz { get { return _monsterTargetz; } set { _monsterTargetz = value; } }
+  
+  [SerializeField]
+  float _redLinex;
+  public float redLinex { get { return _redLinex; } set { _redLinex = value; } }
+  
+  [SerializeField]
+  float _redLinez;
+  public float redLinez { get { return _redLinez; } set { _redLinez = value; } }
   
   [SerializeField]
   string _spawnInfo;
