@@ -164,6 +164,15 @@ public class StageManager : MonoBehaviour
 					}
 					_listMonsterSpawnInfo.Add(groupMonsterSpawnInfo);
 				}
+				else if (id == "empty")
+				{
+					// empty일때는 
+					MonsterSpawnInfo monsterSpawnInfo = new MonsterSpawnInfo();
+					monsterSpawnInfo.monsterId = id;
+					float.TryParse(split[currentIndex + 1], out monsterSpawnInfo.delay);
+					_listMonsterSpawnInfo.Add(monsterSpawnInfo);
+					currentIndex += 2;
+				}
 				else
 				{
 					// 일반몹 아이디일땐 개수에 딜레이까지 들어있을거다. 두개 더 파싱해야한다.
@@ -202,9 +211,19 @@ public class StageManager : MonoBehaviour
 		while (currentIndex < split.Length)
 		{
 			string id = split[currentIndex];
-
-			// 그룹몹 파싱할땐 일반몹만 있을테니
 			MonsterSpawnInfo monsterSpawnInfo = new MonsterSpawnInfo();
+
+			// 그룹몹 파싱할땐 일반몹만 있는게 아니다. 여기서도 empty 체크해야한다.
+			if (id == "empty")
+			{
+				// empty일때는 
+				monsterSpawnInfo.monsterId = id;
+				float.TryParse(split[currentIndex + 1], out monsterSpawnInfo.delay);
+				listInfo.Add(monsterSpawnInfo);
+				currentIndex += 2;
+				continue;
+			}
+
 			int.TryParse(id, out monsterSpawnInfo.monsterSimpleId);
 			int.TryParse(split[currentIndex + 1], out monsterSpawnInfo.count);
 			float.TryParse(split[currentIndex + 2], out monsterSpawnInfo.delay);
@@ -247,6 +266,8 @@ public class StageManager : MonoBehaviour
 			else
 			{
 				MonsterSpawnInfo monsterSpawnInfo = _listMonsterSpawnInfo[i] as MonsterSpawnInfo;
+				if (monsterSpawnInfo.monsterSimpleId == 0 && monsterSpawnInfo.monsterId == "empty" && monsterSpawnInfo.monsterPrefab == null)
+					continue;
 				if (monsterSpawnInfo.monsterPrefab == null)
 					return false;
 			}
@@ -291,23 +312,37 @@ public class StageManager : MonoBehaviour
 				List<MonsterSpawnInfo> listGroupInfo = _dicGroupMonsterSpawnInfo[groupMonsterSpawnInfo.groupId];
 				MonsterSpawnInfo monsterSpawnInfo = listGroupInfo[_currentSpawnIndexInGroup];
 				_remainDelayTime += monsterSpawnInfo.delay;
-				GameObject newObject = BattleInstanceManager.instance.GetCachedObject(monsterSpawnInfo.monsterPrefab, _monsterSpawnPosition + new Vector3(Random.value * 0.01f, 0.0f, Random.value * 0.01f), Quaternion.LookRotation(Vector3.back), cachedTransform);
-				++_currentSpawnCount;
-				if (_currentSpawnCount >= monsterSpawnInfo.count)
+				bool nextInGroup = false;
+				if (monsterSpawnInfo.monsterSimpleId == 0 && monsterSpawnInfo.monsterPrefab == null)
 				{
 					++_currentSpawnIndexInGroup;
-					_currentSpawnCount = 0;
-					if (_currentSpawnIndexInGroup >= listGroupInfo.Count)
+					nextInGroup = true;
+				}
+				else
+				{
+					GameObject newObject = BattleInstanceManager.instance.GetCachedObject(monsterSpawnInfo.monsterPrefab, _monsterSpawnPosition + new Vector3(Random.value * 0.01f, 0.0f, Random.value * 0.01f), Quaternion.LookRotation(Vector3.back), cachedTransform);
+					MonsterActor monsterActor = newObject.GetComponent<MonsterActor>();
+					if (monsterActor != null)
+						monsterActor.checkOverlapPositionFrameCount = 100;
+					++_currentSpawnCount;
+					if (_currentSpawnCount >= monsterSpawnInfo.count)
 					{
-						_currentSpawnIndexInGroup = 0;
+						++_currentSpawnIndexInGroup;
+						nextInGroup = true;
+						_currentSpawnCount = 0;
+					}
+				}
+					
+				if (nextInGroup && _currentSpawnIndexInGroup >= listGroupInfo.Count)
+				{
+					_currentSpawnIndexInGroup = 0;
 
-						// 그룹이 1회 마무리된거다. 그룹의 카운트를 올려두고 이게 다 차면 다음 스텝으로 넘어가게 해야한다.
-						++_currentGroupCount;
-						if (_currentGroupCount >= groupMonsterSpawnInfo.count)
-						{
-							_currentGroupCount = 0;
-							nextStep = true;
-						}
+					// 그룹이 1회 마무리된거다. 그룹의 카운트를 올려두고 이게 다 차면 다음 스텝으로 넘어가게 해야한다.
+					++_currentGroupCount;
+					if (_currentGroupCount >= groupMonsterSpawnInfo.count)
+					{
+						_currentGroupCount = 0;
+						nextStep = true;
 					}
 				}
 			}
@@ -316,15 +351,22 @@ public class StageManager : MonoBehaviour
 		{
 			MonsterSpawnInfo monsterSpawnInfo = infoBase as MonsterSpawnInfo;
 			_remainDelayTime += monsterSpawnInfo.delay;
-			GameObject newObject = BattleInstanceManager.instance.GetCachedObject(monsterSpawnInfo.monsterPrefab, _monsterSpawnPosition + new Vector3(Random.value * 0.01f, 0.0f, Random.value * 0.01f), Quaternion.LookRotation(Vector3.back), cachedTransform);
-			//MonsterActor monsterActor = newObject.GetComponent<MonsterActor>();
-			//if (monsterActor != null)
-			//	monsterActor.checkOverlapPositionFrameCount = 100;
-			++_currentSpawnCount;
-			if (_currentSpawnCount >= monsterSpawnInfo.count)
+			if (monsterSpawnInfo.monsterSimpleId == 0 && monsterSpawnInfo.monsterPrefab == null)
 			{
-				_currentSpawnCount = 0;
 				nextStep = true;
+			}
+			else
+			{
+				GameObject newObject = BattleInstanceManager.instance.GetCachedObject(monsterSpawnInfo.monsterPrefab, _monsterSpawnPosition + new Vector3(Random.value * 0.01f, 0.0f, Random.value * 0.01f), Quaternion.LookRotation(Vector3.back), cachedTransform);
+				MonsterActor monsterActor = newObject.GetComponent<MonsterActor>();
+				if (monsterActor != null)
+					monsterActor.checkOverlapPositionFrameCount = 100;
+				++_currentSpawnCount;
+				if (_currentSpawnCount >= monsterSpawnInfo.count)
+				{
+					_currentSpawnCount = 0;
+					nextStep = true;
+				}
 			}
 		}
 
