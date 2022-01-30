@@ -264,12 +264,13 @@ public class MonsterActor : Actor
 		UpdateDropSp();
 		#endregion
 
-		if (checkOverlapPositionFrameCount > 0)
-		{
-			if (cachedTransform.position.y > 0.0f)
-				cachedTransform.position = new Vector3(cachedTransform.position.x, 0.0f, cachedTransform.position.z);
-			checkOverlapPositionFrameCount -= 1;
-		}
+		if (cachedTransform.position.y > 0.0f)
+			cachedTransform.position = new Vector3(cachedTransform.position.x, 0.0f, cachedTransform.position.z);
+
+		//if (checkOverlapPositionFrameCount > 0)
+		//{
+		//	checkOverlapPositionFrameCount -= 1;
+		//}
 	}
 	public int checkOverlapPositionFrameCount { get; set; }
 
