@@ -53,6 +53,8 @@ public class CustomFollowCamera : MonoBehaviour
 				if (result.x > _quadRight - RIGHT_LIMIT)
 					result.x = _quadRight - RIGHT_LIMIT;
 			}
+			if (StageManager.instance != null)
+				result += StageManager.instance.GetSafeWorldOffset();
 			return result;
 		}
 	}
@@ -90,8 +92,8 @@ public class CustomFollowCamera : MonoBehaviour
 	Vector3 _velocity = Vector3.zero;
 	public void LateUpdate()
 	{
-		if (targetTransform == null)
-			return;
+		//if (targetTransform == null)
+		//	return;
 
 		if (_immediatelyUpdate)
 		{
@@ -118,9 +120,9 @@ public class CustomFollowCamera : MonoBehaviour
 		//cachedTransform.position = Vector3.SmoothDamp(cachedTransform.position, cameraRelativePosition, ref _velocity, smoothTime, _followSpeed * 2.0f, Time.fixedDeltaTime);
 
 		// 그나마 이 방법이 기존에 쓰던 Lerp보다 조금은 더 나은거 같아서 쓰기로 한다.
-		cachedTransform.position = Vector3.SmoothDamp(cachedTransform.position, cameraRelativePosition, ref _velocity, smoothTime, Mathf.Infinity, Time.smoothDeltaTime);
+		//cachedTransform.position = Vector3.SmoothDamp(cachedTransform.position, cameraRelativePosition, ref _velocity, smoothTime, Mathf.Infinity, Time.smoothDeltaTime);
 
-		LateUpdateTargetFrameRate();
+		//LateUpdateTargetFrameRate();
 	}
 
 #if UNITY_IOS

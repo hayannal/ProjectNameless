@@ -70,6 +70,12 @@ public class PlayerAI : MonoBehaviour
 				returnUpdateTargeting = true;
 		}
 		if (returnUpdateTargeting)
+		{
+			Transform targetTransform = targetingProcessor.GetTargetTransform();
+			if (targetTransform != null && targetTransform.gameObject.activeSelf == false)
+				returnUpdateTargeting = false;
+		}
+		if (returnUpdateTargeting)
 			return;
 
 		_currentFindDelay -= deltaTime;

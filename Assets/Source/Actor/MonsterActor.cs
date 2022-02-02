@@ -359,8 +359,10 @@ public class MonsterActor : Actor
 		// Destroy때도 호출이 되는 바람에 BattleInstanceManager.instance에 잘못 접근할때가 있다.
 		if (StageManager.instance == null)
 			return;
+		/*
 		if (CustomFollowCamera.instance == null || CameraFovController.instance == null || LobbyCanvas.instance == null)
 			return;
+		*/
 		if (CustomFollowCamera.instance.gameObject == null)
 			return;
 

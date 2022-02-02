@@ -64,16 +64,16 @@ public class StageGround : MonoBehaviour
 	{
 		if (_currentPlaneObject != null)
 			_currentPlaneObject.SetActive(false);
-		_currentPlaneObject = BattleInstanceManager.instance.GetCachedObject(_stagePlanePrefab, Vector3.zero, Quaternion.identity);
+		_currentPlaneObject = BattleInstanceManager.instance.GetCachedObject(_stagePlanePrefab, StageManager.instance.GetSafeWorldOffset(), Quaternion.identity);
 		BattleInstanceManager.instance.planeCollider = _currentPlaneObject.GetComponent<Collider>();
 
 		if (_currentGroundObject != null)
 			_currentGroundObject.SetActive(false);
-		_currentGroundObject = BattleInstanceManager.instance.GetCachedObject(_stageGroundPrefab, Vector3.zero, Quaternion.identity);
+		_currentGroundObject = BattleInstanceManager.instance.GetCachedObject(_stageGroundPrefab, StageManager.instance.GetSafeWorldOffset(), Quaternion.identity);
 
 		if (_currentWallObject != null)
 			_currentWallObject.SetActive(false);
-		_currentWallObject = BattleInstanceManager.instance.GetCachedObject(_stageWallPrefab, Vector3.zero, Quaternion.identity);
+		_currentWallObject = BattleInstanceManager.instance.GetCachedObject(_stageWallPrefab, StageManager.instance.GetSafeWorldOffset(), Quaternion.identity);
 
 		if (_currentEnvironmentSettingObject != null)
 			_currentEnvironmentSettingObject.SetActive(false);
@@ -81,11 +81,11 @@ public class StageGround : MonoBehaviour
 
 		if (_monsterSpawnPortalObject != null)
 			_monsterSpawnPortalObject.SetActive(false);
-		_monsterSpawnPortalObject = BattleInstanceManager.instance.GetCachedObject(monsterSpawnPortalPrefab, new Vector3(stageTableData.monsterSpawnx, 0.0f, stageTableData.monsterSpawnz), Quaternion.identity);
+		_monsterSpawnPortalObject = BattleInstanceManager.instance.GetCachedObject(monsterSpawnPortalPrefab, new Vector3(stageTableData.monsterSpawnx, 0.0f, stageTableData.monsterSpawnz) + StageManager.instance.GetSafeWorldOffset(), Quaternion.identity);
 
 		if (_endLineObject != null)
 			_endLineObject.SetActive(false);
-		_endLineObject = BattleInstanceManager.instance.GetCachedObject(endLinePrefab, new Vector3(stageTableData.redLinex, 0.0f, stageTableData.redLinez), Quaternion.identity);
+		_endLineObject = BattleInstanceManager.instance.GetCachedObject(endLinePrefab, new Vector3(stageTableData.redLinex, 0.0f, stageTableData.redLinez) + StageManager.instance.GetSafeWorldOffset(), Quaternion.identity);
 
 		// create callback
 		if (StageManager.instance != null)
@@ -114,5 +114,21 @@ public class StageGround : MonoBehaviour
 		InstantiateMap(stageTableData);
 
 		_processing = false;
+	}
+
+	public void FinalizeGround()
+	{
+		if (_currentPlaneObject != null)
+			_currentPlaneObject.SetActive(false);
+		if (_currentGroundObject != null)
+			_currentGroundObject.SetActive(false);
+		if (_currentWallObject != null)
+			_currentWallObject.SetActive(false);
+		if (_currentEnvironmentSettingObject != null)
+			_currentEnvironmentSettingObject.SetActive(false);
+		if (_monsterSpawnPortalObject != null)
+			_monsterSpawnPortalObject.SetActive(false);
+		if (_endLineObject != null)
+			_endLineObject.SetActive(false);
 	}
 }

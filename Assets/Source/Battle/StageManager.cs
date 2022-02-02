@@ -45,6 +45,11 @@ public class StageManager : MonoBehaviour
 	public ObscuredInt playChapter { get; set; }
 	public ObscuredInt playStage { get; set; }
 
+	public bool worldOffsetState { get; set; }
+	public Vector3 worldOffset = new Vector3(100.0f, 0.0f, 0.0f);
+
+	public Vector3 GetSafeWorldOffset() { return worldOffsetState ? worldOffset : Vector3.zero; }
+
 	void Awake()
 	{
 		instance = this;
@@ -84,13 +89,18 @@ public class StageManager : MonoBehaviour
 		ParseSpawnInfo(stageTableData.spawnInfo);
 		_monsterSpawnPosition.x = stageTableData.monsterSpawnx;
 		_monsterSpawnPosition.z = stageTableData.monsterSpawnz;
+		_monsterSpawnPosition += GetSafeWorldOffset();
 		_monsterTargetPosition.x = stageTableData.monsterTargetx;
 		_monsterTargetPosition.z = stageTableData.monsterTargetz;
+		_monsterTargetPosition += GetSafeWorldOffset();
 
 		// 몬스터 로딩까지 시켜놨으면 플레이어 포지션을 수정하고
 		while (BattleInstanceManager.instance.playerActor == null)
 			yield return Timing.WaitForOneFrame;
-		BattleInstanceManager.instance.playerActor.cachedTransform.position = new Vector3(stageTableData.playerSpawnx, 0.0f, stageTableData.playerSpawnz);
+		BattleInstanceManager.instance.playerActor.cachedTransform.position = new Vector3(stageTableData.playerSpawnx, 0.0f, stageTableData.playerSpawnz) + GetSafeWorldOffset();
+		if (BattleInstanceManager.instance.playerActor.gameObject.activeSelf == false)
+			BattleInstanceManager.instance.playerActor.gameObject.SetActive(true);
+		CustomFollowCamera.instance.immediatelyUpdate = true;
 
 		// 몬스터 로딩이 완료되면
 		while (IsDoneLoadedMonsterList() == false)
@@ -379,6 +389,53 @@ public class StageManager : MonoBehaviour
 				_spawnFinished = true;
 			}
 		}
+	}
+
+
+	public void FinalizeStage()
+	{
+		// 생성했던거 반대로 해야한다.
+		_spawnFinished = true;
+		_currentSpawnIndex = 0;
+		_currentSpawnCount = 0;
+		_remainDelayTime = 0.0f;
+		_waitLoadedComplete = false;
+
+		_listMonsterSpawnInfo.Clear();
+		_dicGroupMonsterSpawnInfo.Clear();
+
+		// 이미 생성한 것들도 클리어 시켜야한다.
+		// 몬스터
+		List<MonsterActor> listMonsterActor = BattleInstanceManager.instance.GetLiveMonsterList();
+		for (int i = listMonsterActor.Count - 1; i >= 0; --i)
+		{
+			// 아군 몬스터나 excludeMonsterCount 켜있는 소환체는 거리에 따라 삭제하지 않기로 한다.
+			//if (listMonsterActor[i].team.teamId != (int)Team.eTeamID.DefaultMonster || listMonsterActor[i].excludeMonsterCount)
+			//	continue;
+			MonsterActor monsterActor = listMonsterActor[i];
+			monsterActor.actorStatus.SetHpRatio(0.0f);
+			monsterActor.DisableForNodeWar();
+			monsterActor.gameObject.SetActive(false);
+		}
+
+		// 발사체
+		BattleInstanceManager.instance.FinalizeAllHitObject();
+
+		// 이펙트
+		BattleInstanceManager.instance.FinalizeAllManagedEffectObject();
+
+		// 이렇게 하면 히트오브젝트 뿐만 아니라 DieProcess 처리중인 몬스터도 사라지게 된다.
+		// 예상하지 못한 문제들이 발생할거 같아서 이거로 하지 않고 좌우좌우 번갈아가면서 맵을 만들어내기로 한다.
+		//BattleInstanceManager.instance.DisableAllCachedObject();
+
+		// 스테이지
+		StageGround.instance.FinalizeGround();
+
+		// 플레이어
+		BattleInstanceManager.instance.playerActor.gameObject.SetActive(false);
+
+		// 여기서 전환
+		worldOffsetState ^= true;
 	}
 
 	/*
