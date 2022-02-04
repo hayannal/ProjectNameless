@@ -104,7 +104,8 @@ public class MonsterAI : MonoBehaviour
 	bool _initialized = false;
 	public void InitializeAI()
 	{
-		_startDelayRemainTime = Random.Range(startDelayRange.x, startDelayRange.y);
+		//_startDelayRemainTime = Random.Range(startDelayRange.x, startDelayRange.y);
+		_startDelayRemainTime = 0.0f;
 		_currentState = startState;
 
 		// exception handling
