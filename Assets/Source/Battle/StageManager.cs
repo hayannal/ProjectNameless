@@ -50,6 +50,9 @@ public class StageManager : MonoBehaviour
 
 	public Vector3 GetSafeWorldOffset() { return worldOffsetState ? worldOffset : Vector3.zero; }
 
+	public float currentMonstrStandardHp { get; set; }
+	public float currentMonstrStandardAtk { get; set; }
+
 	void Awake()
 	{
 		instance = this;
@@ -87,6 +90,8 @@ public class StageManager : MonoBehaviour
 
 		// 제일 먼저 스폰 정보를 파싱
 		ParseSpawnInfo(stageTableData.spawnInfo);
+		currentMonstrStandardHp = stageTableData.standardHp;
+		currentMonstrStandardAtk = stageTableData.standardAtk;
 		_monsterSpawnPosition.x = stageTableData.monsterSpawnx;
 		_monsterSpawnPosition.z = stageTableData.monsterSpawnz;
 		_monsterSpawnPosition += GetSafeWorldOffset();

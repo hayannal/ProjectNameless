@@ -17,12 +17,12 @@ public class StageTableData
   public int stage { get { return _stage; } set { _stage = value; } }
   
   [SerializeField]
-  double _standardHp;
-  public double standardHp { get { return _standardHp; } set { _standardHp = value; } }
+  float _standardHp;
+  public float standardHp { get { return _standardHp; } set { _standardHp = value; } }
   
   [SerializeField]
-  double _standardAtk;
-  public double standardAtk { get { return _standardAtk; } set { _standardAtk = value; } }
+  float _standardAtk;
+  public float standardAtk { get { return _standardAtk; } set { _standardAtk = value; } }
   
   [SerializeField]
   string[] _environmentSetting = new string[0];

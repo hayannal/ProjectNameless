@@ -112,6 +112,7 @@ public class BaseDamageAffector : AffectorBase {
 		damage *= damageRatio;
 
 		Actor attackerActor = null;
+		bool appliedCritical = false;
 		if ((int)eActorStatus.CriticalRate < hitParameter.statusBase.valueList.Length && affectorValueLevelTableData.sValue4 == "")
 		{
 			float criticalRate = hitParameter.statusBase.valueList[(int)eActorStatus.CriticalRate];
@@ -135,7 +136,10 @@ public class BaseDamageAffector : AffectorBase {
 				if (criticalDamageRate > 0.0f)
 				{
 					damage *= (1.0f + criticalDamageRate);
+					appliedCritical = true;
+					/*
 					FloatingDamageTextRootCanvas.instance.ShowText(FloatingDamageText.eFloatingDamageType.Critical, _actor);
+					*/
 					/*
 					QuestData.instance.OnQuestEvent(QuestData.eQuestClearType.Critical);
 					GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.Critical);
@@ -272,6 +276,11 @@ public class BaseDamageAffector : AffectorBase {
 					}
 				}
 			}
+		}
+
+		if (_actor.IsMonsterActor() && monsterActor != null)
+		{
+			FloatingDamageTextRootCanvas.instance.ShowText(damage, appliedCritical, _actor);
 		}
 
 		/*

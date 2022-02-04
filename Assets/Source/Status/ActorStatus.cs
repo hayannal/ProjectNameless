@@ -66,8 +66,8 @@ public class ActorStatus : MonoBehaviour
 
 		bool nodeWarCachingMonster = false;
 		MonsterTableData monsterTableData = TableDataManager.instance.FindMonsterTableData(actor.actorId);
-		float standardHp = 1.0f;// StageManager.instance.currentMonstrStandardHp;
-		float standardAtk = 1.0f;// StageManager.instance.currentMonstrStandardAtk;
+		float standardHp = StageManager.instance.currentMonstrStandardHp;
+		float standardAtk = StageManager.instance.currentMonstrStandardAtk;
 		if (actor.team.teamId == (int)Team.eTeamID.DefaultAlly)
 		{
 		}

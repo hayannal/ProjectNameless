@@ -23,6 +23,18 @@ public class FloatingDamageText : MonoBehaviour
 	public Text damageText;
 	public Transform positionAnimationTransform;
 	public DOTweenAnimation alphaTweenAnimation;
+	public CanvasGroup alphaCanvasGroup;
+
+	public void InitializeText(float damage, bool critical, Actor actor, int index)
+	{
+		int intDamage = (int)damage;
+
+		damageText.font = UIString.instance.GetUnlocalizedFont();
+		damageText.fontStyle = UIString.instance.useSystemUnlocalizedFont ? FontStyle.Bold : FontStyle.Normal;
+		damageText.color = critical ? Color.red : Color.white;
+		damageText.text = intDamage.ToString();
+		InitializeText(actor, index);
+	}
 
 	public void InitializeText(eFloatingDamageType floatingDamageType, Actor actor, int index)
 	{
@@ -60,6 +72,12 @@ public class FloatingDamageText : MonoBehaviour
 				break;
 		}
 		damageText.color = Color.white;
+		InitializeText(actor, index);
+	}
+
+	void InitializeText(Actor actor, int index)
+	{
+		alphaCanvasGroup.alpha = 1.0f;
 
 		_offsetY = actor.gaugeOffsetY;
 		_targetTransform = actor.cachedTransform;

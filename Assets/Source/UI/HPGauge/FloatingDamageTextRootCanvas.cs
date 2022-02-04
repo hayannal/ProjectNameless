@@ -51,6 +51,21 @@ public class FloatingDamageTextRootCanvas : MonoBehaviour
 		floatingDamageText.InitializeText(floatingDamageType, actor, index);
 	}
 
+	public void ShowText(float damage, bool critical, Actor actor)
+	{
+#if UNITY_EDITOR
+		if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "BattleScene")
+			return;
+#endif
+
+		// position ani
+		int index = FloatingDamageTextRootCanvas.instance.GetPositionAnimationIndex(actor);
+		index = index % floatingDamageTextPrefabList.Length;
+
+		FloatingDamageText floatingDamageText = GetCachedFloatingDamageText(floatingDamageTextPrefabList[index]);
+		floatingDamageText.InitializeText(damage, critical, actor, index);
+	}
+
 	Dictionary<GameObject, List<FloatingDamageText>> _dicFloatingDamageTextInstancePool = new Dictionary<GameObject, List<FloatingDamageText>>();
 	FloatingDamageText GetCachedFloatingDamageText(GameObject prefab)
 	{
