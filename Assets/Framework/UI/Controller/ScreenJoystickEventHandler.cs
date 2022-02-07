@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 // 젤 첨에 조이스틱을 스크린 오버레이 공간으로 만들었더니 월드스페이스로 되어있는 3D UI의 인풋을 막아버리는 현상이 발생했다.
@@ -12,6 +13,11 @@ using UnityEngine.EventSystems;
 // 스크린 스페이스에 있는 이 핸들러로부터 이벤트를 전달받아서 처리하면 모든게 끝.
 public class ScreenJoystickEventHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
+	void Awake()
+	{
+		transform.parent.GetComponent<GraphicRaycaster>().enabled = false;
+	}
+
 	public void OnPointerDown(PointerEventData eventData)
 	{
 		ScreenJoystick.instance.OnPointerDown(eventData);
