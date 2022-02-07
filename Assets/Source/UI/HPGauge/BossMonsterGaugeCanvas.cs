@@ -100,7 +100,8 @@ public class BossMonsterGaugeCanvas : MonoBehaviour
 		float sumHp = 0.0f;
 		for (int i = 0; i < _listMonsterActor.Count; ++i)
 			sumHp += _listMonsterActor[i].actorStatus.GetHP();
-		float hpLineRatio = sumHp / currentBossHpPer1Line;
+		_bossHpPer1Line = sumHp;
+		float hpLineRatio = 1.0f;
 		_lastHpLineRatio = hpLineRatio;
 		RefreshBossHpGauge(hpLineRatio, true);
 	}
@@ -191,6 +192,7 @@ public class BossMonsterGaugeCanvas : MonoBehaviour
 		UpdateLateFill();
 	}
 
+	float _bossHpPer1Line;
 	float _lastHpLineRatio = 1.0f;
 	public void InternalOnChangedHP(MonsterActor monsterActor)
 	{
@@ -209,7 +211,7 @@ public class BossMonsterGaugeCanvas : MonoBehaviour
 				sumHp += _listMonsterActor[i].actorStatus.GetHP();
 		}
 
-		float currentBossHpPer1Line = 255.0f;// StageManager.instance.currentBossHpPer1Line;
+		float currentBossHpPer1Line = _bossHpPer1Line;
 		float hpLineRatio = sumHp / currentBossHpPer1Line;
 		if (_lastHpLineRatio < hpLineRatio)
 		{
