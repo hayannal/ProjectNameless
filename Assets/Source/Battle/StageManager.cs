@@ -274,6 +274,8 @@ public class StageManager : MonoBehaviour
 				List<MonsterSpawnInfo> listInfo = _dicGroupMonsterSpawnInfo[groupMonsterSpawnInfo.groupId];
 				for (int j = 0; j < listInfo.Count; ++j)
 				{
+					if (listInfo[j].monsterSimpleId == 0 && listInfo[j].monsterId == "empty" && listInfo[j].monsterPrefab == null)
+						continue;
 					if (listInfo[j].monsterPrefab == null)
 						return false;
 				}
