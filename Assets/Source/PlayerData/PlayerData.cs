@@ -32,6 +32,21 @@ public class PlayerData : MonoBehaviour
 	public bool reviewVersion { get; set; }
 #endif
 
+	public ObscuredInt highestClearStage { get; set; }
+	public ObscuredInt selectedStage { get; set; }
+
+	public void OnNewlyCreatedPlayer()
+	{
+		highestClearStage = 0;
+		selectedStage = 0;
+
+		// newlyCreated는 새로 생성된 계정에서만 true일거고 재접하거나 로그아웃 할때 false로 돌아와서 유지될거다.
+		newlyCreated = true;
+		loginned = true;
+
+		Debug.Log("OnNewlyCreatedPlayer Called!");
+	}
+
 	public void ResetData()
 	{
 		// 이게 가장 중요. 다른 것들은 받을때 알아서 다 비우고 다시 셋팅한다.

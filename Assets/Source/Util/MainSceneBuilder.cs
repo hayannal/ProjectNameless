@@ -291,6 +291,8 @@ public class MainSceneBuilder : MonoBehaviour
 			// 개발용으로 쓸 신캐 생성버전을 이 디파인에 묶어서 쓰도록 한다.
 			// 처음 캐릭터를 만들면 게스트로그인으로 생성되며 챕터는 1이 선택되어있고 0스테이지 로비에서 시작된다.
 #else
+			/*
+			 * 지금은 없어서 그냥 주석처리 해두는데 최초 생성일때 뭔가 처리할거면 이거로 씬 구축하면 될듯
 			// 서버가 새 계정이라고 알려줄때만 BuildTutorialSceneCoroutine을 진행하고 아니라면 기본 로직을 따라 씬을 구축한다.
 			if (PlayerData.instance.newlyCreated)
 			{
@@ -298,6 +300,7 @@ public class MainSceneBuilder : MonoBehaviour
 				yield return BuildTutorialSceneCoroutine();
 				yield break;
 			}
+			*/
 #endif
 		}
 

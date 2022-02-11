@@ -269,13 +269,9 @@ public class PlayFabApiManager : MonoBehaviour
 				FunctionName = "GetServerUtc",
 			}, OnGetServerUtc, OnRecvPlayerDataFailure);
 
-			/*
 			// 처음 만든 계정이면 어차피 읽어올게 없다.
-			// 오히려 서버 rules에 넣어둔 OnCreatedPlayer cloud script가 돌고있을텐데
-			// 이게 비동기라서 로그인과 동시에 날아온 인벤 리스트에는 들어있지 않게 된다.
-			// 그래서 직접 캐릭터를 인벤토리에 넣어주고 넘어가면 된다.
+			// 전작과 달리 서버에서 rules도 안쓸테니까 초기화 후 씬 구성하면 될거다.
 			PlayerData.instance.OnNewlyCreatedPlayer();
-			*/
 
 			// 더이상 쓰이는 곳 없다.
 			_loginResult = null;
@@ -535,6 +531,7 @@ public class PlayFabApiManager : MonoBehaviour
 		// 이 시점에서는 아직 PlayerData를 구축하기 전이니 이렇게 직접 체크한다.
 		// highestPlayChapter로 체크해야 기기를 바꾸든 앱을 재설치 하든 데이터를 삭제하든 모든 상황에 대응할 수 있다.
 		// 현재 계정 상태에 따라 다운로드 진행을 결정하는 것.
+		/*
 		int highestPlayChapter = 0;
 		for (int i = 0; i < playerStatistics.Count; ++i)
 		{
@@ -548,6 +545,7 @@ public class PlayFabApiManager : MonoBehaviour
 		// 튜토리얼을 마치지 않았다면 앱 업뎃이든 번들패치든 할 필요 없다. 바로 리턴.
 		if (highestPlayChapter == 0)
 			return true;
+		*/
 
 		// 빌드번호를 서버에 적혀있는 빌드번호와 비교해야한다.
 		BuildVersionInfo versionInfo = null;
@@ -634,7 +632,10 @@ public class PlayFabApiManager : MonoBehaviour
 		// 당연히 Async구조이기 때문에 코루틴으로 바꿔서 대기해야한다.
 		//int resourceNumber = 0;
 		//int.TryParse(split[2], out resourceNumber);
+		/*
+		 * 잠시 번들체크는 빼두자.
 		needCheckResourceVersion = true;
+		*/
 
 		return true;
 	}

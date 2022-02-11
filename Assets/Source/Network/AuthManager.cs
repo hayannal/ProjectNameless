@@ -48,7 +48,7 @@ public class AuthManager : MonoBehaviour
 	}
 	
 	static string LAST_AUTH_KEY = "_account_last_type";
-	static string GUEST_CUSTOM_ID_KEY = "_bjkeqevpzzrem";
+	static string GUEST_CUSTOM_ID_KEY = "_ejfizjqlrpmva";
 
 	eAuthType _requestAuthType;
 	string _customId;
