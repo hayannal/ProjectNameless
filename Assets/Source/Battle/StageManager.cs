@@ -425,6 +425,9 @@ public class StageManager : MonoBehaviour
 			monsterActor.gameObject.SetActive(false);
 		}
 
+		// 별도의 몬스터 HP 게이지를 쓰는 보스만 따로 처리
+		BossMonsterGaugeCanvas.Hide();
+
 		// 발사체
 		BattleInstanceManager.instance.FinalizeAllHitObject();
 

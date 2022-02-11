@@ -26,6 +26,13 @@ public class BossMonsterGaugeCanvas : MonoBehaviour
 		return false;
 	}
 
+	public static void Hide()
+	{
+		if (_instance == null)
+			return;
+		_instance.gameObject.SetActive(false);
+	}
+
 	public static void InitializeGauge(MonsterActor monsterActor)
 	{
 		instance.InternalInitializeGauge(monsterActor);
