@@ -21,9 +21,9 @@ public class StageGround : MonoBehaviour
 	public GameObject monsterSpawnPortalPrefab;
 	public GameObject endLinePrefab;
 
-	public void InitializeGround(StageTableData stageTableData)
+	public void InitializeGround(StageTableData stageTableData, bool repeat)
 	{
-		Timing.RunCoroutine(LoadStageProcess(stageTableData));
+		Timing.RunCoroutine(LoadStageProcess(stageTableData, repeat));
 	}
 
 	GameObject _stagePlanePrefab = null;
@@ -60,7 +60,7 @@ public class StageGround : MonoBehaviour
 	GameObject _currentEnvironmentSettingObject;
 	GameObject _monsterSpawnPortalObject;
 	GameObject _endLineObject;
-	void InstantiateMap(StageTableData stageTableData)
+	void InstantiateMap(StageTableData stageTableData, bool repeat)
 	{
 		if (_currentPlaneObject != null)
 			_currentPlaneObject.SetActive(false);
@@ -85,7 +85,8 @@ public class StageGround : MonoBehaviour
 
 		if (_endLineObject != null)
 			_endLineObject.SetActive(false);
-		_endLineObject = BattleInstanceManager.instance.GetCachedObject(endLinePrefab, new Vector3(stageTableData.redLinex, 0.0f, stageTableData.redLinez) + StageManager.instance.GetSafeWorldOffset(), Quaternion.identity);
+		if (repeat == false)
+			_endLineObject = BattleInstanceManager.instance.GetCachedObject(endLinePrefab, new Vector3(stageTableData.redLinex, 0.0f, stageTableData.redLinez) + StageManager.instance.GetSafeWorldOffset(), Quaternion.identity);
 
 		// create callback
 		if (StageManager.instance != null)
@@ -96,7 +97,7 @@ public class StageGround : MonoBehaviour
 
 	bool _processing = false;
 	public bool processing { get { return _processing; } }
-	IEnumerator<float> LoadStageProcess(StageTableData stageTableData)
+	IEnumerator<float> LoadStageProcess(StageTableData stageTableData, bool repeat)
 	{
 		if (_processing)
 			yield break;
@@ -111,7 +112,7 @@ public class StageGround : MonoBehaviour
 		while (_stagePlanePrefab == null || _stageGroundPrefab == null || _stageWallPrefab == null || _stageEnvPrefab == null)
 			yield return Timing.WaitForOneFrame;
 
-		InstantiateMap(stageTableData);
+		InstantiateMap(stageTableData, repeat);
 
 		_processing = false;
 	}

@@ -47,8 +47,9 @@ public class StageManager : MonoBehaviour
 
 	public bool worldOffsetState { get; set; }
 	public Vector3 worldOffset = new Vector3(100.0f, 0.0f, 0.0f);
-
 	public Vector3 GetSafeWorldOffset() { return worldOffsetState ? worldOffset : Vector3.zero; }
+
+	public static float RepeatModeInterval = 3.0f;
 
 	public float currentMonstrStandardHp { get; set; }
 	public float currentMonstrStandardAtk { get; set; }
@@ -63,14 +64,25 @@ public class StageManager : MonoBehaviour
 		UpdateSpawn();
 	}
 
-	public void InitializeStage(int stage)
+	public bool repeatMode { get; set; }
+	public void InitializeStageFloor(int floor, bool repeat)
+	{
+		StageIdTableData stageIdTableData = TableDataManager.instance.FindStageIdTableData(floor);
+		if (stageIdTableData == null)
+			return;
+
+		repeatMode = repeat;
+		InitializeStage(repeatMode ? stageIdTableData.repeat : stageIdTableData.challenge, repeatMode);
+	}
+
+	void InitializeStage(int stage, bool repeat)
 	{
 		StageTableData stageTableData = TableDataManager.instance.FindStageTableData(stage);
 		if (stageTableData == null)
 			return;
 
 		// StageGround가 심리스 형태의 로드를 관리하기 때문에 지형 로딩에 대해서는 일임한다.
-		StageGround.instance.InitializeGround(stageTableData);
+		StageGround.instance.InitializeGround(stageTableData, repeat);
 	}
 
 	public void OnInstantiateMap(StageTableData stageTableData)
@@ -212,11 +224,8 @@ public class StageManager : MonoBehaviour
 		}
 
 		// reset info
-		_currentSpawnIndex = 0;
-		_currentSpawnCount = 0;
-		_remainDelayTime = 0.0f;
+		ResetInfo();
 		_waitLoadedComplete = true;
-		_spawnFinished = false;
 	}
 
 	void ParseGroupMonsterSpawnInfo(string spawnInfo, List<MonsterSpawnInfo> listInfo)
@@ -290,6 +299,16 @@ public class StageManager : MonoBehaviour
 			}
 		}
 		return true;
+	}
+
+	void ResetInfo()
+	{
+		_currentSpawnIndex = 0;
+		_currentSpawnIndexInGroup = 0;
+		_currentSpawnCount = 0;
+		_currentGroupCount = 0;
+		_remainDelayTime = 0.0f;
+		_spawnFinished = false;
 	}
 
 	bool _waitLoadedComplete;
@@ -401,11 +420,10 @@ public class StageManager : MonoBehaviour
 
 	public void FinalizeStage()
 	{
-		// 생성했던거 반대로 해야한다.
+		ResetInfo();
+
+		// 생성했던거 반대로 해야한다. 강제로 Finish처리해서 더이상 스폰되지 않게 막아둔다.
 		_spawnFinished = true;
-		_currentSpawnIndex = 0;
-		_currentSpawnCount = 0;
-		_remainDelayTime = 0.0f;
 		_waitLoadedComplete = false;
 
 		_listMonsterSpawnInfo.Clear();
@@ -446,6 +464,25 @@ public class StageManager : MonoBehaviour
 
 		// 여기서 전환
 		worldOffsetState ^= true;
+	}
+
+	public void OnDieMonster()
+	{
+		if (_spawnFinished == false)
+			return;
+		List<MonsterActor> listMonsterActor = BattleInstanceManager.instance.GetLiveMonsterList();
+		if (listMonsterActor.Count > 0)
+			return;
+
+		if (repeatMode)
+		{
+			ResetInfo();
+			_remainDelayTime = RepeatModeInterval;
+		}
+		else
+		{
+			// 상황에 맞는 처리를 해야한다.
+		}
 	}
 
 	/*

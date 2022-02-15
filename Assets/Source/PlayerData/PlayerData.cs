@@ -38,7 +38,7 @@ public class PlayerData : MonoBehaviour
 	public void OnNewlyCreatedPlayer()
 	{
 		highestClearStage = 0;
-		selectedStage = 0;
+		selectedStage = 1;
 
 		// newlyCreated는 새로 생성된 계정에서만 true일거고 재접하거나 로그아웃 할때 false로 돌아와서 유지될거다.
 		newlyCreated = true;
@@ -66,27 +66,38 @@ public class PlayerData : MonoBehaviour
 
 	public void OnRecvPlayerStatistics(List<StatisticValue> playerStatistics)
 	{
-		/*
-		// nodeWarClearLevel은 디비에 없을 수 있으므로 초기화가 필요.
-		nodeWarClearLevel = 0;
-		chaosFragmentCount = 0;
+		// 통계는 없을 수 있는 값이니 초기화는 필수
+		highestClearStage = 0;
 		for (int i = 0; i < playerStatistics.Count; ++i)
 		{
 			switch (playerStatistics[i].StatisticName)
 			{
-				case "highestPlayChapter": highestPlayChapter = playerStatistics[i].Value; break;
+				//case "highestPlayChapter": highestPlayChapter = playerStatistics[i].Value; break;
 				case "highestClearStage": highestClearStage = playerStatistics[i].Value; break;
-				case "highestValue": highestValue = playerStatistics[i].Value; break;
-				case "nodClLv": nodeWarClearLevel = playerStatistics[i].Value; break;
-				case "chaosFragment": chaosFragmentCount = playerStatistics[i].Value; break;
-				case "chtRnkSus": cheatRankSus = playerStatistics[i].Value; break;
+				//case "highestValue": highestValue = playerStatistics[i].Value; break;
+				//case "nodClLv": nodeWarClearLevel = playerStatistics[i].Value; break;
+				//case "chaosFragment": chaosFragmentCount = playerStatistics[i].Value; break;
+				//case "chtRnkSus": cheatRankSus = playerStatistics[i].Value; break;
 			}
 		}
-		*/
 	}
 
 	public void OnRecvPlayerData(Dictionary<string, UserDataRecord> userData, Dictionary<string, UserDataRecord> userReadOnlyData, List<CharacterResult> characterList, PlayerProfileModel playerProfile)
 	{
+		// 값이 존재하지 않다면 최고 클리어 스테이지값인 0 보다 1 큰 값일테니 1로 초기화 해둬야한다.
+		selectedStage = 1;
+		if (userData.ContainsKey("selectedStage"))
+		{
+			int intValue = 0;
+			if (int.TryParse(userData["selectedStage"].Value, out intValue))
+				selectedStage = intValue;
+			if (selectedStage > (highestClearStage + 1))
+			{
+				selectedStage = highestClearStage + 1;
+				PlayFabApiManager.instance.RequestIncCliSus(ClientSuspect.eClientSuspectCode.InvalidSelectedChapter);
+			}
+		}
+
 		/*
 		if (userData.ContainsKey("mainCharacterId"))
 		{

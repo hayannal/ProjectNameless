@@ -220,8 +220,9 @@ public class AuthManager : MonoBehaviour
 	GetPlayerCombinedInfoRequestParams CreateLoginParameters()
 	{
 		List<string> playerStatisticNames = new List<string>();
-		playerStatisticNames.Add("highestPlayChapter");
+		//playerStatisticNames.Add("highestPlayChapter");
 		playerStatisticNames.Add("highestClearStage");
+		/*
 		playerStatisticNames.Add("highestValue");
 		playerStatisticNames.Add("nodClLv");
 		playerStatisticNames.Add("guideQuestIndex");
@@ -229,6 +230,7 @@ public class AuthManager : MonoBehaviour
 		playerStatisticNames.Add("analysisExp");
 		playerStatisticNames.Add("pointShopPoint");
 		playerStatisticNames.Add("chtRnkSus");
+		*/
 		GetPlayerCombinedInfoRequestParams parameters = new GetPlayerCombinedInfoRequestParams();
 		parameters.GetCharacterList = true;
 		parameters.GetPlayerStatistics = true;

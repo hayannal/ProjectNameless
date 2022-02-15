@@ -391,7 +391,9 @@ public class MainSceneBuilder : MonoBehaviour
 #if !UNITY_EDITOR
 		Debug.LogWarning("888888888-1");
 #endif
-		StageManager.instance.InitializeStage(10002);
+
+		// 씬을 구축할때는 항상 반복모드로 시작하고 그 이후에 도전모드로 전환하는 형태다.
+		StageManager.instance.InitializeStageFloor(PlayerData.instance.selectedStage, true);
 
 		/*
 		while (StageManager.instance.IsDoneLoadAsyncNextStage() == false)

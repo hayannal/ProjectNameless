@@ -28,6 +28,7 @@ public class TableDataManager : MonoBehaviour
 	public DropTable dropTable;
 	public DamageRateTable damageRateTable;
 
+	public StageIdTable stageIdTable;
 	public StageTable stageTable;
 
 	void Awake()
@@ -236,6 +237,16 @@ public class TableDataManager : MonoBehaviour
 		{
 			if (damageRateTable.dataArray[i].number == addCount && damageRateTable.dataArray[i].id == type)
 				return damageRateTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public StageIdTableData FindStageIdTableData(int floor)
+	{
+		for (int i = 0; i < stageIdTable.dataArray.Length; ++i)
+		{
+			if (stageIdTable.dataArray[i].floor == floor)
+				return stageIdTable.dataArray[i];
 		}
 		return null;
 	}

@@ -9,10 +9,6 @@ using System.Collections;
 public class StageTableData
 {
   [SerializeField]
-  int _type;
-  public int type { get { return _type; } set { _type = value; } }
-  
-  [SerializeField]
   int _stage;
   public int stage { get { return _stage; } set { _stage = value; } }
   
