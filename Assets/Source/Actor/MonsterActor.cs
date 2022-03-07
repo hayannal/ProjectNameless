@@ -372,6 +372,7 @@ public class MonsterActor : Actor
 		*/
 		BattleInstanceManager.instance.OnDieMonster(this);
 		BattleInstanceManager.instance.OnFinalizePathFinderAgent(pathFinderController.agent.agentTypeID);
+		StageManager.instance.OnDieMonster();
 	}
 
 	public void DieForNodeWar()

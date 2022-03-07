@@ -60,6 +60,7 @@ public class StageGround : MonoBehaviour
 	GameObject _currentEnvironmentSettingObject;
 	GameObject _monsterSpawnPortalObject;
 	GameObject _endLineObject;
+	public Vector3 endLinePosition { get; set; }
 	void InstantiateMap(StageTableData stageTableData, bool repeat)
 	{
 		if (_currentPlaneObject != null)
@@ -83,6 +84,7 @@ public class StageGround : MonoBehaviour
 			_monsterSpawnPortalObject.SetActive(false);
 		_monsterSpawnPortalObject = BattleInstanceManager.instance.GetCachedObject(monsterSpawnPortalPrefab, new Vector3(stageTableData.monsterSpawnx, 0.0f, stageTableData.monsterSpawnz) + StageManager.instance.GetSafeWorldOffset(), Quaternion.identity);
 
+		endLinePosition = new Vector3(stageTableData.redLinex, 0.0f, stageTableData.redLinez);
 		if (_endLineObject != null)
 			_endLineObject.SetActive(false);
 		if (repeat == false)

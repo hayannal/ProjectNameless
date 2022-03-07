@@ -62,6 +62,8 @@ public class StageManager : MonoBehaviour
 	void Update()
 	{
 		UpdateSpawn();
+		UpdateReuseMonster();
+		UpdateFailure();
 	}
 
 	public bool repeatMode { get; set; }
@@ -482,6 +484,49 @@ public class StageManager : MonoBehaviour
 		else
 		{
 			// 상황에 맞는 처리를 해야한다.
+		}
+	}
+
+	void UpdateReuseMonster()
+	{
+		if (repeatMode == false)
+			return;
+		List<MonsterActor> listMonsterActor = BattleInstanceManager.instance.GetLiveMonsterList();
+		if (listMonsterActor.Count == 0)
+			return;
+
+		for (int i = listMonsterActor.Count - 1; i >= 0; --i)
+		{
+			Vector3 position = listMonsterActor[i].cachedTransform.position;
+			float deltaZ = monsterTargetPosition.z - position.z;
+			//(listMonsterActor[i].pathFinderController.agent.hasPath && listMonsterActor[i].pathFinderController.agent.pathStatus == UnityEngine.AI.NavMeshPathStatus.PathComplete)
+			if (Mathf.Abs(deltaZ) < 1.0f)
+			{
+				MonsterActor monsterActor = listMonsterActor[i];
+				monsterActor.actorStatus.SetHpRatio(0.0f);
+				monsterActor.DisableForNodeWar();
+				monsterActor.gameObject.SetActive(false);
+			}
+		}
+	}
+
+	void UpdateFailure()
+	{
+		if (repeatMode)
+			return;
+		List<MonsterActor> listMonsterActor = BattleInstanceManager.instance.GetLiveMonsterList();
+		if (listMonsterActor.Count == 0)
+			return;
+
+		for (int i = listMonsterActor.Count - 1; i >= 0; --i)
+		{
+			Vector3 position = listMonsterActor[i].cachedTransform.position;
+			float deltaZ = StageGround.instance.endLinePosition.z - position.z;
+			if (deltaZ < 1.0f)
+				continue;
+
+			Time.timeScale = 0.0f;
+			return;
 		}
 	}
 
