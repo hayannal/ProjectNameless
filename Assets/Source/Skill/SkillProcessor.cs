@@ -34,6 +34,7 @@ public class SkillProcessor : MonoBehaviour
 		public string nameId;
 		public string descriptionId;
 		public List<AffectorBase> listPassiveAffector;
+		public bool autoSkill;
 	}
 
 	void Awake()
@@ -197,6 +198,31 @@ public class SkillProcessor : MonoBehaviour
 			if (monsterActor != null)
 				statusStructForHitObject.bossMonsterActor = monsterActor.bossMonster;
 		}
+	}
+
+	public static string GlobalSkillCooltimeId = "_globalSkillCooltime";
+	public static float GlobalSkillCooltimeDuration = 1.0f;
+	List<SkillInfo> _listTempSkillInfoForSelect = new List<SkillInfo>();
+	public bool UseRandomSkill()
+	{
+		_listTempSkillInfoForSelect.Clear();
+		for (int i = 0; i < _listSkillInfo.Count; ++i)
+		{
+			// 습득한 스킬 중에서 쿨타임 안돌고 있는거만 체크해보면 된다.
+			if (_listSkillInfo[i].autoSkill == false)
+				continue;
+			if (cooltimeProcessor.CheckCooltime(_listSkillInfo[i].skillId))
+				continue;
+			_listTempSkillInfoForSelect.Add(_listSkillInfo[i]);
+		}
+		if (_listTempSkillInfoForSelect.Count == 0)
+			return false;
+
+		int index = Random.Range(0, _listTempSkillInfoForSelect.Count);
+		ApplyNonAniSkill(_listTempSkillInfoForSelect[index]);
+		cooltimeProcessor.ApplyCooltime(_listTempSkillInfoForSelect[index].skillId, _listTempSkillInfoForSelect[index].cooltime);
+		cooltimeProcessor.ApplyCooltime(GlobalSkillCooltimeId, GlobalSkillCooltimeDuration);
+		return true;
 	}
 
 

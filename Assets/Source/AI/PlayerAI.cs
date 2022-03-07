@@ -17,6 +17,7 @@ public class PlayerAI : MonoBehaviour
 	Actor actor { get; set; }
 	TargetingProcessor targetingProcessor { get; set; }
 	BaseCharacterController baseCharacterController { get; set; }
+	SkillProcessor skillProcessor { get; set; }
 
 	void OnDisable()
 	{
@@ -30,6 +31,7 @@ public class PlayerAI : MonoBehaviour
 		actor = GetComponent<Actor>();
 		targetingProcessor = GetComponent<TargetingProcessor>();
 		baseCharacterController = GetComponent<BaseCharacterController>();
+		skillProcessor = GetComponent<SkillProcessor>();
 
 		ActorTableData actorTableData = TableDataManager.instance.FindActorTableData(actor.actorId);
 		if (actorTableData != null)
@@ -48,6 +50,7 @@ public class PlayerAI : MonoBehaviour
 		UpdateTargetingObject();
 		UpdateAttack();
 		UpdateAttackRange();
+		UpdateSkill();
 	}
 
 	float _currentFindDelay;
@@ -389,5 +392,38 @@ public class PlayerAI : MonoBehaviour
 			return false;
 		}
 		return _lastNavMeshResult;
+	}
+
+
+
+	Cooltime _globalSkillCooltime;
+	void UpdateSkill()
+	{
+		// 공격하는거랑 비슷하긴 한데 최종적으로 SkillProcessor에게 요청해서 스킬을 발동시킬거다.
+		if (actor.actorStatus.IsDie())
+			return;
+
+		// 스킬이 동시에 다 나가는게 별로면 전역 딜레이라도 두는게 낫지 않을까.
+		if (_globalSkillCooltime != null && _globalSkillCooltime.CheckCooltime())
+			return;
+
+		// 움직일 수 없다면 스킬도 안나가는게 맞는건가?
+		if (actor.affectorProcessor.IsContinuousAffectorType(eAffectorType.CannotAction))
+			return;
+
+		// 스킬은 항상 자동으로 나가는게 가능하니까 이동이나 공격 상태를 검사할 필요가 없다.
+		bool autoSkillUsable = true;
+
+		// no target
+		if (targetCollider == null)
+			autoSkillUsable = false;
+
+		if (!autoSkillUsable)
+			return;
+
+		if (skillProcessor.UseRandomSkill())
+		{
+			_globalSkillCooltime = actor.cooltimeProcessor.GetCooltime(SkillProcessor.GlobalSkillCooltimeId);
+		}
 	}
 }
