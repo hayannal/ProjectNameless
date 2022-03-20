@@ -733,6 +733,81 @@ public class PlayFabApiManager : MonoBehaviour
 	}
 
 
+	#region Stage Boss
+	ObscuredString _serverEnterKeyForBoss;
+	public void RequestEnterBoss(Action<bool> successCallback, Action failureCallback)
+	{
+		int selectedStage = PlayerData.instance.selectedStage;
+		string input = string.Format("{0}_{1}", selectedStage, "vqzcatwlq");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "EnterBoss",
+			FunctionParameter = new { Enter = 1, SeLv = selectedStage, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			_serverEnterKeyForBoss = failure ? "" : resultString;
+			if (successCallback != null) successCallback.Invoke(failure);
+		}, (error) =>
+		{
+			HandleCommonError(error);
+			if (failureCallback != null) failureCallback.Invoke();
+		});
+	}
+
+	public void RequestCancelBoss()
+	{
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "CancelBoss",
+			GeneratePlayStreamEvent = true,
+		}, null, null);
+	}
+
+	public void RequestEndBoss(int selectedStage, Action successCallback)
+	{
+		ExecuteCloudScriptRequest request = new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "EndBoss",
+			FunctionParameter = new { Flg = (string)_serverEnterKeyForBoss, SeLv = selectedStage },
+			GeneratePlayStreamEvent = true,
+		};
+		Action action = () =>
+		{
+			PlayFabClientAPI.ExecuteCloudScript(request, (success) =>
+			{
+				PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+				jsonResult.TryGetValue("retErr", out object retErr);
+				bool failure = ((retErr.ToString()) == "1");
+				_serverEnterKeyForBoss = "";
+				if (!failure)
+				{
+					RetrySendManager.instance.OnSuccess();
+
+					// 성공시 처리
+					int maxStage = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxStage");
+					maxStage = 50;
+					if (selectedStage <= maxStage)
+						PlayerData.instance.highestClearStage = selectedStage;
+
+					int nextStage = selectedStage + 1;
+					if (nextStage <= maxStage)
+						PlayerData.instance.selectedStage = nextStage;
+				}
+				if (successCallback != null) successCallback.Invoke();
+			}, (error) =>
+			{
+				RetrySendManager.instance.OnFailure();
+			});
+		};
+		RetrySendManager.instance.RequestAction(action, true, true);
+	}
+	#endregion
+
+
 
 
 	#region Sample

@@ -1,5 +1,6 @@
 #define USE_MAIN_SCENE
 
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 #if USE_MAIN_SCENE
@@ -484,7 +485,26 @@ public class StageManager : MonoBehaviour
 		else
 		{
 			// 상황에 맞는 처리를 해야한다.
+			if (CheatingListener.detectedCheatTable)
+				return;
+
+			PlayFabApiManager.instance.RequestEndBoss(PlayerData.instance.selectedStage, () =>
+			{
+				// 패킷 통과하면 다음 처리로 넘어간다.
+				Timing.RunCoroutine(ClearProcess());
+			});
 		}
+	}
+
+	IEnumerator<float> ClearProcess()
+	{
+		ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_Clear"), 1.5f);
+		yield return Timing.WaitForSeconds(1.2f);
+
+		if (this == null)
+			yield break;
+
+		MainCanvas.instance.ChangeStage(PlayerData.instance.selectedStage, true);
 	}
 
 	void UpdateReuseMonster()
@@ -512,8 +532,11 @@ public class StageManager : MonoBehaviour
 		}
 	}
 
+	bool _failureProcessed = false;
 	void UpdateFailure()
 	{
+		if (_failureProcessed)
+			return;
 		if (repeatMode)
 			return;
 		List<MonsterActor> listMonsterActor = BattleInstanceManager.instance.GetLiveMonsterList();
@@ -527,9 +550,38 @@ public class StageManager : MonoBehaviour
 			if (deltaZ < 1.0f)
 				continue;
 
-			Time.timeScale = 0.0f;
+			StartCoroutine(FailureProcess());
 			return;
 		}
+	}
+
+	IEnumerator FailureProcess()
+	{
+		_failureProcessed = true;
+
+		PlayFabApiManager.instance.RequestCancelBoss();
+		Time.timeScale = 0.01f;
+
+		ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_Failure"), 1.5f);
+		yield return new WaitForSecondsRealtime(1.2f);
+
+		FadeCanvas.instance.FadeOut(0.2f, 1.0f, true, true);
+		yield return new WaitForSecondsRealtime(0.2f);
+
+		FinalizeStage();
+
+		yield return new WaitForSecondsRealtime(0.1f);
+		
+		if (MainCanvas.instance != null)
+		{
+			MainCanvas.instance.challengeButtonObject.SetActive(true);
+			MainCanvas.instance.cancelChallengeButtonObject.SetActive(false);
+		}
+		InitializeStageFloor(PlayerData.instance.selectedStage, true);
+		FadeCanvas.instance.FadeIn(0.5f, true);
+
+		Time.timeScale = 1.0f;
+		_failureProcessed = false;
 	}
 
 	/*

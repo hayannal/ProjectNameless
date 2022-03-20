@@ -65,6 +65,8 @@ public class MainSceneBuilder : MonoBehaviour
 		Addressables.Release<GameObject>(_handleStartCharacter);
 		Addressables.Release<GameObject>(_handleCommonBattleGroup);
 
+		Addressables.Release<GameObject>(_handleMainCanvas);
+
 		/*
 		Addressables.Release<GameObject>(_handleLobbyCanvas);
 		Addressables.Release<GameObject>(_handleTreasureChest);
@@ -114,6 +116,8 @@ public class MainSceneBuilder : MonoBehaviour
 	AsyncOperationHandle<GameObject> _handleStageManager;
 	AsyncOperationHandle<GameObject> _handleStartCharacter;
 	AsyncOperationHandle<GameObject> _handleCommonBattleGroup;
+
+	AsyncOperationHandle<GameObject> _handleMainCanvas;
 	/*
 	AsyncOperationHandle<GameObject> _handleBattleManager;
 	AsyncOperationHandle<GameObject> _handleDropObjectGroup;
@@ -339,7 +343,8 @@ public class MainSceneBuilder : MonoBehaviour
 		Debug.LogWarning("222222222");
 #endif
 		_handleCommonBattleGroup = Addressables.LoadAssetAsync<GameObject>("CommonBattleGroup");
-		
+		_handleMainCanvas = Addressables.LoadAssetAsync<GameObject>("MainCanvas");
+
 #if !UNITY_EDITOR
 		Debug.LogWarning("333333333");
 #endif
@@ -602,6 +607,7 @@ public class MainSceneBuilder : MonoBehaviour
 		// step 9-2. lobby ui
 		//yield return _handleLobbyCanvas;
 		//yield return _handleCommonCanvasGroup;
+		yield return _handleMainCanvas;
 		/*
 		while (_handleLobbyCanvas.IsValid() && !_handleLobbyCanvas.IsDone)
 			yield return null;
@@ -610,12 +616,15 @@ public class MainSceneBuilder : MonoBehaviour
 		*/
 		while (_handleCommonBattleGroup.IsValid() && !_handleCommonBattleGroup.IsDone)
 			yield return null;
+		while (_handleMainCanvas.IsValid() && !_handleMainCanvas.IsDone)
+			yield return null;
 #if !UNITY_EDITOR
 		Debug.LogWarning("KKKKKKKKK");
 #endif
 		/*
 		Instantiate<GameObject>(_handleLobbyCanvas.Result);
 		*/
+		Instantiate<GameObject>(_handleMainCanvas.Result);
 		Instantiate<GameObject>(_handleCommonBattleGroup.Result);
 #if !UNITY_EDITOR
 		Debug.LogWarning("LLLLLLLLL");
