@@ -237,7 +237,7 @@ public class PlayerAI : MonoBehaviour
 			if (!autoAttackable)
 				return;
 
-			if (IsTargetColliderInAttackRange(ref diff) == false)
+			if (IsTargetColliderInAttackRange(ref diff, true) == false)
 				return;
 		}
 		#endregion
