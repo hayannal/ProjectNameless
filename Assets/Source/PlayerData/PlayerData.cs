@@ -86,10 +86,10 @@ public class PlayerData : MonoBehaviour
 	{
 		// 값이 존재하지 않다면 최고 클리어 스테이지값인 0 보다 1 큰 값일테니 1로 초기화 해둬야한다.
 		selectedStage = 1;
-		if (userData.ContainsKey("selectedStage"))
+		if (userReadOnlyData.ContainsKey("selectedStage"))
 		{
 			int intValue = 0;
-			if (int.TryParse(userData["selectedStage"].Value, out intValue))
+			if (int.TryParse(userReadOnlyData["selectedStage"].Value, out intValue))
 				selectedStage = intValue;
 			if (selectedStage > (highestClearStage + 1))
 			{
