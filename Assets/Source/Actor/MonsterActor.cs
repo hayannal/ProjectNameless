@@ -372,7 +372,8 @@ public class MonsterActor : Actor
 		*/
 		BattleInstanceManager.instance.OnDieMonster(this);
 		BattleInstanceManager.instance.OnFinalizePathFinderAgent(pathFinderController.agent.agentTypeID);
-		StageManager.instance.OnDieMonster();
+		// Die 호출은 안하는게 맞다.
+		//StageManager.instance.OnDieMonster();
 	}
 
 	public void DieForNodeWar()

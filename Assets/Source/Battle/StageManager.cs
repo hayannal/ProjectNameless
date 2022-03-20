@@ -505,6 +505,8 @@ public class StageManager : MonoBehaviour
 				MonsterActor monsterActor = listMonsterActor[i];
 				monsterActor.actorStatus.SetHpRatio(0.0f);
 				monsterActor.DisableForNodeWar();
+				// Die 호출을 해서 마지막 시점을 알려야한다.
+				OnDieMonster();
 				monsterActor.gameObject.SetActive(false);
 			}
 		}
