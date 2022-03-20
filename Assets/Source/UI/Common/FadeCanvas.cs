@@ -31,10 +31,10 @@ public class FadeCanvas : MonoBehaviour
 		_duration = 0.0f;
 	}
 
-	public void FadeIn(float duration)
+	public void FadeIn(float duration, bool useUnscaledTime = false)
 	{
 		//fadeImage.color = Color.white;
-		fadeImage.DOFade(0.0f, duration);
+		fadeImage.DOFade(0.0f, duration).SetUpdate(useUnscaledTime);
 		_duration = duration;
 	}
 
