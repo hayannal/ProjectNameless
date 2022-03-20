@@ -29,6 +29,10 @@ public class SkillTableData
   public float cooltime { get { return _cooltime; } set { _cooltime = value; } }
   
   [SerializeField]
+  bool _autoSkill;
+  public bool autoSkill { get { return _autoSkill; } set { _autoSkill = value; } }
+  
+  [SerializeField]
   string[] _tableAffectorValueId = new string[0];
   public string[] tableAffectorValueId { get { return _tableAffectorValueId; } set { _tableAffectorValueId = value; } }
   
@@ -59,5 +63,9 @@ public class SkillTableData
   [SerializeField]
   bool _useDescriptionIdOverriding;
   public bool useDescriptionIdOverriding { get { return _useDescriptionIdOverriding; } set { _useDescriptionIdOverriding = value; } }
+  
+  [SerializeField]
+  string[] _effectAddress = new string[0];
+  public string[] effectAddress { get { return _effectAddress; } set { _effectAddress = value; } }
   
 }

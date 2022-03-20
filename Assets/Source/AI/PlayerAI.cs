@@ -421,7 +421,7 @@ public class PlayerAI : MonoBehaviour
 		if (!autoSkillUsable)
 			return;
 
-		if (skillProcessor.UseRandomSkill())
+		if (skillProcessor.UseRandomAutoSkill())
 		{
 			_globalSkillCooltime = actor.cooltimeProcessor.GetCooltime(SkillProcessor.GlobalSkillCooltimeId);
 		}

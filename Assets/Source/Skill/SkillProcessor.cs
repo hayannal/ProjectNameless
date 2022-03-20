@@ -69,6 +69,7 @@ public class SkillProcessor : MonoBehaviour
 			info.tableAffectorValueIdList = skillTableData.tableAffectorValueId;
 			info.nameId = skillTableData.nameId;
 			info.descriptionId = skillTableData.descriptionId;
+			info.autoSkill = skillTableData.autoSkill;
 
 			if (skillTableData.useCooltimeOverriding || skillTableData.useMecanimNameOverriding || skillTableData.useTableAffectorValueIdOverriding || skillTableData.useNameIdOverriding || skillTableData.useDescriptionIdOverriding)
 			{
@@ -91,6 +92,19 @@ public class SkillProcessor : MonoBehaviour
 			#region Passive Skill
 			if (info.skillType == eSkillType.Passive)
 				InitializePassiveSkill(info);
+			#endregion
+
+			#region Auto Skill
+			if (info.skillType == eSkillType.NonAni && info.autoSkill)
+			{
+				for (int j = 0; j < skillTableData.effectAddress.Length; ++j)
+				{
+					AddressableAssetLoadManager.GetAddressableGameObject(skillTableData.effectAddress[j], "CommonEffect", (prefab) =>
+					{
+						BattleInstanceManager.instance.AddCommonPoolPreloadObjectList(prefab);
+					});
+				}
+			}
 			#endregion
 
 			_listSkillInfo.Add(info);
@@ -203,7 +217,7 @@ public class SkillProcessor : MonoBehaviour
 	public static string GlobalSkillCooltimeId = "_globalSkillCooltime";
 	public static float GlobalSkillCooltimeDuration = 1.0f;
 	List<SkillInfo> _listTempSkillInfoForSelect = new List<SkillInfo>();
-	public bool UseRandomSkill()
+	public bool UseRandomAutoSkill()
 	{
 		_listTempSkillInfoForSelect.Clear();
 		for (int i = 0; i < _listSkillInfo.Count; ++i)
