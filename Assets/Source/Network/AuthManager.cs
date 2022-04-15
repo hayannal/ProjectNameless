@@ -1,9 +1,11 @@
 ﻿#define Google
 #define Facebook
+#define Apple
 
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using System.Text;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.AddressableAssets;
@@ -15,9 +17,16 @@ using PlayFab.ClientModels;
 using Google;
 using System.Threading.Tasks;
 #endif
-#if Facebook
 #if UNITY_IOS
+#if Facebook
 using Facebook.Unity;
+#endif
+#if Apple
+using AppleAuth;
+using AppleAuth.Enums;
+using AppleAuth.Extensions;
+using AppleAuth.Interfaces;
+using AppleAuth.Native;
 #endif
 #endif
 #if UNITY_EDITOR
@@ -45,10 +54,11 @@ public class AuthManager : MonoBehaviour
 		Guest = 1,
 		Google,
 		Facebook,
+		Apple,
 	}
 	
 	static string LAST_AUTH_KEY = "_account_last_type";
-	static string GUEST_CUSTOM_ID_KEY = "_ejfizjqlrpmva";
+	static string GUEST_CUSTOM_ID_KEY = "_bjkeqevpzzrem";
 
 	eAuthType _requestAuthType;
 	string _customId;
@@ -56,10 +66,39 @@ public class AuthManager : MonoBehaviour
 	Action _onLinkSuccess;
 	Action<bool, PlayFabErrorCode> _onLinkFailure;
 
-#if Facebook
 #if UNITY_IOS
+#if Apple
+	IAppleAuthManager _appleAuthManager;
+	static string APPLE_USER_ID_KEY = "_fibzqplraj";
+	static string APPLE_IDENTITY_TOKEN_KEY = "_qplfjzvcix";
+#endif
+
+	void Awake()
+	{
+#if Apple
+		// Creates a default JSON deserializer, to transform JSON Native responses to C# instances
+		PayloadDeserializer deserializer = new PayloadDeserializer();
+		// Creates an Apple Authentication manager with the deserializer
+		_appleAuthManager = new AppleAuthManager(deserializer);
+
+		// If at any point we receive a credentials revoked notification, we delete the stored User ID, and go back to login
+		_appleAuthManager.SetCredentialsRevokedCallback(result =>
+		{
+			Debug.Log("Received revoked callback " + result);
+			//this.SetupLoginMenuForSignInWithApple();
+			//PlayerPrefs.DeleteKey(AppleUserIdKey);
+
+			// 로그아웃처럼 처리해주면 되지 않을까
+			DeleteCachedLastLoginInfo();
+			PlayerData.instance.ResetData();
+			SceneManager.LoadScene(0);
+		});
+#endif
+	}
+
 	void Start()
 	{
+#if Facebook
 		if (!FB.IsInitialized)
 		{
 			// Initialize the Facebook SDK
@@ -70,8 +109,10 @@ public class AuthManager : MonoBehaviour
 			// Already initialized, signal an app activation App Event
 			FB.ActivateApp();
 		}
+#endif
 	}
 
+#if Facebook
 	void InitCallback()
 	{
 		if (FB.IsInitialized)
@@ -107,6 +148,13 @@ public class AuthManager : MonoBehaviour
 	{
 		UpdateRetryRemainTime();
 		UpdateRetryUnlinkCustomId();
+
+#if UNITY_IOS
+#if Apple
+		if (_appleAuthManager != null)
+			_appleAuthManager.Update();
+#endif
+#endif
 	}
 
 #if Google
@@ -140,10 +188,15 @@ public class AuthManager : MonoBehaviour
 				LoginWithGoogle(true);
 				break;
 #endif
-#if Facebook
 #if UNITY_IOS
+#if Facebook
 			case eAuthType.Facebook:
 				LoginWithFacebook();
+				break;
+#endif
+#if Apple
+			case eAuthType.Apple:
+				LoginWithApple();
 				break;
 #endif
 #endif
@@ -284,6 +337,16 @@ public class AuthManager : MonoBehaviour
 		PlayFabClientAPI.LoginWithFacebook(request, OnLoginSuccess, OnLoginFailure);
 	}
 
+	void RequestLoginWithApple(string identityToken)
+	{
+		PlayFabApiManager.instance.StartTimeRecord("Login");
+		_requestAuthType = eAuthType.Apple;
+
+		GetPlayerCombinedInfoRequestParams parameters = CreateLoginParameters();
+		var request = new LoginWithAppleRequest { IdentityToken = identityToken, CreateAccount = false, InfoRequestParameters = parameters };
+		PlayFabClientAPI.LoginWithApple(request, OnLoginSuccess, OnLoginFailure);
+	}
+
 	void OnLoginSuccess(PlayFab.ClientModels.LoginResult result)
 	{
 		PlayFabApiManager.instance.EndTimeRecord("Login");
@@ -386,14 +449,30 @@ public class AuthManager : MonoBehaviour
 		}, 100);
 	}
 
+	public bool googleLinked { get; set; }
+	public bool facebookLinked { get; set; }
+	public bool appleLinked { get; set; }
 	public void OnRecvAccountInfo(UserAccountInfo userAccountInfo)
 	{
+		googleLinked = facebookLinked = appleLinked = false;
+
 		// 평소에는 할 필요 없는데 구글 로그인 연동 후에 CustomId가 해제되어있지 않다면 해제 처리를 해줘야한다.
 		// 원래는 연동 즉시 보낼텐데 혹시 강종이나 다른 이슈로 처리 안될까봐 여기서 안전하게 한번 더 체크하는거다.
 		if (userAccountInfo.GoogleInfo != null && userAccountInfo.CustomIdInfo != null)
+		{
 			SetNeedUnlinkCustomId();
+			googleLinked = true;
+		}
 		if (userAccountInfo.FacebookInfo != null && userAccountInfo.CustomIdInfo != null)
+		{
 			SetNeedUnlinkCustomId();
+			facebookLinked = true;
+		}
+		if (userAccountInfo.AppleAccountInfo != null && userAccountInfo.CustomIdInfo != null)
+		{
+			SetNeedUnlinkCustomId();
+			appleLinked = true;
+		}
 	}
 
 	public void SetNeedUnlinkCustomId()
@@ -450,10 +529,15 @@ public class AuthManager : MonoBehaviour
 						LoginWithGoogle(false);
 						break;
 #endif
-#if Facebook
 #if UNITY_IOS
+#if Facebook
 					case eAuthType.Facebook:
 						LoginWithFacebook();
+						break;
+#endif
+#if Apple
+					case eAuthType.Apple:
+						LoginWithApple();
 						break;
 #endif
 #endif
@@ -528,6 +612,35 @@ public class AuthManager : MonoBehaviour
 	}
 
 	void OnLinkFacebookFailure(PlayFabError error)
+	{
+		Debug.Log(error.Error.ToString());
+		Debug.Log(error.ErrorMessage);
+
+		if (_onLinkFailure != null)
+			_onLinkFailure(false, error.Error);
+	}
+
+
+
+	void RequestLinkApple(string identityToken)
+	{
+		var request = new LinkAppleRequest { IdentityToken = identityToken };
+		PlayFabClientAPI.LinkApple(request, OnLinkAppleSuccess, OnLinkAppleFailure);
+	}
+
+	void OnLinkAppleSuccess(EmptyResult result)
+	{
+		ChangeLastAuthType(eAuthType.Apple);
+
+#if UNITY_EDITOR
+		ObscuredPrefs.DeleteKey(GUEST_CUSTOM_ID_KEY);
+#endif
+
+		if (_onLinkSuccess != null)
+			_onLinkSuccess();
+	}
+
+	void OnLinkAppleFailure(PlayFabError error)
 	{
 		Debug.Log(error.Error.ToString());
 		Debug.Log(error.ErrorMessage);
@@ -811,7 +924,7 @@ public class AuthManager : MonoBehaviour
 			if (FB.IsLoggedIn && AccessToken.CurrentAccessToken != null)
 			{
 				Debug.Log("Facebook login already.");
-				AuthCallback(null);
+				AuthCallback((ILoginResult)null);
 				return;
 			}
 		}
@@ -865,6 +978,213 @@ public class AuthManager : MonoBehaviour
 				// 구글과 마찬가지
 				_retryLoginRemainTime = 0.2f;
 			}
+		}
+	}
+#endif
+#endif
+
+
+
+#if UNITY_IOS
+	bool _waitForLinkApple = false;
+	public void LinkAppleAccount(Action onLinkSuccess, Action<bool, PlayFabErrorCode> onLinkFailure)
+	{
+#if UNITY_EDITOR
+		Debug.LogWarning("Apple login cannot be launched from the editor.");
+		return;
+#endif
+		WaitingNetworkCanvas.Show(true);
+
+		_waitForLinkApple = true;
+		_onLinkSuccess = onLinkSuccess;
+		_onLinkFailure = onLinkFailure;
+
+#if Apple
+		LoginWithApple();
+#endif
+	}
+
+	public void LogoutWithApple(bool onlySignOut = false)
+	{
+		// 애플은 코드에서 로그아웃 하는 방법이 없기 때문에
+		// 여기서는 아무것도 하지 않는다.
+		// 아마 셋팅창에서 로그아웃 할 수 없다는 메세지를 띄울 것이다.
+		//FB.LogOut();
+
+		if (onlySignOut)
+			return;
+
+		// 로그아웃시에 하는 것도 구글과 비슷
+		ObscuredPrefs.DeleteKey(APPLE_USER_ID_KEY);
+		ObscuredPrefs.DeleteKey(APPLE_IDENTITY_TOKEN_KEY);
+		DeleteCachedLastLoginInfo();
+		ClientSaveData.instance.OnEndGame();
+		PlayerData.instance.ResetData();
+		SceneManager.LoadScene(0);
+	}
+
+	public void RestartWithApple()
+	{
+		// 리스타트도 마찬가지
+		ChangeLastAuthType(AuthManager.eAuthType.Apple);
+		ClientSaveData.instance.OnEndGame();
+		PlayerData.instance.ResetData();
+		SceneManager.LoadScene(0);
+	}
+
+
+
+#if Apple
+	void LoginWithApple()
+	{
+		if (_waitForLinkApple == false)
+		{
+			// 예제에서는 저장된 AppleUserId가 존재할 경우
+			// CheckCredentialStatusForUserId 함수를 호출해서 정보만 얻고 넘어가라고 하지만
+			// 이 방식으로 하면 로그인 패킷에 필요한 IdentityToken을 받아올 수가 없게된다.
+			// 
+			// 그렇다고 또 다른 제공 함수인 QuickLogin을 사용하면 기존의 silent 로그인 같은게 되는줄 알았는데
+			// 사람들이 이슈에 적어둔 것도 그렇고 그냥 LoginWithAppleId함수와 다를바가 없이 암호 입력창이 뜬다고 한다.
+			/*
+			var quickLoginArgs = new AppleAuthQuickLoginArgs();
+
+			// Quick login should succeed if the credential was authorized before and not revoked
+			_appleAuthManager.QuickLogin(
+				quickLoginArgs,
+				AuthCallback,
+				error =>
+				{
+					var authorizationErrorCode = error.GetAuthorizationErrorCode();
+					Debug.LogWarning("Quick Login Failed " + authorizationErrorCode.ToString() + " " + error.ToString());
+				});
+			*/
+			// 그래서 선택한 마지막 방법은
+			// 플레이팹 Sign in with Apple 연동쪽에도 적혀있는 팁이긴 한데
+			// identityToken의 만료시간을 체크하지 않도록 하고(서버에 Apple로그인 모듈 Addon할때 설정하는 옵션이 있다.)
+			// 클라이언트 단에서 identityToken을 기억해놓고 쓰라는거다.
+			// 대신 로그인 해둔걸 외부 셋팅메뉴에서 풀고올 수 있으니
+			// CheckCredentialStatusForUserId로 
+
+			string appleUserId = ObscuredPrefs.GetString(APPLE_USER_ID_KEY);
+
+			_appleAuthManager.GetCredentialState(
+				appleUserId,
+				state =>
+				{
+					switch (state)
+					{
+						// If it's authorized, login with that user id
+						case CredentialState.Authorized:
+							string identityToken = ObscuredPrefs.GetString(APPLE_IDENTITY_TOKEN_KEY);
+							RequestLoginWithApple(identityToken);
+							return;
+
+						// If it was revoked, or not found, we need a new sign in with apple attempt
+						// Discard previous apple user id
+						case CredentialState.Revoked:
+						case CredentialState.NotFound:
+
+							ObscuredPrefs.DeleteKey(APPLE_USER_ID_KEY);
+							ObscuredPrefs.DeleteKey(APPLE_IDENTITY_TOKEN_KEY);
+							DeleteCachedLastLoginInfo();
+							PlayerData.instance.ResetData();
+							SceneManager.LoadScene(0);
+							return;
+					}
+				},
+				error =>
+				{
+					var authorizationErrorCode = error.GetAuthorizationErrorCode();
+					Debug.LogWarning("Error while trying to get credential state " + authorizationErrorCode.ToString() + " " + error.ToString());
+
+					ObscuredPrefs.DeleteKey(APPLE_USER_ID_KEY);
+					ObscuredPrefs.DeleteKey(APPLE_IDENTITY_TOKEN_KEY);
+					DeleteCachedLastLoginInfo();
+					PlayerData.instance.ResetData();
+					SceneManager.LoadScene(0);
+				});
+			return;
+		}
+
+
+		Debug.Log("Start Apple login.");
+
+		// LoginOptions.None으로 요청하면 불필요한 이메일 선택창을 건너뛸 수 있어서 유저가 좀 더 편한다.
+		var loginArgs = new AppleAuthLoginArgs(LoginOptions.None);
+
+		_appleAuthManager.LoginWithAppleId(
+			loginArgs,
+			AuthCallback,
+			error =>
+			{
+				var authorizationErrorCode = error.GetAuthorizationErrorCode();
+				Debug.LogWarning("Sign in with Apple failed " + authorizationErrorCode.ToString() + " " + error.ToString());
+
+				if (_waitForLinkApple)
+				{
+					_waitForLinkApple = false;
+					WaitingNetworkCanvas.Show(false);
+
+					if (_onLinkFailure != null)
+						_onLinkFailure(true, PlayFabErrorCode.Unknown);
+				}
+				else
+				{
+					// 구글과 마찬가지
+					_retryLoginRemainTime = 0.2f;
+				}
+			});
+	}
+
+	private void AuthCallback(ICredential credential)
+	{
+		string appleUserId = "";
+		ICredential receivedCredential = credential;
+		if (receivedCredential == null)
+		{
+			Debug.Log("Apple credential is null.");
+			return;
+		}
+		appleUserId = credential.User;
+
+		var appleIdCredential = receivedCredential as IAppleIDCredential;
+		var passwordCredential = receivedCredential as IPasswordCredential;
+		
+		if (_waitForLinkApple)
+		{
+			_waitForLinkApple = false;
+			WaitingNetworkCanvas.Show(false);
+
+			if (appleIdCredential != null)
+			{
+				var identityToken = Encoding.UTF8.GetString(appleIdCredential.IdentityToken, 0, appleIdCredential.IdentityToken.Length);
+				RequestLinkApple(identityToken);
+
+				// 애플은 다른 로그인과 달리 최초의 링크때 얻어둔 아이디와 identityToken을 저장해두고 다음번 로그인때 사용해야한다.
+				ObscuredPrefs.SetString(APPLE_USER_ID_KEY, appleUserId);
+				ObscuredPrefs.SetString(APPLE_IDENTITY_TOKEN_KEY, identityToken);
+			}
+			else
+			{
+				if (_onLinkFailure != null)
+					_onLinkFailure(true, PlayFabErrorCode.Unknown);
+			}
+		}
+		else
+		{
+			// 구글이나 페이스북과 달리 저장된 identityToken을 사용할거기 때문에 이쪽으로 들어오지 않는다.
+			/*
+			if (appleIdCredential != null)
+			{
+				var identityToken = Encoding.UTF8.GetString(appleIdCredential.IdentityToken, 0, appleIdCredential.IdentityToken.Length);
+				RequestLoginWithApple(identityToken);
+			}
+			else
+			{
+				// 구글과 마찬가지
+				_retryLoginRemainTime = 0.2f;
+			}
+			*/
 		}
 	}
 #endif
