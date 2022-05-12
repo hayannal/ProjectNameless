@@ -65,6 +65,7 @@ public class MainSceneBuilder : MonoBehaviour
 		Addressables.Release<GameObject>(_handleStartCharacter);
 		Addressables.Release<GameObject>(_handleCommonBattleGroup);
 
+		Addressables.Release<GameObject>(_handleCommonMenuGroup);
 		Addressables.Release<GameObject>(_handleMainCanvas);
 
 		/*
@@ -117,6 +118,8 @@ public class MainSceneBuilder : MonoBehaviour
 	AsyncOperationHandle<GameObject> _handleStartCharacter;
 	AsyncOperationHandle<GameObject> _handleCommonBattleGroup;
 
+	// 컨텐츠 중에서의 필수항목
+	AsyncOperationHandle<GameObject> _handleCommonMenuGroup;
 	AsyncOperationHandle<GameObject> _handleMainCanvas;
 	/*
 	AsyncOperationHandle<GameObject> _handleBattleManager;
@@ -343,6 +346,7 @@ public class MainSceneBuilder : MonoBehaviour
 		Debug.LogWarning("222222222");
 #endif
 		_handleCommonBattleGroup = Addressables.LoadAssetAsync<GameObject>("CommonBattleGroup");
+		_handleCommonMenuGroup = Addressables.LoadAssetAsync<GameObject>("CommonMenuGroup");
 		_handleMainCanvas = Addressables.LoadAssetAsync<GameObject>("MainCanvas");
 
 #if !UNITY_EDITOR
@@ -616,6 +620,8 @@ public class MainSceneBuilder : MonoBehaviour
 		*/
 		while (_handleCommonBattleGroup.IsValid() && !_handleCommonBattleGroup.IsDone)
 			yield return null;
+		while (_handleCommonMenuGroup.IsValid() && !_handleCommonMenuGroup.IsDone)
+			yield return null;
 		while (_handleMainCanvas.IsValid() && !_handleMainCanvas.IsDone)
 			yield return null;
 #if !UNITY_EDITOR
@@ -625,6 +631,7 @@ public class MainSceneBuilder : MonoBehaviour
 		Instantiate<GameObject>(_handleLobbyCanvas.Result);
 		*/
 		Instantiate<GameObject>(_handleMainCanvas.Result);
+		Instantiate<GameObject>(_handleCommonMenuGroup.Result);
 		Instantiate<GameObject>(_handleCommonBattleGroup.Result);
 #if !UNITY_EDITOR
 		Debug.LogWarning("LLLLLLLLL");

@@ -767,6 +767,26 @@ public class BattleInstanceManager : MonoBehaviour
 	}
 	#endregion
 
+	#region Canvas Player Actor
+	// 캔버스용 플레이어 액터는 필드에서 싸우고 있는 캐릭터 말고 새로 만들어서 캔버스 메뉴에서 전투 안하는 용도로 보여주는 캐릭터다.
+	// 그래도 여러개 만들 순 없으니 아이디로 관리하기로 한다.
+	Dictionary<string, PlayerActor> _dicCachedCanvasPlayerActor = new Dictionary<string, PlayerActor>();
+	public PlayerActor GetCachedCanvasPlayerActor(string actorId)
+	{
+		if (_dicCachedCanvasPlayerActor.ContainsKey(actorId))
+			return _dicCachedCanvasPlayerActor[actorId];
+		return null;
+	}
+
+	public void AddCanvasPlayerActor(PlayerActor playerActor, string actorId)
+	{
+		if (_dicCachedCanvasPlayerActor.ContainsKey(actorId))
+			return;
+
+		_dicCachedCanvasPlayerActor.Add(actorId, playerActor);
+	}
+	#endregion
+
 	#region Drop
 	List<DropProcessor> _listCachedDropProcessor = new List<DropProcessor>();
 	public DropProcessor GetCachedDropProcessor(Vector3 position)

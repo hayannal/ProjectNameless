@@ -19,6 +19,9 @@ public class MainCanvas : MonoBehaviour
 	public GameObject challengeButtonObject;
 	public GameObject cancelChallengeButtonObject;
 
+	public GameObject inputRectObject;
+	public CanvasGroup safeAreaCanvasGroup;
+
 	Vector2 _defaultDot7ButtonGroupPosition;
 	Vector2 _defaultTopButtonGroupPosition;
 	Vector2 _defaultBottomButtonGroupPosition;
@@ -100,7 +103,7 @@ public class MainCanvas : MonoBehaviour
 	}
 
 
-
+	#region Boss Challenge
 	public void OnClickBossChallengeButton()
 	{
 		// 언제 어느때든 누를 수 있다.
@@ -198,7 +201,21 @@ public class MainCanvas : MonoBehaviour
 		StageManager.instance.InitializeStageFloor(stage, repeatMode);
 		FadeCanvas.instance.FadeIn(0.5f);
 	}
+	#endregion
 
+	#region Menu
+	public void OnClickCharacterButton()
+	{
+		UIInstanceManager.instance.ShowCanvasAsync("CharacterCanvas", null);
+	}
+
+	public void OnEnterCharacterMenu(bool enter)
+	{
+		inputRectObject.SetActive(!enter);
+		safeAreaCanvasGroup.alpha = enter ? 0.0f : 1.0f;
+		safeAreaCanvasGroup.blocksRaycasts = !enter;
+	}
+	#endregion
 
 
 

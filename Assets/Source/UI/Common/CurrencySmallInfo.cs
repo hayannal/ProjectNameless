@@ -30,10 +30,8 @@ public class CurrencySmallInfo : MonoBehaviour
 
 	public void RefreshInfo()
 	{
-		/*
 		diamondText.text = CurrencyData.instance.dia.ToString("N0");
 		goldText.text = CurrencyData.instance.gold.ToString("N0");
-		*/
 	}
 
 	public void OnClickDiamondButton()

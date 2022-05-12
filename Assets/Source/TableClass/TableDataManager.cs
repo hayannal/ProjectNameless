@@ -16,7 +16,6 @@ public class TableDataManager : MonoBehaviour
 	public MonsterTable monsterTable;
 	public MonsterGroupTable monsterGroupTable;
 	public ActorTable actorTable;
-	public PowerLevelTable powerLevelTable;
 	public SkillTable skillTable;
 	public SkillLevelTable skillLevelTable;
 	public ConditionValueTable conditionValueTable;
@@ -30,6 +29,9 @@ public class TableDataManager : MonoBehaviour
 
 	public StageIdTable stageIdTable;
 	public StageTable stageTable;
+
+	public ActorInfoTable actorInfoTable;
+	public PlayerLevelTable playerLevelTable;
 
 	void Awake()
 	{
@@ -122,16 +124,6 @@ public class TableDataManager : MonoBehaviour
 		{
 			if (actorTable.dataArray[i].actorId == actorId)
 				return actorTable.dataArray[i];
-		}
-		return null;
-	}
-
-	public PowerLevelTableData FindPowerLevelTableData(int powerLevel)
-	{
-		for (int i = 0; i < powerLevelTable.dataArray.Length; ++i)
-		{
-			if (powerLevelTable.dataArray[i].powerLevel == powerLevel)
-				return powerLevelTable.dataArray[i];
 		}
 		return null;
 	}
@@ -257,6 +249,26 @@ public class TableDataManager : MonoBehaviour
 		{
 			if (stageTable.dataArray[i].stage == stage)
 				return stageTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public ActorInfoTableData FindActorInfoTableData(string actorId)
+	{
+		for (int i = 0; i < actorInfoTable.dataArray.Length; ++i)
+		{
+			if (actorInfoTable.dataArray[i].actorId == actorId)
+				return actorInfoTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public PlayerLevelTableData FindPlayerLevelTableData(int level)
+	{
+		for (int i = 0; i < playerLevelTable.dataArray.Length; ++i)
+		{
+			if (playerLevelTable.dataArray[i].playerLevel == level)
+				return playerLevelTable.dataArray[i];
 		}
 		return null;
 	}

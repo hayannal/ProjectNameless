@@ -40,10 +40,12 @@ public class RandomCameraShake : MonoBehaviour
 
 	void PlayShake()
 	{
-		/*
 		if (MainSceneBuilder.instance != null && MainSceneBuilder.instance.waitCachingObject)
 			return;
-		*/
+		if (CharacterCanvas.instance != null && CharacterCanvas.instance.gameObject.activeSelf)
+			return;
+		if (CharacterCanvas.instance != null && StackCanvas.IsInStack(CharacterCanvas.instance.gameObject))
+			return;
 
 		if (startDelay == 0.0f)
 			Shake();

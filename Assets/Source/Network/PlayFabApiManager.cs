@@ -244,10 +244,12 @@ public class PlayFabApiManager : MonoBehaviour
 	{
 		LoginResult loginResult = _loginResult;
 
+		CurrencyData.instance.OnRecvCurrencyData(loginResult.InfoResultPayload.UserVirtualCurrency, loginResult.InfoResultPayload.UserVirtualCurrencyRechargeTimes);
+
 		/*
 		ApplyGlobalTable(loginResult.InfoResultPayload.TitleData);
 		AuthManager.instance.OnRecvAccountInfo(loginResult.InfoResultPayload.AccountInfo);
-		CurrencyData.instance.OnRecvCurrencyData(loginResult.InfoResultPayload.UserVirtualCurrency, loginResult.InfoResultPayload.UserVirtualCurrencyRechargeTimes);
+		
 		DailyShopData.instance.OnRecvShopData(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData);
 		MailData.instance.OnRecvMailData(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics, loginResult.NewlyCreated);
 		SupportData.instance.OnRecvSupportData(loginResult.InfoResultPayload.UserReadOnlyData);
@@ -804,6 +806,66 @@ public class PlayFabApiManager : MonoBehaviour
 			});
 		};
 		RetrySendManager.instance.RequestAction(action, true, true);
+	}
+	#endregion
+
+	#region Player Character
+	public void RequestSubLevelUp(int subLevelIndex, int price, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}_{2}", subLevelIndex, price, "izerdjqa");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "PlayerSubLevelUp",
+			FunctionParameter = new { SubLevelIndex = subLevelIndex, Pr = price, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				CurrencyData.instance.gold -= price;
+				PlayerData.instance.OnSubLevelUp(subLevelIndex);
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
+	public void RequestLevelUp(int price, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}", price, "qizlrnmo");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "PlayerLevelUp",
+			FunctionParameter = new { Pr = price, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				CurrencyData.instance.gold -= price;
+				PlayerData.instance.OnLevelUp();
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
 	}
 	#endregion
 

@@ -35,6 +35,13 @@ public class PlayerData : MonoBehaviour
 	public ObscuredInt highestClearStage { get; set; }
 	public ObscuredInt selectedStage { get; set; }
 
+	#region Player Property
+	public static int SubLevelCount = 3;
+	List<ObscuredInt> _listSubLevel = new List<ObscuredInt>();
+	public List<ObscuredInt> listSubLevel { get { return _listSubLevel; } }
+	public ObscuredInt playerLevel { get; set; }
+	#endregion
+
 	public void OnNewlyCreatedPlayer()
 	{
 		highestClearStage = 0;
@@ -68,12 +75,28 @@ public class PlayerData : MonoBehaviour
 	{
 		// 통계는 없을 수 있는 값이니 초기화는 필수
 		highestClearStage = 0;
+
+		// 레벨은 1로 시작하는게 맞다.
+		playerLevel = 1;
+		if (_listSubLevel.Count == 0)
+		{
+			for (int i = 0; i < SubLevelCount; ++i)
+				_listSubLevel.Add(0);
+		}
+		for (int i = 0; i < _listSubLevel.Count; ++i)
+			_listSubLevel[i] = 0;
+
+		// confirm
 		for (int i = 0; i < playerStatistics.Count; ++i)
 		{
 			switch (playerStatistics[i].StatisticName)
 			{
 				//case "highestPlayChapter": highestPlayChapter = playerStatistics[i].Value; break;
 				case "highestClearStage": highestClearStage = playerStatistics[i].Value; break;
+				case "playerLevel": playerLevel = playerStatistics[i].Value; break;
+				case "subLevel0": _listSubLevel[0] = playerStatistics[i].Value; break;
+				case "subLevel1": _listSubLevel[1] = playerStatistics[i].Value; break;
+				case "subLevel2": _listSubLevel[2] = playerStatistics[i].Value; break;
 				//case "highestValue": highestValue = playerStatistics[i].Value; break;
 				//case "nodClLv": nodeWarClearLevel = playerStatistics[i].Value; break;
 				//case "chaosFragment": chaosFragmentCount = playerStatistics[i].Value; break;
@@ -160,5 +183,28 @@ public class PlayerData : MonoBehaviour
 
 		newlyCreated = false;
 		loginned = true;
+	}
+
+	public void OnSubLevelUp(int subLevelIndex)
+	{
+		if (subLevelIndex < _listSubLevel.Count)
+			_listSubLevel[subLevelIndex] += 1;
+
+		// 캐릭터 데이터가 변경되면 이걸 사용하는 PlayerActor의 ActorStatus도 새로 스탯을 계산해야한다.
+		PlayerActor playerActor = BattleInstanceManager.instance.playerActor;
+		if (playerActor != null)
+			playerActor.actorStatus.InitializeActorStatus();
+	}
+
+	public void OnLevelUp()
+	{
+		playerLevel += 1;
+		for (int i = 0; i < _listSubLevel.Count; ++i)
+			_listSubLevel[i] = 0;
+
+		// 캐릭터 데이터가 변경되면 이걸 사용하는 PlayerActor의 ActorStatus도 새로 스탯을 계산해야한다.
+		PlayerActor playerActor = BattleInstanceManager.instance.playerActor;
+		if (playerActor != null)
+			playerActor.actorStatus.InitializeActorStatus();
 	}
 }

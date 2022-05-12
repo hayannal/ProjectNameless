@@ -17,7 +17,7 @@ public class ActorStatus : MonoBehaviour
 	StatusBase _statusBase;
 	public StatusBase statusBase { get { return _statusBase; } }
 	public Actor actor { get; private set; }
-	public int powerLevel { get; private set; }
+	public int actorLevel { get; private set; }
 
 	static float s_criticalPowerConstantA = 5.0f;
 	static float s_criticalPowerConstantB = 3.0f;
@@ -28,20 +28,37 @@ public class ActorStatus : MonoBehaviour
 	}
 
 	// 로비에서 파워레벨이 바뀌든 연구소 장비가 바뀌든 이 함수 호출해주면 알아서 모든 스탯을 재계산하게 된다.
-	public void InitializeActorStatus(int overridePowerLevel = -1)
+	public void InitializeActorStatus(int overrideLevel = -1)
 	{
 		if (_statusBase == null)
 			_statusBase = new ActorStatusList();
 		else
 			_statusBase.ClearValue();
 
-		if (overridePowerLevel == -1)
-			powerLevel = 1;
+		if (overrideLevel == -1)
+		{
+			actorLevel = 1;
+			if (CharacterData.s_PlayerActorId == actor.actorId)
+			{
+				actorLevel = PlayerData.instance.playerLevel;
+			}
+			else
+			{
+				//characterData = PlayerData.instance.GetCharacterData(actor.actorId);
+				//if (characterData != null) actorLevel = characterData.powerLevel;
+			}
+		}
+		else
+			actorLevel = overrideLevel;
 
 		ActorTableData actorTableData = TableDataManager.instance.FindActorTableData(actor.actorId);
-		PowerLevelTableData powerLevelTableData = TableDataManager.instance.FindPowerLevelTableData(powerLevel);
-		_statusBase.valueList[(int)eActorStatus.MaxHp] = powerLevelTableData.hp;
-		_statusBase.valueList[(int)eActorStatus.Attack] = powerLevelTableData.atk;
+
+		PlayerLevelTableData playerLevelTableData = TableDataManager.instance.FindPlayerLevelTableData(actorLevel);
+		_statusBase.valueList[(int)eActorStatus.MaxHp] = 9999.0f;
+		_statusBase.valueList[(int)eActorStatus.Attack] = playerLevelTableData.accumulatedAtk;
+		for (int i = 0; i < PlayerData.instance.listSubLevel.Count; ++i)
+			_statusBase.valueList[(int)eActorStatus.Attack] += PlayerData.instance.listSubLevel[i];
+
 		_statusBase.valueList[(int)eActorStatus.AttackDelay] = actorTableData.attackDelay;
 		_statusBase.valueList[(int)eActorStatus.MoveSpeed] = actorTableData.moveSpeed;
 		_statusBase.valueList[(int)eActorStatus.MaxSp] = actorTableData.sp;
@@ -238,7 +255,7 @@ public class ActorStatus : MonoBehaviour
 
 	public void GetNextPowerLevelDisplayValue(ref float nextAttack, ref float nextMaxHp)
 	{
-		InitializeActorStatus(powerLevel + 1);
+		InitializeActorStatus(actorLevel + 1);
 		nextAttack = GetDisplayAttack();
 		nextMaxHp = GetDisplayMaxHp();
 		InitializeActorStatus();
