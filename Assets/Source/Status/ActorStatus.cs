@@ -84,7 +84,7 @@ public class ActorStatus : MonoBehaviour
 		bool nodeWarCachingMonster = false;
 		MonsterTableData monsterTableData = TableDataManager.instance.FindMonsterTableData(actor.actorId);
 		float standardHp = StageManager.instance.currentMonstrStandardHp;
-		float standardAtk = StageManager.instance.currentMonstrStandardAtk;
+		float standardDef = StageManager.instance.currentMonstrStandardDef;
 		if (actor.team.teamId == (int)Team.eTeamID.DefaultAlly)
 		{
 		}
@@ -109,7 +109,8 @@ public class ActorStatus : MonoBehaviour
 			*/
 		}
 		_statusBase.valueList[(int)eActorStatus.MaxHp] = standardHp * monsterTableData.multiHp;
-		_statusBase.valueList[(int)eActorStatus.Attack] = standardAtk * monsterTableData.multiAtk;
+		_statusBase.valueList[(int)eActorStatus.Attack] = 1.0f * monsterTableData.multiAtk;
+		_statusBase.valueList[(int)eActorStatus.Defense] = standardDef;
 		//_statusBase.valueList[(int)eActorStatus.AttackDelay] = monsterTableData.attackDelay;
 		//_statusBase.valueList[(int)eActorStatus.EvadeRate] = monsterTableData.evadeRate;
 		_statusBase.valueList[(int)eActorStatus.MoveSpeed] = monsterTableData.moveSpeed;

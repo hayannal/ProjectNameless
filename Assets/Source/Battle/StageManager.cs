@@ -53,7 +53,7 @@ public class StageManager : MonoBehaviour
 	public static float RepeatModeInterval = 3.0f;
 
 	public float currentMonstrStandardHp { get; set; }
-	public float currentMonstrStandardAtk { get; set; }
+	public float currentMonstrStandardDef { get; set; }
 
 	void Awake()
 	{
@@ -106,7 +106,7 @@ public class StageManager : MonoBehaviour
 		// 제일 먼저 스폰 정보를 파싱
 		ParseSpawnInfo(stageTableData.spawnInfo);
 		currentMonstrStandardHp = stageTableData.standardHp;
-		currentMonstrStandardAtk = stageTableData.standardAtk;
+		currentMonstrStandardDef = stageTableData.standardDef;
 		_monsterSpawnPosition.x = stageTableData.monsterSpawnx;
 		_monsterSpawnPosition.z = stageTableData.monsterSpawnz;
 		_monsterSpawnPosition += GetSafeWorldOffset();

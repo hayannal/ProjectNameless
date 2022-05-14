@@ -17,8 +17,8 @@ public class StageTableData
   public float standardHp { get { return _standardHp; } set { _standardHp = value; } }
   
   [SerializeField]
-  float _standardAtk;
-  public float standardAtk { get { return _standardAtk; } set { _standardAtk = value; } }
+  float _standardDef;
+  public float standardDef { get { return _standardDef; } set { _standardDef = value; } }
   
   [SerializeField]
   string[] _environmentSetting = new string[0];

@@ -67,8 +67,8 @@ public class BaseDamageAffector : AffectorBase {
 		}
 
 		//float damage = hitParameter.statusBase.valueList[(int)eActorStatus.Attack] * 1000.0f / (_actor.actorStatus.GetValue(eActorStatus.Defense) + 1000.0f);
-		//float damage = hitParameter.statusBase.valueList[(int)eActorStatus.Attack] - _actor.actorStatus.GetValue(eActorStatus.Defense);
-		float damage = hitParameter.statusBase.valueList[(int)eActorStatus.Attack];
+		float damage = hitParameter.statusBase.valueList[(int)eActorStatus.Attack] - _actor.actorStatus.GetValue(eActorStatus.Defense);
+		//float damage = hitParameter.statusBase.valueList[(int)eActorStatus.Attack];
 
 		// 저렙일때의 보정처리는 damage 오자마자 최초에 처리한다.
 		// 사실 이건 CollisionDamageAffector에서도 하고 ReflectDamageAffector에서도 필요한거긴 하지만
