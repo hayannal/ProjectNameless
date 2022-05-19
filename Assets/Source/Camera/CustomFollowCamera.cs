@@ -16,6 +16,9 @@ public class CustomFollowCamera : MonoBehaviour
 	private float _distanceToTarget = 30.0f;
 
 	[SerializeField]
+	private float _offsetZ = -1.0f;
+
+	[SerializeField]
 	private float _followSpeed = 3.0f;
 
 	public float smoothTime = 0.3f;
@@ -34,6 +37,12 @@ public class CustomFollowCamera : MonoBehaviour
 		set { _distanceToTarget = Mathf.Max(0.0f, value); }
 	}
 
+	public float offsetZ
+	{
+		get { return _offsetZ; }
+		set { _offsetZ = value; }
+	}
+
 	public float followSpeed
 	{
 		get { return _followSpeed; }
@@ -45,7 +54,7 @@ public class CustomFollowCamera : MonoBehaviour
 		get
 		{
 			//Vector3 result = targetTransform.position - cachedTransform.forward * distanceToTarget;
-			Vector3 result = Vector3.zero - cachedTransform.forward * distanceToTarget;
+			Vector3 result = Vector3.zero - cachedTransform.forward * distanceToTarget + new Vector3(0.0f, 0.0f, _offsetZ);
 			if (_quadLoaded && checkPlaneLeftRightQuad)
 			{
 				if (result.x < _quadLeft - LEFT_LIMIT)
