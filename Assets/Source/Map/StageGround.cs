@@ -20,6 +20,7 @@ public class StageGround : MonoBehaviour
 
 	public GameObject monsterSpawnPortalPrefab;
 	public GameObject endLinePrefab;
+	public GameObject stageFloorInfoCanvasPrefab;
 
 	public void InitializeGround(StageTableData stageTableData, bool repeat)
 	{
@@ -115,6 +116,7 @@ public class StageGround : MonoBehaviour
 			yield return Timing.WaitForOneFrame;
 
 		InstantiateMap(stageTableData, repeat);
+		ShowStageFloorInfoCanvas(true);
 
 		_processing = false;
 	}
@@ -133,7 +135,31 @@ public class StageGround : MonoBehaviour
 			_monsterSpawnPortalObject.SetActive(false);
 		if (_endLineObject != null)
 			_endLineObject.SetActive(false);
+
+		ShowStageFloorInfoCanvas(false);
 	}
+
+
+	#region World Canvas
+	void ShowStageFloorInfoCanvas(bool show)
+	{
+		if (show)
+		{
+			if (StageFloorInfoCanvas.instance == null)
+				Instantiate<GameObject>(stageFloorInfoCanvasPrefab, null);
+			else
+				StageFloorInfoCanvas.instance.gameObject.SetActive(true);
+
+			StageFloorInfoCanvas.instance.cachedTransform.position = StageManager.instance.GetSafeWorldOffset();
+			StageFloorInfoCanvas.instance.RefreshStageInfo(PlayerData.instance.selectedStage, StageManager.instance.repeatMode);
+		}
+		else
+		{
+			if (StageFloorInfoCanvas.instance != null)
+				StageFloorInfoCanvas.instance.gameObject.SetActive(false);
+		}
+	}
+	#endregion
 
 
 	#region For Canvas EnvironmentSetting

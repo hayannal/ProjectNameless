@@ -8,13 +8,9 @@ public class MainCanvas : MonoBehaviour
 {
 	public static MainCanvas instance;
 
-	public RectTransform dot7ButtonGroupRectTransform;
-	public RectTransform dot7ButtonGroupHideRectTransform;
-	public RectTransform topButtonGroupRectTransform;
-	public RectTransform topButtonGroupHideRectTransform;
-	public RectTransform bottomButtonGroupRectTransform;
-	public RectTransform bottomButtonGroupHideRectTransform;
-	public float noInputTime = 5.0f;
+	public RectTransform[] basePositionRectTransformList;
+	public RectTransform[] targetPositionRectTransformList;
+	public float noInputTime = 15.0f;
 
 	public GameObject challengeButtonObject;
 	public GameObject cancelChallengeButtonObject;
@@ -22,23 +18,21 @@ public class MainCanvas : MonoBehaviour
 	public GameObject inputRectObject;
 	public CanvasGroup safeAreaCanvasGroup;
 
-	Vector2 _defaultDot7ButtonGroupPosition;
-	Vector2 _defaultTopButtonGroupPosition;
-	Vector2 _defaultBottomButtonGroupPosition;
+	List<Vector2> _listBasePosition = new List<Vector2>();
 	void Awake()
 	{
 		instance = this;
-		_defaultDot7ButtonGroupPosition = dot7ButtonGroupRectTransform.anchoredPosition;
-		_defaultTopButtonGroupPosition = topButtonGroupRectTransform.anchoredPosition;
-		_defaultBottomButtonGroupPosition = bottomButtonGroupRectTransform.anchoredPosition;
+
+		for (int i = 0; i < basePositionRectTransformList.Length; ++i)
+			_listBasePosition.Add(basePositionRectTransformList[i].anchoredPosition);
 	}
 
 	void OnEnable()
 	{
 		_noInputRemainTime = noInputTime;
-		dot7ButtonGroupRectTransform.anchoredPosition = _defaultDot7ButtonGroupPosition;
-		topButtonGroupRectTransform.anchoredPosition = _defaultTopButtonGroupPosition;
-		bottomButtonGroupRectTransform.anchoredPosition = _defaultBottomButtonGroupPosition;
+
+		for (int i = 0; i < basePositionRectTransformList.Length; ++i)
+			basePositionRectTransformList[i].anchoredPosition = _listBasePosition[i];
 	}
 
 	// Start is called before the first frame update
@@ -67,9 +61,8 @@ public class MainCanvas : MonoBehaviour
 			}
 		}
 
-		dot7ButtonGroupRectTransform.anchoredPosition = Vector3.Lerp(dot7ButtonGroupRectTransform.anchoredPosition, _buttonHideState ? dot7ButtonGroupHideRectTransform.anchoredPosition : _defaultDot7ButtonGroupPosition, Time.deltaTime * 5.0f);
-		topButtonGroupRectTransform.anchoredPosition = Vector3.Lerp(topButtonGroupRectTransform.anchoredPosition, _buttonHideState ? topButtonGroupHideRectTransform.anchoredPosition : _defaultTopButtonGroupPosition, Time.deltaTime * 5.0f);
-		bottomButtonGroupRectTransform.anchoredPosition = Vector3.Lerp(bottomButtonGroupRectTransform.anchoredPosition, _buttonHideState ? bottomButtonGroupHideRectTransform.anchoredPosition : _defaultBottomButtonGroupPosition, Time.deltaTime * 5.0f);
+		for (int i = 0; i < basePositionRectTransformList.Length; ++i)
+			basePositionRectTransformList[i].anchoredPosition = Vector3.Lerp(basePositionRectTransformList[i].anchoredPosition, _buttonHideState ? targetPositionRectTransformList[i].anchoredPosition : _listBasePosition[i], Time.deltaTime * 5.0f);
 	}
 
 	public void OnPointerDown(BaseEventData baseEventData)
@@ -100,6 +93,12 @@ public class MainCanvas : MonoBehaviour
 				OnClickBattlePauseButton();
 			*/
 		}
+	}
+
+	public void OnClickCloseButton()
+	{
+		if (_noInputRemainTime > 0.0f)
+			_noInputRemainTime = 0.001f;
 	}
 
 
@@ -144,6 +143,9 @@ public class MainCanvas : MonoBehaviour
 			yield break;
 
 		StageManager.instance.FinalizeStage();
+
+		if (_noInputRemainTime > 0.0f)
+			_noInputRemainTime = 0.001f;
 
 		yield return Timing.WaitForSeconds(0.1f);
 
@@ -191,6 +193,9 @@ public class MainCanvas : MonoBehaviour
 
 		StageManager.instance.FinalizeStage();
 
+		if (_noInputRemainTime > 0.0f)
+			_noInputRemainTime = 0.001f;
+
 		yield return Timing.WaitForSeconds(0.1f);
 
 		if (this == null)
@@ -214,6 +219,11 @@ public class MainCanvas : MonoBehaviour
 		inputRectObject.SetActive(!enter);
 		safeAreaCanvasGroup.alpha = enter ? 0.0f : 1.0f;
 		safeAreaCanvasGroup.blocksRaycasts = !enter;
+	}
+
+	public void OnClickSpinButton()
+	{
+		UIInstanceManager.instance.ShowCanvasAsync("BettingCanvas", null);
 	}
 	#endregion
 
