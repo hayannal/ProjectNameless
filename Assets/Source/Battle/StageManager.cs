@@ -498,8 +498,9 @@ public class StageManager : MonoBehaviour
 
 	IEnumerator<float> ClearProcess()
 	{
-		ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_Clear"), 1.5f);
-		yield return Timing.WaitForSeconds(1.2f);
+		UIInstanceManager.instance.ShowCanvasAsync("VictoryResultCanvas", null);
+		//ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_Clear"), 1.5f);
+		yield return Timing.WaitForSeconds(2.0f);
 
 		if (this == null)
 			yield break;

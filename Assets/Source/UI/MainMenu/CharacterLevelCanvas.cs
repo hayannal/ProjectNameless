@@ -243,11 +243,20 @@ public class CharacterLevelCanvas : MonoBehaviour
 		if (CheatingListener.detectedCheatTable)
 			return;
 
+		float prevValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.Attack);
 		PlayFabApiManager.instance.RequestSubLevelUp(subLevelIndex, price, () =>
 		{
+			float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.Attack);
+
 			RefreshInfo();
 			CharacterCanvas.instance.currencySmallInfo.RefreshInfo();
 			BattleInstanceManager.instance.GetCachedObject(subLevelUpEffectPrefab, CharacterCanvas.instance.rootOffsetPosition, Quaternion.identity, null);
+
+			// 변경 완료를 알리고
+			UIInstanceManager.instance.ShowCanvasAsync("ChangePowerCanvas", () =>
+			{
+				ChangePowerCanvas.instance.ShowInfo(prevValue, nextValue);
+			});
 		});
 	}
 
@@ -320,11 +329,20 @@ public class CharacterLevelCanvas : MonoBehaviour
 			return;
 		}
 
+		float prevValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.Attack);
 		PlayFabApiManager.instance.RequestLevelUp(_price, () =>
 		{
+			float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.Attack);
+
 			RefreshInfo();
 			CharacterCanvas.instance.currencySmallInfo.RefreshInfo();
 			BattleInstanceManager.instance.GetCachedObject(subLevelUpEffectPrefab, CharacterCanvas.instance.rootOffsetPosition, Quaternion.identity, null);
+
+			// 변경 완료를 알리고
+			UIInstanceManager.instance.ShowCanvasAsync("ChangePowerCanvas", () =>
+			{
+				ChangePowerCanvas.instance.ShowInfo(prevValue, nextValue);
+			});
 		});
 	}
 
