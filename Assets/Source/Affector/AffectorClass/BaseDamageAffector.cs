@@ -73,6 +73,9 @@ public class BaseDamageAffector : AffectorBase {
 		if (damage <= 1.0f)
 			damage = 1.0f;
 
+		// 방어력 빼고나서 제일 먼저 하는게 multiAtk 곱하는거다.
+		damage *= hitParameter.statusBase.valueList[(int)eActorStatus.AttackMulti];
+
 		// 저렙일때의 보정처리는 damage 오자마자 최초에 처리한다.
 		// 사실 이건 CollisionDamageAffector에서도 하고 ReflectDamageAffector에서도 필요한거긴 하지만
 		// 플레이어가 맞을때에 대한 보정처리는 너무 심해질 경우 꽥 하고 죽어버리기 때문에 느낌상 안좋을거 같아서

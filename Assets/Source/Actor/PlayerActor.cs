@@ -210,6 +210,9 @@ public class PlayerActor : Actor
 
 		BattleInstanceManager.instance.playerActor = this;
 		CustomFollowCamera.instance.targetTransform = cachedTransform;
+
+		if (StageFloorInfoCanvas.instance != null)
+			StageFloorInfoCanvas.instance.RefreshCombatPower();
 		/*
 		if (DotMainMenuCanvas.instance != null && DotMainMenuCanvas.instance.gameObject.activeSelf)
 			DotMainMenuCanvas.instance.ForceSetTargetTransform(cachedTransform);

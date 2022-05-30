@@ -98,7 +98,7 @@ public class CharacterLevelCanvas : MonoBehaviour
 		}
 
 		playerLevelText.text = UIString.instance.GetString("GameUI_CharPower", level);
-		atkText.text = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.Attack).ToString("N0");
+		atkText.text = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower).ToString("N0");
 
 
 		if (level >= BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxPlayerLevel"))
@@ -124,6 +124,9 @@ public class CharacterLevelCanvas : MonoBehaviour
 			_price = requiredGold;
 			_subLevelComplete = subLevelComplete;
 		}
+
+		if (StageFloorInfoCanvas.instance != null)
+			StageFloorInfoCanvas.instance.RefreshCombatPower();
 
 		/*
 		changeWingText.SetLocalizedText(UIString.instance.GetString(hasWing ? "GameUI_ChangeWings" : "GameUI_CreateWings"));
@@ -243,10 +246,10 @@ public class CharacterLevelCanvas : MonoBehaviour
 		if (CheatingListener.detectedCheatTable)
 			return;
 
-		float prevValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.Attack);
+		float prevValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
 		PlayFabApiManager.instance.RequestSubLevelUp(subLevelIndex, price, () =>
 		{
-			float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.Attack);
+			float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
 
 			RefreshInfo();
 			CharacterCanvas.instance.currencySmallInfo.RefreshInfo();
@@ -329,10 +332,10 @@ public class CharacterLevelCanvas : MonoBehaviour
 			return;
 		}
 
-		float prevValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.Attack);
+		float prevValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
 		PlayFabApiManager.instance.RequestLevelUp(_price, () =>
 		{
-			float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.Attack);
+			float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
 
 			RefreshInfo();
 			CharacterCanvas.instance.currencySmallInfo.RefreshInfo();

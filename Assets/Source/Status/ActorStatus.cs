@@ -57,15 +57,42 @@ public class ActorStatus : MonoBehaviour
 		_statusBase.valueList[(int)eActorStatus.MaxHp] = 9999.0f;
 		_statusBase.valueList[(int)eActorStatus.Attack] = playerLevelTableData.accumulatedAtk;
 		for (int i = 0; i < PlayerData.instance.listSubLevel.Count; ++i)
-			_statusBase.valueList[(int)eActorStatus.Attack] += PlayerData.instance.listSubLevel[i];
+		{
+			int subLevel = PlayerData.instance.listSubLevel[i];
+			for (int j = 1; j <= subLevel; ++j)
+			{
+				int addValue = 0;
+				switch (j)
+				{
+					case 1:
+					case 2:
+					case 3:
+						addValue = BattleInstanceManager.instance.GetCachedGlobalConstantInt("SubLevelFightValueLine1");
+						break;
+					case 4:
+					case 5:
+					case 6:
+						addValue = BattleInstanceManager.instance.GetCachedGlobalConstantInt("SubLevelFightValueLine2");
+						break;
+					case 7:
+					case 8:
+					case 9:
+						addValue = BattleInstanceManager.instance.GetCachedGlobalConstantInt("SubLevelFightValueLine2");
+						break;
+				}
+				_statusBase.valueList[(int)eActorStatus.Attack] += addValue;
+			}
+		}
+		_statusBase.valueList[(int)eActorStatus.CombatPower] = _statusBase.valueList[(int)eActorStatus.Attack];
+		_statusBase.valueList[(int)eActorStatus.AttackMulti] = actorTableData.multiAtk;
 
 		_statusBase.valueList[(int)eActorStatus.AttackDelay] = actorTableData.attackDelay;
 		_statusBase.valueList[(int)eActorStatus.MoveSpeed] = actorTableData.moveSpeed;
 		_statusBase.valueList[(int)eActorStatus.MaxSp] = actorTableData.sp;
 
 		// actor multi
-		_statusBase.valueList[(int)eActorStatus.MaxHp] *= actorTableData.multiHp;
-		_statusBase.valueList[(int)eActorStatus.Attack] *= actorTableData.multiAtk;
+		//_statusBase.valueList[(int)eActorStatus.MaxHp] *= actorTableData.multiHp;
+		//_statusBase.valueList[(int)eActorStatus.Attack] *= actorTableData.multiAtk;
 
 		//if (isServer)
 		_statusBase._hp = _lastMaxHp = GetValue(eActorStatus.MaxHp);

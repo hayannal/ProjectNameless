@@ -51,6 +51,9 @@ public class MainCanvas : MonoBehaviour
 	bool _buttonHideState = false;
 	void UpdateNoInput()
 	{
+		if (IsHideState())
+			return;
+
 		if (_noInputRemainTime > 0.0f)
 		{
 			_noInputRemainTime -= Time.deltaTime;
@@ -219,6 +222,11 @@ public class MainCanvas : MonoBehaviour
 		inputRectObject.SetActive(!enter);
 		safeAreaCanvasGroup.alpha = enter ? 0.0f : 1.0f;
 		safeAreaCanvasGroup.blocksRaycasts = !enter;
+	}
+
+	bool IsHideState()
+	{
+		return (safeAreaCanvasGroup.alpha == 0.0f);
 	}
 
 	public void OnClickSpinButton()

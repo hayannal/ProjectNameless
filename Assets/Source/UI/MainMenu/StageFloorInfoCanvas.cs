@@ -11,6 +11,8 @@ public class StageFloorInfoCanvas : MonoBehaviour
 	public GameObject repeatTextObject;
 	public GameObject challengeTextObject;
 
+	public Text combatPowerText;
+
 	void Awake()
 	{
 		instance = this;
@@ -23,6 +25,14 @@ public class StageFloorInfoCanvas : MonoBehaviour
 		challengeTextObject.SetActive(!repeat);
 	}
 
+	public void RefreshCombatPower()
+	{
+		if (BattleInstanceManager.instance.playerActor == null)
+			return;
+
+		float value = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
+		combatPowerText.text = value.ToString("N0");
+	}
 
 
 

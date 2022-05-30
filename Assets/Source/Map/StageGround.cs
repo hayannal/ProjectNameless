@@ -152,6 +152,7 @@ public class StageGround : MonoBehaviour
 
 			StageFloorInfoCanvas.instance.cachedTransform.position = StageManager.instance.GetSafeWorldOffset();
 			StageFloorInfoCanvas.instance.RefreshStageInfo(PlayerData.instance.selectedStage, StageManager.instance.repeatMode);
+			StageFloorInfoCanvas.instance.RefreshCombatPower();
 		}
 		else
 		{
