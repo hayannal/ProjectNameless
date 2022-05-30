@@ -104,6 +104,11 @@ public class MainCanvas : MonoBehaviour
 			_noInputRemainTime = 0.001f;
 	}
 
+	public void OnClickOptionButton()
+	{ 
+		UIInstanceManager.instance.ShowCanvasAsync("SettingCanvas", null);
+	}
+
 
 	#region Boss Challenge
 	public void OnClickBossChallengeButton()

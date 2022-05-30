@@ -14,10 +14,6 @@ public class SettingCanvas : MonoBehaviour
 	public Text systemVolumeText;
 	public Slider bgmVolumeSlider;
 	public Text bgmVolumeText;
-	public SwitchAnim doubleTabSwitch;
-	public Text doubleTabOnOffText;
-	public SwitchAnim lockIconSwitch;
-	public Text lockIconOnOffText;
 
 	public Text languageButtonText;
 	public Transform accountTextTransform;
@@ -55,8 +51,7 @@ public class SettingCanvas : MonoBehaviour
 
 	void OnEnable()
 	{
-		if (LobbyCanvas.instance != null)
-			LobbyCanvas.instance.lobbyOptionButton.gameObject.SetActive(false);
+		MainCanvas.instance.OnEnterCharacterMenu(true);
 
 		/*
 		if (DotMainMenuCanvas.instance != null && DotMainMenuCanvas.instance.gameObject.activeSelf)
@@ -73,12 +68,14 @@ public class SettingCanvas : MonoBehaviour
 
 	void OnDisable()
 	{
-		if (LobbyCanvas.instance != null)
-		{
-			bool lobby = (MainSceneBuilder.instance != null && MainSceneBuilder.instance.lobby);
-			if (lobby)
-				LobbyCanvas.instance.lobbyOptionButton.gameObject.SetActive(true);
-		}
+		if (StageManager.instance == null)
+			return;
+		if (MainSceneBuilder.instance == null)
+			return;
+		if (MainCanvas.instance == null)
+			return;
+
+		MainCanvas.instance.OnEnterCharacterMenu(false);
 	}
 
 	public void OnClickHomeButton()
@@ -93,8 +90,6 @@ public class SettingCanvas : MonoBehaviour
 	{
 		systemVolumeSlider.value = OptionManager.instance.systemVolume;
 		bgmVolumeSlider.value = OptionManager.instance.bgmVolume;
-		doubleTabSwitch.isOn = (OptionManager.instance.useDoubleTab == 1);
-		lockIconSwitch.isOn = (OptionManager.instance.lockIcon == 1);
 
 		LoadLanguage();
 		RefreshAccount();
@@ -122,34 +117,6 @@ public class SettingCanvas : MonoBehaviour
 	{
 		OptionManager.instance.bgmVolume = value;
 		bgmVolumeText.text = Mathf.RoundToInt(value * 100.0f).ToString();
-	}
-
-	public void OnSwitchOnDoubleTab()
-	{
-		OptionManager.instance.useDoubleTab = 1;
-		doubleTabOnOffText.text = "ON";
-		doubleTabOnOffText.color = Color.white;
-	}
-
-	public void OnSwitchOffDoubleTab()
-	{
-		OptionManager.instance.useDoubleTab = 0;
-		doubleTabOnOffText.text = "OFF";
-		doubleTabOnOffText.color = new Color(0.176f, 0.176f, 0.176f);
-	}
-
-	public void OnSwitchOnLockIcon()
-	{
-		OptionManager.instance.lockIcon = 1;
-		lockIconOnOffText.text = "ON";
-		lockIconOnOffText.color = Color.white;
-	}
-
-	public void OnSwitchOffLockIcon()
-	{
-		OptionManager.instance.lockIcon = 0;
-		lockIconOnOffText.text = "OFF";
-		lockIconOnOffText.color = new Color(0.176f, 0.176f, 0.176f);
 	}
 	#endregion
 
