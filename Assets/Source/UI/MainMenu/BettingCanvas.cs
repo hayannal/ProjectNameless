@@ -9,6 +9,8 @@ public class BettingCanvas : MonoBehaviour
 {
 	public static BettingCanvas instance;
 
+	public CurrencySmallInfo currencySmallInfo;
+
 	public Sprite[] slotSpriteList;
 	public Sprite[] slotBlurSpriteList;
 
@@ -19,6 +21,12 @@ public class BettingCanvas : MonoBehaviour
 	public RectTransform[] contentRootRectTransformList;
 	public GridLayoutGroup gridLayoutGroup;
 
+	public Text betText;
+
+	public Slider spinRatioSlider;
+	public Text spinText;
+	public Text fillRemainTimeText;
+
 	public class CustomItemContainer : CachedItemHave<BettingCanvasListItem>
 	{
 	}
@@ -28,11 +36,16 @@ public class BettingCanvas : MonoBehaviour
 	{ 
 		SmallGold = 0,
 		BigGold = 1,
-		Test = 2,
-		Temp = 3,
-		Event = 4,
+		SmallSpin = 2,
+		SmallDiamond = 3,
 
-		Amount = 5,
+		GoldBoxRoom = 4,
+		GoblinRoom = 5,
+		Ticket = 6,
+
+		Event = 7,
+
+		Amount,
 	}
 
 	void Awake()
@@ -55,13 +68,36 @@ public class BettingCanvas : MonoBehaviour
 
 	void OnEnable()
 	{
+		MainCanvas.instance.OnEnterCharacterMenu(true);
+
 		// 한번 셋팅된 상태에서 창을 다시 켤때는 굳이 리셋할 필요 없으니 냅두는게 맞다.
 		//InitializeSlot();
+
+		// refresh
+		RefreshBet();
+		RefreshSpin();
+	}
+
+	void OnDisable()
+	{
+		if (StageManager.instance == null)
+			return;
+		if (MainSceneBuilder.instance == null)
+			return;
+		if (MainCanvas.instance == null)
+			return;
+
+		MainCanvas.instance.OnEnterCharacterMenu(false);
 	}
 
 	void Update()
 	{
 		UpdateSlot();
+
+		#region Spin
+		UpdateFillRemainTime();
+		UpdateRefresh();
+		#endregion
 	}
 
 	List<List<BettingCanvasListItem>> _listListItem = new List<List<BettingCanvasListItem>>();
@@ -121,30 +157,21 @@ public class BettingCanvas : MonoBehaviour
 
 	public void OnClickSpinButton()
 	{
-		/*
-		if (PlayerData.instance.balancePp == 0)
+		if (CurrencyData.instance.spin == 0)
 		{
-			ToastCanvas.instance.ShowToast(UIString.instance.GetString("BalanceUI_NotEnoughBalancePP"), 2.0f);
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughSpin"), 2.0f);
 			return;
 		}
-		*/
-
-		/*
-		PlayFabApiManager.instance.RequestUseBalancePp(_targetPpCharacter, _sliderCount, _priceOnce * _sliderCount, () =>
-		{
-			OnRecvSpinSlot();
-		});
-		*/
-
-		Timing.RunCoroutine(SlotProcess());
+		//PlayFabApiManager.instance.RequestBetting(, () =>
+		//{
+		//	OnRecvSpinSlot();
+		//});
 	}
 
 	void OnRecvSpinSlot()
 	{
-		/*
 		currencySmallInfo.RefreshInfo();
 		Timing.RunCoroutine(SlotProcess());
-		*/
 	}
 
 
@@ -395,5 +422,100 @@ public class BettingCanvas : MonoBehaviour
 
 		inputLockObject.SetActive(false);
 		backKeyButton.interactable = true;
+	}
+
+
+	#region Spin
+	public void RefreshSpin()
+	{
+		if (PlayerData.instance.clientOnly)
+			return;
+
+		int current = CurrencyData.instance.spin;
+		int max = CurrencyData.instance.spinMax;
+		spinRatioSlider.value = (float)current / max;
+		spinText.text = string.Format("{0}/{1}", current, max);
+		_lastCurrent = current;
+		if (current >= max)
+		{
+			fillRemainTimeText.text = "";
+			_needUpdate = false;
+		}
+		else
+		{
+			_nextFillDateTime = CurrencyData.instance.spinRechargeTime;
+			_needUpdate = true;
+			_lastRemainTimeSecond = -1;
+		}
+	}
+
+	bool _needUpdate = false;
+	System.DateTime _nextFillDateTime;
+	int _lastRemainTimeSecond = -1;
+	void UpdateFillRemainTime()
+	{
+		if (_needUpdate == false)
+			return;
+
+		if (ServerTime.UtcNow < _nextFillDateTime)
+		{
+			System.TimeSpan remainTime = _nextFillDateTime - ServerTime.UtcNow;
+			if (_lastRemainTimeSecond != (int)remainTime.TotalSeconds)
+			{
+				fillRemainTimeText.text = string.Format("{0}:{1:00}", remainTime.Minutes, remainTime.Seconds);
+				_lastRemainTimeSecond = (int)remainTime.TotalSeconds;
+			}
+		}
+		else
+		{
+			// 우선 클라단에서 하기로 했으니 서버랑 통신해서 바꾸진 않는다.
+			// 대신 CurrencyData의 값과 비교하면서 바뀌는지 확인한다.
+			_needUpdate = false;
+			fillRemainTimeText.text = "0:00";
+			_needRefresh = true;
+		}
+	}
+
+	bool _needRefresh = false;
+	int _lastCurrent;
+	void UpdateRefresh()
+	{
+		if (_needRefresh == false)
+			return;
+
+		if (_lastCurrent != CurrencyData.instance.spin)
+		{
+			RefreshSpin();
+			_needRefresh = false;
+		}
+	}
+	#endregion
+
+	List<int> _listBetValue = new List<int>();
+	int _currentBetIndex;
+	void RefreshBet()
+	{
+		if (_listBetValue.Count == 0)
+		{
+			_listBetValue.Add(1);
+			_listBetValue.Add(2);
+			_listBetValue.Add(3);
+			_listBetValue.Add(5);
+			_listBetValue.Add(10);
+			_listBetValue.Add(20);
+			_currentBetIndex = 0;
+		}
+
+
+		betText.text = string.Format("BET X{0}", _listBetValue[_currentBetIndex]);
+	}
+
+	public void OnClickBetButton()
+	{
+		++_currentBetIndex;
+		if (_currentBetIndex >= _listBetValue.Count)
+			_currentBetIndex = 0;
+
+		RefreshBet();
 	}
 }

@@ -108,14 +108,14 @@ public class CurrencyData : MonoBehaviour
 				break;
 			}
 			else
-				_spinRechargeTime += TimeSpan.FromSeconds(BattleInstanceManager.instance.GetCachedGlobalConstantInt("TimeSecToGetOneEnergy"));
+				_spinRechargeTime += TimeSpan.FromSeconds(BattleInstanceManager.instance.GetCachedGlobalConstantInt("TimeSecToGetOneSpin"));
 		}
 
 		// 여러번 건너뛰었단건 홈키 같은거 눌러서 한동안 업데이트 안되다가 몰아서 업데이트 되었단 얘기다. 이럴땐 강제 UI 업데이트
 		if (loopCount > 5)
 		{
-			//if (EnergyGaugeCanvas.instance != null)
-			//	EnergyGaugeCanvas.instance.RefreshEnergy();
+			if (BettingCanvas.instance != null)
+				BettingCanvas.instance.RefreshSpin();
 		}
 	}
 	
