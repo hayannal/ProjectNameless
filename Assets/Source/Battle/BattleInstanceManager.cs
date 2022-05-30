@@ -582,9 +582,6 @@ public class BattleInstanceManager : MonoBehaviour
 	Dictionary<int, int> _dicPathFinderAgentRefCount = new Dictionary<int, int>();
 	public void OnInitializePathFinderAgent(int agentTypeID)
 	{
-		if (BattleManager.instance != null && BattleManager.instance.IsNodeWar())
-			return;
-
 		if (_dicPathFinderAgentRefCount.ContainsKey(agentTypeID) == false)
 		{
 			_dicPathFinderAgentRefCount.Add(agentTypeID, 1);
@@ -600,8 +597,8 @@ public class BattleInstanceManager : MonoBehaviour
 	// 어차피 NavMeshSurface는 컴포넌트라서 맵 지워질때 날아갈텐데 바닥판 안바뀔걸 대비해서 지워두는게 나으려나
 	public void OnFinalizePathFinderAgent(int agentTypeID)
 	{
-		if (BattleManager.instance != null && BattleManager.instance.IsNodeWar())
-			return;
+		// 필요할때 수동으로 삭제하기로 한다.
+		return;
 
 		if (_dicPathFinderAgentRefCount.ContainsKey(agentTypeID) == false)
 			return;
@@ -615,6 +612,19 @@ public class BattleInstanceManager : MonoBehaviour
 			currentGround.ClearNavMesh(agentTypeID);
 		}
 		AddTotalPathFinderAgentRefCount(-1);
+	}
+
+	public void FinalizePathFinderAgent()
+	{
+		Dictionary<int, int>.Enumerator e = _dicPathFinderAgentRefCount.GetEnumerator();
+		while (e.MoveNext())
+		{
+			currentGround.ClearNavMesh(e.Current.Key);
+		}
+		_dicPathFinderAgentRefCount.Clear();
+
+		currentGround.ClearNavMesh(_bulletFlyingAgentTypeID);
+		_totalPathFinderAgentRefCount = 0;
 	}
 
 	#region BulletFlying AgentType
@@ -636,6 +646,9 @@ public class BattleInstanceManager : MonoBehaviour
 		}
 		else
 		{
+			// 위 PathFinder와 마찬가지로 필요할때 수동으로 삭제하기로 한다.
+			return;
+
 			if (_totalPathFinderAgentRefCount <= 0)
 				return;
 			_totalPathFinderAgentRefCount += addCount;

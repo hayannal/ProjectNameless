@@ -462,6 +462,9 @@ public class StageManager : MonoBehaviour
 		// 스테이지
 		StageGround.instance.FinalizeGround();
 
+		// Path
+		BattleInstanceManager.instance.FinalizePathFinderAgent();
+
 		// 플레이어
 		BattleInstanceManager.instance.playerActor.gameObject.SetActive(false);
 
@@ -479,6 +482,7 @@ public class StageManager : MonoBehaviour
 
 		if (repeatMode)
 		{
+			BattleInstanceManager.instance.FinalizePathFinderAgent();
 			ResetInfo();
 			_remainDelayTime = RepeatModeInterval;
 		}
