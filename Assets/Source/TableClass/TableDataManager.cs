@@ -29,6 +29,7 @@ public class TableDataManager : MonoBehaviour
 
 	public StageIdTable stageIdTable;
 	public StageTable stageTable;
+	public StageBetTable stageBetTable;
 
 	public ActorInfoTable actorInfoTable;
 	public PlayerLevelTable playerLevelTable;
@@ -249,6 +250,16 @@ public class TableDataManager : MonoBehaviour
 		{
 			if (stageTable.dataArray[i].stage == stage)
 				return stageTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public StageBetTableData FindStageBetTableData(int floor)
+	{
+		for (int i = 0; i < stageBetTable.dataArray.Length; ++i)
+		{
+			if (stageBetTable.dataArray[i].stage == floor)
+				return stageBetTable.dataArray[i];
 		}
 		return null;
 	}
