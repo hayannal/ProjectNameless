@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using CodeStage.AntiCheat.ObscuredTypes;
 using DG.Tweening;
 using MEC;
 
@@ -27,11 +28,21 @@ public class BettingCanvas : MonoBehaviour
 	public Text spinText;
 	public Text fillRemainTimeText;
 
+	public GameObject[] smallGoldEffectObjectList;
+	public GameObject bigGoldEffectObject;
+	public GameObject spinEffectObject;
+	public GameObject diamondEffectObject;
+	public GameObject ticketEffectObject;
+
+	// 이벤트 이펙트 역시 여기에 있는데 패치하게 된다면 이걸 교체해서 캔버스를 패치하게 될거 같다.
+	public GameObject eventEffectObject;
+
 	public class CustomItemContainer : CachedItemHave<BettingCanvasListItem>
 	{
 	}
 	CustomItemContainer[] _containerList;
 
+	// 서버에서 RoomType으로 체크하기 때문에 GoldBoxRoom 4번이나 GoblinRoom 5번이 바뀌면 서버 스크립트 Betting도 바꿔줘야한다.
 	public enum eSlotImage
 	{ 
 		SmallGold = 0,
@@ -68,6 +79,12 @@ public class BettingCanvas : MonoBehaviour
 
 	void OnEnable()
 	{
+		RefreshSpin();
+
+		bool restore = StackCanvas.Push(gameObject, false, null, OnPopStack);
+		if (restore)
+			return;
+
 		MainCanvas.instance.OnEnterCharacterMenu(true);
 
 		// 한번 셋팅된 상태에서 창을 다시 켤때는 굳이 리셋할 필요 없으니 냅두는게 맞다.
@@ -75,10 +92,17 @@ public class BettingCanvas : MonoBehaviour
 
 		// refresh
 		RefreshBet();
-		RefreshSpin();
 	}
 
 	void OnDisable()
+	{
+		if (StackCanvas.Pop(gameObject))
+			return;
+
+		OnPopStack();
+	}
+
+	void OnPopStack()
 	{
 		if (StageManager.instance == null)
 			return;
@@ -157,20 +181,28 @@ public class BettingCanvas : MonoBehaviour
 
 	public void OnClickSpinButton()
 	{
-		if (CurrencyData.instance.spin == 0)
+		int useSpin = _listBetValue[_currentBetRateIndex];
+		if (CurrencyData.instance.spin < useSpin)
 		{
 			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughSpin"), 2.0f);
 			return;
 		}
-		//PlayFabApiManager.instance.RequestBetting(, () =>
-		//{
-		//	OnRecvSpinSlot();
-		//});
+
+		PrepareBetting();
+		PrepareGoldBoxTarget();
+		PlayFabApiManager.instance.RequestBetting(useSpin, _resultGold, _resultDiamond, _resultSpin, _resultTicket, _resultEvent, _reserveRoomType, _refreshTurn, _refreshNewTurn, _refreshNewGold, () =>
+		{
+			OnRecvSpinSlot();
+		});
 	}
 
 	void OnRecvSpinSlot()
 	{
-		currencySmallInfo.RefreshInfo();
+		// Spin은 바로 차감 후
+		RefreshSpin();
+
+		// 골드나 다이아는 여기서 갱신하면 안되고 이펙트 뜰때 해야한다.
+		//currencySmallInfo.RefreshInfo();
 		Timing.RunCoroutine(SlotProcess());
 	}
 
@@ -244,6 +276,27 @@ public class BettingCanvas : MonoBehaviour
 	int _lastIndex = 1;
 
 
+	bool IsAll(eSlotImage slotImage)
+	{
+		for (int i = 0; i < _listTargetValue.Count; ++i)
+		{
+			if ((eSlotImage)_listTargetValue[i] != slotImage)
+				return false;
+		}
+		return true;
+	}
+
+	bool IsInclude(eSlotImage slotImage)
+	{
+		for (int i = 0; i < _listTargetValue.Count; ++i)
+		{
+			if ((eSlotImage)_listTargetValue[i] == slotImage)
+				return true;
+		}
+		return false;
+	}
+
+
 	List<float> _listSpinSpeed = new List<float>();
 	List<float> _listSpinAccel = new List<float>();
 	List<bool> _listStopWaitFlag = new List<bool>();
@@ -288,17 +341,7 @@ public class BettingCanvas : MonoBehaviour
 		// 그러니 0.2초 안에 속도를 줄여야하고
 		// 타겟 슬롯에 다다를때 바로 멈추는 연출로 바꿔야한다.
 
-		int targetSlot = -1;
-		bool fixedResult = false;
-		if (fixedResult)
-		{
-			targetSlot = 3;
-		}
-		else
-		{
-			// 그게 아니라면 랜덤하게
-			targetSlot = Random.Range(0, (int)eSlotImage.Amount);
-		}
+		int targetSlot = _listTargetValue[0];
 		_listSpinAccel[0] = Random.Range(400.0f, 600.0f);
 		_listStopPosition[0] = (targetSlot + 1) * -gridLayoutGroup.cellSize.x - gridLayoutGroup.cellSize.x * 0.5f;
 		_listStopWaitFlag[0] = true;
@@ -315,7 +358,7 @@ public class BettingCanvas : MonoBehaviour
 		yield return Timing.WaitForSeconds(Random.Range(0.2f, 0.4f));
 
 		// 그게 아니라면 랜덤하게
-		targetSlot = Random.Range(0, (int)eSlotImage.Amount);
+		targetSlot = _listTargetValue[1];
 		_listSpinAccel[1] = Random.Range(400.0f, 600.0f);
 		_listStopPosition[1] = (targetSlot + 1) * -gridLayoutGroup.cellSize.x - gridLayoutGroup.cellSize.x * 0.5f;
 		_listStopWaitFlag[1] = true;
@@ -333,7 +376,7 @@ public class BettingCanvas : MonoBehaviour
 		yield return Timing.WaitForSeconds(Random.Range(0.3f, 0.7f));
 
 		// 
-		targetSlot = Random.Range(0, (int)eSlotImage.Amount);
+		targetSlot = _listTargetValue[2];
 		_listSpinAccel[2] = Random.Range(400.0f, 600.0f);
 		_listStopPosition[2] = (targetSlot + 1) * -gridLayoutGroup.cellSize.x - gridLayoutGroup.cellSize.x * 0.5f;
 		_listStopWaitFlag[2] = true;
@@ -374,37 +417,6 @@ public class BettingCanvas : MonoBehaviour
 		// 플래그를 켜서 인접하는지를 봐야한다.
 		// 근데 그냥 인접만 검사하면 두바퀴는 못돌고 한바퀴만 돌테니
 		// 감속이 어느정도 되었을때만 멈추게 해야할거다.
-		//}
-
-		// 
-
-		/*
-		// 배경 페이드
-		DOTween.To(() => canvasGroup.alpha, x => canvasGroup.alpha = x, 0.0f, 0.3f).SetEase(Ease.Linear);
-		yield return Timing.WaitForSeconds(0.15f);
-
-		// 대상 캐릭터 아이콘 가운데로 이동
-		targetCharacterListItem.cachedRectTransform.DOAnchorPos(new Vector2(0.0f, _defaultAnchoredPosition.y), 0.6f);
-		yield return Timing.WaitForSeconds(0.6f);
-
-		// 새로운 결과 팝업창이 나오고
-		messageTextObject.SetActive(false);
-		exitObject.SetActive(false);
-		resultGroupObject.SetActive(true);
-		yield return Timing.WaitForSeconds(0.3f);
-
-		float tweenDelay = 0.5f;
-		yield return Timing.WaitForSeconds(0.2f);
-
-		// pp 늘어나는 연출
-		_ppChangeSpeed = -_addValue / ppChangeTime;
-		_floatCurrentPp = _addValue;
-		_updatePpText = true;
-		yield return Timing.WaitForSeconds(ppChangeTime);
-		ppValueTweenAnimation.DORestart();
-		yield return Timing.WaitForSeconds(tweenDelay);
-
-		*/
 
 		/*
 		// 터치하여 나가기 보여주고
@@ -420,9 +432,326 @@ public class BettingCanvas : MonoBehaviour
 		DotMainMenuCanvas.instance.RefreshCharacterAlarmObject();
 		*/
 
+		// 결과에 따른 이펙트 처리
+		BasicResultEffect();
+		currencySmallInfo.RefreshInfo();
+
+		// 추가 연출이 필요한 것
+		if (IsInclude(eSlotImage.Event))
+		{
+			// 골드나 다른 이펙트 연출이 끝나는걸 기다렸다가
+			yield return Timing.WaitForSeconds(0.7f);
+
+			// 이벤트 연출을 하고
+			eventEffectObject.SetActive(false);
+			eventEffectObject.SetActive(true);
+
+			// 잠시 대기 후 끝내도록 한다.
+			yield return Timing.WaitForSeconds(0.3f);
+		}
+
 		inputLockObject.SetActive(false);
 		backKeyButton.interactable = true;
+
+		// 씬전환이 필요할테니 별도로 처리하기로 한다.
+		if (IsAll(eSlotImage.GoblinRoom))
+		{
+			
+		}
+		else if (IsAll(eSlotImage.GoldBoxRoom))
+		{
+			Timing.RunCoroutine(GoldBoxRoomMoveProcess());
+		}
 	}
+
+	#region Packet
+	// 패킷 보내기전에 클라가 먼저 굴림을 결정해야한다.
+	List<int> _listTargetValue = new List<int>();
+
+	// 패킷으로 보내는 재화들
+	ObscuredInt _resultGold;
+	ObscuredInt _resultDiamond;
+	ObscuredInt _resultSpin;
+	ObscuredInt _resultTicket;
+	ObscuredInt _resultEvent;
+	ObscuredInt _reserveRoomType;
+	void PrepareBetting()
+	{
+		if (_listTargetValue.Count == 0)
+		{
+			for (int i = 0; i < contentRootRectTransformList.Length; ++i)
+			{
+				_listTargetValue.Add(0);
+			}
+		}
+
+		bool fixedResult = false;
+		if (fixedResult)
+		{
+			_listTargetValue[0] = 3;
+		}
+		else
+		{
+			// 그게 아니라면 랜덤하게
+			_listTargetValue[0] = Random.Range(0, (int)eSlotImage.Amount);
+		}
+
+		// 두번째 슬롯 세번째 슬롯도 마찬가지다.
+		_listTargetValue[1] = Random.Range(0, (int)eSlotImage.Amount);
+		_listTargetValue[2] = Random.Range(0, (int)eSlotImage.Amount);
+
+		_listTargetValue[0] = (int)eSlotImage.GoldBoxRoom;
+		_listTargetValue[1] = (int)eSlotImage.GoldBoxRoom;
+		_listTargetValue[2] = (int)eSlotImage.GoldBoxRoom;
+
+		Debug.LogFormat("Betting Prepare : {0} {1} {2}", _listTargetValue[0], _listTargetValue[1], _listTargetValue[2]);
+
+		// 리셋
+		// 결과에 따라 미리미리 랜덤 굴릴것들은 굴려놔야 패킷으로 보낼 수 있다.
+		_resultGold = _resultDiamond = _resultSpin = _resultTicket = _resultEvent = 0;
+		_reserveRoomType = 0;
+		int betRate = _listBetValue[_currentBetRateIndex];
+
+		// 현재 맥스 층에 따른 베팅 테이블
+		StageBetTableData stageBetTableData = TableDataManager.instance.FindStageBetTableData(PlayerData.instance.currentRewardStage);
+		if (stageBetTableData == null)
+		{
+			Debug.LogErrorFormat("Not found StageBetTable! currentHighest = {0} / selected = {1}", PlayerData.instance.highestClearStage, PlayerData.instance.selectedStage);
+			return;
+		}
+
+		if (IsAll(eSlotImage.Ticket))
+		{
+			// 테이블이든 랜덤이든 뭔가로 결정
+			_resultTicket = BattleInstanceManager.instance.GetCachedGlobalConstantInt("Bet3Tickets") * betRate;
+		}
+		else if (IsAll(eSlotImage.GoblinRoom))
+		{
+			// 이건 스테이지 진행에 따른 테이블같은거로 될듯. 그 안에서 미리 결정해두고 사용자가 터치하면 보여준다.
+			// 아래 GoldBoxRoom과 동일하게 여기서는 플래그만 걸고 획득 패킷은 나중에 보내기로 한다.
+			_resultGold = 0;
+			_reserveRoomType = (int)eSlotImage.GoblinRoom;
+		}
+		else if (IsAll(eSlotImage.GoldBoxRoom))
+		{
+			// 다른 패킷들과 달리 들어가서 플레이를 해야 보상을 제공하는 구조다.
+			// 그러다보니 패킷 보낼때 골드를 보낼수가 없다.
+			// 대신 골드를 보낼 수 있는 플래그 하나를 걸어두고 enterFlag처럼 이 값을 클라에게 돌려준다.
+			// 이걸 보상패킷으로 보내면 된다.
+			// 고블린 룸도 마찬가지 형태로 진행하기로 한다.
+			_resultGold = 0;
+			_reserveRoomType = (int)eSlotImage.GoldBoxRoom;
+
+			// Prepare 후 패킷할때 리셋될테니 현재 저장된 골드값을 기억해두었다가
+			// EndBettingRoom할때 사용하도록 한다.
+			CurrencyData.instance.currentGoldBoxRoomReward = CurrencyData.instance.goldBoxTargetReward;
+		}
+		else if (IsAll(eSlotImage.SmallDiamond))
+		{
+			// 아마도 테이블에 따른 값일듯
+			_resultDiamond = BattleInstanceManager.instance.GetCachedGlobalConstantInt("Bet3Diamonds") * betRate;
+		}
+		else if (IsAll(eSlotImage.SmallSpin))
+		{
+			_resultSpin = BattleInstanceManager.instance.GetCachedGlobalConstantInt("Bet3Spins") * betRate;
+		}
+		else
+		{
+			// include 형태기 때문에 개수에 따라 결과가 달라질거다.
+			// 테이블에 값이 있을테니 
+			int smallCount = 0;
+			for (int i = 0; i < _listTargetValue.Count; ++i)
+			{
+				if (_listTargetValue[i] == (int)eSlotImage.SmallGold)
+					++smallCount;
+			}
+			int bigCount = 0;
+			for (int i = 0; i < _listTargetValue.Count; ++i)
+			{
+				if (_listTargetValue[i] == (int)eSlotImage.BigGold)
+					++bigCount;
+			}
+			if (smallCount > 0 || bigCount > 0)
+			{
+				int tableResultGold = 0;
+				if (bigCount == 0)
+				{
+					switch (smallCount)
+					{
+						case 1: tableResultGold = stageBetTableData.s1; break;
+						case 2: tableResultGold = stageBetTableData.s2; break;
+						case 3: tableResultGold = stageBetTableData.s3; break;
+					}
+				}
+				else if (smallCount == 0)
+				{
+					switch (bigCount)
+					{
+						case 1: tableResultGold = stageBetTableData.b1; break;
+						case 2: tableResultGold = stageBetTableData.b2; break;
+						case 3: tableResultGold = stageBetTableData.b3; break;
+					}
+				}
+				else
+				{
+					if (smallCount == 1 && bigCount == 1)
+						tableResultGold = stageBetTableData.s1b1;
+					else if (smallCount == 1 && bigCount == 2)
+						tableResultGold = stageBetTableData.s1b2;
+					else if (smallCount == 2 && bigCount == 1)
+						tableResultGold = stageBetTableData.s2b1;
+				}
+				_resultGold = tableResultGold * betRate;
+			}
+
+			// Event Point
+			int eventCount = 0;
+			for (int i = 0; i < _listTargetValue.Count; ++i)
+			{
+				if (_listTargetValue[i] == (int)eSlotImage.Event)
+					++eventCount;
+			}
+			string eventCountKey = "";
+			switch (eventCount)
+			{
+				case 1: eventCountKey = "Bet1Event"; break;
+				case 2: eventCountKey = "Bet2Events"; break;
+				case 3: eventCountKey = "Bet3Events"; break;
+			}
+			if (!string.IsNullOrEmpty(eventCountKey))
+				_resultEvent = BattleInstanceManager.instance.GetCachedGlobalConstantInt(eventCountKey) * betRate;
+		}
+	}
+
+	ObscuredBool _refreshTurn = false;
+	ObscuredInt _refreshNewTurn = 0;
+	ObscuredInt _refreshNewGold = 0;
+	void PrepareGoldBoxTarget()
+	{
+		_refreshTurn = false;
+		_refreshNewTurn = 0;
+		_refreshNewGold = 0;
+
+		// 현재 맥스 층에 따른 베팅 테이블
+		StageBetTableData stageBetTableData = TableDataManager.instance.FindStageBetTableData(PlayerData.instance.currentRewardStage);
+		if (stageBetTableData == null)
+			return;
+
+		// 마지막 남은 턴일때는 서버에 갱신을 알려야한다.
+		if (CurrencyData.instance.goldBoxRemainTurn == 1)
+			_refreshTurn = true;
+
+		// 그런데 하나 예외 상황이 있다. 
+		// 골드박스룸에 진입할때는 남은 턴에 상관없이 무조건 갱신해야한다.
+		if (_reserveRoomType == (int)eSlotImage.GoldBoxRoom)
+			_refreshTurn = true;
+
+		// 최초 계정생성 후에는 한번이라도 골드박스로 진입할때까지 갱신 자체를 안할거다. 그러니 이런 예외처리는 필요없다.
+		//if (CurrencyData.instance.bettingCount == 0)
+		//	_refreshTurn = true;
+
+		if (_refreshTurn)
+		{
+			_refreshNewTurn = Random.Range(BattleInstanceManager.instance.GetCachedGlobalConstantInt("GoldBoxTurnMin"), BattleInstanceManager.instance.GetCachedGlobalConstantInt("GoldBoxTurnMax") + 1);
+			_refreshNewGold = Random.Range(stageBetTableData.goldBoxMin, stageBetTableData.goldBoxMax);
+		}
+	}
+	#endregion
+
+	#region EndEffect
+	void BasicResultEffect()
+	{
+		// 골드나 다이아만 나올때는 이펙트 처리만 하지만
+		// 특수 결과로 나올땐 다음 프로세스를 진행해야한다.
+		// 기본 이펙트는 인풋 막는거 없이 바로 보여지고 넘어가는 것들이다.
+		if (IsAll(eSlotImage.Ticket))
+		{
+			// 이펙트만
+			ticketEffectObject.SetActive(false);
+			ticketEffectObject.SetActive(true);
+		}
+		/*
+		else if (IsAll(eSlotImage.GoblinRoom))
+		{
+			// 씬전환 필요. 두개는 씬전환이 필요하다
+			// Basic함수 말고 다른쪽에서 처리하기로 한다.
+		}
+		else if (IsAll(eSlotImage.GoldBoxRoom))
+		{
+		}
+		*/
+		else if (IsAll(eSlotImage.SmallDiamond))
+		{
+			// 이펙트만
+			diamondEffectObject.SetActive(false);
+			diamondEffectObject.SetActive(true);
+		}
+		else if (IsAll(eSlotImage.SmallSpin))
+		{
+			// 이펙트만
+			spinEffectObject.SetActive(false);
+			spinEffectObject.SetActive(true);
+		}
+		else
+		{
+			// 골드는 나오는 양에 따라서 이펙트를 나눠서 쓰기로 한다.
+			int smallCount = 0;
+			for (int i = 0; i < _listTargetValue.Count; ++i)
+			{
+				if (_listTargetValue[i] == (int)eSlotImage.SmallGold)
+					++smallCount;
+			}
+			int bigCount = 0;
+			for (int i = 0; i < _listTargetValue.Count; ++i)
+			{
+				if (_listTargetValue[i] == (int)eSlotImage.BigGold)
+					++bigCount;
+			}
+
+			// 카운트에 따라 이펙트 인덱스를 선택한다.
+			if (bigCount > 0)
+			{
+				bigGoldEffectObject.SetActive(false);
+				bigGoldEffectObject.SetActive(true);
+			}
+			else if (smallCount > 0)
+			{
+				int index = smallCount - 1;
+				smallGoldEffectObjectList[index].SetActive(false);
+				smallGoldEffectObjectList[index].SetActive(true);
+			}
+		}
+	}
+
+	IEnumerator<float> GoldBoxRoomMoveProcess()
+	{
+		// 인풋 차단
+		inputLockObject.SetActive(true);
+		backKeyButton.interactable = false;
+
+		// 골드박스 선택되었다는 이펙트 같은거나 알림 표시 후
+		
+		// 이펙트 표시 시간만큼 잠시 대기
+		yield return Timing.WaitForSeconds(1.0f);
+
+		// 페이드 하면서
+		FadeCanvas.instance.FadeOut(0.2f, 1.0f, true);
+		yield return Timing.WaitForSeconds(0.2f);
+
+		// 새로운 전용 캔버스를 호출해둔다.
+		// 전용 캔버스가 알아서 StackCanvas형태로 호출되면서 BettingCanvas를 끄게 될거다.
+		// 여기서 새로운 그라운드도 만들어질거다.
+		UIInstanceManager.instance.ShowCanvasAsync("GoldBoxRoomCanvas", () =>
+		{
+			// 페이드 풀면서 BettingCanvas는 종료시킬 준비를 하고
+			inputLockObject.SetActive(false);
+			backKeyButton.interactable = true;
+
+			// 
+			FadeCanvas.instance.FadeIn(0.5f);
+		});
+	}
+	#endregion
 
 
 	#region Spin
@@ -492,7 +821,7 @@ public class BettingCanvas : MonoBehaviour
 	#endregion
 
 	List<int> _listBetValue = new List<int>();
-	int _currentBetIndex;
+	int _currentBetRateIndex;
 	void RefreshBet()
 	{
 		if (_listBetValue.Count == 0)
@@ -503,18 +832,17 @@ public class BettingCanvas : MonoBehaviour
 			_listBetValue.Add(5);
 			_listBetValue.Add(10);
 			_listBetValue.Add(20);
-			_currentBetIndex = 0;
+			_currentBetRateIndex = 0;
 		}
 
-
-		betText.text = string.Format("BET X{0}", _listBetValue[_currentBetIndex]);
+		betText.text = string.Format("BET X{0}", _listBetValue[_currentBetRateIndex]);
 	}
 
 	public void OnClickBetButton()
 	{
-		++_currentBetIndex;
-		if (_currentBetIndex >= _listBetValue.Count)
-			_currentBetIndex = 0;
+		++_currentBetRateIndex;
+		if (_currentBetRateIndex >= _listBetValue.Count)
+			_currentBetRateIndex = 0;
 
 		RefreshBet();
 	}

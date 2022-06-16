@@ -279,6 +279,11 @@ public class AuthManager : MonoBehaviour
 		playerStatisticNames.Add("subLevel0");
 		playerStatisticNames.Add("subLevel1");
 		playerStatisticNames.Add("subLevel2");
+		playerStatisticNames.Add("betCnt");
+		playerStatisticNames.Add("ticket");
+		playerStatisticNames.Add("eventPoint");
+		playerStatisticNames.Add("goldBoxTurn");
+		playerStatisticNames.Add("goldBoxValue");
 		/*
 		playerStatisticNames.Add("highestValue");
 		playerStatisticNames.Add("nodClLv");

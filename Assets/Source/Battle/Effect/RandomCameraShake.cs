@@ -46,6 +46,8 @@ public class RandomCameraShake : MonoBehaviour
 			return;
 		if (CharacterCanvas.instance != null && StackCanvas.IsInStack(CharacterCanvas.instance.gameObject))
 			return;
+		if (GoldBoxRoomCanvas.instance != null && GoldBoxRoomCanvas.instance.gameObject.activeSelf)
+			return;
 
 		if (startDelay == 0.0f)
 			Shake();

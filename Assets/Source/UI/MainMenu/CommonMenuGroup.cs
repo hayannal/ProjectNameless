@@ -7,6 +7,7 @@ public class CommonMenuGroup : MonoBehaviour
 	public static CommonMenuGroup instance = null;
 
 	public GameObject menuInfoGroundPrefab;
+	public GameObject goldBoxRoomGroundPrefab;
 
 	void Awake()
 	{

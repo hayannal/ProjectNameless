@@ -48,4 +48,20 @@ public class StageBetTableData
   int _s2b1;
   public int s2b1 { get { return _s2b1; } set { _s2b1 = value; } }
   
+  [SerializeField]
+  int _goldBoxMin;
+  public int goldBoxMin { get { return _goldBoxMin; } set { _goldBoxMin = value; } }
+  
+  [SerializeField]
+  int _goldBoxMax;
+  public int goldBoxMax { get { return _goldBoxMax; } set { _goldBoxMax = value; } }
+  
+  [SerializeField]
+  int _goblinSuccess;
+  public int goblinSuccess { get { return _goblinSuccess; } set { _goblinSuccess = value; } }
+  
+  [SerializeField]
+  int _goblinFailure;
+  public int goblinFailure { get { return _goblinFailure; } set { _goblinFailure = value; } }
+  
 }

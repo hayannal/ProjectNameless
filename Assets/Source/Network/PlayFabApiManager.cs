@@ -244,12 +244,11 @@ public class PlayFabApiManager : MonoBehaviour
 	{
 		LoginResult loginResult = _loginResult;
 
-		CurrencyData.instance.OnRecvCurrencyData(loginResult.InfoResultPayload.UserVirtualCurrency, loginResult.InfoResultPayload.UserVirtualCurrencyRechargeTimes);
-
-		/*
 		ApplyGlobalTable(loginResult.InfoResultPayload.TitleData);
 		AuthManager.instance.OnRecvAccountInfo(loginResult.InfoResultPayload.AccountInfo);
-		
+		CurrencyData.instance.OnRecvCurrencyData(loginResult.InfoResultPayload.UserVirtualCurrency, loginResult.InfoResultPayload.UserVirtualCurrencyRechargeTimes, loginResult.InfoResultPayload.PlayerStatistics);
+
+		/*
 		DailyShopData.instance.OnRecvShopData(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData);
 		MailData.instance.OnRecvMailData(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics, loginResult.NewlyCreated);
 		SupportData.instance.OnRecvSupportData(loginResult.InfoResultPayload.UserReadOnlyData);
@@ -791,7 +790,6 @@ public class PlayFabApiManager : MonoBehaviour
 
 					// 성공시 처리
 					int maxStage = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxStage");
-					maxStage = 50;
 					if (selectedStage <= maxStage)
 						PlayerData.instance.highestClearStage = selectedStage;
 
@@ -869,6 +867,103 @@ public class PlayFabApiManager : MonoBehaviour
 	}
 	#endregion
 
+
+	#region Betting
+	public void RequestBetting(int useSpin, int resultGold, int resultDiamond, int resultSpin, int resultTicket, int resultEventPoint, int reserveRoomType, bool refreshTurn, int newTurn, int newGold, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		int intRefreshTurn = refreshTurn ? 1 : 0;
+		string input = string.Format("{0}_{1}_{2}_{3}_{4}_{5}_{6}_{7}_{8}_{9}_{10}", CurrencyData.instance.bettingCount + 1, useSpin, resultGold, resultDiamond, resultSpin, resultTicket, resultEventPoint, reserveRoomType, intRefreshTurn, newTurn, "azirjwlm");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "Betting",
+			FunctionParameter = new { Cnt = CurrencyData.instance.bettingCount + 1, Bet = useSpin, AddGo = resultGold, AddDi = resultDiamond, AddSp = resultSpin, AddTi = resultTicket, AddEv = resultEventPoint, ResRoomTp = reserveRoomType, RefreshTurn = intRefreshTurn, NewTurn = newTurn, NewGold = newGold, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			jsonResult.TryGetValue("roomFlg", out object roomFlg);
+			jsonResult.TryGetValue("refreshTurn", out object serverRefreshTurn);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				CurrencyData.instance.bettingCount += 1;
+
+				CurrencyData.instance.gold += resultGold;
+				CurrencyData.instance.dia += resultDiamond;
+				CurrencyData.instance.ticket += resultTicket;
+				CurrencyData.instance.eventPoint += resultEventPoint;
+
+				if (useSpin == resultSpin)
+				{
+				}
+				else if (useSpin > resultSpin)
+					CurrencyData.instance.UseSpin(useSpin - resultSpin);
+				else if (useSpin < resultSpin)
+					CurrencyData.instance.OnRecvRefillSpin(resultSpin - useSpin);
+
+				_serverEnterKeyForRoom = (reserveRoomType != 0) ? roomFlg.ToString() : "";
+
+				if (refreshTurn && serverRefreshTurn.ToString() == "1")
+				{
+					CurrencyData.instance.goldBoxRemainTurn = newTurn;
+					CurrencyData.instance.goldBoxTargetReward = newGold;
+				}
+				else
+				{
+					if (CurrencyData.instance.goldBoxRemainTurn > 1)
+						CurrencyData.instance.goldBoxRemainTurn -= 1;
+				}
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
+	ObscuredString _serverEnterKeyForRoom;
+	public void RequestEndBettingRoom(int resultGold, Action successCallback)
+	{
+		string input = string.Format("{0}_{1}", resultGold, "lirqzmak");
+		string checkSum = CheckSum(input);
+
+		ExecuteCloudScriptRequest request = new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "EndBettingRoom",
+			FunctionParameter = new { Flg = (string)_serverEnterKeyForRoom, AddGo = resultGold, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		};
+		Action action = () =>
+		{
+			PlayFabClientAPI.ExecuteCloudScript(request, (success) =>
+			{
+				string resultString = (string)success.FunctionResult;
+				bool failure = (resultString == "1");
+				_serverEnterKeyForRoom = "";
+				if (!failure)
+				{
+					RetrySendManager.instance.OnSuccess();
+
+					// 성공시 처리
+					CurrencyData.instance.gold += resultGold;
+
+					if (successCallback != null) successCallback.Invoke();
+				}
+			}, (error) =>
+			{
+				RetrySendManager.instance.OnFailure();
+			});
+		};
+		RetrySendManager.instance.RequestAction(action, true, true);
+	}
+	#endregion
 
 
 

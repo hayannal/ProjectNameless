@@ -102,6 +102,7 @@ GameObject:
   - component: {fileID: 895339675921185351}
   - component: {fileID: 5844429176156077051}
   - component: {fileID: 3793213782501961031}
+  - component: {fileID: 6077757085202813773}
   m_Layer: 5
   m_Name: EffectRoot
   m_TagString: Untagged
@@ -166,6 +167,19 @@ MonoBehaviour:
   - {fileID: 3125118765895182032}
   - {fileID: 3125118765895182034}
   m_ShrinkByMaterial: 0
+--- !u!114 &6077757085202813773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 575269149368618753}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b5be0b5558824a419d78086f00871cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  delayTime: 2
 --- !u!1 &985440685982013183
 GameObject:
   m_ObjectHideFlags: 0
@@ -1431,6 +1445,15 @@ MonoBehaviour:
   spinRatioSlider: {fileID: 4393553131049922842}
   spinText: {fileID: 3051043485855206490}
   fillRemainTimeText: {fileID: 8568440092535700226}
+  smallGoldEffectObjectList:
+  - {fileID: 575269149368618753}
+  - {fileID: 575269149368618753}
+  - {fileID: 575269149368618753}
+  bigGoldEffectObject: {fileID: 575269149368618753}
+  spinEffectObject: {fileID: 575269149368618753}
+  diamondEffectObject: {fileID: 575269149368618753}
+  ticketEffectObject: {fileID: 575269149368618753}
+  eventEffectObject: {fileID: 575269149368618753}
 --- !u!1 &5375896490875439465
 GameObject:
   m_ObjectHideFlags: 0
@@ -2911,15 +2934,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f18777abe7ffb4140b9651999a307657, type: 3}
---- !u!224 &3075494680145428375 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 497421740156534858, guid: f18777abe7ffb4140b9651999a307657,
-    type: 3}
-  m_PrefabInstance: {fileID: 3191196649858645981}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &3005672594587426699 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 432102841880879190, guid: f18777abe7ffb4140b9651999a307657,
+    type: 3}
+  m_PrefabInstance: {fileID: 3191196649858645981}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &3075494680145428375 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 497421740156534858, guid: f18777abe7ffb4140b9651999a307657,
     type: 3}
   m_PrefabInstance: {fileID: 3191196649858645981}
   m_PrefabAsset: {fileID: 0}

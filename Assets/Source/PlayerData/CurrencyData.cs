@@ -42,7 +42,16 @@ public class CurrencyData : MonoBehaviour
 	public ObscuredInt legendEquipKey { get; set; }
 	public ObscuredInt dailyDiaRemainCount { get; set; }
 
-	public void OnRecvCurrencyData(Dictionary<string, int> userVirtualCurrency, Dictionary<string, VirtualCurrencyRechargeTime> userVirtualCurrencyRechargeTimes)
+	#region Betting
+	public ObscuredInt bettingCount { get; set; }
+	public ObscuredInt goldBoxTargetReward { get; set; }
+	public ObscuredInt currentGoldBoxRoomReward { get; set; }
+	public ObscuredInt goldBoxRemainTurn { get; set; }
+	public ObscuredInt ticket { get; set; }
+	public ObscuredInt eventPoint { get; set; }
+	#endregion
+
+	public void OnRecvCurrencyData(Dictionary<string, int> userVirtualCurrency, Dictionary<string, VirtualCurrencyRechargeTime> userVirtualCurrencyRechargeTimes, List<StatisticValue> playerStatistics)
 	{
 		if (userVirtualCurrency.ContainsKey("GO"))
 			gold = userVirtualCurrency["GO"];
@@ -75,6 +84,32 @@ public class CurrencyData : MonoBehaviour
 			}
 			//TimeSpan timeSpan = userVirtualCurrencyRechargeTimes["EN"].RechargeTime - DateTime.UtcNow;
 			//int totalSeconds = (int)timeSpan.TotalSeconds;
+		}
+
+		// 재화는 한정적인 자원이라 재화 안써도 되는건 통계써서 가져오기로 한다.
+		bettingCount = 0;
+		ticket = 0;
+		eventPoint = 0;
+		goldBoxRemainTurn = 0;
+		goldBoxTargetReward = 0;
+		for (int i = 0; i < playerStatistics.Count; ++i)
+		{
+			switch (playerStatistics[i].StatisticName)
+			{
+				case "betCnt": bettingCount = playerStatistics[i].Value; break;
+				case "ticket": ticket = playerStatistics[i].Value; break;
+				case "eventPoint": eventPoint = playerStatistics[i].Value; break;
+				case "goldBoxTurn": goldBoxRemainTurn = playerStatistics[i].Value; break;
+				case "goldBoxValue": goldBoxTargetReward = playerStatistics[i].Value; break;
+			}
+		}
+
+		// 최초로 계정을 생성해서 한번도 굴리지 않은 상태거나 아직 remainTurn이 설정되지 않은 상태라면
+		// 한번도 골드박스룸에 입장하지 않은 상태일거다.
+		// 이땐 FirstGoldBox로 보상을 설정해두고 사용하기로 한다.
+		if (bettingCount == 0 || goldBoxRemainTurn == 0)
+		{
+			goldBoxTargetReward = BattleInstanceManager.instance.GetCachedGlobalConstantInt("FirstGoldBox");
 		}
 	}
 
@@ -150,5 +185,27 @@ public class CurrencyData : MonoBehaviour
 		}
 		return true;
 	}
-	
+
+
+	public void OnRecvRefillSpin(int refillAmount)
+	{
+		bool full = (spin >= spinMax);
+		spin += refillAmount;
+
+		//if (full == false && OptionManager.instance.energyAlarm == 1)
+		//	CancelEnergyNotification();
+
+		if (spin >= spinMax)
+			_rechargingSpin = false;
+		else
+		{
+			if (OptionManager.instance.energyAlarm == 1)
+			{
+				//ReserveEnergyNotification();
+			}
+		}
+
+		if (BettingCanvas.instance != null)
+			BettingCanvas.instance.RefreshSpin();
+	}
 }

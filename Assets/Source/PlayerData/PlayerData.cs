@@ -34,6 +34,13 @@ public class PlayerData : MonoBehaviour
 
 	public ObscuredInt highestClearStage { get; set; }
 	public ObscuredInt selectedStage { get; set; }
+	public int currentRewardStage
+	{
+		get
+		{
+			return Mathf.Max(highestClearStage, selectedStage);
+		}
+	}
 
 	#region Player Property
 	public static int SubLevelCount = 3;
