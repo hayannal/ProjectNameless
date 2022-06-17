@@ -869,7 +869,7 @@ public class PlayFabApiManager : MonoBehaviour
 
 
 	#region Betting
-	public void RequestBetting(int useSpin, int resultGold, int resultDiamond, int resultSpin, int resultTicket, int resultEventPoint, int reserveRoomType, bool refreshTurn, int newTurn, int newGold, Action successCallback)
+	public void RequestBetting(int useSpin, int resultGold, int resultDiamond, int resultSpin, int resultTicket, int resultEventPoint, int reserveRoomType, bool refreshTurn, int newTurn, int newGold, Action<bool> successCallback)
 	{
 		WaitingNetworkCanvas.Show(true);
 
@@ -909,10 +909,12 @@ public class PlayFabApiManager : MonoBehaviour
 
 				_serverEnterKeyForRoom = (reserveRoomType != 0) ? roomFlg.ToString() : "";
 
+				bool refreshTurnComplete = false;
 				if (refreshTurn && serverRefreshTurn.ToString() == "1")
 				{
 					CurrencyData.instance.goldBoxRemainTurn = newTurn;
 					CurrencyData.instance.goldBoxTargetReward = newGold;
+					refreshTurnComplete = true;
 				}
 				else
 				{
@@ -920,7 +922,7 @@ public class PlayFabApiManager : MonoBehaviour
 						CurrencyData.instance.goldBoxRemainTurn -= 1;
 				}
 
-				if (successCallback != null) successCallback.Invoke();
+				if (successCallback != null) successCallback.Invoke(refreshTurnComplete);
 			}
 		}, (error) =>
 		{

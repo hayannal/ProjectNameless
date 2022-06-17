@@ -123,22 +123,30 @@ public class GoldBoxRoomGround : MonoBehaviour
 		boxAnimatorList[index].enabled = true;
 		boxAnimatorList[index].Play("ChestOpenAnimation");
 
+		int getGold = 0;
 		if (_listPercentIndex[0] == index)
 		{
-			_resultGold += (int)(CurrencyData.instance.currentGoldBoxRoomReward * 0.6666f);
-			Debug.LogFormat("66% : {0:N0}", (int)(CurrencyData.instance.currentGoldBoxRoomReward * 0.6666f));
+			getGold = (int)(CurrencyData.instance.currentGoldBoxRoomReward * 0.6666f);
+			Debug.LogFormat("66% : {0:N0}", getGold);
 		}
 		else if (_listPercentIndex[1] == index)
 		{
-			_resultGold += (int)(CurrencyData.instance.currentGoldBoxRoomReward * 0.1666f);
-			Debug.LogFormat("16% : {0:N0}", (int)(CurrencyData.instance.currentGoldBoxRoomReward * 0.1666f));
+			getGold = (int)(CurrencyData.instance.currentGoldBoxRoomReward * 0.1666f);
+			Debug.LogFormat("16% : {0:N0}", getGold);
 		}
 		else if (_listPercentIndex[2] == index)
 		{
-			_resultGold += (int)(CurrencyData.instance.currentGoldBoxRoomReward * 0.1666f);
-			Debug.LogFormat("16% : {0:N0}", (int)(CurrencyData.instance.currentGoldBoxRoomReward * 0.1666f));
+			getGold = (int)(CurrencyData.instance.currentGoldBoxRoomReward * 0.1666f);
+			Debug.LogFormat("16% : {0:N0}", getGold);
 		}
+		_resultGold += getGold;
 		++_openCount;
+		if (GoldBoxRoomCanvas.instance != null)
+			GoldBoxRoomCanvas.instance.UseKey();
+		if (getGold > 0 && GoldBoxRoomCanvas.instance != null)
+			GoldBoxRoomCanvas.instance.SetStoleValue(getGold);
+		if (getGold > 0)
+			ToastNumberCanvas.instance.ShowToast(getGold.ToString("N0"), 2.0f);
 
 		if (_openCount == 3)
 		{
@@ -165,5 +173,8 @@ public class GoldBoxRoomGround : MonoBehaviour
 
 		// 
 		FadeCanvas.instance.FadeIn(0.5f);
+
+		yield return Timing.WaitForSeconds(0.3f);
+		BettingCanvas.instance.CheckNeedRefreshTurn();
 	}
 }

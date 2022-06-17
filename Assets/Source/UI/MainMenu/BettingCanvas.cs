@@ -22,6 +22,11 @@ public class BettingCanvas : MonoBehaviour
 	public RectTransform[] contentRootRectTransformList;
 	public GridLayoutGroup gridLayoutGroup;
 
+	public Transform goldBoxTargetRootTransform;
+	public Text goldBoxTargetValueText;
+	public Text bettingResultText;
+	public DOTweenAnimation bettingResultTweenAnimation;
+	public Transform bettingResultTransform;
 	public Text betText;
 
 	public Slider spinRatioSlider;
@@ -75,6 +80,11 @@ public class BettingCanvas : MonoBehaviour
 
 		// 최초에 입장시 해준다.
 		InitializeSlot();
+
+		// 최초 설정
+		bettingResultText.text = "";
+		goldBoxTargetValueText.text = string.Format("{0:N0}", CurrencyData.instance.goldBoxTargetReward);
+		_needAdjustRect = true;
 	}
 
 	void OnEnable()
@@ -114,8 +124,16 @@ public class BettingCanvas : MonoBehaviour
 		MainCanvas.instance.OnEnterCharacterMenu(false);
 	}
 
+	bool _needAdjustRect;
 	void Update()
 	{
+		if (_needAdjustRect)
+		{
+			goldBoxTargetRootTransform.gameObject.SetActive(false);
+			goldBoxTargetRootTransform.gameObject.SetActive(true);
+			_needAdjustRect = false;
+		}
+
 		UpdateSlot();
 
 		#region Spin
@@ -190,12 +208,16 @@ public class BettingCanvas : MonoBehaviour
 
 		PrepareBetting();
 		PrepareGoldBoxTarget();
-		PlayFabApiManager.instance.RequestBetting(useSpin, _resultGold, _resultDiamond, _resultSpin, _resultTicket, _resultEvent, _reserveRoomType, _refreshTurn, _refreshNewTurn, _refreshNewGold, () =>
+		PlayFabApiManager.instance.RequestBetting(useSpin, _resultGold, _resultDiamond, _resultSpin, _resultTicket, _resultEvent, _reserveRoomType, _refreshTurn, _refreshNewTurn, _refreshNewGold, (refreshTurnComplete) =>
 		{
+			// 턴 바꿔야하는걸 기억시켜두고 연출을 진행하면 된다.
+			_needRefreshTurn = true;
+
 			OnRecvSpinSlot();
 		});
 	}
 
+	bool _needRefreshTurn = false;
 	void OnRecvSpinSlot()
 	{
 		// Spin은 바로 차감 후
@@ -322,6 +344,10 @@ public class BettingCanvas : MonoBehaviour
 		inputLockObject.SetActive(true);
 		backKeyButton.interactable = false;
 
+		// 스케일
+		//bettingResultTweenAnimation.DOPlayBackwards();
+		bettingResultTransform.DOScale(0.0f, 0.2f);
+
 		// 슬롯들을 회전시킨다.
 		// 회전 속도는 일정량 빠른 상태에서 조금씩 차이나는 정도다.
 		_listSpinSpeed[0] = Random.Range(2000.0f, 2050.0f);
@@ -433,6 +459,7 @@ public class BettingCanvas : MonoBehaviour
 		*/
 
 		// 결과에 따른 이펙트 처리
+		RefreshResultText();
 		BasicResultEffect();
 		currencySmallInfo.RefreshInfo();
 
@@ -462,6 +489,31 @@ public class BettingCanvas : MonoBehaviour
 		{
 			Timing.RunCoroutine(GoldBoxRoomMoveProcess());
 		}
+		else
+		{
+			// 씬이동하지 않을땐 
+			CheckNeedRefreshTurn();
+		}
+	}
+
+	public void CheckNeedRefreshTurn()
+	{
+		if (_needRefreshTurn == false)
+			return;
+
+		Timing.RunCoroutine(RefreshGoldBoxTargetValueProcess());
+	}
+
+	IEnumerator<float> RefreshGoldBoxTargetValueProcess()
+	{
+		goldBoxTargetRootTransform.DOLocalMoveX(-400.0f, 0.5f);
+
+		yield return Timing.WaitForSeconds(0.5f);
+
+		goldBoxTargetValueText.text = string.Format("{0:N0}", CurrencyData.instance.goldBoxTargetReward);
+		goldBoxTargetRootTransform.localPosition = new Vector3(400.0f, goldBoxTargetRootTransform.localPosition.y, goldBoxTargetRootTransform.localPosition.z);
+
+		goldBoxTargetRootTransform.DOLocalMoveX(0.0f, 0.5f);
 	}
 
 	#region Packet
@@ -500,9 +552,9 @@ public class BettingCanvas : MonoBehaviour
 		_listTargetValue[1] = Random.Range(0, (int)eSlotImage.Amount);
 		_listTargetValue[2] = Random.Range(0, (int)eSlotImage.Amount);
 
-		_listTargetValue[0] = (int)eSlotImage.GoldBoxRoom;
-		_listTargetValue[1] = (int)eSlotImage.GoldBoxRoom;
-		_listTargetValue[2] = (int)eSlotImage.GoldBoxRoom;
+		//_listTargetValue[0] = (int)eSlotImage.GoldBoxRoom;
+		//_listTargetValue[1] = (int)eSlotImage.GoldBoxRoom;
+		//_listTargetValue[2] = (int)eSlotImage.GoldBoxRoom;
 
 		Debug.LogFormat("Betting Prepare : {0} {1} {2}", _listTargetValue[0], _listTargetValue[1], _listTargetValue[2]);
 
@@ -659,6 +711,50 @@ public class BettingCanvas : MonoBehaviour
 	#endregion
 
 	#region EndEffect
+	void RefreshResultText()
+	{
+		string resultString = "";
+		if (_resultTicket > 0)
+		{
+			if (_resultTicket == 1) resultString = "TICKET";
+			else resultString = string.Format("{0} TICKETS", _resultTicket);
+		}
+		else if (_reserveRoomType == (int)eSlotImage.GoblinRoom)
+		{
+			resultString = "GOBLIN ROOM";
+		}
+		else if (_reserveRoomType == (int)eSlotImage.GoldBoxRoom)
+		{
+			resultString = "GOLDBOX ROOM";
+		}
+		else if (_resultDiamond > 0)
+		{
+			if (_resultDiamond == 1) resultString = "DIAMOND";
+			else resultString = string.Format("{0} DIAMONDS", _resultDiamond);
+		}
+		else if (_resultSpin > 0)
+		{
+			if (_resultSpin == 1) resultString = "SPIN";
+			else resultString = string.Format("{0} SPINS", _resultSpin);
+		}
+		else
+		{
+			if (_resultGold > 0)
+				resultString = string.Format("{0:N0}", _resultGold);
+			else if (_resultEvent > 0)
+			{
+				if (_resultEvent == 1) resultString = "EVENT POINT";
+				else resultString = string.Format("{0} EVENT POINTS", _resultEvent);
+			}
+		}
+
+		if (!string.IsNullOrEmpty(resultString))
+		{
+			bettingResultText.text = resultString;
+			bettingResultTweenAnimation.DORestart();
+		}
+	}
+
 	void BasicResultEffect()
 	{
 		// 골드나 다이아만 나올때는 이펙트 처리만 하지만
