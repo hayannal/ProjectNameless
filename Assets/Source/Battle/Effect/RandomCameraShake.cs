@@ -48,6 +48,8 @@ public class RandomCameraShake : MonoBehaviour
 			return;
 		if (GoldBoxRoomCanvas.instance != null && GoldBoxRoomCanvas.instance.gameObject.activeSelf)
 			return;
+		if (FindMonsterRoomCanvas.instance != null && FindMonsterRoomCanvas.instance.gameObject.activeSelf)
+			return;
 
 		if (startDelay == 0.0f)
 			Shake();

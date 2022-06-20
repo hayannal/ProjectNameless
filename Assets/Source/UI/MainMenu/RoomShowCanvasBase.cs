@@ -8,7 +8,7 @@ public class RoomShowCanvasBase : MonoBehaviour
 	public float roomCameraFov = 43.0f;
 
 	#region Room Camera
-	protected Vector3 _rootOffsetPosition = new Vector3(0.0f, 0.0f, -75.0f);
+	protected Vector3 _rootOffsetPosition = new Vector3(0.0f, 0.0f, -200.0f);
 	public Vector3 rootOffsetPosition { get { return _rootOffsetPosition; } }
 	bool _roomCameraMode = false;
 	//float _lastRendererResolutionFactor;

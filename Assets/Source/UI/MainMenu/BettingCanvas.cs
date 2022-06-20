@@ -56,7 +56,7 @@ public class BettingCanvas : MonoBehaviour
 		SmallDiamond = 3,
 
 		GoldBoxRoom = 4,
-		GoblinRoom = 5,
+		FindMonsterRoom = 5,
 		Ticket = 6,
 
 		Event = 7,
@@ -211,7 +211,8 @@ public class BettingCanvas : MonoBehaviour
 		PlayFabApiManager.instance.RequestBetting(useSpin, _resultGold, _resultDiamond, _resultSpin, _resultTicket, _resultEvent, _reserveRoomType, _refreshTurn, _refreshNewTurn, _refreshNewGold, (refreshTurnComplete) =>
 		{
 			// 턴 바꿔야하는걸 기억시켜두고 연출을 진행하면 된다.
-			_needRefreshTurn = true;
+			if (refreshTurnComplete)
+				_needRefreshTurn = true;
 
 			OnRecvSpinSlot();
 		});
@@ -481,9 +482,9 @@ public class BettingCanvas : MonoBehaviour
 		backKeyButton.interactable = true;
 
 		// 씬전환이 필요할테니 별도로 처리하기로 한다.
-		if (IsAll(eSlotImage.GoblinRoom))
+		if (IsAll(eSlotImage.FindMonsterRoom))
 		{
-			
+			Timing.RunCoroutine(FindMonsterRoomMoveProcess());
 		}
 		else if (IsAll(eSlotImage.GoldBoxRoom))
 		{
@@ -577,12 +578,12 @@ public class BettingCanvas : MonoBehaviour
 			// 테이블이든 랜덤이든 뭔가로 결정
 			_resultTicket = BattleInstanceManager.instance.GetCachedGlobalConstantInt("Bet3Tickets") * betRate;
 		}
-		else if (IsAll(eSlotImage.GoblinRoom))
+		else if (IsAll(eSlotImage.FindMonsterRoom))
 		{
 			// 이건 스테이지 진행에 따른 테이블같은거로 될듯. 그 안에서 미리 결정해두고 사용자가 터치하면 보여준다.
 			// 아래 GoldBoxRoom과 동일하게 여기서는 플래그만 걸고 획득 패킷은 나중에 보내기로 한다.
 			_resultGold = 0;
-			_reserveRoomType = (int)eSlotImage.GoblinRoom;
+			_reserveRoomType = (int)eSlotImage.FindMonsterRoom;
 		}
 		else if (IsAll(eSlotImage.GoldBoxRoom))
 		{
@@ -719,7 +720,7 @@ public class BettingCanvas : MonoBehaviour
 			if (_resultTicket == 1) resultString = "TICKET";
 			else resultString = string.Format("{0} TICKETS", _resultTicket);
 		}
-		else if (_reserveRoomType == (int)eSlotImage.GoblinRoom)
+		else if (_reserveRoomType == (int)eSlotImage.FindMonsterRoom)
 		{
 			resultString = "GOBLIN ROOM";
 		}
@@ -840,6 +841,29 @@ public class BettingCanvas : MonoBehaviour
 		UIInstanceManager.instance.ShowCanvasAsync("GoldBoxRoomCanvas", () =>
 		{
 			// 페이드 풀면서 BettingCanvas는 종료시킬 준비를 하고
+			inputLockObject.SetActive(false);
+			backKeyButton.interactable = true;
+
+			// 
+			FadeCanvas.instance.FadeIn(0.5f);
+		});
+	}
+
+	IEnumerator<float> FindMonsterRoomMoveProcess()
+	{
+		inputLockObject.SetActive(true);
+		backKeyButton.interactable = false;
+
+		// 골드박스 선택되었다는 이펙트 같은거나 알림 표시 후
+
+		// 이펙트 표시 시간만큼 잠시 대기
+		yield return Timing.WaitForSeconds(1.0f);
+
+		FadeCanvas.instance.FadeOut(0.2f, 1.0f, true);
+		yield return Timing.WaitForSeconds(0.2f);
+
+		UIInstanceManager.instance.ShowCanvasAsync("FindMonsterRoomCanvas", () =>
+		{
 			inputLockObject.SetActive(false);
 			backKeyButton.interactable = true;
 
