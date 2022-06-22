@@ -160,7 +160,7 @@ public class MailData : MonoBehaviour
 				return true;
 
 			// 정보가 있더라도 기간 확인 후 삭제가 필요하면 리턴 true
-			//DateTime startDateTime = new DateTime(info.sy, info.sm, info.sd);
+			DateTime startDateTime = new DateTime(info.sy, info.sm, info.sd);
 			DateTime endDateTime = new DateTime(info.ey, info.em, info.ed);
 
 			DateTime receiveTime = new DateTime();
@@ -179,6 +179,8 @@ public class MailData : MonoBehaviour
 				else
 				{
 					if (ServerTime.UtcNow > endDateTime && ServerTime.UtcNow > validTime)
+						return true;
+					if (ServerTime.UtcNow < startDateTime && ServerTime.UtcNow < endDateTime)
 						return true;
 				}
 			}
