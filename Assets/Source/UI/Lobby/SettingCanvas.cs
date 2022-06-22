@@ -17,6 +17,7 @@ public class SettingCanvas : MonoBehaviour
 
 	public Text languageButtonText;
 	public Transform accountTextTransform;
+	public Text serverIdText;
 	public GameObject googleImageObject;
 	public GameObject facebookImageObject;
 	public Text accountButtonText;
@@ -59,6 +60,8 @@ public class SettingCanvas : MonoBehaviour
 		*/
 
 		LoadOption();
+
+		serverIdText.text = PlayFabApiManager.instance.playFabId;
 
 		termsText.SetLocalizedText(UIString.instance.GetString("GameUI_TermsOfService"));
 		termsText.fontStyle = FontStyle.Italic;
