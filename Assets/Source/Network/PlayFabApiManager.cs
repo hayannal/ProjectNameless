@@ -247,11 +247,11 @@ public class PlayFabApiManager : MonoBehaviour
 		ApplyGlobalTable(loginResult.InfoResultPayload.TitleData);
 		AuthManager.instance.OnRecvAccountInfo(loginResult.InfoResultPayload.AccountInfo);
 		CurrencyData.instance.OnRecvCurrencyData(loginResult.InfoResultPayload.UserVirtualCurrency, loginResult.InfoResultPayload.UserVirtualCurrencyRechargeTimes, loginResult.InfoResultPayload.PlayerStatistics);
-
-		/*
-		DailyShopData.instance.OnRecvShopData(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData);
 		MailData.instance.OnRecvMailData(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics, loginResult.NewlyCreated);
 		SupportData.instance.OnRecvSupportData(loginResult.InfoResultPayload.UserReadOnlyData);
+
+		/*
+		DailyShopData.instance.OnRecvShopData(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData);		
 		QuestData.instance.OnRecvQuestData(loginResult.InfoResultPayload.UserReadOnlyData);
 		GuideQuestData.instance.OnRecvGuideQuestData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 		PlayerData.instance.OnRecvLevelPackageResetInfo(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData, loginResult.NewlyCreated);
@@ -964,6 +964,74 @@ public class PlayFabApiManager : MonoBehaviour
 			});
 		};
 		RetrySendManager.instance.RequestAction(action, true, true);
+	}
+	#endregion
+
+
+	#region Mail
+	public void RequestRefreshMailList(int mailTableDataCount, string osCode, int clientVersion, Action<bool, bool, bool, string, string> successCallback)
+	{
+		string input = string.Format("{0}_{1}_{2}", osCode, clientVersion, "qalzpocv");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "RefreshMail",
+			FunctionParameter = new { Mtc = mailTableDataCount, Os = osCode, CltVer = clientVersion, Cs = checkSum },
+			GeneratePlayStreamEvent = true
+		}, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("del", out object del);
+			jsonResult.TryGetValue("add", out object add);
+			jsonResult.TryGetValue("mod", out object mod);
+			jsonResult.TryGetValue("dat", out object jsonDateTime);
+			jsonResult.TryGetValue("mtd", out object jsonMailTable);
+			bool deleted = ((del.ToString()) == "1");
+			bool added = ((add.ToString()) == "1");
+			bool modified = ((mod.ToString()) == "1");
+			if (successCallback != null) successCallback.Invoke(deleted, added, modified, (string)jsonDateTime, (string)jsonMailTable);
+		}, (error) =>
+		{
+			// 5분마다 주기적으로 보내는거라 에러 핸들링 하면 안된다.
+			//HandleCommonError(error);
+		});
+	}
+
+	public void RequestReceiveMailPresent(string id, int receiveDay, string type, int addDia, int addGold, int addSpin, Action<bool> successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		ExecuteCloudScriptRequest request = new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "GetMail",
+			FunctionParameter = new { Id = id, Dy = receiveDay, Tp = type },
+			GeneratePlayStreamEvent = true,
+		};
+
+		PlayFabClientAPI.ExecuteCloudScript(request, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				bool result = MailData.instance.OnRecvGetMail(id, receiveDay, type);
+				if (result)
+				{
+					WaitingNetworkCanvas.Show(false);
+
+					CurrencyData.instance.dia += addDia;
+					CurrencyData.instance.gold += addGold;
+					if (addSpin > 0)
+						CurrencyData.instance.OnRecvRefillSpin(addSpin);
+
+					if (successCallback != null) successCallback.Invoke(failure);
+				}
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
 	}
 	#endregion
 

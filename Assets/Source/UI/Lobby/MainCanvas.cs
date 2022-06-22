@@ -238,6 +238,11 @@ public class MainCanvas : MonoBehaviour
 	{
 		UIInstanceManager.instance.ShowCanvasAsync("BettingCanvas", null);
 	}
+
+	public void OnClickMailButton()
+	{
+		UIInstanceManager.instance.ShowCanvasAsync("MailCanvas", null);
+	}
 	#endregion
 
 
