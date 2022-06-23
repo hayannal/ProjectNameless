@@ -258,9 +258,7 @@ public class MailCanvasListItem : MonoBehaviour
 		{
 			PlayFabApiManager.instance.RequestReceiveMailPresent(id, receiveDay, _type, _addDia, _addGold, _addSpin, (serverFailure) =>
 			{
-				/*
 				MainCanvas.instance.RefreshMailAlarmObject();
-				*/
 				ToastCanvas.instance.ShowToast(UIString.instance.GetString("MailUI_AfterClaim"), 2.0f);
 				MailCanvas.instance.RefreshGrid();
 			});

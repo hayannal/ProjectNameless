@@ -18,6 +18,9 @@ public class MainCanvas : MonoBehaviour
 	public GameObject inputRectObject;
 	public CanvasGroup safeAreaCanvasGroup;
 
+	public RectTransform mailAlarmRootTransform;
+	public RectTransform cashShopAlarmRootTransform;
+
 	List<Vector2> _listBasePosition = new List<Vector2>();
 	void Awake()
 	{
@@ -33,6 +36,8 @@ public class MainCanvas : MonoBehaviour
 
 		for (int i = 0; i < basePositionRectTransformList.Length; ++i)
 			basePositionRectTransformList[i].anchoredPosition = _listBasePosition[i];
+
+		RefreshAlarmObjectList();
 	}
 
 	// Start is called before the first frame update
@@ -242,6 +247,165 @@ public class MainCanvas : MonoBehaviour
 	public void OnClickMailButton()
 	{
 		UIInstanceManager.instance.ShowCanvasAsync("MailCanvas", null);
+	}
+	#endregion
+
+
+
+
+	#region AlarmObject
+	void RefreshAlarmObjectList()
+	{
+		//RefreshCashShopAlarmObject();
+		//RefreshCharacterAlarmObject();
+		RefreshMailAlarmObject();
+	}
+
+	public static bool IsAlarmCashShop()
+	{
+		bool result = false;
+		/*
+		if (DailyShopData.instance.GetTodayFreeItemData() != null && DailyShopData.instance.dailyFreeItemReceived == false)
+			result = true;
+		if (CurrencyData.instance.dailyDiaRemainCount > 0 && PlayerData.instance.sharedDailyPackageOpened == false)
+			result = true;
+		if (PlayerData.instance.chaosFragmentCount >= BattleInstanceManager.instance.GetCachedGlobalConstantInt("ChaosPowerPointsCost"))
+		{
+			for (int i = 0; i <= DailyShopData.ChaosSlotMax; ++i)
+			{
+				if (i <= DailyShopData.instance.chaosSlotUnlockLevel && DailyShopData.instance.IsPurchasedTodayChaosData(i) == false)
+					return true;
+			}
+		}
+		*/
+		return result;
+	}
+
+	public void RefreshCashShopAlarmObject()
+	{
+		/*
+		RefreshAlarmObject(IsAlarmCashShop(), cashShopAlarmRootTransform);
+		*/
+	}
+
+	public static bool IsAlarmCharacter()
+	{
+		/*
+		List<CharacterData> listCharacterData = PlayerData.instance.listCharacterData;
+		for (int i = 0; i < listCharacterData.Count; ++i)
+		{
+			if (listCharacterData[i].IsAlarmState())
+				return true;
+		}
+		*/
+		return false;
+	}
+
+	static bool IsPlusAlarmCharacter()
+	{
+		/*
+		List<CharacterData> listCharacterData = PlayerData.instance.listCharacterData;
+		for (int i = 0; i < listCharacterData.Count; ++i)
+		{
+			if (listCharacterData[i].IsPlusAlarmState())
+				return true;
+		}
+		*/
+		return false;
+	}
+
+	public static bool IsTutorialPlusAlarmCharacter()
+	{
+		/*
+		// 가지고 있는 캐릭터들의 레벨이 전부 1이면서 PlusAlarmState가 켜진 상태라면 초보자 전용 알람이라 생각하고 다른걸 띄워준다.
+		bool levelOne = true;
+		List<CharacterData> listCharacterData = PlayerData.instance.listCharacterData;
+		for (int i = 0; i < listCharacterData.Count; ++i)
+		{
+			if (listCharacterData[i].powerLevel > 1)
+			{
+				levelOne = false;
+				break;
+			}
+		}
+		if (levelOne && IsPlusAlarmCharacter())
+			return true;
+		*/
+		return false;
+	}
+
+	public void RefreshCharacterAlarmObject()
+	{
+		/*
+		RefreshAlarmObject(false, characterAlarmRootTransform);
+
+		bool showTutorialPlusAlarm = IsTutorialPlusAlarmCharacter();
+		if (showTutorialPlusAlarm)
+			AlarmObject.ShowTutorialPlusAlarm(alarmRootTransformList[(int)eButtonType.Character]);
+
+		bool show = (showTutorialPlusAlarm == false && IsAlarmCharacter());
+		if (show)
+			RefreshAlarmObject(true, (int)eButtonType.Character);
+		if (refreshLobbyAlarm)
+			LobbyCanvas.instance.RefreshAlarmObject(eButtonType.Character, show);
+
+		// 다른 DotMainMenu와 달리 Character버튼에서는 기본적인 느낌표 알람이 안뜨는 때에도 Plus알람을 체크해야한다.
+		_reserveCharacterPlusAlarm = false;
+		_reserveCharacterPlusAlarmOffset = false;
+		if (show == false && showTutorialPlusAlarm == false && IsPlusAlarmCharacter())
+			_reserveCharacterPlusAlarm = true;
+
+		if (show && showTutorialPlusAlarm == false && IsPlusAlarmCharacter())
+		{
+			_reserveCharacterPlusAlarm = true;
+			_reserveCharacterPlusAlarmOffset = true;
+		}
+		*/
+	}
+
+	bool _reserveCharacterPlusAlarm = false;
+	bool _reserveCharacterPlusAlarmOffset = false;
+	void UpdateCharacterPlusAlarm()
+	{
+		/*
+		// DotMainMenuCanvas 생성될때 같은 프레임에 호출하면 tweenAnimation이 발동된채로 보여서 Update문에서 처리하게 해둔다.
+		if (_reserveCharacterPlusAlarm)
+		{
+			if (_reserveCharacterPlusAlarmOffset)
+			{
+				AlarmObject.Show(alarmRootTransformList[(int)eButtonType.Character], false, false, true, false, null, true);
+				_reserveCharacterPlusAlarmOffset = false;
+			}
+			else
+			{
+				// CharacterListCanvas에서 했던거처럼 tweenAnimation은 안쓰지만 ignoreAutoDisable은 굳이 할 필요 없어서 false로 해둔다.
+				AlarmObject.Show(alarmRootTransformList[(int)eButtonType.Character], false, false, true);
+			}
+			_reserveCharacterPlusAlarm = false;
+		}
+		*/
+	}
+
+	public static bool IsAlarmMail()
+	{
+		return MailData.instance.GetReceivableMailPresentCount() > 0;
+	}
+
+	public void RefreshMailAlarmObject()
+	{
+		RefreshAlarmObject(IsAlarmMail(), mailAlarmRootTransform);
+	}
+
+	void RefreshAlarmObject(bool show, Transform alarmRootTransform)
+	{
+		if (show)
+		{
+			AlarmObject.Show(alarmRootTransform);
+		}
+		else
+		{
+			AlarmObject.Hide(alarmRootTransform);
+		}
 	}
 	#endregion
 

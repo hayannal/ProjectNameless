@@ -381,11 +381,9 @@ public class MailData : MonoBehaviour
 			if (MainSceneBuilder.instance != null && MainSceneBuilder.instance.lobby) lobby = true;
 			if (lobby)
 			{
-				/*
 				// 새로운 메일이 있다면 New표시를 해서 아이콘에 알려준다.
 				if (MainCanvas.instance != null && MainCanvas.instance.gameObject.activeSelf)
 					MainCanvas.instance.RefreshMailAlarmObject();
-				*/
 			}
 		}
 	}
