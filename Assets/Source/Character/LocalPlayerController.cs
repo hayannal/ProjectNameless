@@ -140,9 +140,6 @@ public sealed class LocalPlayerController : BaseCharacterController
 		if (moveAmount > 0.0f)
 		{
 			actionController.PlayActionByActionName("Move");
-
-			if (MainSceneBuilder.instance != null && MainSceneBuilder.instance.lobby && TitleCanvas.instance != null && TitleCanvas.instance.gameObject.activeSelf)
-				TitleCanvas.instance.FadeTitle();
 		}
 		else
 		{
@@ -174,9 +171,6 @@ public sealed class LocalPlayerController : BaseCharacterController
 
 		if (ScreenJoystick.instance.CheckInput(Control.eInputType.Tab) && IsAutoPlay(true) == false)
 		{
-			if (MainSceneBuilder.instance != null && MainSceneBuilder.instance.lobby && TitleCanvas.instance != null && TitleCanvas.instance.gameObject.activeSelf)
-				TitleCanvas.instance.FadeTitle();
-
 			/*
 			if (DotMainMenuCanvas.instance != null && DotMainMenuCanvas.instance.gameObject.activeSelf && StackCanvas.IsInStack(DotMainMenuCanvas.instance.gameObject) == false)
 			{

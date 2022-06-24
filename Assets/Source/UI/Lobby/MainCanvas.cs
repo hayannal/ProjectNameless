@@ -82,9 +82,6 @@ public class MainCanvas : MonoBehaviour
 
 	public void OnClickBackButton()
 	{
-		if (MainSceneBuilder.instance != null && MainSceneBuilder.instance.lobby && TitleCanvas.instance != null)
-			TitleCanvas.instance.FadeTitle();
-
 		if (LoadingCanvas.instance != null && LoadingCanvas.instance.gameObject.activeSelf)
 			return;
 
