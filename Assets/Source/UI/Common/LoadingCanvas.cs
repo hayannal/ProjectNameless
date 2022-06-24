@@ -94,6 +94,7 @@ public class LoadingCanvas : MonoBehaviour
 			return;
 		}
 		*/
+
 		// 타이틀 안나올때의 로비 진입 이벤트. 여기가 시작점이다.
 		if (PlayerData.instance.checkRestartScene)
 		{
