@@ -18,15 +18,16 @@ public class SupportWriteCanvas : MonoBehaviour
 	void OnEnable()
 	{
 		RefreshText();
+
+		StackCanvas.Push(gameObject);
+	}
+
+	void OnDisable()
+	{
+		StackCanvas.Pop(gameObject);
 	}
 
 	public void OnClickBackButton()
-	{
-		gameObject.SetActive(false);
-		UIInstanceManager.instance.ShowCanvasAsync("SupportListCanvas", null);
-	}
-
-	public void OnClickHomeButton()
 	{
 		gameObject.SetActive(false);
 	}
@@ -47,13 +48,11 @@ public class SupportWriteCanvas : MonoBehaviour
 
 		YesNoCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("GameUI_SupportSendConfirm"), () =>
 		{
-			/*
 			PlayFabApiManager.instance.ReqeustWriteInquiry(bodyInputField.text, () =>
 			{
 				gameObject.SetActive(false);
 				UIInstanceManager.instance.ShowCanvasAsync("SupportListCanvas", null);
 			});
-			*/
 		});
 	}
 }

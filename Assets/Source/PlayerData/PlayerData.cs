@@ -49,10 +49,17 @@ public class PlayerData : MonoBehaviour
 	public ObscuredInt playerLevel { get; set; }
 	#endregion
 
+	// 이용약관 확인용 변수. 값이 있으면 기록된거로 간주하고 true로 해둔다.
+	public ObscuredBool termsConfirmed { get; set; }
+
+	// 네트워크 오류로 인해 씬을 재시작할때는 타이틀 떠서 진입하듯 초기 프로세스들을 검사해야한다.
+	public bool checkRestartScene { get; set; }
+
 	public void OnNewlyCreatedPlayer()
 	{
 		highestClearStage = 0;
 		selectedStage = 1;
+		termsConfirmed = false;
 
 		// newlyCreated는 새로 생성된 계정에서만 true일거고 재접하거나 로그아웃 할때 false로 돌아와서 유지될거다.
 		newlyCreated = true;
@@ -69,13 +76,13 @@ public class PlayerData : MonoBehaviour
 
 		/*
 		lobbyDownloadState = false;
+		*/
 
 		// OnRecvPlayerData 함수들 두번 받아도 아무 문제없게 짜두면 여기서 딱히 할일은 없을거다.
 		// 두번 받는거 뿐만 아니라 모든 변수를 다 덮어서 기록하는지도 확인하면 완벽하다.(건너뛰면 이전값이 남을테니 위험)
 		//
 		// 대신 진입시에 앱구동처럼 처리하기 위해 재시작 플래그를 여기서 걸어둔다.
 		checkRestartScene = true;
-		*/
 	}
 
 	public void OnRecvPlayerStatistics(List<StatisticValue> playerStatistics)
@@ -173,7 +180,6 @@ public class PlayerData : MonoBehaviour
 		}
 		*/
 
-		/*
 		termsConfirmed = false;
 		if (userReadOnlyData.ContainsKey("termsDat"))
 		{
@@ -181,6 +187,7 @@ public class PlayerData : MonoBehaviour
 				termsConfirmed = true;
 		}
 
+		/*
 		ContentsData.instance.OnRecvContentsData(userData, userReadOnlyData);
 
 		displayName = "";

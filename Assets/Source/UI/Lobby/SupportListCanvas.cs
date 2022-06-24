@@ -32,6 +32,8 @@ public class SupportListCanvas : MonoBehaviour
 	{
 		RefreshGrid();
 
+		StackCanvas.Push(gameObject);
+
 		if (DragThresholdController.instance != null)
 			DragThresholdController.instance.ApplyUIDragThreshold();
 	}
@@ -40,15 +42,11 @@ public class SupportListCanvas : MonoBehaviour
 	{
 		if (DragThresholdController.instance != null)
 			DragThresholdController.instance.ResetUIDragThreshold();
+
+		StackCanvas.Pop(gameObject);
 	}
 
 	public void OnClickBackButton()
-	{
-		gameObject.SetActive(false);
-		UIInstanceManager.instance.ShowCanvasAsync("SettingCanvas", null);
-	}
-
-	public void OnClickHomeButton()
 	{
 		gameObject.SetActive(false);
 	}

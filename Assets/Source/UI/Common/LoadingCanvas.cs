@@ -69,8 +69,6 @@ public class LoadingCanvas : MonoBehaviour
 	}
 	#endregion
 
-	public bool onlyObjectFade { get; set; }
-
 	public void FadeOutObject()
 	{
 		progressObject.SetActive(false);
@@ -79,18 +77,13 @@ public class LoadingCanvas : MonoBehaviour
 	
 	public void OnCompleteObjectFade()
 	{
-		if (onlyObjectFade)
-		{
-			if (TitleCanvas.instance != null)
-				TitleCanvas.instance.ShowTitle();
-			gameObject.SetActive(false);
-		}
-		else
-			backgroundFadeTweenAnimation.DOPlay();
+		backgroundFadeTweenAnimation.DOPlay();
 	}
 
 	public void OnCompleteBackgroundFade()
 	{
+		Debug.Log("LoadingCanvas OnCompleteBackgroundFade");
+
 		gameObject.SetActive(false);
 
 		/*
@@ -100,7 +93,7 @@ public class LoadingCanvas : MonoBehaviour
 			DownloadManager.instance.ShowLobbyDownloadInfo();
 			return;
 		}
-
+		*/
 		// 타이틀 안나올때의 로비 진입 이벤트. 여기가 시작점이다.
 		if (PlayerData.instance.checkRestartScene)
 		{
@@ -111,6 +104,7 @@ public class LoadingCanvas : MonoBehaviour
 			return;
 		}
 
+		/*
 		// 평소에는 게임 구동 후 씬전환때만 들어오기 때문에 Event 체크만 해도 된다.
 		EventManager.instance.OnLobby();
 		*/
@@ -137,10 +131,11 @@ public class LoadingCanvas : MonoBehaviour
 		else if (ClientSaveData.instance.IsCachedInProgressGame())
 			LobbyCanvas.instance.CheckClientSaveData();
 		else
+		*/
 		{
 			// 아무것도 처리할게 없을때 언어옵션이 한국어라면 약관 띄울 준비를 한다.
 			// 약관창 뜬 상태에서 네트워크 오류로 씬 재시작시 checkRestartScene플래그가 켜지기 때문에 다시 이쪽으로 들어오게 될거다.
-			if (PlayerData.instance.termsConfirmed == false && ContentsManager.IsTutorialChapter() == false && OptionManager.instance.language == "KOR")
+			if (PlayerData.instance.termsConfirmed == false && /*ContentsManager.IsTutorialChapter() == false &&*/ OptionManager.instance.language == "KOR")
 			{
 				UIInstanceManager.instance.ShowCanvasAsync("TermsConfirmCanvas", () =>
 				{
@@ -151,13 +146,14 @@ public class LoadingCanvas : MonoBehaviour
 						// 튜토 깨자마자 1챕터로 넘어올텐데 예외처리를 하기 위해 checkRestartScene은 걸려있는 상태일거다.
 						// 약관창 처리를 위해서 이렇게 해둔건데 문제는 NewChapter 이벤트가 큐에 쌓여져있어서
 						// 다음번 씬 이동시에 나올텐데 이걸 바로 나오게 하기 위해서 여기에서 처리해둔다.
+						/*
 						bool showTitleCanvas = (MainSceneBuilder.instance != null && MainSceneBuilder.instance.lobby && TitleCanvas.instance != null && TitleCanvas.instance.gameObject.activeSelf);
 						if (EventManager.instance.IsStandbyClientEvent(EventManager.eClientEvent.NewChapter) && showTitleCanvas == false)
 							EventManager.instance.OnCompleteLobbyEvent();
+						*/
 					});
 				});
 			}
 		}
-		*/
 	}
 }

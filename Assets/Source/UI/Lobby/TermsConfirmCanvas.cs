@@ -33,7 +33,7 @@ public class TermsConfirmCanvas : MonoBehaviour
 	{
 		UIInstanceManager.instance.ShowCanvasAsync("TermsCanvas", () =>
 		{
-			TermsCanvas.instance.RefreshInfo(true, false);
+			TermsCanvas.instance.RefreshInfo(true);
 		});
 	}
 
@@ -41,13 +41,12 @@ public class TermsConfirmCanvas : MonoBehaviour
 	{
 		UIInstanceManager.instance.ShowCanvasAsync("TermsCanvas", () =>
 		{
-			TermsCanvas.instance.RefreshInfo(false, false);
+			TermsCanvas.instance.RefreshInfo(false);
 		});
 	}
 
 	public void OnClickOkButton()
 	{
-		/*
 		// 패킷 처리 후 문제가 없다면
 		PlayFabApiManager.instance.RequestConfirmTerms(() =>
 		{
@@ -55,7 +54,6 @@ public class TermsConfirmCanvas : MonoBehaviour
 			if (_okAction != null)
 				_okAction();
 		});
-		*/
 	}
 
 	public void OnClickBackgroundButton()

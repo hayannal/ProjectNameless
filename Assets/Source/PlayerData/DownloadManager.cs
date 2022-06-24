@@ -459,7 +459,6 @@ public class DownloadManager : MonoBehaviour
 			if (TermsCanvas.instance != null && TermsCanvas.instance.gameObject.activeSelf)
 				TermsCanvas.instance.gameObject.SetActive(false);
 
-			/*
 			// CheckTerms
 			if (OptionManager.instance.language == "KOR" && PlayerData.instance.termsConfirmed == false)
 			{
@@ -471,14 +470,15 @@ public class DownloadManager : MonoBehaviour
 					TermsConfirmCanvas.instance.ShowCanvas(() =>
 					{
 						UIString.instance.currentRegion = "";
+						/*
 						PlayerData.instance.lobbyDownloadState = false;
+						*/
 						Addressables.Release(_totalDownloadHandle);
 						SceneManager.LoadScene(0);
 					});
 				});
 			}
 			else
-			*/
 			{
 				// 해외는 항상 이게 뜨는거다.
 				// 로비에 있으니 메세지박스 하나는 띄워놓고 확인 누르면 씬을 이동시켜줘야한다.

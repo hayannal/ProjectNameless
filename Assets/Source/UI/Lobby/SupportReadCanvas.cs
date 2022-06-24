@@ -14,13 +14,17 @@ public class SupportReadCanvas : MonoBehaviour
 		instance = this;
 	}
 
-	public void OnClickBackButton()
+	void OnEnable()
 	{
-		gameObject.SetActive(false);
-		UIInstanceManager.instance.ShowCanvasAsync("SupportListCanvas", null);
+		StackCanvas.Push(gameObject);
 	}
 
-	public void OnClickHomeButton()
+	void OnDisable()
+	{
+		StackCanvas.Pop(gameObject);
+	}
+
+	public void OnClickBackButton()
 	{
 		gameObject.SetActive(false);
 	}

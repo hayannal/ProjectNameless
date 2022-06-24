@@ -9,7 +9,6 @@ public class TermsCanvas : MonoBehaviour
 
 	public StringTermsTable stringTermsTable;
 
-	public GameObject homeButtonObject;
 	public Text groupNameText;
 	public Text contentText;
 
@@ -21,29 +20,29 @@ public class TermsCanvas : MonoBehaviour
 		instance = this;
 	}
 
-	public void OnClickBackButton()
+	void OnEnable()
 	{
-		// StackCanvas를 사용하진 않지만 백버튼인척 하기 위해 이렇게 처리한다.
-		// 홈버튼 안보이는 이용약관 확인창에서는 그냥 닫기만 하면 된다.
-		gameObject.SetActive(false);
-		if (_showHomeButton)
-			UIInstanceManager.instance.ShowCanvasAsync("SettingCanvas", null);
+		StackCanvas.Push(gameObject);
 	}
 
-	public void OnClickHomeButton()
+	void OnDisable()
+	{
+		StackCanvas.Pop(gameObject);
+	}
+
+	public void OnClickBackButton()
 	{
 		gameObject.SetActive(false);
 	}
 
 	bool _showTerms;
 	int _page;
-	bool _showHomeButton;
-	public void RefreshInfo(bool terms, bool showHomeButton)
+	//bool _showBackButton;
+	public void RefreshInfo(bool terms)
 	{
 		_showTerms = terms;
-		_showHomeButton = showHomeButton;
-
-		homeButtonObject.SetActive(showHomeButton);
+		//_showBackButton = showBackButton;
+		//backButtonObject.SetActive(showBackButton);
 		groupNameText.SetLocalizedText(UIString.instance.GetString(terms ? "GameUI_TermsOfService" : "GameUI_PrivacyPolicy"));
 
 		if (terms)

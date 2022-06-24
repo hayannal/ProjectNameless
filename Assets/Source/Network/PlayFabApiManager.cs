@@ -1036,6 +1036,78 @@ public class PlayFabApiManager : MonoBehaviour
 	#endregion
 
 
+	#region Terms
+	public void RequestConfirmTerms(Action successCallback)
+	{
+		ExecuteCloudScriptRequest request = new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "Terms",
+			FunctionParameter = new { Terms = 1 },
+			GeneratePlayStreamEvent = true,
+		};
+		Action action = () =>
+		{
+			PlayFabClientAPI.ExecuteCloudScript(request, (success) =>
+			{
+				RetrySendManager.instance.OnSuccess();
+				PlayerData.instance.termsConfirmed = true;
+				if (successCallback != null) successCallback.Invoke();
+			}, (error) =>
+			{
+				RetrySendManager.instance.OnFailure();
+			});
+		};
+		RetrySendManager.instance.RequestAction(action, true);
+	}
+	#endregion
+
+	#region Support
+	public void RequestRefreshInquiryList(Action<string> successCallback)
+	{
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "RefreshInquiry",
+			FunctionParameter = new { Inq = 1 },
+			GeneratePlayStreamEvent = true
+		}, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("dat", out object jsonInquiryData);
+			if (successCallback != null) successCallback.Invoke((string)jsonInquiryData);
+		}, (error) =>
+		{
+			// 5분마다 주기적으로 보내는거라 에러 핸들링 하면 안된다.
+			//HandleCommonError(error);
+		});
+	}
+
+	public void ReqeustWriteInquiry(string body, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "Inquiry",
+			FunctionParameter = new { Body = body },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+				SupportData.instance.OnRecvWriteInquiry(body);
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+	#endregion
+
+
 
 	#region Sample
 	// Sample 1. 콜백도 없고 재전송도 없을땐 이렇게 간단하게 처리

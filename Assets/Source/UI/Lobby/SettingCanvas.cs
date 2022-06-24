@@ -52,12 +52,11 @@ public class SettingCanvas : MonoBehaviour
 
 	void OnEnable()
 	{
-		MainCanvas.instance.OnEnterCharacterMenu(true);
+		bool restore = StackCanvas.Push(gameObject, false, null, OnPopStack);
+		if (restore)
+			return;
 
-		/*
-		if (DotMainMenuCanvas.instance != null && DotMainMenuCanvas.instance.gameObject.activeSelf)
-			DotMainMenuCanvas.instance.OnClickBackButton();
-		*/
+		MainCanvas.instance.OnEnterCharacterMenu(true);
 
 		LoadOption();
 
@@ -70,6 +69,14 @@ public class SettingCanvas : MonoBehaviour
 	}
 
 	void OnDisable()
+	{
+		if (StackCanvas.Pop(gameObject))
+			return;
+
+		OnPopStack();
+	}
+
+	void OnPopStack()
 	{
 		if (StageManager.instance == null)
 			return;
@@ -392,10 +399,7 @@ public class SettingCanvas : MonoBehaviour
 		}
 		*/
 
-		UIInstanceManager.instance.ShowCanvasAsync("SupportListCanvas", () =>
-		{
-			OnClickHomeButton();
-		});
+		UIInstanceManager.instance.ShowCanvasAsync("SupportListCanvas", null);
 	}
 	#endregion
 
@@ -404,8 +408,7 @@ public class SettingCanvas : MonoBehaviour
 	{
 		UIInstanceManager.instance.ShowCanvasAsync("TermsCanvas", () =>
 		{
-			TermsCanvas.instance.RefreshInfo(true, true);
-			OnClickHomeButton();
+			TermsCanvas.instance.RefreshInfo(true);
 		});
 	}
 
@@ -413,8 +416,7 @@ public class SettingCanvas : MonoBehaviour
 	{
 		UIInstanceManager.instance.ShowCanvasAsync("TermsCanvas", () =>
 		{
-			TermsCanvas.instance.RefreshInfo(false, true);
-			OnClickHomeButton();
+			TermsCanvas.instance.RefreshInfo(false);
 		});
 	}
 	#endregion

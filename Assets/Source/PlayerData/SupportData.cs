@@ -81,11 +81,9 @@ public class SupportData : MonoBehaviour
 		//supportRefreshTime += TimeSpan.FromHours(1);
 		supportRefreshTime = ServerTime.UtcNow + TimeSpan.FromHours(1);
 
-		/*
 		// WaitNetwork 없이 패킷 보내서 응답이 오면 갱신해둔다. 로그아웃 없이 받으려면 이렇게 해야한다
 		// 삭제는 클라가 하지 않고 서버가 수행하니 보내주는거 받기만 하면 된다.
 		PlayFabApiManager.instance.RequestRefreshInquiryList(OnRecvRefreshInquiry);
-		*/
 	}
 
 	void OnRecvRefreshInquiry(string jsonInquiryData)
