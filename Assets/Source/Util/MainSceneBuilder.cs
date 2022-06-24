@@ -665,17 +665,11 @@ public class MainSceneBuilder : MonoBehaviour
 		Debug.LogWarning("OOOOOOOOO");
 #endif
 
-		/*
 		// step 11. title ui
 		if (s_firstTimeAfterLaunch)
 		{
-			LoadingCanvas.instance.onlyObjectFade = true;
-			//yield return _handleTitleCanvas;
-			while (_handleTitleCanvas.IsValid() && !_handleTitleCanvas.IsDone)
-				yield return null;
-			Instantiate<GameObject>(_handleTitleCanvas.Result);
+			PlayerData.instance.checkRestartScene = true;
 		}
-		*/
 
 		// 마무리 셋팅
 		_waitUpdateRemainCount = 2;
