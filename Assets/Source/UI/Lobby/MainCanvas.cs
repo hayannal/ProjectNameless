@@ -153,6 +153,7 @@ public class MainCanvas : MonoBehaviour
 			yield break;
 
 		StageManager.instance.FinalizeStage();
+		TeamManager.instance.HideForMoveMap(true);
 
 		if (_noInputRemainTime > 0.0f)
 			_noInputRemainTime = 0.001f;
@@ -178,6 +179,7 @@ public class MainCanvas : MonoBehaviour
 		challengeButtonObject.SetActive(false);
 		cancelChallengeButtonObject.SetActive(true);
 		StageManager.instance.InitializeStageFloor(PlayerData.instance.selectedStage, false);
+		TeamManager.instance.HideForMoveMap(false);
 		FadeCanvas.instance.FadeIn(0.5f);
 	}
 
@@ -202,6 +204,7 @@ public class MainCanvas : MonoBehaviour
 			yield break;
 
 		StageManager.instance.FinalizeStage();
+		TeamManager.instance.HideForMoveMap(true);
 
 		if (_noInputRemainTime > 0.0f)
 			_noInputRemainTime = 0.001f;
@@ -214,6 +217,7 @@ public class MainCanvas : MonoBehaviour
 		challengeButtonObject.SetActive(true);
 		cancelChallengeButtonObject.SetActive(false);
 		StageManager.instance.InitializeStageFloor(stage, repeatMode);
+		TeamManager.instance.HideForMoveMap(false);
 		FadeCanvas.instance.FadeIn(0.5f);
 	}
 	#endregion

@@ -574,6 +574,7 @@ public class StageManager : MonoBehaviour
 		yield return new WaitForSecondsRealtime(0.2f);
 
 		FinalizeStage();
+		TeamManager.instance.HideForMoveMap(true);
 
 		yield return new WaitForSecondsRealtime(0.1f);
 		
@@ -583,6 +584,7 @@ public class StageManager : MonoBehaviour
 			MainCanvas.instance.cancelChallengeButtonObject.SetActive(false);
 		}
 		InitializeStageFloor(PlayerData.instance.selectedStage, true);
+		TeamManager.instance.HideForMoveMap(false);
 		FadeCanvas.instance.FadeIn(0.5f, true);
 
 		Time.timeScale = 1.0f;

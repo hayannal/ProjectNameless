@@ -1,4 +1,5 @@
 ﻿//#define USE_TITLE_PLAYER_ENTITY
+//#define USE_CHARACTER_ENTITY
 
 using System;
 using System.Collections;
@@ -213,7 +214,9 @@ public class PlayFabApiManager : MonoBehaviour
 	GetObjectsResponse _titlePlayerEntityObject;
 #endif
 	Dictionary<string, GetCharacterStatisticsResult> _dicCharacterStatisticsResult = new Dictionary<string, GetCharacterStatisticsResult>();
+#if USE_CHARACTER_ENTITY
 	List<ObjectResult> _listCharacterEntityObject = new List<ObjectResult>();
+#endif
 	public void OnRecvLoginResult(LoginResult loginResult)
 	{
 		_playFabId = loginResult.PlayFabId;
@@ -281,7 +284,9 @@ public class PlayFabApiManager : MonoBehaviour
 
 		_loginResult = loginResult;
 		_dicCharacterStatisticsResult.Clear();
+#if USE_CHARACTER_ENTITY
 		_listCharacterEntityObject.Clear();
+#endif
 
 		StartTimeRecord("PlayerData");
 
@@ -300,9 +305,11 @@ public class PlayFabApiManager : MonoBehaviour
 			GetCharacterStatisticsRequest getCharacterStatisticsRequest = new GetCharacterStatisticsRequest { CharacterId = characterId };
 			PlayFabClientAPI.GetCharacterStatistics(getCharacterStatisticsRequest, OnGetCharacterStatistics, OnRecvPlayerDataFailure);
 			++_requestCountForGetPlayerData;
+#if USE_CHARACTER_ENTITY
 			GetObjectsRequest getCharacterEntityRequest = new GetObjectsRequest { Entity = new PlayFab.DataModels.EntityKey { Id = characterId, Type = "character" } };
 			PlayFabDataAPI.GetObjects(getCharacterEntityRequest, OnGetObjectsCharacter, OnRecvPlayerDataFailure);
 			++_requestCountForGetPlayerData;
+#endif
 		}
 
 		// 서버의 utcTime도 받아두기로 한다. 그래서 클라가 가지고 있는 utcTime과 차이를 구해놓고 이후 클라의 utcNow를 얻을때 보정에 쓰도록 한다.
@@ -367,6 +374,7 @@ public class PlayFabApiManager : MonoBehaviour
 		CheckCompleteRecvPlayerData();
 	}
 
+#if USE_CHARACTER_ENTITY
 	void OnGetObjectsCharacter(GetObjectsResponse result)
 	{
 		Dictionary<string, ObjectResult>.Enumerator e = result.Objects.GetEnumerator();
@@ -387,6 +395,7 @@ public class PlayFabApiManager : MonoBehaviour
 		--_requestCountForGetPlayerData;
 		CheckCompleteRecvPlayerData();
 	}
+#endif
 
 	bool _waitOnlyServerUtc = false;
 	float _getServerUtcSendTime;
@@ -679,8 +688,8 @@ public class PlayFabApiManager : MonoBehaviour
 		TimeSpaceData.instance.OnRecvEquipInventory(_loginResult.InfoResultPayload.UserInventory, _loginResult.InfoResultPayload.UserData, _loginResult.InfoResultPayload.UserReadOnlyData);
 		*/
 		PlayerData.instance.OnRecvPlayerData(_loginResult.InfoResultPayload.UserData, _loginResult.InfoResultPayload.UserReadOnlyData, _loginResult.InfoResultPayload.CharacterList, _loginResult.InfoResultPayload.PlayerProfile);
+		PlayerData.instance.OnRecvCharacterList(_loginResult.InfoResultPayload.CharacterList, _dicCharacterStatisticsResult);
 		/*
-		PlayerData.instance.OnRecvCharacterList(_loginResult.InfoResultPayload.CharacterList, _dicCharacterStatisticsResult, _listCharacterEntityObject);
 		MercenaryData.instance.OnRecvMercenaryData(_loginResult.InfoResultPayload.TitleData, false);
 		*/
 		enableCliSusQueue = false;
@@ -690,7 +699,9 @@ public class PlayFabApiManager : MonoBehaviour
 		_titlePlayerEntityObject = null;
 #endif
 		_dicCharacterStatisticsResult.Clear();
+#if USE_CHARACTER_ENTITY
 		_listCharacterEntityObject.Clear();
+#endif
 	}
 	#endregion
 

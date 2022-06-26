@@ -199,6 +199,9 @@ public class PlayerActor : Actor
 
 	public void OnChangedMainCharacter()
 	{
+		if (playerAI.useTeamMemberAI)
+			return;
+
 		bool lobby = (MainSceneBuilder.instance != null && MainSceneBuilder.instance.lobby);
 		if (lobby == false && BattleManager.instance != null && BattleManager.instance.IsDefaultBattle())
 		{

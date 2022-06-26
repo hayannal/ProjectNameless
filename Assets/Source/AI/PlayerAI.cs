@@ -19,6 +19,8 @@ public class PlayerAI : MonoBehaviour
 	BaseCharacterController baseCharacterController { get; set; }
 	SkillProcessor skillProcessor { get; set; }
 
+	public bool useTeamMemberAI { get; set; }
+
 	void OnDisable()
 	{
 		if (_cachedTargetingObjectTransform != null)
@@ -112,6 +114,9 @@ public class PlayerAI : MonoBehaviour
 	bool _lastUseSleepObject = false;
 	void UpdateTargetingObject()
 	{
+		if (useTeamMemberAI)
+			return;
+
 		if (targetCollider == null)
 		{
 			if (_cachedTargetingObjectTransform != null)
@@ -399,6 +404,9 @@ public class PlayerAI : MonoBehaviour
 	Cooltime _globalSkillCooltime;
 	void UpdateSkill()
 	{
+		if (useTeamMemberAI)
+			return;
+
 		// 공격하는거랑 비슷하긴 한데 최종적으로 SkillProcessor에게 요청해서 스킬을 발동시킬거다.
 		if (actor.actorStatus.IsDie())
 			return;

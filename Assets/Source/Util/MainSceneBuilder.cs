@@ -496,6 +496,9 @@ public class MainSceneBuilder : MonoBehaviour
 		Instantiate<GameObject>(_handleStartCharacter.Result);
 #endif
 
+		//
+		TeamManager.instance.InitializeTeamMember();
+
 #if !UNITY_EDITOR
 		Debug.LogWarning("FFFFFFFFF");
 #endif

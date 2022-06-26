@@ -46,6 +46,8 @@ public class ActorStatus : MonoBehaviour
 			{
 				//characterData = PlayerData.instance.GetCharacterData(actor.actorId);
 				//if (characterData != null) actorLevel = characterData.powerLevel;
+				// 팀원 캐릭터들도 기본 레벨은 동일한걸 받아와서 쓰기로 한다.
+				actorLevel = PlayerData.instance.playerLevel;
 			}
 		}
 		else

@@ -61,6 +61,8 @@ public class PlayerData : MonoBehaviour
 		selectedStage = 1;
 		termsConfirmed = false;
 
+		leftCharacterId = rightCharacterId = "";
+
 		// newlyCreated는 새로 생성된 계정에서만 true일거고 재접하거나 로그아웃 할때 false로 돌아와서 유지될거다.
 		newlyCreated = true;
 		loginned = true;
@@ -135,10 +137,9 @@ public class PlayerData : MonoBehaviour
 			}
 		}
 
-		/*
-		if (userData.ContainsKey("mainCharacterId"))
+		if (userData.ContainsKey("leftCharacterId"))
 		{
-			string actorId = userData["mainCharacterId"].Value;
+			string actorId = userData["leftCharacterId"].Value;
 			bool find = false;
 			for (int i = 0; i < characterList.Count; ++i)
 			{
@@ -149,14 +150,36 @@ public class PlayerData : MonoBehaviour
 				}
 			}
 			if (find)
-				_mainCharacterId = actorId;
+				leftCharacterId = actorId;
 			else
 			{
-				_mainCharacterId = "Actor0201";
+				leftCharacterId = "";
 				PlayFabApiManager.instance.RequestIncCliSus(ClientSuspect.eClientSuspectCode.InvalidMainCharacter);
 			}
 		}
 
+		if (userData.ContainsKey("rightCharacterId"))
+		{
+			string actorId = userData["rightCharacterId"].Value;
+			bool find = false;
+			for (int i = 0; i < characterList.Count; ++i)
+			{
+				if (characterList[i].CharacterName == actorId)
+				{
+					find = true;
+					break;
+				}
+			}
+			if (find)
+				rightCharacterId = actorId;
+			else
+			{
+				rightCharacterId = "";
+				PlayFabApiManager.instance.RequestIncCliSus(ClientSuspect.eClientSuspectCode.InvalidMainCharacter);
+			}
+		}
+
+		/*
 		if (userData.ContainsKey("selectedChapter"))
 		{
 			int intValue = 0;
@@ -221,4 +244,89 @@ public class PlayerData : MonoBehaviour
 		if (playerActor != null)
 			playerActor.actorStatus.InitializeActorStatus();
 	}
+
+	public void OnRecvCharacterList(List<CharacterResult> characterList, Dictionary<string, GetCharacterStatisticsResult> dicCharacterStatistics)
+	{
+		_listCharacterData.Clear();
+		for (int i = 0; i < characterList.Count; ++i)
+		{
+			string actorId = characterList[i].CharacterName;
+			string serverCharacterId = characterList[i].CharacterId;
+			if (dicCharacterStatistics.ContainsKey(serverCharacterId) == false)
+				continue;
+			if (dicCharacterStatistics[serverCharacterId].CharacterStatistics == null)
+				continue;
+
+			/*
+			// 이건 필수항목이 아니라서 없을수도 있다.
+			PlayFabApiManager.CharacterDataEntity1 dataObject = null;
+			for (int j = 0; j < characterEntityObjectList.Count; ++j)
+			{
+				if (characterEntityObjectList[j].ObjectName == actorId)
+				{
+					dataObject = JsonUtility.FromJson<PlayFabApiManager.CharacterDataEntity1>(characterEntityObjectList[j].DataObject.ToString());
+					break;
+				}
+			}
+			*/
+
+			CharacterData newCharacterData = new CharacterData();
+			newCharacterData.actorId = actorId;
+			newCharacterData.entityKey = new PlayFab.DataModels.EntityKey { Id = serverCharacterId, Type = "character" };
+			newCharacterData.Initialize(dicCharacterStatistics[serverCharacterId].CharacterStatistics);
+			_listCharacterData.Add(newCharacterData);
+		}
+	}
+
+
+	#region Character List
+	List<CharacterData> _listCharacterData = new List<CharacterData>();
+	public List<CharacterData> listCharacterData { get { return _listCharacterData; } }
+
+	public string leftCharacterId { get; set; }
+	public string rightCharacterId { get; set; }
+
+	public CharacterData GetCharacterData(string actorId)
+	{
+		for (int i = 0; i < _listCharacterData.Count; ++i)
+		{
+			if (_listCharacterData[i].actorId == actorId)
+				return _listCharacterData[i];
+		}
+		return null;
+	}
+	
+	public bool ContainsActor(string actorId)
+	{
+		for (int i = 0; i < _listCharacterData.Count; ++i)
+		{
+			if (_listCharacterData[i].actorId == actorId)
+				return true;
+		}
+		return false;
+	}
+
+	public bool ContainsActorByGrade(int grade)
+	{
+		for (int i = 0; i < _listCharacterData.Count; ++i)
+		{
+			ActorTableData actorTableData = TableDataManager.instance.FindActorTableData(_listCharacterData[i].actorId);
+			if (actorTableData.grade == grade)
+				return true;
+		}
+		return false;
+	}
+
+	public void ReinitializeActorStatus()
+	{
+		// 모든 캐릭터의 스탯을 재계산 하도록 알려야한다.
+		for (int i = 0; i < _listCharacterData.Count; ++i)
+		{
+			PlayerActor playerActor = BattleInstanceManager.instance.GetCachedPlayerActor(_listCharacterData[i].actorId);
+			if (playerActor == null)
+				continue;
+			playerActor.actorStatus.InitializeActorStatus();
+		}
+	}
+	#endregion
 }
