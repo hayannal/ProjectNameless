@@ -252,6 +252,8 @@ public class PlayFabApiManager : MonoBehaviour
 		CurrencyData.instance.OnRecvCurrencyData(loginResult.InfoResultPayload.UserVirtualCurrency, loginResult.InfoResultPayload.UserVirtualCurrencyRechargeTimes, loginResult.InfoResultPayload.PlayerStatistics);
 		MailData.instance.OnRecvMailData(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics, loginResult.NewlyCreated);
 		SupportData.instance.OnRecvSupportData(loginResult.InfoResultPayload.UserReadOnlyData);
+		CashShopData.instance.OnRecvCashShopData(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData);
+		PlayerData.instance.OnRecvServerTableData(loginResult.InfoResultPayload.TitleData);
 
 		/*
 		DailyShopData.instance.OnRecvShopData(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData);		
@@ -741,6 +743,20 @@ public class PlayFabApiManager : MonoBehaviour
 
 			HandleCommonError(error);
 			if (failureCallback != null) failureCallback.Invoke();
+		});
+	}
+
+	public void RequestGetTitleData(List<string> keys, Action<Dictionary<string, string>> successCallback)
+	{
+		PlayFabClientAPI.GetTitleData(new GetTitleDataRequest()
+		{
+			Keys = keys
+		}, (success) =>
+		{
+			if (successCallback != null) successCallback.Invoke(success.Data);
+		}, (error) =>
+		{
+			HandleCommonError(error);
 		});
 	}
 

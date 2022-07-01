@@ -34,6 +34,9 @@ public class TableDataManager : MonoBehaviour
 	public ActorInfoTable actorInfoTable;
 	public PlayerLevelTable playerLevelTable;
 
+	public EventTypeTable eventTypeTable;
+	public EventRewardTable eventRewardTable;
+
 	void Awake()
 	{
 		instance = this;
@@ -280,6 +283,26 @@ public class TableDataManager : MonoBehaviour
 		{
 			if (playerLevelTable.dataArray[i].playerLevel == level)
 				return playerLevelTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public EventTypeTableData FindEventTypeTableData(string id)
+	{
+		for (int i = 0; i < eventTypeTable.dataArray.Length; ++i)
+		{
+			if (eventTypeTable.dataArray[i].id == id)
+				return eventTypeTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public EventRewardTableData FindEventRewardTableData(string id, int num)
+	{
+		for (int i = 0; i < eventRewardTable.dataArray.Length; ++i)
+		{
+			if (eventRewardTable.dataArray[i].id == id && eventRewardTable.dataArray[i].num == num)
+				return eventRewardTable.dataArray[i];
 		}
 		return null;
 	}

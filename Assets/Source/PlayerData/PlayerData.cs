@@ -49,11 +49,69 @@ public class PlayerData : MonoBehaviour
 	public ObscuredInt playerLevel { get; set; }
 	#endregion
 
+	// 서버 테이블 갱신시간. 플레이어 데이터와 상관없이 하루 단위로 받아서 갱신하는거다.
+	public DateTime serverTableRefreshTime { get; private set; }
+
 	// 이용약관 확인용 변수. 값이 있으면 기록된거로 간주하고 true로 해둔다.
 	public ObscuredBool termsConfirmed { get; set; }
 
 	// 네트워크 오류로 인해 씬을 재시작할때는 타이틀 떠서 진입하듯 초기 프로세스들을 검사해야한다.
 	public bool checkRestartScene { get; set; }
+
+	void Update()
+	{
+		UpdateServerTableRefreshTime();
+	}
+
+	List<string> _listTitleKey;
+	void UpdateServerTableRefreshTime()
+	{
+		if (loginned == false)
+			return;
+
+		/*
+		if (_listDailyShopSlotInfo == null)
+			return;
+		*/
+
+		if (DateTime.Compare(ServerTime.UtcNow, serverTableRefreshTime) < 0)
+			return;
+
+		// 상품의 구매 여부와 상관없이 무조건 갱신해야한다.
+		serverTableRefreshTime += TimeSpan.FromDays(1);
+
+		if (_listTitleKey == null)
+		{
+			_listTitleKey = new List<string>();
+			//_listTitleKey.Add("daShp");
+			//_listTitleKey.Add("daFre");
+
+			// 데일리 샵 관련 테이블 말고도 아래에서 추가로 받아야하는 것들도 포함시켜야한다.
+			//_listTitleKey.Add("lvRst");
+			//_listTitleKey.Add("mcLst");
+			//_listTitleKey.Add("rnkSt");
+			//_listTitleKey.Add("rnkBan");
+		}
+
+		// 패킷을 보내서 새 정보를 받아와야한다.
+		PlayFabApiManager.instance.RequestGetTitleData(_listTitleKey, (dicData) =>
+		{
+			// 새 테이블로 갱신하면 된다.
+			OnRecvServerTableData(dicData);
+
+			// 이땐 절대 구매 내역을 초기화 하면 안된다. 이 타이밍은 날짜 갱신 5분전에 상점 리스트를 새로 받는거라 구매 내역은 실제로 날짜가 갱신되는 타이밍에 해야한다.
+
+
+			// 테이블 받는 로직이 이미 구현되어있어서 레벨팩 리셋 타이머도 같이 처리해주기로 한다.
+			//OnRecvLevelPackageResetInfo(dicData);
+
+			// 머셔너리 데이터도 같이 포함
+			//MercenaryData.instance.OnRecvMercenaryData(dicData, true);
+
+			// 랭킹 예비 추가삭제 리스트도 포함
+			//RankingData.instance.OnRecvRankingData(dicData);
+		});
+	}
 
 	public void OnNewlyCreatedPlayer()
 	{
@@ -85,6 +143,38 @@ public class PlayerData : MonoBehaviour
 		//
 		// 대신 진입시에 앱구동처럼 처리하기 위해 재시작 플래그를 여기서 걸어둔다.
 		checkRestartScene = true;
+	}
+
+	public void OnRecvServerTableData(Dictionary<string, string> titleData)
+	{
+		// 일일 상점같은 서버 테이블을 매일 받아두기 위해 만든 함수.
+		// 특이한건 딱 날짜 넘어가는 타이밍에 받으면 잠깐 데이터가 틀어질 수 있기 때문에 5분전에 미리 받는거로 해둔다.
+		// 이럼 다음날에 되자마자 바로 갱신하는데 쓰일 수 있다.
+		// 사실 당일 데이터를 바꿔놨다면 저 3분 사이에 다른템이 나올 수 있다는건데
+		// 이런식으로 당일 데이터를 바꾸는 일은 없을테니까 할 수 있는 방식이다.
+		serverTableRefreshTime = new DateTime(ServerTime.UtcNow.Year, ServerTime.UtcNow.Month, ServerTime.UtcNow.Day) + TimeSpan.FromDays(1) - TimeSpan.FromMinutes(3);
+
+		// 그런데 만약 서버 리셋타임 5분도 안남기고 접속한거라면 괜히 또 받아질테니 리셋 타임과 비교해봐서 하루를 밀어둔다.
+		if (DateTime.Compare(ServerTime.UtcNow, serverTableRefreshTime) < 0)
+		{
+		}
+		else
+			serverTableRefreshTime += TimeSpan.FromDays(1);
+
+		/*
+		_listDailyShopSlotInfo = null;
+		_listDailyFreeItemInfo = null;
+
+		var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
+
+		// 일일상점 데이터
+		if (titleData.ContainsKey("daShp"))
+			_listDailyShopSlotInfo = serializer.DeserializeObject<List<DailyShopSlotInfo>>(titleData["daShp"]);
+
+		// 일일 무료 아이템
+		if (titleData.ContainsKey("daFre"))
+			_listDailyFreeItemInfo = serializer.DeserializeObject<List<DailyFreeItemInfo>>(titleData["daFre"]);
+		*/
 	}
 
 	public void OnRecvPlayerStatistics(List<StatisticValue> playerStatistics)
@@ -154,7 +244,7 @@ public class PlayerData : MonoBehaviour
 			else
 			{
 				leftCharacterId = "";
-				PlayFabApiManager.instance.RequestIncCliSus(ClientSuspect.eClientSuspectCode.InvalidMainCharacter);
+				//PlayFabApiManager.instance.RequestIncCliSus(ClientSuspect.eClientSuspectCode.InvalidMainCharacter);
 			}
 		}
 
@@ -175,7 +265,7 @@ public class PlayerData : MonoBehaviour
 			else
 			{
 				rightCharacterId = "";
-				PlayFabApiManager.instance.RequestIncCliSus(ClientSuspect.eClientSuspectCode.InvalidMainCharacter);
+				//PlayFabApiManager.instance.RequestIncCliSus(ClientSuspect.eClientSuspectCode.InvalidMainCharacter);
 			}
 		}
 
