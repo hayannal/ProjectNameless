@@ -643,11 +643,11 @@ public class MonsterAI : MonoBehaviour
 	#endregion
 	void UpdateChase()
 	{
-		if (pathFinderController.agent.destination != StageManager.instance.monsterTargetPosition)
-		{
-			if (pathFinderController.agent.pathPending)
-				pathFinderController.agent.ResetPath();
+		if (pathFinderController.agent.pathPending)
+			pathFinderController.agent.ResetPath();
 
+		if (pathFinderController.agent.destination.x != StageManager.instance.monsterTargetPosition.x || pathFinderController.agent.destination.z != StageManager.instance.monsterTargetPosition.z)
+		{
 			if (pathFinderController.agent.isOnNavMesh)
 				pathFinderController.agent.destination = StageManager.instance.monsterTargetPosition;
 		}
