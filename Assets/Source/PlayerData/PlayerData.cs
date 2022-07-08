@@ -115,7 +115,8 @@ public class PlayerData : MonoBehaviour
 
 	public void OnNewlyCreatedPlayer()
 	{
-		highestClearStage = 0;
+		OnRecvPlayerStatistics(null);
+
 		selectedStage = 1;
 		termsConfirmed = false;
 
@@ -191,6 +192,9 @@ public class PlayerData : MonoBehaviour
 		}
 		for (int i = 0; i < _listSubLevel.Count; ++i)
 			_listSubLevel[i] = 0;
+
+		if (playerStatistics == null)
+			return;
 
 		// confirm
 		for (int i = 0; i < playerStatistics.Count; ++i)
