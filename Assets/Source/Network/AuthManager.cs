@@ -159,7 +159,7 @@ public class AuthManager : MonoBehaviour
 
 #if Google
 	//Google
-	private string webClientId = "1044940954131-maditus5m72kc7vs7famr207mu3ug65j.apps.googleusercontent.com";
+	private string webClientId = "206766975983-dfkb7sijaifijqrv7j2c0h22f656ipd3.apps.googleusercontent.com";
 	private GoogleSignInConfiguration configuration;
 	private GoogleSignInUser googleUser;
 #endif
