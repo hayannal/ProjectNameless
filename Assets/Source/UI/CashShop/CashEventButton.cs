@@ -8,16 +8,20 @@ public class CashEventButton : MonoBehaviour
 {
 	public string cashEventId;
 	public Text remainTimeText;
+	public GameObject buttonRootObject;
 
 	void OnEnable()
 	{
-		if (!string.IsNullOrEmpty(cashEventId))
+		if (string.IsNullOrEmpty(cashEventId))
 			return;
 
 		bool isShow = CashShopData.instance.IsShowEvent(cashEventId);
 		if (isShow)
 			_eventExpireDateTime = CashShopData.instance.GetExpireDateTime(cashEventId);
-		gameObject.SetActive(isShow);
+
+		if (buttonRootObject == null)
+			buttonRootObject = gameObject;
+		buttonRootObject.SetActive(isShow);
 	}
 
 	void Update()
@@ -49,7 +53,7 @@ public class CashEventButton : MonoBehaviour
 			// 이벤트 기간이 끝났으면 닫아버리는게 제일 편하다.
 			// 토스트 출력은 열어둔 창에 대해서만 할테니 버튼은 그냥 닫으면 될거같다.
 			//ToastCanvas.instance.ShowToast(UIString.instance.GetString("LoginUI_EventExpired"), 2.0f);
-			gameObject.SetActive(false);
+			buttonRootObject.SetActive(false);
 		}
 	}
 
