@@ -644,10 +644,7 @@ public class PlayFabApiManager : MonoBehaviour
 		// 당연히 Async구조이기 때문에 코루틴으로 바꿔서 대기해야한다.
 		//int resourceNumber = 0;
 		//int.TryParse(split[2], out resourceNumber);
-		/*
-		 * 잠시 번들체크는 빼두자.
 		needCheckResourceVersion = true;
-		*/
 
 		return true;
 	}
