@@ -132,8 +132,8 @@ public class TeamManager : MonoBehaviour
 		Vector3 offset = Vector3.zero;
 		switch  (positionType)
 		{
-			case ePosition.Left: offset = new Vector3(-1.5f, 0.0f, -0.5f); break;
-			case ePosition.Right: offset = new Vector3(1.5f, 0.0f, -0.5f); break;
+			case ePosition.Left: offset = new Vector3(-1.5f, 0.0f, 0.3f); break;
+			case ePosition.Right: offset = new Vector3(1.5f, 0.0f, 0.3f); break;
 		}
 		playerActor.cachedTransform.position = basePosition + offset;
 	}
