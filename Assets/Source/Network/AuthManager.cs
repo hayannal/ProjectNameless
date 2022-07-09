@@ -1031,7 +1031,9 @@ public class AuthManager : MonoBehaviour
 		ObscuredPrefs.DeleteKey(APPLE_USER_ID_KEY);
 		ObscuredPrefs.DeleteKey(APPLE_IDENTITY_TOKEN_KEY);
 		DeleteCachedLastLoginInfo();
+		/*
 		ClientSaveData.instance.OnEndGame();
+		*/
 		PlayerData.instance.ResetData();
 		SceneManager.LoadScene(0);
 	}
@@ -1040,7 +1042,9 @@ public class AuthManager : MonoBehaviour
 	{
 		// 리스타트도 마찬가지
 		ChangeLastAuthType(AuthManager.eAuthType.Apple);
+		/*
 		ClientSaveData.instance.OnEndGame();
+		*/
 		PlayerData.instance.ResetData();
 		SceneManager.LoadScene(0);
 	}
