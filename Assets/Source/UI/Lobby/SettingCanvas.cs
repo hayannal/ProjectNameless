@@ -336,8 +336,10 @@ public class SettingCanvas : MonoBehaviour
 #elif UNITY_IOS
 		MobileNotificationWrapper.instance.CheckAuthorization(() =>
 		{
+			/*
 			CurrencyData.instance.ReserveEnergyNotification();
 			GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.EnergyChargeAlarm);
+			*/
 		}, () =>
 		{
 			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_EnergyNotiAppleLast"), 2.0f);

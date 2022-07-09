@@ -897,7 +897,9 @@ public class AuthManager : MonoBehaviour
 
 		// 로그아웃시에 하는 것도 구글과 비슷
 		DeleteCachedLastLoginInfo();
+		/*
 		ClientSaveData.instance.OnEndGame();
+		*/
 		PlayerData.instance.ResetData();
 		SceneManager.LoadScene(0);
 	}
@@ -906,7 +908,9 @@ public class AuthManager : MonoBehaviour
 	{
 		// 리스타트도 마찬가지
 		ChangeLastAuthType(AuthManager.eAuthType.Facebook);
+		/*
 		ClientSaveData.instance.OnEndGame();
+		*/
 		PlayerData.instance.ResetData();
 		SceneManager.LoadScene(0);
 	}
