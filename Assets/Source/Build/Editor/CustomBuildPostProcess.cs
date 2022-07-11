@@ -28,16 +28,18 @@ public static class CustomBuildPostProcess
 		string productName = pbxProject.GetBuildPropertyForAnyConfig(targetGUID, "PRODUCT_NAME");
 		Debug.LogFormat("BundleId : {0} / ProductName : {1}", bundleId, productName);
 
-		string newProductName = "Nameless Origin";
+		string newProductName = "Nameless Master";
 		if (productName != newProductName)
 		{
 			pbxProject.SetBuildProperty(targetGUID, "PRODUCT_NAME", newProductName);
 		}
-		string newBundleId = "com.powersourcestudio.namelessorigin";
+		/*
+		string newBundleId = "com.powersourcestudio.namelessmaster";
 		if (bundleId != newBundleId)
 		{
 			pbxProject.SetBuildProperty(targetGUID, "PRODUCT_BUNDLE_IDENTIFIER", newBundleId);
 		}
+		*/
 		pbxProject.WriteToFile(pbxProjectPath);
 
 
