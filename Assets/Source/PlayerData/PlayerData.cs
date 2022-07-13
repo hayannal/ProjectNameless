@@ -122,6 +122,8 @@ public class PlayerData : MonoBehaviour
 
 		leftCharacterId = rightCharacterId = "";
 
+		AnalysisData.instance.OnNewlyCreatedPlayer();
+
 		// newlyCreated는 새로 생성된 계정에서만 true일거고 재접하거나 로그아웃 할때 false로 돌아와서 유지될거다.
 		newlyCreated = true;
 		loginned = true;

@@ -36,6 +36,7 @@ public class TableDataManager : MonoBehaviour
 
 	public EventTypeTable eventTypeTable;
 	public EventRewardTable eventRewardTable;
+	public AnalysisTable analysisTable;
 
 	void Awake()
 	{
@@ -303,6 +304,16 @@ public class TableDataManager : MonoBehaviour
 		{
 			if (eventRewardTable.dataArray[i].id == id && eventRewardTable.dataArray[i].num == num)
 				return eventRewardTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public AnalysisTableData FindAnalysisTableData(int level)
+	{
+		for (int i = 0; i < analysisTable.dataArray.Length; ++i)
+		{
+			if (analysisTable.dataArray[i].level == level)
+				return analysisTable.dataArray[i];
 		}
 		return null;
 	}

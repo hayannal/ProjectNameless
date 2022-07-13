@@ -284,12 +284,12 @@ public class AuthManager : MonoBehaviour
 		playerStatisticNames.Add("eventPoint");
 		playerStatisticNames.Add("goldBoxTurn");
 		playerStatisticNames.Add("goldBoxValue");
+		playerStatisticNames.Add("analysisExp");
 		/*
 		playerStatisticNames.Add("highestValue");
 		playerStatisticNames.Add("nodClLv");
 		playerStatisticNames.Add("guideQuestIndex");
 		playerStatisticNames.Add("chaosFragment");
-		playerStatisticNames.Add("analysisExp");
 		playerStatisticNames.Add("pointShopPoint");
 		playerStatisticNames.Add("chtRnkSus");
 		*/

@@ -19,6 +19,7 @@ public class MainCanvas : MonoBehaviour
 	public CanvasGroup safeAreaCanvasGroup;
 
 	public RectTransform mailAlarmRootTransform;
+	public RectTransform analysisAlarmRootTransform;
 	public RectTransform cashShopAlarmRootTransform;
 
 	List<Vector2> _listBasePosition = new List<Vector2>();
@@ -235,7 +236,7 @@ public class MainCanvas : MonoBehaviour
 		safeAreaCanvasGroup.blocksRaycasts = !enter;
 	}
 
-	bool IsHideState()
+	public bool IsHideState()
 	{
 		return (safeAreaCanvasGroup.alpha == 0.0f);
 	}
@@ -244,6 +245,11 @@ public class MainCanvas : MonoBehaviour
 	{
 		UIInstanceManager.instance.ShowCanvasAsync("BettingCanvas", null);
 	}
+
+	public void OnClickAnalysisButton()
+	{
+		UIInstanceManager.instance.ShowCanvasAsync("ResearchCanvas", null);
+	} 
 
 	public void OnClickMailButton()
 	{
@@ -260,6 +266,7 @@ public class MainCanvas : MonoBehaviour
 		//RefreshCashShopAlarmObject();
 		//RefreshCharacterAlarmObject();
 		RefreshMailAlarmObject();
+		RefreshAnalysisAlarmObject();
 	}
 
 	public static bool IsAlarmCashShop()
@@ -395,6 +402,16 @@ public class MainCanvas : MonoBehaviour
 	public void RefreshMailAlarmObject()
 	{
 		RefreshAlarmObject(IsAlarmMail(), mailAlarmRootTransform);
+	}
+
+	public static bool IsAlarmAnalysis()
+	{
+		return ResearchInfoAnalysisCanvas.CheckAnalysis();
+	}
+
+	public void RefreshAnalysisAlarmObject()
+	{
+		RefreshAlarmObject(IsAlarmAnalysis(), analysisAlarmRootTransform);
 	}
 
 	void RefreshAlarmObject(bool show, Transform alarmRootTransform)
