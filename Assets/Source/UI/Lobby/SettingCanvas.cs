@@ -347,20 +347,20 @@ public class SettingCanvas : MonoBehaviour
 		}
 
 #if UNITY_ANDROID
+		CurrencyData.instance.ReserveSpinNotification();
 		/*
-		CurrencyData.instance.ReserveEnergyNotification();
 		GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.EnergyChargeAlarm);
 		*/
 #elif UNITY_IOS
 		MobileNotificationWrapper.instance.CheckAuthorization(() =>
 		{
+			CurrencyData.instance.ReserveSpinNotification();
 			/*
-			CurrencyData.instance.ReserveEnergyNotification();
 			GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.EnergyChargeAlarm);
 			*/
 		}, () =>
 		{
-			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_EnergyNotiAppleLast"), 2.0f);
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_SpinNotiAppleLast"), 2.0f);
 			Timing.RunCoroutine(DelayedResetSwitch());
 		});
 #endif

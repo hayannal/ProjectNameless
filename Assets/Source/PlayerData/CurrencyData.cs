@@ -174,17 +174,39 @@ public class CurrencyData : MonoBehaviour
 				{
 					// full이 아니었다면 이전에 등록되어있던 Noti를 먼저 삭제해야한다.
 					// 만약 energyAlarm을 꺼둔채로 에너지를 소모했다면 취소시킬 Noti가 없을텐데 그걸 판단할 방법은 귀찮으므로 그냥 Cancel 호출하는거로 해둔다.
-					//CancelEnergyNotification();
+					CancelSpinNotification();
 				}
 			}
 
 			if (OptionManager.instance.energyAlarm == 1)
 			{
-				//ReserveEnergyNotification();
+				ReserveSpinNotification();
 			}
 		}
 		return true;
 	}
+
+	#region Notification
+	const int SpinNotificationId = 10001;
+	public void ReserveSpinNotification()
+	{
+		// 충전때까지의 시간을 구해서
+		if (spin >= spinMax)
+			return;
+
+		int diffMinusOne = spinMax - spin - 1;
+		TimeSpan remainTime = _spinRechargeTime - ServerTime.UtcNow;
+		double totalSecond = remainTime.TotalSeconds + diffMinusOne * BattleInstanceManager.instance.GetCachedGlobalConstantInt("TimeSecToGetOneSpin");
+		DateTime deliveryTime = DateTime.Now.ToLocalTime() + TimeSpan.FromSeconds(totalSecond);
+		MobileNotificationWrapper.instance.SendNotification(SpinNotificationId, UIString.instance.GetString("SystemUI_SpinFullTitle"), UIString.instance.GetString("SystemUI_SpinFullBody"),
+			deliveryTime, null, true, "my_custom_icon_id", "my_custom_large_icon_id");
+	}
+
+	public void CancelSpinNotification()
+	{
+		MobileNotificationWrapper.instance.CancelPendingNotificationItem(SpinNotificationId);
+	}
+	#endregion
 
 
 	public void OnRecvRefillSpin(int refillAmount)
@@ -192,8 +214,8 @@ public class CurrencyData : MonoBehaviour
 		bool full = (spin >= spinMax);
 		spin += refillAmount;
 
-		//if (full == false && OptionManager.instance.energyAlarm == 1)
-		//	CancelEnergyNotification();
+		if (full == false && OptionManager.instance.energyAlarm == 1)
+			CancelSpinNotification();
 
 		if (spin >= spinMax)
 			_rechargingSpin = false;
@@ -201,7 +223,7 @@ public class CurrencyData : MonoBehaviour
 		{
 			if (OptionManager.instance.energyAlarm == 1)
 			{
-				//ReserveEnergyNotification();
+				ReserveSpinNotification();
 			}
 		}
 
