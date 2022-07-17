@@ -315,6 +315,16 @@ public class PlayerData : MonoBehaviour
 			displayName = playerProfile.DisplayName;
 		*/
 
+		if (userReadOnlyData.ContainsKey("delAccDat"))
+		{
+			if (string.IsNullOrEmpty(userReadOnlyData["delAccDat"].Value) == false)
+			{
+				// 통계랑 항상 쌍으로 기록하기때문에 readOnlyData 한쪽만 검사해도 무방하다
+				// 여기 값이 들어있으면 
+				PlayFabApiManager.instance.RequestDeleteAccount(true, null);
+			}
+		}
+
 		newlyCreated = false;
 		loginned = true;
 	}

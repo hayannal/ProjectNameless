@@ -21,6 +21,7 @@ public class SettingCanvas : MonoBehaviour
 	public GameObject googleImageObject;
 	public GameObject appleImageObject;
 	public Text accountButtonText;
+	public GameObject accountDeleteButtonObject;
 	public Slider frameRateSlider;
 	public Text frameRateText;
 	public SwitchAnim energyAlarmSwitch;
@@ -166,6 +167,7 @@ public class SettingCanvas : MonoBehaviour
 				accountButtonText.SetLocalizedText(UIString.instance.GetString("GameUI_LogOut"));
 				break;
 		}
+		accountDeleteButtonObject.SetActive(lastAuthType == AuthManager.eAuthType.Apple);
 	}
 
 	public void OnClickAccountMoreButton()
@@ -303,6 +305,17 @@ public class SettingCanvas : MonoBehaviour
 		}
 	}
 #endif
+
+	public void OnClickAccountDeleteButton()
+	{
+		YesNoCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("GameUI_DeleteAccountConfirm"), () =>
+		{
+			PlayFabApiManager.instance.RequestDeleteAccount(false, () =>
+			{
+				Application.Quit();
+			});
+		});
+	}
 	#endregion
 
 	#region Frame Rate

@@ -1060,6 +1060,29 @@ public class PlayFabApiManager : MonoBehaviour
 	#endregion
 
 
+	#region Account Delete
+	public void RequestDeleteAccount(bool cancel, Action successCallback)
+	{
+		if (cancel == false)
+			WaitingNetworkCanvas.Show(true);
+
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "DeleteAccount",
+			FunctionParameter = new { Cancel = cancel ? 1 : 0 },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			if (cancel == false)
+				WaitingNetworkCanvas.Show(false);
+			if (successCallback != null) successCallback.Invoke();
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+	#endregion
+
 	#region Terms
 	public void RequestConfirmTerms(Action successCallback)
 	{
