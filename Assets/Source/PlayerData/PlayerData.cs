@@ -122,7 +122,8 @@ public class PlayerData : MonoBehaviour
 
 		leftCharacterId = rightCharacterId = "";
 
-		AnalysisData.instance.OnNewlyCreatedPlayer();
+		// 계정 시작시 패킷 오류가 생기면 복구할 방법이 없기 때문에 여기서 처리하지 않기로 하고 Update돌면서 확인하기로 한다.
+		//AnalysisData.instance.OnNewlyCreatedPlayer();
 
 		// newlyCreated는 새로 생성된 계정에서만 true일거고 재접하거나 로그아웃 할때 false로 돌아와서 유지될거다.
 		newlyCreated = true;

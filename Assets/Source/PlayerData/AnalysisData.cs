@@ -33,20 +33,7 @@ public class AnalysisData : MonoBehaviour
 	public DateTime analysisStartedTime { get; private set; }
 	public DateTime analysisCompleteTime { get; private set; }
 
-	public void OnNewlyCreatedPlayer()
-	{
-		// 처음이라면 분석시작을 서버에 알려서 기록해야한다. 딱 한번만 날리는 패킷
-		_waitFirstStartPacket = true;
-		PlayFabApiManager.instance.RequestStartAnalysis(() =>
-		{
-			_waitFirstStartPacket = false;
-		}, () =>
-		{
-			_waitFirstStartPacket = false;
-			_retryFirstStartRemainTime = 3.0f;
-		});
-		
-	}
+	
 
 	void Update()
 	{
@@ -70,9 +57,23 @@ public class AnalysisData : MonoBehaviour
 			if (_retryFirstStartRemainTime <= 0.0f)
 			{
 				_retryFirstStartRemainTime = 0.0f;
-				OnNewlyCreatedPlayer();
+				StartAnalysis();
 			}
 		}
+	}
+
+	public void StartAnalysis()
+	{
+		// 처음이라면 분석시작을 서버에 알려서 기록해야한다. 딱 한번만 날리는 패킷
+		_waitFirstStartPacket = true;
+		PlayFabApiManager.instance.RequestStartAnalysis(() =>
+		{
+			_waitFirstStartPacket = false;
+		}, () =>
+		{
+			_waitFirstStartPacket = false;
+			_retryFirstStartRemainTime = 3.0f;
+		});
 	}
 
 	public void OnRecvAnalysisData(Dictionary<string, UserDataRecord> userReadOnlyData, List<StatisticValue> playerStatistics)
@@ -97,6 +98,12 @@ public class AnalysisData : MonoBehaviour
 			if (string.IsNullOrEmpty(userReadOnlyData["anlyStrDat"].Value) == false)
 				OnRecvAnalysisStartInfo(userReadOnlyData["anlyStrDat"].Value);
 		}
+
+		// 로그인 할때마다 analysisStarted 시작 상태가 아니라면 초기화를 진행해야한다.
+		// 대신 로그인 하자마자 보내면 디비에서 제대로 처리 못할 수 도 있을테니
+		// 1초 뒤에 보내도록 한다.
+		if (analysisLevel == 1 && analysisStarted == false)
+			_retryFirstStartRemainTime = 1.0f;
 	}
 
 	public void OnRecvAnalysisStartInfo(string lastAnalysisStartTimeString)
