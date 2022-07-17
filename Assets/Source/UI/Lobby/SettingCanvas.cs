@@ -19,7 +19,7 @@ public class SettingCanvas : MonoBehaviour
 	public Transform accountTextTransform;
 	public Text serverIdText;
 	public GameObject googleImageObject;
-	public GameObject facebookImageObject;
+	public GameObject appleImageObject;
 	public Text accountButtonText;
 	public Slider frameRateSlider;
 	public Text frameRateText;
@@ -41,10 +41,10 @@ public class SettingCanvas : MonoBehaviour
 		_ignoreStartEvent = true;
 #if UNITY_ANDROID
 		googleImageObject.SetActive(true);
-		facebookImageObject.SetActive(false);
+		appleImageObject.SetActive(false);
 #elif UNITY_IOS
 		googleImageObject.SetActive(false);
-		facebookImageObject.SetActive(true);
+		appleImageObject.SetActive(true);
 		// minValue를 고치는건 한번만 하면 된다.
 		frameRateSlider.minValue = 5;
 #endif
@@ -162,7 +162,7 @@ public class SettingCanvas : MonoBehaviour
 				accountButtonText.SetLocalizedText(UIString.instance.GetString("GameUI_SignIn"));
 				break;
 			case AuthManager.eAuthType.Google:
-			case AuthManager.eAuthType.Facebook:
+			case AuthManager.eAuthType.Apple:
 				accountButtonText.SetLocalizedText(UIString.instance.GetString("GameUI_LogOut"));
 				break;
 		}
@@ -176,7 +176,7 @@ public class SettingCanvas : MonoBehaviour
 	public void OnClickGoogleButton()
 	{
 #if UNITY_IOS
-		OnClickFacebookButton();
+		OnClickAppleButton();
 		return;
 #endif
 
@@ -248,14 +248,14 @@ public class SettingCanvas : MonoBehaviour
 	}
 
 #if UNITY_IOS
-	// 아이폰에서는 페이스북쪽으로 처리해준다.
-	void OnClickFacebookButton()
+	// 아이폰에서는 애플쪽으로 처리해준다.
+	void OnClickAppleButton()
 	{
 		AuthManager.eAuthType lastAuthType = AuthManager.instance.GetLastLoginType();
 		switch (lastAuthType)
 		{
 			case AuthManager.eAuthType.Guest:
-				AuthManager.instance.LinkFacebookAccount(() =>
+				AuthManager.instance.LinkAppleAccount(() =>
 				{
 					RefreshAccount();
 					ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_SignInDone"), 2.0f);
@@ -272,16 +272,16 @@ public class SettingCanvas : MonoBehaviour
 					{
 						YesNoCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("GameUI_SignInAlready"), () =>
 						{
-							// 이미 페이스북 로그인은 되어있는 상태지만 Last AuthType는 CustomId인 상태다. 그러니 Last AuthType을 바꾸고 씬을 재시작시켜야한다.
-							AuthManager.instance.RestartWithFacebook();
+							// 이미 애플 로그인은 되어있는 상태지만 Last AuthType는 CustomId인 상태다. 그러니 Last AuthType을 바꾸고 씬을 재시작시켜야한다.
+							AuthManager.instance.RestartWithApple();
 						}, () =>
 						{
-							AuthManager.instance.LogoutWithFacebook(true);
+							AuthManager.instance.LogoutWithApple(true);
 						});
 					}
 				});
 				break;
-			case AuthManager.eAuthType.Facebook:
+			case AuthManager.eAuthType.Apple:
 				// 로그아웃 예외처리는 구글과 마찬가지로 처리
 				if (AuthManager.instance.needUnlinkCustomId)
 				{
@@ -292,7 +292,7 @@ public class SettingCanvas : MonoBehaviour
 				// 이미 연동되어있는 상태라면 확인창을 띄우고 로그아웃을 해야한다.
 				YesNoCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("GameUI_LogOutConfirm"), () =>
 				{
-					AuthManager.instance.LogoutWithFacebook();
+					AuthManager.instance.LogoutWithApple();
 				});
 				break;
 		}
