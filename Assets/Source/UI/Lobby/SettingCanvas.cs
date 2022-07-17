@@ -283,6 +283,10 @@ public class SettingCanvas : MonoBehaviour
 				});
 				break;
 			case AuthManager.eAuthType.Apple:
+				// 애플은 기기 외부에서 로그아웃 해야하므로 안내메세지만 보여준다. 꼭 이거로 해야하나. 직접 로그아웃 하는게 편하긴 한데.
+				//ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_LogOutAppleToast"), 2.0f);
+				//return;
+
 				// 로그아웃 예외처리는 구글과 마찬가지로 처리
 				if (AuthManager.instance.needUnlinkCustomId)
 				{
