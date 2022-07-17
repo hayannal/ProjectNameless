@@ -59,16 +59,8 @@ public class AnalysisResultCanvas : MonoBehaviour
 			return;
 		}
 
-		if (showLevelUp && showAnalysisResult == false)
-		{
-			// 레벨업 단독일때만 emptyRect를 활성화시켜둔다.
-			emptyRootRectTransform.gameObject.SetActive(true);
-		}
-		else
-		{
-			// 다른 상황에서는 empty 보여주는 곳 없다.
-			emptyRootRectTransform.gameObject.SetActive(false);
-		}
+		// 캐릭터 결과창 영역이 빠지면서 그냥 항상 켜는게 나을거 같아서 수정해둔다.
+		emptyRootRectTransform.gameObject.SetActive(true);
 
 		// 나머지 처리는 항상 동일
 		levelUpRootRectTransform.gameObject.SetActive(false);
