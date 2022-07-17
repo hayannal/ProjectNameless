@@ -268,7 +268,8 @@ public class SettingCanvas : MonoBehaviour
 					if (failure == PlayFab.PlayFabErrorCode.Unknown)
 						return;
 
-					if (failure == PlayFab.PlayFabErrorCode.LinkedAccountAlreadyClaimed)
+					// 이상하게 아이폰에선 LinkedAccountAlreadyClaimed 대신 아래 에러로 날아온다.
+					if (failure == PlayFab.PlayFabErrorCode.LinkedIdentifierAlreadyClaimed)
 					{
 						YesNoCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("GameUI_SignInAlready"), () =>
 						{

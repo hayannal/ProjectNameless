@@ -66,7 +66,7 @@ public class TutorialLinkAccountCanvas : MonoBehaviour
 			if (failure == PlayFab.PlayFabErrorCode.Unknown)
 				return;
 
-			if (failure == PlayFab.PlayFabErrorCode.LinkedAccountAlreadyClaimed)
+			if (failure == PlayFab.PlayFabErrorCode.LinkedIdentifierAlreadyClaimed)
 			{
 				YesNoCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("GameUI_SignInAlready"), () =>
 				{
