@@ -21,7 +21,7 @@ public class SettingCanvas : MonoBehaviour
 	public GameObject googleImageObject;
 	public GameObject appleImageObject;
 	public Text accountButtonText;
-	public GameObject accountDeleteButtonObject;
+	public Text accountDeleteText;
 	public Slider frameRateSlider;
 	public Text frameRateText;
 	public SwitchAnim spinAlarmSwitch;
@@ -60,6 +60,8 @@ public class SettingCanvas : MonoBehaviour
 		LoadOption();
 
 		serverIdText.text = PlayFabApiManager.instance.playFabId;
+		accountDeleteText.SetLocalizedText(UIString.instance.GetString("GameUI_DeleteAccount"));
+		accountDeleteText.fontStyle = FontStyle.Italic;
 
 		termsText.SetLocalizedText(UIString.instance.GetString("GameUI_TermsOfService"));
 		termsText.fontStyle = FontStyle.Italic;
@@ -163,7 +165,7 @@ public class SettingCanvas : MonoBehaviour
 				accountButtonText.SetLocalizedText(UIString.instance.GetString("GameUI_LogOut"));
 				break;
 		}
-		accountDeleteButtonObject.SetActive(lastAuthType == AuthManager.eAuthType.Apple);
+		accountDeleteText.gameObject.SetActive(lastAuthType == AuthManager.eAuthType.Apple);
 	}
 
 	public void OnClickAccountMoreButton()
