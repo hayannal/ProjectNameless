@@ -24,10 +24,8 @@ public class SettingCanvas : MonoBehaviour
 	public GameObject accountDeleteButtonObject;
 	public Slider frameRateSlider;
 	public Text frameRateText;
-	public SwitchAnim energyAlarmSwitch;
-	public Text energyAlarmOnOffText;
-	public SwitchAnim darkModeSwitch;
-	public Text darkModeOnOffText;
+	public SwitchAnim spinAlarmSwitch;
+	public Text spinAlarmOnOffText;
 
 	public Text termsText;
 	public Text policyText;
@@ -107,10 +105,8 @@ public class SettingCanvas : MonoBehaviour
 		frameRateSlider.value = OptionManager.instance.frame;
 
 		_notUserSetting = true;
-		energyAlarmSwitch.isOn = (OptionManager.instance.energyAlarm == 1);
+		spinAlarmSwitch.isOn = (OptionManager.instance.spinAlarm == 1);
 		_notUserSetting = false;
-
-		darkModeSwitch.isOn = (OptionManager.instance.darkMode == 1);
 	}
 
 	public void SaveOption()
@@ -332,11 +328,11 @@ public class SettingCanvas : MonoBehaviour
 	// WingCanvas에서 했던거 가져와서 유저 입력이 있을때만 Reserve / Cancel 하는거로 수정해둔다.
 	bool _ignoreStartEvent = false;
 	bool _notUserSetting = false;
-	public void OnSwitchOnEnergyAlarm()
+	public void OnSwitchOnSpinAlarm()
 	{
-		OptionManager.instance.energyAlarm = 1;
-		energyAlarmOnOffText.text = "ON";
-		energyAlarmOnOffText.color = Color.white;
+		OptionManager.instance.spinAlarm = 1;
+		spinAlarmOnOffText.text = "ON";
+		spinAlarmOnOffText.color = Color.white;
 
 		if (_notUserSetting)
 			return;
@@ -369,14 +365,14 @@ public class SettingCanvas : MonoBehaviour
 	IEnumerator<float> DelayedResetSwitch()
 	{
 		yield return Timing.WaitForOneFrame;
-		energyAlarmSwitch.AnimateSwitch();
+		spinAlarmSwitch.AnimateSwitch();
 	}
 
-	public void OnSwitchOffEnergyAlarm()
+	public void OnSwitchOffSpinAlarm()
 	{
-		OptionManager.instance.energyAlarm = 0;
-		energyAlarmOnOffText.text = "OFF";
-		energyAlarmOnOffText.color = new Color(0.176f, 0.176f, 0.176f);
+		OptionManager.instance.spinAlarm = 0;
+		spinAlarmOnOffText.text = "OFF";
+		spinAlarmOnOffText.color = new Color(0.176f, 0.176f, 0.176f);
 
 		if (_notUserSetting)
 			return;
@@ -386,25 +382,7 @@ public class SettingCanvas : MonoBehaviour
 			return;
 		}
 
-		/*
-		CurrencyData.instance.CancelEnergyNotification();
-		*/
-	}
-	#endregion
-
-	#region Dark Mode
-	public void OnSwitchOnDarkMode()
-	{
-		OptionManager.instance.darkMode = 1;
-		darkModeOnOffText.text = "ON";
-		darkModeOnOffText.color = Color.white;
-	}
-
-	public void OnSwitchOffDarkMode()
-	{
-		OptionManager.instance.darkMode = 0;
-		darkModeOnOffText.text = "OFF";
-		darkModeOnOffText.color = new Color(0.176f, 0.176f, 0.176f);
+		CurrencyData.instance.CancelSpinNotification();
 	}
 	#endregion
 

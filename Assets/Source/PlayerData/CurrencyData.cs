@@ -170,7 +170,7 @@ public class CurrencyData : MonoBehaviour
 			}
 			else
 			{
-				if (OptionManager.instance.energyAlarm == 1)
+				if (OptionManager.instance.spinAlarm == 1)
 				{
 					// full이 아니었다면 이전에 등록되어있던 Noti를 먼저 삭제해야한다.
 					// 만약 energyAlarm을 꺼둔채로 에너지를 소모했다면 취소시킬 Noti가 없을텐데 그걸 판단할 방법은 귀찮으므로 그냥 Cancel 호출하는거로 해둔다.
@@ -178,7 +178,7 @@ public class CurrencyData : MonoBehaviour
 				}
 			}
 
-			if (OptionManager.instance.energyAlarm == 1)
+			if (OptionManager.instance.spinAlarm == 1)
 			{
 				ReserveSpinNotification();
 			}
@@ -214,14 +214,14 @@ public class CurrencyData : MonoBehaviour
 		bool full = (spin >= spinMax);
 		spin += refillAmount;
 
-		if (full == false && OptionManager.instance.energyAlarm == 1)
+		if (full == false && OptionManager.instance.spinAlarm == 1)
 			CancelSpinNotification();
 
 		if (spin >= spinMax)
 			_rechargingSpin = false;
 		else
 		{
-			if (OptionManager.instance.energyAlarm == 1)
+			if (OptionManager.instance.spinAlarm == 1)
 			{
 				ReserveSpinNotification();
 			}
