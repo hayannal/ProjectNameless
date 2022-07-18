@@ -336,6 +336,19 @@ public class AuthManager : MonoBehaviour
 				SceneManager.LoadScene(0);
 				return;
 			}
+			else if (GetLastLoginType() == eAuthType.Google)
+			{
+				// 계정삭제 해놓고 일주일 뒤에 접속할때 리셋이 되게 하려면 이런식으로 해줘야한다.
+				LogoutWithGoogle(false);
+				return;
+			}
+			else if (GetLastLoginType() == eAuthType.Apple)
+			{
+#if UNITY_IOS
+				LogoutWithApple(false);
+				return;
+#endif
+			}
 		}
 
 		//PlayFabApiManager.instance.HandleCommonError(error); 호출하는 대신
