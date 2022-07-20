@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using UnityEngine;
 
 namespace NotificationSamples
 {
@@ -10,7 +11,7 @@ namespace NotificationSamples
     /// </summary>
     public class DefaultSerializer : IPendingNotificationsSerializer
     {
-        private const byte Version = 0;
+        private const byte Version = 1;
 
         private readonly string filename;
 
@@ -26,69 +27,81 @@ namespace NotificationSamples
         /// <inheritdoc />
         public void Serialize(IList<PendingNotification> notifications)
         {
-            using (var file = new FileStream(filename, FileMode.Create))
+            try
             {
-                using (var writer = new BinaryWriter(file))
+                using (var file = new FileStream(filename, FileMode.Create))
                 {
-                    // Write version number
-                    writer.Write(Version);
-
-                    // Write list length
-                    writer.Write(notifications.Count);
-
-                    // Write each item
-                    foreach (PendingNotification notificationToSave in notifications)
+                    using (var writer = new BinaryWriter(file))
                     {
-                        IGameNotification notification = notificationToSave.Notification;
+                        // Write version number
+                        writer.Write(Version);
 
-                        // ID
-                        writer.Write(notification.Id.HasValue);
-                        if (notification.Id.HasValue)
+                        // Write list length
+                        writer.Write(notifications.Count);
+
+                        // Write each item
+                        foreach (PendingNotification notificationToSave in notifications)
                         {
-                            writer.Write(notification.Id.Value);
-                        }
+                            IGameNotification notification = notificationToSave.Notification;
 
-                        // Title
-                        writer.Write(notification.Title ?? "");
+                            // ID
+                            writer.Write(notification.Id.HasValue);
+                            if (notification.Id.HasValue)
+                            {
+                                writer.Write(notification.Id.Value);
+                            }
 
-                        // Body
-                        writer.Write(notification.Body ?? "");
+                            // Title
+                            writer.Write(notification.Title ?? "");
 
-                        // Subtitle
-                        writer.Write(notification.Subtitle ?? "");
+                            // Body
+                            writer.Write(notification.Body ?? "");
 
-                        // Group
-                        writer.Write(notification.Group ?? "");
+                            // Subtitle
+                            writer.Write(notification.Subtitle ?? "");
 
-                        // Badge
-                        writer.Write(notification.BadgeNumber.HasValue);
-                        if (notification.BadgeNumber.HasValue)
-                        {
-                            writer.Write(notification.BadgeNumber.Value);
-                        }
+                            // Group
+                            writer.Write(notification.Group ?? "");
 
-                        // Time (must have a value)
-                        writer.Write(notification.DeliveryTime.Value.Ticks);
+                            // Data
+                            writer.Write(notification.Data ?? "");
 
-						// ShouldAutoCancel
-						writer.Write(notification.ShouldAutoCancel);
+                            // Badge
+                            writer.Write(notification.BadgeNumber.HasValue);
+                            if (notification.BadgeNumber.HasValue)
+                            {
+                                writer.Write(notification.BadgeNumber.Value);
+                            }
 
-						// SmallIcon
-						writer.Write(notification.SmallIcon ?? "");
+                            // Time (must have a value)
+                            writer.Write(notification.DeliveryTime.Value.Ticks);
 
-						// LargeIcon
-						writer.Write(notification.LargeIcon ?? "");
+							// ShouldAutoCancel
+							writer.Write(notification.ShouldAutoCancel);
 
-						// ShowTimestamp
-						writer.Write(notification.ShowTimestamp);
+							// SmallIcon
+							writer.Write(notification.SmallIcon ?? "");
 
-						// BigTextStyle
-						writer.Write(notification.BigTextStyle);
+							// LargeIcon
+							writer.Write(notification.LargeIcon ?? "");
 
-						// TitleColor
-						// no need not yet
-					}
-				}
+							// ShowTimestamp
+							writer.Write(notification.ShowTimestamp);
+
+							// BigTextStyle
+							writer.Write(notification.BigTextStyle);
+
+							// TitleColor
+							// no need not yet
+						}
+
+						writer.Flush();
+                    }
+                }
+            }
+            catch (IOException e)
+            {
+                Debug.LogException(e);
             }
         }
 
@@ -100,74 +113,86 @@ namespace NotificationSamples
                 return null;
             }
 
-            using (var file = new FileStream(filename, FileMode.Open))
+            try
             {
-                using (var reader = new BinaryReader(file))
+                using (var file = new FileStream(filename, FileMode.Open))
                 {
-                    // Version
-                    reader.ReadByte();
-
-                    // Length
-                    int numElements = reader.ReadInt32();
-
-                    var result = new List<IGameNotification>(numElements);
-                    for (var i = 0; i < numElements; ++i)
+                    using (var reader = new BinaryReader(file))
                     {
-                        IGameNotification notification = platform.CreateNotification();
-                        bool hasValue;
+                        // Version
+                        var version = reader.ReadByte();
 
-                        // ID
-                        hasValue = reader.ReadBoolean();
-                        if (hasValue)
+                        // Length
+                        int numElements = reader.ReadInt32();
+
+                        var result = new List<IGameNotification>(numElements);
+                        for (var i = 0; i < numElements; ++i)
                         {
-                            notification.Id = reader.ReadInt32();
-                        }
+                            IGameNotification notification = platform.CreateNotification();
+                            bool hasValue;
 
-                        // Title
-                        notification.Title = reader.ReadString();
+                            // ID
+                            hasValue = reader.ReadBoolean();
+                            if (hasValue)
+                            {
+                                notification.Id = reader.ReadInt32();
+                            }
 
-                        // Body
-                        notification.Body = reader.ReadString();
+                            // Title
+                            notification.Title = reader.ReadString();
 
-                        // Body
-                        notification.Subtitle = reader.ReadString();
+                            // Body
+                            notification.Body = reader.ReadString();
 
-                        // Group
-                        notification.Group = reader.ReadString();
+                            // Body
+                            notification.Subtitle = reader.ReadString();
 
-                        // Badge
-                        hasValue = reader.ReadBoolean();
-                        if (hasValue)
-                        {
-                            notification.BadgeNumber = reader.ReadInt32();
-                        }
+                            // Group
+                            notification.Group = reader.ReadString();
 
-                        // Time
-                        notification.DeliveryTime = new DateTime(reader.ReadInt64(), DateTimeKind.Local);
+                            // Data, introduced in version 1
+                            if (version > 0)
+                                notification.Data = reader.ReadString();
 
-						// ShouldAutoCancel
-						notification.ShouldAutoCancel = reader.ReadBoolean();
+                            // Badge
+                            hasValue = reader.ReadBoolean();
+                            if (hasValue)
+                            {
+                                notification.BadgeNumber = reader.ReadInt32();
+                            }
 
-						// SmallIcon
-						notification.SmallIcon = reader.ReadString();
+                            // Time
+                            notification.DeliveryTime = new DateTime(reader.ReadInt64(), DateTimeKind.Local);
 
-						// LargeIcon
-						notification.LargeIcon = reader.ReadString();
+							// ShouldAutoCancel
+							notification.ShouldAutoCancel = reader.ReadBoolean();
 
-						// ShowTimestamp
-						notification.ShowTimestamp = reader.ReadBoolean();
+							// SmallIcon
+							notification.SmallIcon = reader.ReadString();
 
-						// BigTextStyle
-						notification.BigTextStyle = reader.ReadBoolean();
+							// LargeIcon
+							notification.LargeIcon = reader.ReadString();
 
-						// TitleColor
-						// pass
+							// ShowTimestamp
+							notification.ShowTimestamp = reader.ReadBoolean();
 
-						result.Add(notification);
+							// BigTextStyle
+							notification.BigTextStyle = reader.ReadBoolean();
+
+							// TitleColor
+							// pass
+
+							result.Add(notification);
+						}
+
+                        return result;
                     }
-
-                    return result;
                 }
+            }
+            catch (IOException e)
+            {
+                Debug.LogException(e);
+                return null;
             }
         }
     }
