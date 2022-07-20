@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using UnityEngine;
 
 namespace NotificationSamples
 {
@@ -27,81 +26,72 @@ namespace NotificationSamples
         /// <inheritdoc />
         public void Serialize(IList<PendingNotification> notifications)
         {
-            try
+            using (var file = new FileStream(filename, FileMode.Create))
             {
-                using (var file = new FileStream(filename, FileMode.Create))
+                using (var writer = new BinaryWriter(file))
                 {
-                    using (var writer = new BinaryWriter(file))
+                    // Write version number
+                    writer.Write(Version);
+
+                    // Write list length
+                    writer.Write(notifications.Count);
+
+                    // Write each item
+                    foreach (PendingNotification notificationToSave in notifications)
                     {
-                        // Write version number
-                        writer.Write(Version);
+                        IGameNotification notification = notificationToSave.Notification;
 
-                        // Write list length
-                        writer.Write(notifications.Count);
-
-                        // Write each item
-                        foreach (PendingNotification notificationToSave in notifications)
+                        // ID
+                        writer.Write(notification.Id.HasValue);
+                        if (notification.Id.HasValue)
                         {
-                            IGameNotification notification = notificationToSave.Notification;
+                            writer.Write(notification.Id.Value);
+                        }
 
-                            // ID
-                            writer.Write(notification.Id.HasValue);
-                            if (notification.Id.HasValue)
-                            {
-                                writer.Write(notification.Id.Value);
-                            }
+                        // Title
+                        writer.Write(notification.Title ?? "");
 
-                            // Title
-                            writer.Write(notification.Title ?? "");
+                        // Body
+                        writer.Write(notification.Body ?? "");
 
-                            // Body
-                            writer.Write(notification.Body ?? "");
+                        // Subtitle
+                        writer.Write(notification.Subtitle ?? "");
 
-                            // Subtitle
-                            writer.Write(notification.Subtitle ?? "");
+                        // Group
+                        writer.Write(notification.Group ?? "");
 
-                            // Group
-                            writer.Write(notification.Group ?? "");
+                        // Data
+                        writer.Write(notification.Data ?? "");
 
-                            // Data
-                            writer.Write(notification.Data ?? "");
+                        // Badge
+                        writer.Write(notification.BadgeNumber.HasValue);
+                        if (notification.BadgeNumber.HasValue)
+                        {
+                            writer.Write(notification.BadgeNumber.Value);
+                        }
 
-                            // Badge
-                            writer.Write(notification.BadgeNumber.HasValue);
-                            if (notification.BadgeNumber.HasValue)
-                            {
-                                writer.Write(notification.BadgeNumber.Value);
-                            }
+                        // Time (must have a value)
+                        writer.Write(notification.DeliveryTime.Value.Ticks);
 
-                            // Time (must have a value)
-                            writer.Write(notification.DeliveryTime.Value.Ticks);
+						// ShouldAutoCancel
+						writer.Write(notification.ShouldAutoCancel);
 
-							// ShouldAutoCancel
-							writer.Write(notification.ShouldAutoCancel);
+						// SmallIcon
+						writer.Write(notification.SmallIcon ?? "");
 
-							// SmallIcon
-							writer.Write(notification.SmallIcon ?? "");
+						// LargeIcon
+						writer.Write(notification.LargeIcon ?? "");
 
-							// LargeIcon
-							writer.Write(notification.LargeIcon ?? "");
+						// ShowTimestamp
+						writer.Write(notification.ShowTimestamp);
 
-							// ShowTimestamp
-							writer.Write(notification.ShowTimestamp);
+						// BigTextStyle
+						writer.Write(notification.BigTextStyle);
 
-							// BigTextStyle
-							writer.Write(notification.BigTextStyle);
-
-							// TitleColor
-							// no need not yet
-						}
-
-						writer.Flush();
-                    }
-                }
-            }
-            catch (IOException e)
-            {
-                Debug.LogException(e);
+						// TitleColor
+						// no need not yet
+					}
+				}
             }
         }
 
@@ -113,86 +103,78 @@ namespace NotificationSamples
                 return null;
             }
 
-            try
+            using (var file = new FileStream(filename, FileMode.Open))
             {
-                using (var file = new FileStream(filename, FileMode.Open))
+                using (var reader = new BinaryReader(file))
                 {
-                    using (var reader = new BinaryReader(file))
+                    // Version
+                    var version = reader.ReadByte();
+
+                    // Length
+                    int numElements = reader.ReadInt32();
+
+                    var result = new List<IGameNotification>(numElements);
+                    for (var i = 0; i < numElements; ++i)
                     {
-                        // Version
-                        var version = reader.ReadByte();
+                        IGameNotification notification = platform.CreateNotification();
+                        bool hasValue;
 
-                        // Length
-                        int numElements = reader.ReadInt32();
-
-                        var result = new List<IGameNotification>(numElements);
-                        for (var i = 0; i < numElements; ++i)
+                        // ID
+                        hasValue = reader.ReadBoolean();
+                        if (hasValue)
                         {
-                            IGameNotification notification = platform.CreateNotification();
-                            bool hasValue;
+                            notification.Id = reader.ReadInt32();
+                        }
 
-                            // ID
-                            hasValue = reader.ReadBoolean();
-                            if (hasValue)
-                            {
-                                notification.Id = reader.ReadInt32();
-                            }
+                        // Title
+                        notification.Title = reader.ReadString();
 
-                            // Title
-                            notification.Title = reader.ReadString();
+                        // Body
+                        notification.Body = reader.ReadString();
 
-                            // Body
-                            notification.Body = reader.ReadString();
+                        // Body
+                        notification.Subtitle = reader.ReadString();
 
-                            // Body
-                            notification.Subtitle = reader.ReadString();
+                        // Group
+                        notification.Group = reader.ReadString();
 
-                            // Group
-                            notification.Group = reader.ReadString();
+                        // Data, introduced in version 1
+                        if (version > 0)
+                            notification.Data = reader.ReadString();
 
-                            // Data, introduced in version 1
-                            if (version > 0)
-                                notification.Data = reader.ReadString();
+                        // Badge
+                        hasValue = reader.ReadBoolean();
+                        if (hasValue)
+                        {
+                            notification.BadgeNumber = reader.ReadInt32();
+                        }
 
-                            // Badge
-                            hasValue = reader.ReadBoolean();
-                            if (hasValue)
-                            {
-                                notification.BadgeNumber = reader.ReadInt32();
-                            }
+                        // Time
+                        notification.DeliveryTime = new DateTime(reader.ReadInt64(), DateTimeKind.Local);
 
-                            // Time
-                            notification.DeliveryTime = new DateTime(reader.ReadInt64(), DateTimeKind.Local);
+						// ShouldAutoCancel
+						notification.ShouldAutoCancel = reader.ReadBoolean();
 
-							// ShouldAutoCancel
-							notification.ShouldAutoCancel = reader.ReadBoolean();
+						// SmallIcon
+						notification.SmallIcon = reader.ReadString();
 
-							// SmallIcon
-							notification.SmallIcon = reader.ReadString();
+						// LargeIcon
+						notification.LargeIcon = reader.ReadString();
 
-							// LargeIcon
-							notification.LargeIcon = reader.ReadString();
+						// ShowTimestamp
+						notification.ShowTimestamp = reader.ReadBoolean();
 
-							// ShowTimestamp
-							notification.ShowTimestamp = reader.ReadBoolean();
+						// BigTextStyle
+						notification.BigTextStyle = reader.ReadBoolean();
 
-							// BigTextStyle
-							notification.BigTextStyle = reader.ReadBoolean();
+						// TitleColor
+						// pass
 
-							// TitleColor
-							// pass
+						result.Add(notification);
+					}
 
-							result.Add(notification);
-						}
-
-                        return result;
-                    }
+                    return result;
                 }
-            }
-            catch (IOException e)
-            {
-                Debug.LogException(e);
-                return null;
             }
         }
     }
