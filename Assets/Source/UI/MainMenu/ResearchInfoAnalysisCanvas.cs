@@ -460,6 +460,7 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 
 		PlayFabApiManager.instance.RequestAnalysis(() =>
 		{
+			GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.Analysis);
 			OnAnalysisResult();
 			Timing.RunCoroutine(AnalysisResultProcess());
 		});

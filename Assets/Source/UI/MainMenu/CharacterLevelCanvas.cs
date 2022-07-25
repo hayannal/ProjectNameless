@@ -249,6 +249,8 @@ public class CharacterLevelCanvas : MonoBehaviour
 		float prevValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
 		PlayFabApiManager.instance.RequestSubLevelUp(subLevelIndex, price, () =>
 		{
+			GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.EnhanceCharacter);
+
 			float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
 
 			RefreshInfo();
@@ -335,6 +337,8 @@ public class CharacterLevelCanvas : MonoBehaviour
 		float prevValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
 		PlayFabApiManager.instance.RequestLevelUp(_price, () =>
 		{
+			GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.LevelUpCharacter);
+
 			float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
 
 			RefreshInfo();

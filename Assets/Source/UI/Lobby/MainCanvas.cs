@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using DG.Tweening;
 using MEC;
 
 public class MainCanvas : MonoBehaviour
@@ -17,6 +18,7 @@ public class MainCanvas : MonoBehaviour
 
 	public GameObject inputRectObject;
 	public CanvasGroup safeAreaCanvasGroup;
+	public CanvasGroup questInfoCanvasGroup;
 
 	public RectTransform mailAlarmRootTransform;
 	public RectTransform analysisAlarmRootTransform;
@@ -424,6 +426,35 @@ public class MainCanvas : MonoBehaviour
 		{
 			AlarmObject.Hide(alarmRootTransform);
 		}
+	}
+	#endregion
+
+
+	#region QuestInfo Gruop
+	public void FadeOutQuestInfoGroup(float alpha, float duration, bool onlyFade, bool disableOnComplete)
+	{
+		DOTween.To(() => questInfoCanvasGroup.alpha, x => questInfoCanvasGroup.alpha = x, alpha, duration).SetEase(Ease.Linear).OnComplete(() =>
+		{
+			if (onlyFade)
+				return;
+
+			// Fade가 끝나고나서 상황에 맞게 초기화 해준다.
+			if (disableOnComplete)
+			{
+				GuideQuestInfo.instance.gameObject.SetActive(false);
+				//SubQuestInfo.instance.gameObject.SetActive(false);
+			}
+			else
+			{
+				GuideQuestInfo.instance.CloseInfo();
+				//SubQuestInfo.instance.CloseInfo();
+			}
+		});
+	}
+
+	public void FadeInQuestInfoGroup(float alpha, float duration)    //, bool bossWar)
+	{
+		DOTween.To(() => questInfoCanvasGroup.alpha, x => questInfoCanvasGroup.alpha = x, alpha, duration).SetEase(Ease.Linear);
 	}
 	#endregion
 

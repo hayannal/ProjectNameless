@@ -255,11 +255,11 @@ public class PlayFabApiManager : MonoBehaviour
 		CashShopData.instance.OnRecvCashShopData(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData);
 		PlayerData.instance.OnRecvServerTableData(loginResult.InfoResultPayload.TitleData);
 		AnalysisData.instance.OnRecvAnalysisData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
+		GuideQuestData.instance.OnRecvGuideQuestData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 
 		/*
 		DailyShopData.instance.OnRecvShopData(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData);		
 		QuestData.instance.OnRecvQuestData(loginResult.InfoResultPayload.UserReadOnlyData);
-		GuideQuestData.instance.OnRecvGuideQuestData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 		PlayerData.instance.OnRecvLevelPackageResetInfo(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData, loginResult.NewlyCreated);
 		CumulativeEventData.instance.OnRecvCumulativeEventData(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics, loginResult.NewlyCreated);
 		RankingData.instance.OnRecvRankingData(loginResult.InfoResultPayload.TitleData);
@@ -1255,6 +1255,95 @@ public class PlayFabApiManager : MonoBehaviour
 				AnalysisData.instance.OnLevelUp(targetLevel);
 				CurrencyData.instance.dia -= price;
 
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+	#endregion
+
+
+	#region Guide Quest
+	public void RequestGuideQuestProceedingCount(int currentGuideQuestIndex, int addCount, int expectCount, int key, Action successCallback)
+	{
+		string input = string.Format("{0}_{1}_{2}_{3}_{4}", currentGuideQuestIndex, addCount, expectCount, key, "zxiozlmqj");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "GuideQuestProceedingCount",
+			FunctionParameter = new { Add = addCount, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (failure)
+				HandleCommonError();
+			else
+			{
+				GuideQuestData.instance.currentGuideQuestProceedingCount += addCount;
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+	public void RequestCompleteGuideQuest(int currentGuideQuestIndex, string rewardType, int key, int addDia, int addGold, int addSpin, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		// 퀘완료를 보내기전에 다음번에 받을 퀘의 진행상태를 체크
+		int nextInitialProceedingCount = GuideQuestData.instance.CheckNextInitialProceedingCount();
+
+		string input = string.Format("{0}_{1}_{2}_{3}_{4}", currentGuideQuestIndex, rewardType, nextInitialProceedingCount, key, "witpnvfwk");
+		string infoCheckSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "CompleteGuideQuest",
+			FunctionParameter = new { Tp = rewardType, Np = nextInitialProceedingCount, InfCs = infoCheckSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				GuideQuestData.instance.currentGuideQuestIndex += 1;
+				GuideQuestData.instance.currentGuideQuestProceedingCount = nextInitialProceedingCount;
+
+				CurrencyData.instance.dia += addDia;
+				CurrencyData.instance.gold += addGold;
+				if (addSpin > 0)
+					CurrencyData.instance.OnRecvRefillSpin(addSpin);
+
+				/*
+				jsonResult.TryGetValue("adChrIdPay", out object adChrIdPayload);
+				if (characterBox)
+				{
+					List<DropManager.CharacterPpRequest> listPpInfo = DropManager.instance.GetPowerPointInfo();
+					int addBalancePp = DropManager.instance.GetLobbyBalancePpAmount();
+					List<string> listGrantInfo = DropManager.instance.GetGrantCharacterInfo();
+					List<DropManager.CharacterTrpRequest> listTrpInfo = DropManager.instance.GetTranscendPointInfo();
+
+					++PlayerData.instance.questCharacterBoxOpenCount;
+					if ((listTrpInfo.Count + listGrantInfo.Count) == 0)
+						PlayerData.instance.notStreakCharCount += 2;
+					else
+						PlayerData.instance.notStreakCharCount = 0;
+
+					// update
+					PlayerData.instance.OnRecvUpdateCharacterStatistics(listPpInfo, listTrpInfo, addBalancePp);
+					PlayerData.instance.OnRecvGrantCharacterList(adChrIdPayload);
+				}
+
+				jsonResult.TryGetValue("itmRet", out object itmRet);
+				*/
 				if (successCallback != null) successCallback.Invoke();
 			}
 		}, (error) =>

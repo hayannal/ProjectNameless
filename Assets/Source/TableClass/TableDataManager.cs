@@ -38,6 +38,8 @@ public class TableDataManager : MonoBehaviour
 	public EventRewardTable eventRewardTable;
 	public AnalysisTable analysisTable;
 
+	public GuideQuestTable guideQuestTable;
+
 	void Awake()
 	{
 		instance = this;
@@ -314,6 +316,16 @@ public class TableDataManager : MonoBehaviour
 		{
 			if (analysisTable.dataArray[i].level == level)
 				return analysisTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public GuideQuestTableData FindGuideQuestTableData(int id)
+	{
+		for (int i = 0; i < guideQuestTable.dataArray.Length; ++i)
+		{
+			if (guideQuestTable.dataArray[i].id == id)
+				return guideQuestTable.dataArray[i];
 		}
 		return null;
 	}

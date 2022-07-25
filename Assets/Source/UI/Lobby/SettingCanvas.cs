@@ -346,16 +346,12 @@ public class SettingCanvas : MonoBehaviour
 
 #if UNITY_ANDROID
 		CurrencyData.instance.ReserveSpinNotification();
-		/*
-		GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.EnergyChargeAlarm);
-		*/
+		GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.SpinChargeAlarm);
 #elif UNITY_IOS
 		MobileNotificationWrapper.instance.CheckAuthorization(() =>
 		{
 			CurrencyData.instance.ReserveSpinNotification();
-			/*
-			GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.EnergyChargeAlarm);
-			*/
+			GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.SpinChargeAlarm);
 		}, () =>
 		{
 			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_SpinNotiAppleLast"), 2.0f);

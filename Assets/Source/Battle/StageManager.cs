@@ -494,6 +494,8 @@ public class StageManager : MonoBehaviour
 
 			PlayFabApiManager.instance.RequestEndBoss(PlayerData.instance.selectedStage, () =>
 			{
+				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.ClearStage);
+
 				// 패킷 통과하면 다음 처리로 넘어간다.
 				Timing.RunCoroutine(ClearProcess());
 			});

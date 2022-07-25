@@ -190,6 +190,8 @@ public class SkillProcessor : MonoBehaviour
 		// 애니만 없을뿐 active스킬처럼 쓰는거라서 managed는 false로 호출한다.
 		for (int i = 0; i < info.tableAffectorValueIdList.Length; ++i)
 			affectorProcessor.ApplyAffectorValue(info.tableAffectorValueIdList[i], hitParameter, false);
+
+		GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.UseSkill);
 	}
 	#endregion
 
