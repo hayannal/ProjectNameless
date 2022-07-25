@@ -170,4 +170,14 @@ public class TeamManager : MonoBehaviour
 		}
 		_hideFlag = hide;
 	}
+
+	public void InitializeActorStatus()
+	{
+		for (int i = 0; i < _listPlayerActor.Count; ++i)
+		{
+			if (_listPlayerActor[i] == null)
+				continue;
+			_listPlayerActor[i].actorStatus.InitializeActorStatus();
+		}
+	}
 }

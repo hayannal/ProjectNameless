@@ -338,6 +338,8 @@ public class PlayerData : MonoBehaviour
 		PlayerActor playerActor = BattleInstanceManager.instance.playerActor;
 		if (playerActor != null)
 			playerActor.actorStatus.InitializeActorStatus();
+
+		TeamManager.instance.InitializeActorStatus();
 	}
 
 	public void OnLevelUp()
@@ -350,6 +352,8 @@ public class PlayerData : MonoBehaviour
 		PlayerActor playerActor = BattleInstanceManager.instance.playerActor;
 		if (playerActor != null)
 			playerActor.actorStatus.InitializeActorStatus();
+
+		TeamManager.instance.InitializeActorStatus();
 	}
 
 	public void OnRecvCharacterList(List<CharacterResult> characterList, Dictionary<string, GetCharacterStatisticsResult> dicCharacterStatistics)
