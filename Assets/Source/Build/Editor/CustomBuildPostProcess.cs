@@ -34,7 +34,7 @@ public static class CustomBuildPostProcess
 			pbxProject.SetBuildProperty(targetGUID, "PRODUCT_NAME", newProductName);
 		}
 		/*
-		string newBundleId = "com.powersourcestudio.namelessmaster";
+		string newBundleId = "com.powersourcestudio.namelessplayer";
 		if (bundleId != newBundleId)
 		{
 			pbxProject.SetBuildProperty(targetGUID, "PRODUCT_BUNDLE_IDENTIFIER", newBundleId);
