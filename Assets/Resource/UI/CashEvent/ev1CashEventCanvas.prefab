@@ -222,7 +222,7 @@ GameObject:
   - component: {fileID: 9070134344894553531}
   - component: {fileID: 1986553288268756201}
   - component: {fileID: 2167186781070748558}
-  - component: {fileID: 3644267352506655832}
+  - component: {fileID: -6915113935669652474}
   m_Layer: 5
   m_Name: ev1CashEventCanvas
   m_TagString: Untagged
@@ -313,7 +313,7 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &3644267352506655832
+--- !u!114 &-6915113935669652474
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -322,7 +322,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3644267352506655833}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a481d3912686bae46a3c1106dd671287, type: 3}
+  m_Script: {fileID: 11500000, guid: 611de08b0b94812429fe97f20a2519bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   cashEventId: ev1
@@ -469,7 +469,7 @@ MonoBehaviour:
   onPurchaseComplete:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3644267352506655832}
+      - m_Target: {fileID: -6915113935669652474}
         m_MethodName: OnPurchaseComplete
         m_Mode: 0
         m_Arguments:
@@ -483,7 +483,7 @@ MonoBehaviour:
   onPurchaseFailed:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3644267352506655832}
+      - m_Target: {fileID: -6915113935669652474}
         m_MethodName: OnPurchaseFailed
         m_Mode: 0
         m_Arguments:
@@ -617,7 +617,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3644267352506655832}
+      - m_Target: {fileID: -6915113935669652474}
         m_MethodName: OnClickButton
         m_Mode: 1
         m_Arguments:
@@ -1295,13 +1295,13 @@ PrefabInstance:
     - target: {fileID: 9020202619608113471, guid: c884d8d15230b1f45a462486d2323cf7,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 9020202619608113471, guid: c884d8d15230b1f45a462486d2323cf7,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 3644267352506655833}
     - target: {fileID: 9020202619608113471, guid: c884d8d15230b1f45a462486d2323cf7,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -1310,7 +1310,7 @@ PrefabInstance:
     - target: {fileID: 9020202619608113471, guid: c884d8d15230b1f45a462486d2323cf7,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnClickOkButton
+      value: SetActive
       objectReference: {fileID: 0}
     - target: {fileID: 9020202619608113471, guid: c884d8d15230b1f45a462486d2323cf7,
         type: 3}

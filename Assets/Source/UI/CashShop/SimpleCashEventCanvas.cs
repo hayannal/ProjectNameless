@@ -120,7 +120,7 @@ public class SimpleCashEventCanvas : MonoBehaviour
 		}
 	}
 
-	virtual protected void RequestServerPacket(Product product)
+	protected virtual void RequestServerPacket(Product product)
 	{
 
 	}
