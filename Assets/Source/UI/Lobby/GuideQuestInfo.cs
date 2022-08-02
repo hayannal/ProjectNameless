@@ -27,7 +27,7 @@ public class GuideQuestInfo : MonoBehaviour
 
 	public GameObject goldIconObject;
 	public GameObject diaIconObject;
-	public GameObject spinIconObject;
+	public GameObject energyIconObject;
 	public Text rewardCountText;
 	public GameObject specialRewardRootObject;
 	public Text specialRewardText;
@@ -160,7 +160,7 @@ public class GuideQuestInfo : MonoBehaviour
 
 		goldIconObject.SetActive(false);
 		diaIconObject.SetActive(false);
-		spinIconObject.SetActive(false);
+		energyIconObject.SetActive(false);
 
 		if (guideQuestTableData.rewardType == "cu")
 		{
@@ -168,8 +168,8 @@ public class GuideQuestInfo : MonoBehaviour
 				goldIconObject.SetActive(true);
 			else if (guideQuestTableData.rewardValue == CurrencyData.DiamondCode())
 				diaIconObject.SetActive(true);
-			else if (guideQuestTableData.rewardValue == CurrencyData.SpinCode())
-				spinIconObject.SetActive(true);
+			else if (guideQuestTableData.rewardValue == CurrencyData.EnergyCode())
+				energyIconObject.SetActive(true);
 			rewardCountText.text = guideQuestTableData.rewardCount.ToString("N0");
 		}
 		else if (guideQuestTableData.rewardType == "be")
@@ -319,7 +319,7 @@ public class GuideQuestInfo : MonoBehaviour
 
 			int addGold = 0;
 			int addDia = 0;
-			int addSpin = 0;
+			int addEnergy = 0;
 			if (guideQuestTableData.rewardValue == CurrencyData.GoldCode())
 			{
 				addGold += guideQuestTableData.rewardCount;
@@ -330,15 +330,15 @@ public class GuideQuestInfo : MonoBehaviour
 				addDia += guideQuestTableData.rewardCount;
 				showCurrencySmallInfo = true;
 			}
-			else if (guideQuestTableData.rewardValue == CurrencyData.SpinCode())
-				addSpin += guideQuestTableData.rewardCount;
+			else if (guideQuestTableData.rewardValue == CurrencyData.EnergyCode())
+				addEnergy += guideQuestTableData.rewardCount;
 
 			/*
 			if (showCurrencySmallInfo)
 				CurrencySmallInfoCanvas.Show(true);
 			*/
 
-			PlayFabApiManager.instance.RequestCompleteGuideQuest(GuideQuestData.instance.currentGuideQuestIndex, guideQuestTableData.rewardType, guideQuestTableData.key, addDia, addGold, addSpin, () =>
+			PlayFabApiManager.instance.RequestCompleteGuideQuest(GuideQuestData.instance.currentGuideQuestIndex, guideQuestTableData.rewardType, guideQuestTableData.key, addDia, addGold, addEnergy, () =>
 			{
 				if (showCurrencySmallInfo)
 				{

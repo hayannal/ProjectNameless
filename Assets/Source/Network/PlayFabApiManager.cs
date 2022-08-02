@@ -893,17 +893,17 @@ public class PlayFabApiManager : MonoBehaviour
 
 
 	#region Betting
-	public void RequestBetting(int useSpin, int resultGold, int resultDiamond, int resultSpin, int resultTicket, int resultEventPoint, int reserveRoomType, bool refreshTurn, int newTurn, int newGold, Action<bool> successCallback)
+	public void RequestBetting(int useSpin, int resultGold, int resultDiamond, int resultEnergy, int resultTicket, int resultEventPoint, int reserveRoomType, bool refreshTurn, int newTurn, int newGold, Action<bool> successCallback)
 	{
 		WaitingNetworkCanvas.Show(true);
 
 		int intRefreshTurn = refreshTurn ? 1 : 0;
-		string input = string.Format("{0}_{1}_{2}_{3}_{4}_{5}_{6}_{7}_{8}_{9}_{10}", CurrencyData.instance.bettingCount + 1, useSpin, resultGold, resultDiamond, resultSpin, resultTicket, resultEventPoint, reserveRoomType, intRefreshTurn, newTurn, "azirjwlm");
+		string input = string.Format("{0}_{1}_{2}_{3}_{4}_{5}_{6}_{7}_{8}_{9}_{10}", CurrencyData.instance.bettingCount + 1, useSpin, resultGold, resultDiamond, resultEnergy, resultTicket, resultEventPoint, reserveRoomType, intRefreshTurn, newTurn, "azirjwlm");
 		string checkSum = CheckSum(input);
 		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "Betting",
-			FunctionParameter = new { Cnt = CurrencyData.instance.bettingCount + 1, Bet = useSpin, AddGo = resultGold, AddDi = resultDiamond, AddSp = resultSpin, AddTi = resultTicket, AddEv = resultEventPoint, ResRoomTp = reserveRoomType, RefreshTurn = intRefreshTurn, NewTurn = newTurn, NewGold = newGold, Cs = checkSum },
+			FunctionParameter = new { Cnt = CurrencyData.instance.bettingCount + 1, Bet = useSpin, AddGo = resultGold, AddDi = resultDiamond, AddEn = resultEnergy, AddTi = resultTicket, AddEv = resultEventPoint, ResRoomTp = reserveRoomType, RefreshTurn = intRefreshTurn, NewTurn = newTurn, NewGold = newGold, Cs = checkSum },
 			GeneratePlayStreamEvent = true,
 		}, (success) =>
 		{
@@ -923,13 +923,13 @@ public class PlayFabApiManager : MonoBehaviour
 				CurrencyData.instance.ticket += resultTicket;
 				CurrencyData.instance.eventPoint += resultEventPoint;
 
-				if (useSpin == resultSpin)
+				if (useSpin == resultEnergy)
 				{
 				}
-				else if (useSpin > resultSpin)
-					CurrencyData.instance.UseSpin(useSpin - resultSpin);
-				else if (useSpin < resultSpin)
-					CurrencyData.instance.OnRecvRefillSpin(resultSpin - useSpin);
+				else if (useSpin > resultEnergy)
+					CurrencyData.instance.UseEnergy(useSpin - resultEnergy);
+				else if (useSpin < resultEnergy)
+					CurrencyData.instance.OnRecvRefillEnergy(resultEnergy - useSpin);
 
 				_serverEnterKeyForRoom = (reserveRoomType != 0) ? roomFlg.ToString() : "";
 
@@ -1021,7 +1021,7 @@ public class PlayFabApiManager : MonoBehaviour
 		});
 	}
 
-	public void RequestReceiveMailPresent(string id, int receiveDay, string type, int addDia, int addGold, int addSpin, Action<bool> successCallback)
+	public void RequestReceiveMailPresent(string id, int receiveDay, string type, int addDia, int addGold, int addEnergy, Action<bool> successCallback)
 	{
 		WaitingNetworkCanvas.Show(true);
 
@@ -1046,8 +1046,8 @@ public class PlayFabApiManager : MonoBehaviour
 
 					CurrencyData.instance.dia += addDia;
 					CurrencyData.instance.gold += addGold;
-					if (addSpin > 0)
-						CurrencyData.instance.OnRecvRefillSpin(addSpin);
+					if (addEnergy > 0)
+						CurrencyData.instance.OnRecvRefillEnergy(addEnergy);
 
 					if (successCallback != null) successCallback.Invoke(failure);
 				}
@@ -1291,7 +1291,7 @@ public class PlayFabApiManager : MonoBehaviour
 			HandleCommonError(error);
 		});
 	}
-	public void RequestCompleteGuideQuest(int currentGuideQuestIndex, string rewardType, int key, int addDia, int addGold, int addSpin, Action successCallback)
+	public void RequestCompleteGuideQuest(int currentGuideQuestIndex, string rewardType, int key, int addDia, int addGold, int addEnergy, Action successCallback)
 	{
 		WaitingNetworkCanvas.Show(true);
 
@@ -1319,8 +1319,8 @@ public class PlayFabApiManager : MonoBehaviour
 
 				CurrencyData.instance.dia += addDia;
 				CurrencyData.instance.gold += addGold;
-				if (addSpin > 0)
-					CurrencyData.instance.OnRecvRefillSpin(addSpin);
+				if (addEnergy > 0)
+					CurrencyData.instance.OnRecvRefillEnergy(addEnergy);
 
 				/*
 				jsonResult.TryGetValue("adChrIdPay", out object adChrIdPayload);

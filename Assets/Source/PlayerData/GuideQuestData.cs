@@ -236,7 +236,7 @@ public class GuideQuestData : MonoBehaviour
 			case eQuestClearType.ClearStage:
 				return Mathf.Min(PlayerData.instance.highestClearStage, nextGuideQuestTableData.needCount);
 			case eQuestClearType.SpinChargeAlarm:
-				if (OptionManager.instance.spinAlarm == 1)
+				if (OptionManager.instance.energyAlarm == 1)
 					processed = true;
 				break;
 		}
