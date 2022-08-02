@@ -200,7 +200,7 @@ public class BettingCanvas : MonoBehaviour
 	public void OnClickSpinButton()
 	{
 		int useSpin = _listBetValue[_currentBetRateIndex];
-		if (CurrencyData.instance.spin < useSpin)
+		if (CurrencyData.instance.energy < useSpin)
 		{
 			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughSpin"), 2.0f);
 			return;
@@ -880,8 +880,8 @@ public class BettingCanvas : MonoBehaviour
 		if (PlayerData.instance.clientOnly)
 			return;
 
-		int current = CurrencyData.instance.spin;
-		int max = CurrencyData.instance.spinMax;
+		int current = CurrencyData.instance.energy;
+		int max = CurrencyData.instance.energyMax;
 		spinRatioSlider.value = (float)current / max;
 		spinText.text = string.Format("{0}/{1}", current, max);
 		_lastCurrent = current;
@@ -892,7 +892,7 @@ public class BettingCanvas : MonoBehaviour
 		}
 		else
 		{
-			_nextFillDateTime = CurrencyData.instance.spinRechargeTime;
+			_nextFillDateTime = CurrencyData.instance.energyRechargeTime;
 			_needUpdate = true;
 			_lastRemainTimeSecond = -1;
 		}
@@ -932,7 +932,7 @@ public class BettingCanvas : MonoBehaviour
 		if (_needRefresh == false)
 			return;
 
-		if (_lastCurrent != CurrencyData.instance.spin)
+		if (_lastCurrent != CurrencyData.instance.energy)
 		{
 			RefreshSpin();
 			_needRefresh = false;

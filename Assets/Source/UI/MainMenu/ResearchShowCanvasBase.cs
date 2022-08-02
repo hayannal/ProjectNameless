@@ -2,31 +2,29 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// 렌더러 Resolution Factor 안건드리는 형태가 필요해서 추가한다.
-public class RoomShowCanvasBase : MonoBehaviour
+public class ResearchShowCanvasBase : MonoBehaviour
 {
-	public Transform roomCameraTransform;
-	public float roomCameraFov = 43.0f;
+	// CharacterShowCanvasBase 처럼 ResearchShowCanvasBase같은걸 만들까 하다가 연구는 여러개로 나눠서 상속받을 일이 없을거 같아서
+	// 하나의 클래스 안에 넣기로 한다.
+	public Transform infoCameraTransform;
+	public float infoCameraFov = 43.0f;
 
-	#region Room Camera
-	protected Vector3 _rootOffsetPosition = new Vector3(0.0f, 0.0f, -200.0f);
+	#region Info Camera
+	protected Vector3 _rootOffsetPosition = new Vector3(0.0f, 0.0f, 75.0f);
 	public Vector3 rootOffsetPosition { get { return _rootOffsetPosition; } }
-	bool _roomCameraMode = false;
-	//float _lastRendererResolutionFactor;
-	//float _lastBloomResolutionFactor;
+	bool _infoCameraMode = false;
+	float _lastRendererResolutionFactor;
+	float _lastBloomResolutionFactor;
 	float _lastFov;
 	Color _lastBackgroundColor;
 	Vector3 _lastCameraPosition;
 	Quaternion _lastCameraRotation;
-	Vector3 _lastCharacterPosition;
-	Quaternion _lastCharacterRotation;
+
 	Transform _groundTransform;
-	EnvironmentSetting _environmentSetting;
 	GameObject _prevEnvironmentSettingObject;
-	float _defaultLightIntensity;
-	protected void SetInfoCameraMode(bool enable)
+	public void SetInfoCameraMode(bool enable)
 	{
-		if (_roomCameraMode == enable)
+		if (_infoCameraMode == enable)
 			return;
 
 		if (enable)
@@ -36,8 +34,8 @@ public class RoomShowCanvasBase : MonoBehaviour
 			CustomFollowCamera.instance.enabled = false;
 
 			// save prev info
-			//_lastRendererResolutionFactor = CustomRenderer.instance.RenderTextureResolutionFactor;
-			//_lastBloomResolutionFactor = CustomRenderer.instance.bloom.RenderTextureResolutoinFactor;
+			_lastRendererResolutionFactor = CustomRenderer.instance.RenderTextureResolutionFactor;
+			_lastBloomResolutionFactor = CustomRenderer.instance.bloom.RenderTextureResolutoinFactor;
 			_lastFov = UIInstanceManager.instance.GetCachedCameraMain().fieldOfView;
 			_lastBackgroundColor = UIInstanceManager.instance.GetCachedCameraMain().backgroundColor;
 			_lastCameraPosition = CustomFollowCamera.instance.cachedTransform.position;
@@ -46,24 +44,18 @@ public class RoomShowCanvasBase : MonoBehaviour
 			// ground setting
 			_prevEnvironmentSettingObject = StageGround.instance.DisableCurrentEnvironmentSetting();
 			if (_groundTransform == null)
-			{
-				_groundTransform = BattleInstanceManager.instance.GetCachedObject(CommonMenuGroup.instance.goldBoxRoomGroundPrefab, _rootOffsetPosition, Quaternion.identity).transform;
-				_environmentSetting = _groundTransform.GetComponentInChildren<EnvironmentSetting>();
-				_defaultLightIntensity = _environmentSetting.defaultDirectionalLightIntensity;
-			}
+				_groundTransform = BattleInstanceManager.instance.GetCachedObject(CommonMenuGroup.instance.menuInfoGroundPrefab, _rootOffsetPosition, Quaternion.identity).transform;
 			else
-			{
-				_environmentSetting.SetDefaultLightIntensity(_defaultLightIntensity);
 				_groundTransform.gameObject.SetActive(true);
-			}
+			CharacterInfoGround.instance.stoneObject.SetActive(false);
 
 			// setting
 			CustomRenderer.instance.RenderTextureResolutionFactor = (CustomRenderer.instance.RenderTextureResolutionFactor + 1.0f) * 0.5f;
-			CustomRenderer.instance.bloom.RenderTextureResolutoinFactor = 0.7f;
-			UIInstanceManager.instance.GetCachedCameraMain().fieldOfView = roomCameraFov;
+			CustomRenderer.instance.bloom.RenderTextureResolutoinFactor = 0.8f;
+			UIInstanceManager.instance.GetCachedCameraMain().fieldOfView = infoCameraFov;
 			UIInstanceManager.instance.GetCachedCameraMain().backgroundColor = new Color(0.183f, 0.19f, 0.208f);
-			CustomFollowCamera.instance.cachedTransform.position = roomCameraTransform.localPosition + _rootOffsetPosition;
-			CustomFollowCamera.instance.cachedTransform.rotation = roomCameraTransform.localRotation;
+			CustomFollowCamera.instance.cachedTransform.position = infoCameraTransform.localPosition + _rootOffsetPosition;
+			CustomFollowCamera.instance.cachedTransform.rotation = infoCameraTransform.localRotation;
 		}
 		else
 		{
@@ -76,12 +68,12 @@ public class RoomShowCanvasBase : MonoBehaviour
 			if (BattleInstanceManager.instance.playerActor.gameObject == null)
 				return;
 
-			_environmentSetting.SetDefaultLightIntensity(_defaultLightIntensity);
+			CharacterInfoGround.instance.stoneObject.SetActive(true);
 			_groundTransform.gameObject.SetActive(false);
 			_prevEnvironmentSettingObject.SetActive(true);
 
-			//CustomRenderer.instance.RenderTextureResolutionFactor = _lastRendererResolutionFactor;
-			//CustomRenderer.instance.bloom.RenderTextureResolutoinFactor = _lastBloomResolutionFactor;
+			CustomRenderer.instance.RenderTextureResolutionFactor = _lastRendererResolutionFactor;
+			CustomRenderer.instance.bloom.RenderTextureResolutoinFactor = _lastBloomResolutionFactor;
 			UIInstanceManager.instance.GetCachedCameraMain().fieldOfView = _lastFov;
 			UIInstanceManager.instance.GetCachedCameraMain().backgroundColor = _lastBackgroundColor;
 			CustomFollowCamera.instance.cachedTransform.position = _lastCameraPosition;
@@ -89,8 +81,9 @@ public class RoomShowCanvasBase : MonoBehaviour
 
 			CameraFovController.instance.enabled = true;
 			CustomFollowCamera.instance.enabled = true;
+			//LobbyCanvas.instance.OnEnterMainMenu(false);
 		}
-		_roomCameraMode = enable;
+		_infoCameraMode = enable;
 	}
 	#endregion
 }

@@ -21,7 +21,7 @@ public class MailCanvasListItem : MonoBehaviour
 	public GameObject rewardRootObject;
 	public GameObject goldIconObject;
 	public GameObject diaIconObject;
-	public GameObject spinIconObject;
+	public GameObject energyIconObject;
 	public Text countText;
 	public Text rewardNameText;
 	public GameObject addObject;
@@ -48,14 +48,14 @@ public class MailCanvasListItem : MonoBehaviour
 
 	public string id { get; set; }
 	public int receiveDay { get; set; }
-	int _addDia, _addGold, _addSpin;
+	int _addDia, _addGold, _addEnergy;
 	string _type;
 	string _value;
 	public void Initialize(MailData.MailCreateInfo createInfo, MailData.MyMailData myMailData, int receiveDay, DateTime validTime)
 	{
 		this.id = myMailData.id;
 		this.receiveDay = receiveDay;
-		_addDia = _addGold = _addSpin = 0;
+		_addDia = _addGold = _addEnergy = 0;
 		_type = createInfo.tp;
 		_value = createInfo.vl;
 
@@ -106,7 +106,7 @@ public class MailCanvasListItem : MonoBehaviour
 					_addGold = createInfo.cn;
 					goldIconObject.SetActive(true);
 					diaIconObject.SetActive(false);
-					spinIconObject.SetActive(false);
+					energyIconObject.SetActive(false);
 					countText.color = GetGoldTextColor();
 				}
 				else if (createInfo.vl == CurrencyData.DiamondCode())
@@ -114,15 +114,15 @@ public class MailCanvasListItem : MonoBehaviour
 					_addDia = createInfo.cn;
 					goldIconObject.SetActive(false);
 					diaIconObject.SetActive(true);
-					spinIconObject.SetActive(false);
+					energyIconObject.SetActive(false);
 					countText.color = GetDiaTextColor();
 				}
-				else if (createInfo.vl == CurrencyData.SpinCode())
+				else if (createInfo.vl == CurrencyData.EnergyCode())
 				{
-					_addSpin = createInfo.cn;
+					_addEnergy = createInfo.cn;
 					goldIconObject.SetActive(false);
 					diaIconObject.SetActive(false);
-					spinIconObject.SetActive(true);
+					energyIconObject.SetActive(true);
 					countText.color = Color.white;
 				}
 				countText.text = createInfo.cn.ToString("N0");
@@ -256,7 +256,7 @@ public class MailCanvasListItem : MonoBehaviour
 	{
 		if (_type == "cu")
 		{
-			PlayFabApiManager.instance.RequestReceiveMailPresent(id, receiveDay, _type, _addDia, _addGold, _addSpin, (serverFailure) =>
+			PlayFabApiManager.instance.RequestReceiveMailPresent(id, receiveDay, _type, _addDia, _addGold, _addEnergy, (serverFailure) =>
 			{
 				MainCanvas.instance.RefreshMailAlarmObject();
 				ToastCanvas.instance.ShowToast(UIString.instance.GetString("MailUI_AfterClaim"), 2.0f);

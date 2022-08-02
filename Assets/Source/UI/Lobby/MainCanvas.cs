@@ -243,9 +243,9 @@ public class MainCanvas : MonoBehaviour
 		return (safeAreaCanvasGroup.alpha == 0.0f);
 	}
 
-	public void OnClickSpinButton()
+	public void OnClickGachaButton()
 	{
-		UIInstanceManager.instance.ShowCanvasAsync("BettingCanvas", null);
+		UIInstanceManager.instance.ShowCanvasAsync("GachaCanvas", null);
 	}
 
 	public void OnClickAnalysisButton()

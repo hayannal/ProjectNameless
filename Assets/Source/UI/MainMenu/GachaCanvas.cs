@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ResearchCanvas : ResearchShowCanvasBase
+public class GachaCanvas : ResearchShowCanvasBase
 {
-	public static ResearchCanvas instance;
+	public static GachaCanvas instance;
 
 	public CurrencySmallInfo currencySmallInfo;
 	public GameObject innerMenuPrefab;
-	public GameObject researchGroundObjectPrefab;
+	public GameObject gachaGroundObjectPrefab;
 	public GameObject inputLockObject;
 
 	void Awake()
@@ -17,22 +17,22 @@ public class ResearchCanvas : ResearchShowCanvasBase
 	}
 
 	GameObject _menuObject;
-	GameObject _researchGroundObject;
+	GameObject _gachaGroundObject;
 	void Start()
 	{
-		_researchGroundObject = Instantiate<GameObject>(researchGroundObjectPrefab, _rootOffsetPosition, Quaternion.identity);
+		_gachaGroundObject = Instantiate<GameObject>(gachaGroundObjectPrefab, _rootOffsetPosition, Quaternion.identity);
 		_menuObject = Instantiate<GameObject>(innerMenuPrefab);
 	}
 
 	void OnEnable()
 	{
-		if (_researchGroundObject != null)
-			_researchGroundObject.SetActive(true);
+		if (_gachaGroundObject != null)
+			_gachaGroundObject.SetActive(true);
 		if (_menuObject != null)
 			_menuObject.SetActive(true);
 
 		bool restore = StackCanvas.Push(gameObject, false, null, OnPopStack);
-		
+
 		if (restore)
 			return;
 
@@ -43,7 +43,7 @@ public class ResearchCanvas : ResearchShowCanvasBase
 	void OnDisable()
 	{
 		_menuObject.SetActive(false);
-		_researchGroundObject.SetActive(false);
+		_gachaGroundObject.SetActive(false);
 
 		if (StackCanvas.Pop(gameObject))
 			return;

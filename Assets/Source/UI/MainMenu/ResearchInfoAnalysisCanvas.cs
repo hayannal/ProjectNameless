@@ -95,7 +95,7 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 		if (ObscuredPrefs.HasKey(OPTION_COMPLETE_ALARM))
 			_onCompleteAlarmState = ObscuredPrefs.GetInt(OPTION_COMPLETE_ALARM) == 1;
 
-		MoveTween(true);
+		MoveTween(false);
 		RefreshInfo();
 
 		// 화면 전환이 없다보니 제대로 캐싱할 시간은 없고 오브젝트만 만들었다가 꺼두는 캐싱이라도 해둔다.

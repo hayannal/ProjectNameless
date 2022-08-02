@@ -107,7 +107,7 @@ public class SettingCanvas : MonoBehaviour
 		frameRateSlider.value = OptionManager.instance.frame;
 
 		_notUserSetting = true;
-		spinAlarmSwitch.isOn = (OptionManager.instance.spinAlarm == 1);
+		spinAlarmSwitch.isOn = (OptionManager.instance.energyAlarm == 1);
 		_notUserSetting = false;
 	}
 
@@ -332,7 +332,7 @@ public class SettingCanvas : MonoBehaviour
 	bool _notUserSetting = false;
 	public void OnSwitchOnSpinAlarm()
 	{
-		OptionManager.instance.spinAlarm = 1;
+		OptionManager.instance.energyAlarm = 1;
 		spinAlarmOnOffText.text = "ON";
 		spinAlarmOnOffText.color = Color.white;
 
@@ -345,16 +345,16 @@ public class SettingCanvas : MonoBehaviour
 		}
 
 #if UNITY_ANDROID
-		CurrencyData.instance.ReserveSpinNotification();
+		CurrencyData.instance.ReserveEnergyNotification();
 		GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.SpinChargeAlarm);
 #elif UNITY_IOS
 		MobileNotificationWrapper.instance.CheckAuthorization(() =>
 		{
-			CurrencyData.instance.ReserveSpinNotification();
+			CurrencyData.instance.ReserveEnergyNotification();
 			GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.SpinChargeAlarm);
 		}, () =>
 		{
-			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_SpinNotiAppleLast"), 2.0f);
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_EnergyNotiAppleLast"), 2.0f);
 			Timing.RunCoroutine(DelayedResetSwitch());
 		});
 #endif
@@ -368,7 +368,7 @@ public class SettingCanvas : MonoBehaviour
 
 	public void OnSwitchOffSpinAlarm()
 	{
-		OptionManager.instance.spinAlarm = 0;
+		OptionManager.instance.energyAlarm = 0;
 		spinAlarmOnOffText.text = "OFF";
 		spinAlarmOnOffText.color = new Color(0.176f, 0.176f, 0.176f);
 
@@ -380,7 +380,7 @@ public class SettingCanvas : MonoBehaviour
 			return;
 		}
 
-		CurrencyData.instance.CancelSpinNotification();
+		CurrencyData.instance.CancelEnergyNotification();
 	}
 	#endregion
 
