@@ -1354,6 +1354,37 @@ public class PlayFabApiManager : MonoBehaviour
 	#endregion
 
 
+	#region Purchase Validate
+#if UNITY_ANDROID
+	public void RequestValidatePurchase(string isoCurrencyCode, uint price, string receiptJson, string signature, Action successCallback, Action<PlayFabError> failureCallback)
+	{
+		PlayFabClientAPI.ValidateGooglePlayPurchase(new ValidateGooglePlayPurchaseRequest()
+		{
+			CurrencyCode = isoCurrencyCode,
+			PurchasePrice = price,
+			ReceiptJson = receiptJson,
+			Signature = signature
+#elif UNITY_IOS
+	public void RequestValidatePurchase(string isoCurrencyCode, int price, string receiptData, Action successCallback, Action<PlayFabError> failureCallback)
+	{
+		PlayFabClientAPI.ValidateIOSReceipt(new ValidateIOSReceiptRequest()
+		{
+			CurrencyCode = isoCurrencyCode,
+			PurchasePrice = price,
+			ReceiptData = receiptData
+#endif
+		}, (success) =>
+		{
+			if (successCallback != null) successCallback.Invoke();
+		}, (error) =>
+		{
+			HandleCommonError(error);
+			if (failureCallback != null) failureCallback.Invoke(error);
+		});
+	}
+	#endregion
+
+
 
 	#region Sample
 	// Sample 1. 콜백도 없고 재전송도 없을땐 이렇게 간단하게 처리
