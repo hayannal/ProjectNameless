@@ -39,6 +39,7 @@ public class TableDataManager : MonoBehaviour
 	public AnalysisTable analysisTable;
 
 	public GuideQuestTable guideQuestTable;
+	public GachaTypeTable gachaTypeTable;
 
 	void Awake()
 	{
