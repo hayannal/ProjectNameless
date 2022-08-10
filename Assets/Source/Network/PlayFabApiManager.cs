@@ -954,7 +954,6 @@ public class PlayFabApiManager : MonoBehaviour
 		});
 	}
 
-	ObscuredString _serverEnterKeyForRoom;
 	public void RequestEndBettingRoom(int resultGold, Action successCallback)
 	{
 		string input = string.Format("{0}_{1}", resultGold, "lirqzmak");
@@ -963,6 +962,104 @@ public class PlayFabApiManager : MonoBehaviour
 		ExecuteCloudScriptRequest request = new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "EndBettingRoom",
+			FunctionParameter = new { Flg = (string)_serverEnterKeyForRoom, AddGo = resultGold, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		};
+		Action action = () =>
+		{
+			PlayFabClientAPI.ExecuteCloudScript(request, (success) =>
+			{
+				string resultString = (string)success.FunctionResult;
+				bool failure = (resultString == "1");
+				_serverEnterKeyForRoom = "";
+				if (!failure)
+				{
+					RetrySendManager.instance.OnSuccess();
+
+					// 성공시 처리
+					CurrencyData.instance.gold += resultGold;
+
+					if (successCallback != null) successCallback.Invoke();
+				}
+			}, (error) =>
+			{
+				RetrySendManager.instance.OnFailure();
+			});
+		};
+		RetrySendManager.instance.RequestAction(action, true, true);
+	}
+	#endregion
+
+	#region Gacha
+	public void RequestGacha(int useEnergy, int resultGold, int resultEnergy, int resultBrokenEnergy, int resultEventPoint, int reserveRoomType, bool refreshTurn, int newTurn, int newGold, Action<bool> successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		int intRefreshTurn = refreshTurn ? 1 : 0;
+		string input = string.Format("{0}_{1}_{2}_{3}_{4}_{5}_{6}_{7}_{8}_{9}", CurrencyData.instance.bettingCount + 1, useEnergy, resultGold, resultEnergy, resultBrokenEnergy, resultEventPoint, reserveRoomType, intRefreshTurn, newTurn, "azirjwlm");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "Gacha",
+			FunctionParameter = new { Cnt = CurrencyData.instance.bettingCount + 1, Bet = useEnergy, AddGo = resultGold, AddEn = resultEnergy, AddBrEn = resultBrokenEnergy, AddEv = resultEventPoint, ResRoomTp = reserveRoomType, RefreshTurn = intRefreshTurn, NewTurn = newTurn, NewGold = newGold, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			jsonResult.TryGetValue("roomFlg", out object roomFlg);
+			jsonResult.TryGetValue("refreshTurn", out object serverRefreshTurn);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				CurrencyData.instance.bettingCount += 1;
+
+				CurrencyData.instance.gold += resultGold;
+				CurrencyData.instance.brokenEnergy += resultBrokenEnergy;
+				CurrencyData.instance.eventPoint += resultEventPoint;
+
+				if (useEnergy == resultEnergy)
+				{
+				}
+				else if (useEnergy > resultEnergy)
+					CurrencyData.instance.UseEnergy(useEnergy - resultEnergy);
+				else if (useEnergy < resultEnergy)
+					CurrencyData.instance.OnRecvRefillEnergy(resultEnergy - useEnergy);
+
+				_serverEnterKeyForRoom = (reserveRoomType != 0) ? roomFlg.ToString() : "";
+
+				bool refreshTurnComplete = false;
+				if (refreshTurn && serverRefreshTurn.ToString() == "1")
+				{
+					CurrencyData.instance.goldBoxRemainTurn = newTurn;
+					CurrencyData.instance.goldBoxTargetReward = newGold;
+					refreshTurnComplete = true;
+				}
+				else
+				{
+					if (CurrencyData.instance.goldBoxRemainTurn > 1)
+						CurrencyData.instance.goldBoxRemainTurn -= 1;
+				}
+
+				if (successCallback != null) successCallback.Invoke(refreshTurnComplete);
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
+	ObscuredString _serverEnterKeyForRoom;
+	public void RequestEndGachaRoom(int resultGold, Action successCallback)
+	{
+		string input = string.Format("{0}_{1}", resultGold, "lirqzmak");
+		string checkSum = CheckSum(input);
+
+		ExecuteCloudScriptRequest request = new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "EndGachaRoom",
 			FunctionParameter = new { Flg = (string)_serverEnterKeyForRoom, AddGo = resultGold, Cs = checkSum },
 			GeneratePlayStreamEvent = true,
 		};

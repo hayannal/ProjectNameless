@@ -185,8 +185,10 @@ public class FindMonsterRoomGround : MonoBehaviour
 
 		_waitSelect = false;
 
+		int betRate = GachaInfoCanvas.instance.GetBetRate();
+
 		// 3번째 클릭하자마자 패킷을 보내서 결과 제대로 저장되면
-		PlayFabApiManager.instance.RequestEndBettingRoom(success ? stageBetTableData.goblinSuccess : stageBetTableData.goblinFailure, () =>
+		PlayFabApiManager.instance.RequestEndBettingRoom(success ? stageBetTableData.goblinSuccess * betRate : stageBetTableData.goblinFailure * betRate, () =>
 		{
 			Timing.RunCoroutine(ReturnProcess());
 		});
@@ -203,7 +205,10 @@ public class FindMonsterRoomGround : MonoBehaviour
 
 		FindMonsterRoomCanvas.instance.gameObject.SetActive(false);
 
-		yield return Timing.WaitForSeconds(0.2f);
+		yield return Timing.WaitForSeconds(0.1f);
+
+		// 가차 캔버스로 돌아가야한다.
+		GachaCanvas.instance.gameObject.SetActive(true);
 
 		// 
 		FadeCanvas.instance.FadeIn(0.5f);
@@ -213,7 +218,7 @@ public class FindMonsterRoomGround : MonoBehaviour
 		// FindMonster에서는 GoldBox 보상을 바꾸지 않는다.
 		// 그렇지만 마지막 1턴 남겨두고 Find Monster Room 들어왔을땐 되돌아오면서 바뀌어야하니까
 		// 호출을 건너뛸 순 없다.
-		BettingCanvas.instance.CheckNeedRefreshTurn();
+		GachaInfoCanvas.instance.CheckNeedRefreshTurn();
 	}
 
 

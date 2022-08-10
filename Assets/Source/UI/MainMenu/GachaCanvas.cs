@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GachaCanvas : ResearchShowCanvasBase
 {
@@ -10,6 +11,7 @@ public class GachaCanvas : ResearchShowCanvasBase
 	public GameObject innerMenuPrefab;
 	public GameObject gachaGroundObjectPrefab;
 	public GameObject inputLockObject;
+	public Button backKeyButton;
 
 	void Awake()
 	{
@@ -31,12 +33,12 @@ public class GachaCanvas : ResearchShowCanvasBase
 		if (_menuObject != null)
 			_menuObject.SetActive(true);
 
-		bool restore = StackCanvas.Push(gameObject, false, null, OnPopStack);
+		SetInfoCameraMode(true);
 
+		bool restore = StackCanvas.Push(gameObject, false, null, OnPopStack);
 		if (restore)
 			return;
 
-		SetInfoCameraMode(true);
 		MainCanvas.instance.OnEnterCharacterMenu(true);
 	}
 
@@ -44,6 +46,8 @@ public class GachaCanvas : ResearchShowCanvasBase
 	{
 		_menuObject.SetActive(false);
 		_gachaGroundObject.SetActive(false);
+
+		SetInfoCameraMode(false);
 
 		if (StackCanvas.Pop(gameObject))
 			return;
@@ -58,7 +62,6 @@ public class GachaCanvas : ResearchShowCanvasBase
 		if (MainSceneBuilder.instance == null)
 			return;
 
-		SetInfoCameraMode(false);
 		MainCanvas.instance.OnEnterCharacterMenu(false);
 	}
 }

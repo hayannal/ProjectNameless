@@ -627,6 +627,7 @@ public class BettingCanvas : MonoBehaviour
 			if (smallCount > 0 || bigCount > 0)
 			{
 				int tableResultGold = 0;
+				/*
 				if (bigCount == 0)
 				{
 					switch (smallCount)
@@ -654,6 +655,7 @@ public class BettingCanvas : MonoBehaviour
 					else if (smallCount == 2 && bigCount == 1)
 						tableResultGold = stageBetTableData.s2b1;
 				}
+				*/
 				_resultGold = tableResultGold * betRate;
 			}
 

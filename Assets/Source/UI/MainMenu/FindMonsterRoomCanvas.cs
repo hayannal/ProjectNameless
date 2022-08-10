@@ -56,6 +56,8 @@ public class FindMonsterRoomCanvas : MonoBehaviour
 
 		CustomFollowCamera.instance.cachedTransform.position = roomCameraTransform.localPosition + _rootOffsetPosition;
 		CustomFollowCamera.instance.cachedTransform.rotation = roomCameraTransform.localRotation;
+
+		MainCanvas.instance.OnEnterCharacterMenu(true);
 	}
 
 	void OnDisable()
@@ -92,6 +94,8 @@ public class FindMonsterRoomCanvas : MonoBehaviour
 
 		CameraFovController.instance.enabled = true;
 		CustomFollowCamera.instance.enabled = true;
+
+		MainCanvas.instance.OnEnterCharacterMenu(false);
 	}
 
 	/*

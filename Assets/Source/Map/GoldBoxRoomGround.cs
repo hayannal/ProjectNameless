@@ -150,8 +150,10 @@ public class GoldBoxRoomGround : MonoBehaviour
 
 		if (_openCount == 3)
 		{
+			int betRate = GachaInfoCanvas.instance.GetBetRate();
+
 			// 3번째 클릭하자마자 패킷을 보내서 결과 제대로 저장되면
-			PlayFabApiManager.instance.RequestEndBettingRoom(_resultGold, () =>
+			PlayFabApiManager.instance.RequestEndBettingRoom(_resultGold * betRate, () =>
 			{
 				Timing.RunCoroutine(ReturnProcess());
 			});
@@ -169,12 +171,15 @@ public class GoldBoxRoomGround : MonoBehaviour
 
 		GoldBoxRoomCanvas.instance.gameObject.SetActive(false);
 
-		yield return Timing.WaitForSeconds(0.2f);
+		yield return Timing.WaitForSeconds(0.1f);
+		
+		// 가차 캔버스로 돌아가야한다.
+		GachaCanvas.instance.gameObject.SetActive(true);
 
 		// 
 		FadeCanvas.instance.FadeIn(0.5f);
 
 		yield return Timing.WaitForSeconds(0.3f);
-		BettingCanvas.instance.CheckNeedRefreshTurn();
+		GachaInfoCanvas.instance.CheckNeedRefreshTurn();
 	}
 }

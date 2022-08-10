@@ -44,6 +44,7 @@ public class CurrencyData : MonoBehaviour
 
 	#region Betting
 	public ObscuredInt bettingCount { get; set; }
+	public ObscuredInt brokenEnergy { get; set; }
 	public ObscuredInt goldBoxTargetReward { get; set; }
 	public ObscuredInt currentGoldBoxRoomReward { get; set; }
 	public ObscuredInt goldBoxRemainTurn { get; set; }
@@ -88,6 +89,7 @@ public class CurrencyData : MonoBehaviour
 
 		// 재화는 한정적인 자원이라 재화 안써도 되는건 통계써서 가져오기로 한다.
 		bettingCount = 0;
+		brokenEnergy = 0;
 		ticket = 0;
 		eventPoint = 0;
 		goldBoxRemainTurn = 0;
@@ -97,6 +99,7 @@ public class CurrencyData : MonoBehaviour
 			switch (playerStatistics[i].StatisticName)
 			{
 				case "betCnt": bettingCount = playerStatistics[i].Value; break;
+				case "brokenEnergy": brokenEnergy = playerStatistics[i].Value; break;
 				case "ticket": ticket = playerStatistics[i].Value; break;
 				case "eventPoint": eventPoint = playerStatistics[i].Value; break;
 				case "goldBoxTurn": goldBoxRemainTurn = playerStatistics[i].Value; break;
@@ -227,7 +230,7 @@ public class CurrencyData : MonoBehaviour
 			}
 		}
 
-		//if (BettingCanvas.instance != null)
-		//	BettingCanvas.instance.RefreshSpin();
+		if (GachaInfoCanvas.instance != null)
+			GachaInfoCanvas.instance.RefreshEnergy();
 	}
 }

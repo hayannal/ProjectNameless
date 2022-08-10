@@ -26,6 +26,7 @@ public class GoldBoxRoomCanvas : RoomShowCanvasBase
 			return;
 
 		SetInfoCameraMode(true);
+		MainCanvas.instance.OnEnterCharacterMenu(true);
 
 		for (int i = 0; i < remainIconImageList.Length; ++i)
 			remainIconImageList[i].SetActive(true);
@@ -75,6 +76,7 @@ public class GoldBoxRoomCanvas : RoomShowCanvasBase
 		if (MainSceneBuilder.instance == null)
 			return;
 		SetInfoCameraMode(false);
+		MainCanvas.instance.OnEnterCharacterMenu(false);
 	}
 
 	public void UseKey()

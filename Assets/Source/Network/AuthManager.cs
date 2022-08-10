@@ -223,6 +223,7 @@ public class AuthManager : MonoBehaviour
 		playerStatisticNames.Add("subLevel1");
 		playerStatisticNames.Add("subLevel2");
 		playerStatisticNames.Add("betCnt");
+		playerStatisticNames.Add("brokenEnergy");
 		playerStatisticNames.Add("ticket");
 		playerStatisticNames.Add("eventPoint");
 		playerStatisticNames.Add("goldBoxTurn");
