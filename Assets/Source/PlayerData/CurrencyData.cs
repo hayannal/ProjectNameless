@@ -201,7 +201,7 @@ public class CurrencyData : MonoBehaviour
 		TimeSpan remainTime = _energyRechargeTime - ServerTime.UtcNow;
 		double totalSecond = remainTime.TotalSeconds + diffMinusOne * BattleInstanceManager.instance.GetCachedGlobalConstantInt("TimeSecToGetOneEnergy");
 		DateTime deliveryTime = DateTime.Now.ToLocalTime() + TimeSpan.FromSeconds(totalSecond);
-		MobileNotificationWrapper.instance.SendNotification(EnergyNotificationId, UIString.instance.GetString("SystemUI_SpinFullTitle"), UIString.instance.GetString("SystemUI_SpinFullBody"),
+		MobileNotificationWrapper.instance.SendNotification(EnergyNotificationId, UIString.instance.GetString("SystemUI_EnergyFullTitle"), UIString.instance.GetString("SystemUI_EnergyFullBody"),
 			deliveryTime, null, true, "my_custom_icon_id", "my_custom_large_icon_id");
 	}
 

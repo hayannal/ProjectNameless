@@ -24,8 +24,8 @@ public class SettingCanvas : MonoBehaviour
 	public Text accountDeleteText;
 	public Slider frameRateSlider;
 	public Text frameRateText;
-	public SwitchAnim spinAlarmSwitch;
-	public Text spinAlarmOnOffText;
+	//public SwitchAnim spinAlarmSwitch;
+	//public Text spinAlarmOnOffText;
 
 	public Text termsText;
 	public Text policyText;
@@ -37,7 +37,7 @@ public class SettingCanvas : MonoBehaviour
 
 	void Start()
 	{
-		_ignoreStartEvent = true;
+		//_ignoreStartEvent = true;
 #if UNITY_ANDROID
 		googleImageObject.SetActive(true);
 		appleImageObject.SetActive(false);
@@ -106,9 +106,9 @@ public class SettingCanvas : MonoBehaviour
 		RefreshAccount();
 		frameRateSlider.value = OptionManager.instance.frame;
 
-		_notUserSetting = true;
-		spinAlarmSwitch.isOn = (OptionManager.instance.energyAlarm == 1);
-		_notUserSetting = false;
+		//_notUserSetting = true;
+		//spinAlarmSwitch.isOn = (OptionManager.instance.energyAlarm == 1);
+		//_notUserSetting = false;
 	}
 
 	public void SaveOption()
@@ -325,6 +325,7 @@ public class SettingCanvas : MonoBehaviour
 	}
 	#endregion
 
+	/*
 	#region System
 	// Hexart Switch 특성상 OnEnable 될때마다 자동으로 호출되서 두개 이상 Reserve가 쌓이는 문제가 있어서
 	// WingCanvas에서 했던거 가져와서 유저 입력이 있을때만 Reserve / Cancel 하는거로 수정해둔다.
@@ -383,6 +384,7 @@ public class SettingCanvas : MonoBehaviour
 		CurrencyData.instance.CancelEnergyNotification();
 	}
 	#endregion
+	*/
 
 	#region Support
 	public void OnClickSupportButton()

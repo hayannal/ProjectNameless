@@ -44,7 +44,7 @@ public class OptionManager : MonoBehaviour
 	string OPTION_FRAME_KEY = "_option_frame_key";
 	string OPTION_DOUBLE_TAB_KEY = "_option_double_tab_key";
 	string OPTION_LOCK_ICON_KEY = "_option_lock_icon_key";
-	string OPTION_ENERGY_ALARM = "_option_energy_alarm_key";
+	public string OPTION_ENERGY_ALARM = "_option_energy_alarm_key";
 
 	void LoadSystemLanguage()
 	{

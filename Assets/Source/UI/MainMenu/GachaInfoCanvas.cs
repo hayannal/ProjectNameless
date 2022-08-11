@@ -107,9 +107,6 @@ public class GachaInfoCanvas : MonoBehaviour
 	{
 		RefreshEnergy();
 
-		if (ObscuredPrefs.HasKey(OPTION_COMPLETE_ALARM))
-			_onCompleteAlarmState = ObscuredPrefs.GetInt(OPTION_COMPLETE_ALARM) == 1;
-
 		MoveTween(false);
 		RefreshInfo();
 
@@ -119,7 +116,7 @@ public class GachaInfoCanvas : MonoBehaviour
 
 	void OnDisable()
 	{
-		ObscuredPrefs.SetInt(OPTION_COMPLETE_ALARM, _onCompleteAlarmState ? 1 : 0);
+		ObscuredPrefs.SetInt(OptionManager.instance.OPTION_ENERGY_ALARM, OptionManager.instance.energyAlarm);
 	}
 
 	bool _reserveGaugeMoveTweenAnimation;
@@ -257,12 +254,10 @@ public class GachaInfoCanvas : MonoBehaviour
 	}
 	#endregion
 
-	bool _onCompleteAlarmState = false;
-	string OPTION_COMPLETE_ALARM = "_option_energy_alarm_key";
 	void RefreshAlarm()
 	{
 		_notUserSetting = true;
-		alarmSwitch.isOn = _onCompleteAlarmState;
+		alarmSwitch.isOn = (OptionManager.instance.energyAlarm == 1);
 		_notUserSetting = false;
 	}
 	
@@ -271,7 +266,7 @@ public class GachaInfoCanvas : MonoBehaviour
 	bool _notUserSetting = false;
 	public void OnSwitchOnCompleteAlarm()
 	{
-		_onCompleteAlarmState = true;
+		OptionManager.instance.energyAlarm = 1;
 		alarmOnOffText.text = "ON";
 		alarmOnOffText.color = Color.white;
 
@@ -284,11 +279,13 @@ public class GachaInfoCanvas : MonoBehaviour
 		}
 
 #if UNITY_ANDROID
-		AnalysisData.instance.ReserveAnalysisNotification();
+		CurrencyData.instance.ReserveEnergyNotification();
+		GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.SpinChargeAlarm);
 #elif UNITY_IOS
 		MobileNotificationWrapper.instance.CheckAuthorization(() =>
 		{
-			AnalysisData.instance.ReserveAnalysisNotification();
+			CurrencyData.instance.ReserveEnergyNotification();
+			GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.SpinChargeAlarm);
 		}, () =>
 		{
 			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_EnergyNotiAppleLast"), 2.0f);
@@ -305,7 +302,7 @@ public class GachaInfoCanvas : MonoBehaviour
 
 	public void OnSwitchOffCompleteAlarm()
 	{
-		_onCompleteAlarmState = false;
+		OptionManager.instance.energyAlarm = 0;
 		alarmOnOffText.text = "OFF";
 		alarmOnOffText.color = new Color(0.176f, 0.176f, 0.176f);
 
@@ -317,7 +314,7 @@ public class GachaInfoCanvas : MonoBehaviour
 			return;
 		}
 
-		AnalysisData.instance.CancelAnalysisNotification();
+		CurrencyData.instance.CancelEnergyNotification();
 	}
 	#endregion
 	
