@@ -86,6 +86,24 @@ public class CashShopData : MonoBehaviour
 		*/
 	}
 
+	public void OnRecvOpenCashEvent(string openEventId, string cashEventExpireTimeString)
+	{
+		DateTime cashEventExpireTime = new DateTime();
+		if (DateTime.TryParse(cashEventExpireTimeString, out cashEventExpireTime))
+		{
+			DateTime universalTime = cashEventExpireTime.ToUniversalTime();
+			if (_dicExpireTime.ContainsKey(openEventId))
+				_dicExpireTime[openEventId] = universalTime;
+			else
+				_dicExpireTime.Add(openEventId, universalTime);
+		}
+	}
+
+	public void OnRecvCloseCashEvent(string closeEventId)
+	{
+		_dicExpireTime.Remove(closeEventId);
+	}
+
 	public bool IsShowEvent(string eventId)
 	{
 		if (_dicExpireTime.ContainsKey(eventId) && ServerTime.UtcNow < _dicExpireTime[eventId])

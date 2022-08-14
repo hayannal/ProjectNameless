@@ -241,7 +241,7 @@ public class GachaInfoCanvas : MonoBehaviour
 			_currentBetRateIndex = 0;
 		}
 
-		betText.text = string.Format("BET X{0}", _listBetValue[_currentBetRateIndex]);
+		betText.text = string.Format("BOOST X{0}", _listBetValue[_currentBetRateIndex]);
 	}
 
 	public void OnClickBetButton()
@@ -548,15 +548,16 @@ public class GachaInfoCanvas : MonoBehaviour
 		GachaCanvas.instance.backKeyButton.interactable = false;
 
 		// 이펙트
-		GachaObjects.instance.effectRootTransform.gameObject.SetActive(true);
-		yield return Timing.WaitForSeconds(5.0f);
+		float waitTime = 5.0f;
+		GameObject waitEffectObject = GachaObjects.instance.ShowSummonWaitEffect(_gachaResult, ref waitTime);
+		yield return Timing.WaitForSeconds(waitTime);
 
 		// 결과에 따른 소환 오브젝트들 소환
 		GachaObjects.instance.ShowSummonResultObject(true, _gachaResult);
 
 		// 이펙트 마저 사라질 시간까지 대기 후
 		yield return Timing.WaitForSeconds(1.0f);
-		GachaObjects.instance.effectRootTransform.gameObject.SetActive(false);
+		waitEffectObject.SetActive(false);
 
 		// 결과에 따른 소환 오브젝트에 따른 이펙트
 		GachaObjects.instance.ShowSummonResultEffectObject(_gachaResult);
@@ -581,7 +582,7 @@ public class GachaInfoCanvas : MonoBehaviour
 			GachaCanvas.instance.backKeyButton.interactable = true;
 
 			// 
-			CheckNeedRefreshTurn();
+			OnPostProcess();
 		}
 	}
 
@@ -631,8 +632,20 @@ public class GachaInfoCanvas : MonoBehaviour
 	}
 	#endregion
 
+	#region PostProcess Gacha
+	public void OnPostProcess()
+	{
+		// 여러가지 일들을 할텐데
+		// 제일 먼저 하는건 Turn Refresh
+		CheckNeedRefreshTurn();
+
+		// 그리고 하는건 에너지
+		CheckCashEvent();
+	}
+	#endregion
+
 	#region Refresh Turn
-	public void CheckNeedRefreshTurn()
+	void CheckNeedRefreshTurn()
 	{
 		if (_needRefreshTurn == false)
 			return;
@@ -640,6 +653,31 @@ public class GachaInfoCanvas : MonoBehaviour
 		GachaIndicatorCanvas.instance.SetValue(CurrencyData.instance.goldBoxTargetReward);
 		GachaIndicatorCanvas.instance.gameObject.SetActive(false);
 		GachaIndicatorCanvas.instance.gameObject.SetActive(true);
+
+		_needRefreshTurn = false;
+	}
+	#endregion
+
+	#region Cash Event
+	void CheckCashEvent()
+	{
+		EventTypeTableData eventTypeTableData = TableDataManager.instance.FindEventTypeTableData("ev1");
+		if (eventTypeTableData == null)
+			return;
+
+		if (CurrencyData.instance.energy > 0)
+			return;
+
+		if (CashShopData.instance.IsShowEvent(eventTypeTableData.id))
+			return;
+
+		if (UnityEngine.Random.value < 0.333f)
+			return;
+
+		PlayFabApiManager.instance.RequestOpenCashEvent(eventTypeTableData.id, eventTypeTableData.givenTime, () =>
+		{
+			MainCanvas.instance.ShowCashEvent(eventTypeTableData.id, true, true);
+		});
 	}
 	#endregion
 }

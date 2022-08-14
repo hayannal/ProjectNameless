@@ -1252,6 +1252,62 @@ public class PlayFabApiManager : MonoBehaviour
 	#endregion
 
 
+	#region CashEvent
+	public void RequestOpenCashEvent(string openEventId, int givenTime, Action successCallback)
+	{
+		string input = string.Format("{0}_{1}_{2}", openEventId, givenTime, "ldruqzvm");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "OpenCashEvent",
+			FunctionParameter = new { EvId = openEventId, GiTim = givenTime, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				jsonResult.TryGetValue("date", out object date);
+
+				// 성공시에는 서버에서 방금 기록한 유효기간 만료 시간이 날아온다.
+				CashShopData.instance.OnRecvOpenCashEvent(openEventId, (string)date);
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
+	public void RequestCloseCashEvent(string closeEventId, Action successCallback)
+	{
+		string input = string.Format("{0}_{1}", closeEventId, "ldruqzvn");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "CloseCashEvent",
+			FunctionParameter = new { EvId = closeEventId, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				CashShopData.instance.OnRecvCloseCashEvent(closeEventId);
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+	#endregion
+
+
 	#region Analysis
 	public void RequestStartAnalysis(Action successCallback, Action failureCallback)
 	{

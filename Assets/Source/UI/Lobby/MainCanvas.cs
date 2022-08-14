@@ -20,6 +20,8 @@ public class MainCanvas : MonoBehaviour
 	public CanvasGroup safeAreaCanvasGroup;
 	public CanvasGroup questInfoCanvasGroup;
 
+	public CashEventButton[] cashEventButtonList;
+
 	public RectTransform mailAlarmRootTransform;
 	public RectTransform analysisAlarmRootTransform;
 	public RectTransform cashShopAlarmRootTransform;
@@ -455,6 +457,26 @@ public class MainCanvas : MonoBehaviour
 	public void FadeInQuestInfoGroup(float alpha, float duration)    //, bool bossWar)
 	{
 		DOTween.To(() => questInfoCanvasGroup.alpha, x => questInfoCanvasGroup.alpha = x, alpha, duration).SetEase(Ease.Linear);
+	}
+	#endregion
+
+
+	#region CashEvent
+	public void ShowCashEvent(string cashEventId, bool showButton, bool showCanvas)
+	{
+		for (int i = 0; i < cashEventButtonList.Length; ++i)
+		{
+			if (cashEventButtonList[i].cashEventId == cashEventId)
+			{
+				if (showButton)
+					cashEventButtonList[i].ShowButton(true);
+
+				if (showCanvas)
+					CashEventButton.ShowEventCanvas(cashEventId);
+
+				break;
+			}
+		}
 	}
 	#endregion
 

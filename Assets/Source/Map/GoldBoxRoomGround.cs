@@ -180,6 +180,6 @@ public class GoldBoxRoomGround : MonoBehaviour
 		FadeCanvas.instance.FadeIn(0.5f);
 
 		yield return Timing.WaitForSeconds(0.3f);
-		GachaInfoCanvas.instance.CheckNeedRefreshTurn();
+		GachaInfoCanvas.instance.OnPostProcess();
 	}
 }

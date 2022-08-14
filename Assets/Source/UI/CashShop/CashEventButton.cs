@@ -19,14 +19,19 @@ public class CashEventButton : MonoBehaviour
 		if (isShow)
 			_eventExpireDateTime = CashShopData.instance.GetExpireDateTime(cashEventId);
 
-		if (buttonRootObject == null)
-			buttonRootObject = gameObject;
-		buttonRootObject.SetActive(isShow);
+		ShowButton(isShow);
 	}
 
 	void Update()
 	{
 		UpdateRemainTime();
+	}
+
+	public void ShowButton(bool show)
+	{
+		if (buttonRootObject == null)
+			buttonRootObject = gameObject;
+		buttonRootObject.SetActive(show);
 	}
 
 	DateTime _eventExpireDateTime;
@@ -59,6 +64,11 @@ public class CashEventButton : MonoBehaviour
 
 	public void OnClickButton()
 	{
-		UIInstanceManager.instance.ShowCanvasAsync(string.Format("{0}CashEventCanvas", cashEventId), null);
+		ShowEventCanvas(cashEventId);
+	}
+
+	public static void ShowEventCanvas(string id)
+	{
+		UIInstanceManager.instance.ShowCanvasAsync(string.Format("{0}CashEventCanvas", id), null);
 	}
 }

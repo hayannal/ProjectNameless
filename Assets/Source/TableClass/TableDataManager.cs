@@ -330,4 +330,14 @@ public class TableDataManager : MonoBehaviour
 		}
 		return null;
 	}
+
+	public GachaTypeTableData FindeGachaTypeTableData(string gachaId)
+	{
+		for (int i = 0; i < gachaTypeTable.dataArray.Length; ++i)
+		{
+			if (gachaTypeTable.dataArray[i].gachaId == gachaId)
+				return gachaTypeTable.dataArray[i];
+		}
+		return null;
+	}
 }

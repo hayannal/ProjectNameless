@@ -218,7 +218,7 @@ public class FindMonsterRoomGround : MonoBehaviour
 		// FindMonster에서는 GoldBox 보상을 바꾸지 않는다.
 		// 그렇지만 마지막 1턴 남겨두고 Find Monster Room 들어왔을땐 되돌아오면서 바뀌어야하니까
 		// 호출을 건너뛸 순 없다.
-		GachaInfoCanvas.instance.CheckNeedRefreshTurn();
+		GachaInfoCanvas.instance.OnPostProcess();
 	}
 
 
