@@ -40,6 +40,8 @@ public class TableDataManager : MonoBehaviour
 
 	public GuideQuestTable guideQuestTable;
 	public GachaTypeTable gachaTypeTable;
+	public ShopCashTable shopCashTable;
+	public LevelPassTable levelPassTable;
 
 	void Awake()
 	{
@@ -337,6 +339,26 @@ public class TableDataManager : MonoBehaviour
 		{
 			if (gachaTypeTable.dataArray[i].gachaId == gachaId)
 				return gachaTypeTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public ShopCashTableData FindShopCashTableData(string productId)
+	{
+		for (int i = 0; i < shopCashTable.dataArray.Length; ++i)
+		{
+			if (shopCashTable.dataArray[i].productId == productId)
+				return shopCashTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public LevelPassTableData FindLevelPassTableData(int level)
+	{
+		for (int i = 0; i < levelPassTable.dataArray.Length; ++i)
+		{
+			if (levelPassTable.dataArray[i].level == level)
+				return levelPassTable.dataArray[i];
 		}
 		return null;
 	}

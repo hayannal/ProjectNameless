@@ -20,11 +20,13 @@ public class MainCanvas : MonoBehaviour
 	public CanvasGroup safeAreaCanvasGroup;
 	public CanvasGroup questInfoCanvasGroup;
 
+	public GameObject levelPassButtonObject;
 	public CashEventButton[] cashEventButtonList;
 
 	public RectTransform mailAlarmRootTransform;
 	public RectTransform analysisAlarmRootTransform;
 	public RectTransform cashShopAlarmRootTransform;
+	public RectTransform levelPassAlarmRootTransform;
 
 	List<Vector2> _listBasePosition = new List<Vector2>();
 	void Awake()
@@ -42,6 +44,7 @@ public class MainCanvas : MonoBehaviour
 		for (int i = 0; i < basePositionRectTransformList.Length; ++i)
 			basePositionRectTransformList[i].anchoredPosition = _listBasePosition[i];
 
+		RefreshCashButton();
 		RefreshAlarmObjectList();
 	}
 
@@ -271,6 +274,7 @@ public class MainCanvas : MonoBehaviour
 		//RefreshCharacterAlarmObject();
 		RefreshMailAlarmObject();
 		RefreshAnalysisAlarmObject();
+		RefreshLevelPassAlarmObject();
 	}
 
 	public static bool IsAlarmCashShop()
@@ -418,6 +422,34 @@ public class MainCanvas : MonoBehaviour
 		RefreshAlarmObject(IsAlarmAnalysis(), analysisAlarmRootTransform);
 	}
 
+	public static bool IsAlarmLevelPass()
+	{
+		if (CashShopData.instance.IsPurchasedFlag(CashShopData.eCashFlagType.LevelPass) == false)
+		{
+			if (CashShopData.instance.levelPassAlarmStateForNoPass)
+				return true;
+			return false;
+		}
+
+		bool getable = false;
+		for (int i = 0; i < TableDataManager.instance.levelPassTable.dataArray.Length; ++i)
+		{
+			int level = TableDataManager.instance.levelPassTable.dataArray[i].level;
+			if (level <= PlayerData.instance.playerLevel && CashShopData.instance.IsGetLevelPassReward(level) == false)
+			{
+				getable = true;
+				break;
+			}
+		}
+
+		return getable;
+	}
+
+	public void RefreshLevelPassAlarmObject()
+	{
+		RefreshAlarmObject(IsAlarmLevelPass(), levelPassAlarmRootTransform);
+	}
+
 	void RefreshAlarmObject(bool show, Transform alarmRootTransform)
 	{
 		if (show)
@@ -460,6 +492,21 @@ public class MainCanvas : MonoBehaviour
 	}
 	#endregion
 
+
+	#region Cash Button
+	public void RefreshCashButton()
+	{
+		bool showLevelPass = (PlayerData.instance.playerLevel >= 5);
+		levelPassButtonObject.SetActive(showLevelPass);
+
+
+	}
+
+	public void OnClickLevelPassButton()
+	{
+		UIInstanceManager.instance.ShowCanvasAsync("LevelPassCanvas", null);
+	}
+	#endregion
 
 	#region CashEvent
 	public void ShowCashEvent(string cashEventId, bool showButton, bool showCanvas)

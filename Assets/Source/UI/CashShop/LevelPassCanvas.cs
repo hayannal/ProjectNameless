@@ -1,17 +1,95 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.Purchasing;
 
-public class BigBoostEventCanvas : SimpleCashEventCanvas
+public class LevelPassCanvas : SimpleCashCanvas
 {
+	public static LevelPassCanvas instance;
+
+	public GameObject priceButtonObject;
+	public GameObject purchasedButtonObject;
+	public Image purchasedButtonImage;
+	public Text purchasedText;
+
+	public GameObject contentItemPrefab;
+	public RectTransform contentRootRectTransform;
+
+	public class CustomItemContainer : CachedItemHave<LevelPassCanvasListItem>
+	{
+	}
+	CustomItemContainer _container = new CustomItemContainer();
+
+	void Awake()
+	{
+		instance = this;
+	}
+
 	void Start()
 	{
-		ShopCashTableData shopCashTableData = TableDataManager.instance.FindShopCashTableData("BigBoost");
+		contentItemPrefab.SetActive(false);
+
+		ShopCashTableData shopCashTableData = TableDataManager.instance.FindShopCashTableData("LevelPass");
 		if (shopCashTableData == null)
 			return;
 		RefreshPrice(shopCashTableData.serverItemId, shopCashTableData.kor, shopCashTableData.eng);
+
+		// refresh
+		RefreshGrid();
+
+		if (CashShopData.instance.levelPassAlarmStateForNoPass)
+		{
+			CashShopData.instance.levelPassAlarmStateForNoPass = false;
+			MainCanvas.instance.RefreshLevelPassAlarmObject();
+		}
 	}
+
+	void OnEnable()
+	{
+		RefreshPriceButton();
+		MainCanvas.instance.OnEnterCharacterMenu(true);
+	}
+
+	void OnDisable()
+	{
+		MainCanvas.instance.OnEnterCharacterMenu(false);
+	}
+
+	void RefreshPriceButton()
+	{
+		bool purchased = CashShopData.instance.IsPurchasedFlag(CashShopData.eCashFlagType.LevelPass);
+		priceButtonObject.SetActive(!purchased);
+		purchasedButtonObject.SetActive(purchased);
+		if (purchased)
+		{
+			purchasedButtonImage.color = ColorUtil.halfGray;
+			purchasedText.color = Color.gray;
+		}
+	}
+
+	List<LevelPassCanvasListItem> _listLevelPassCanvasListItem = new List<LevelPassCanvasListItem>();
+	public void RefreshGrid()
+	{
+		for (int i = 0; i < _listLevelPassCanvasListItem.Count; ++i)
+			_listLevelPassCanvasListItem[i].gameObject.SetActive(false);
+		_listLevelPassCanvasListItem.Clear();
+
+		for (int i = 0; i < TableDataManager.instance.levelPassTable.dataArray.Length; ++i)
+		{
+			LevelPassCanvasListItem levelPassCanvasListItem = _container.GetCachedItem(contentItemPrefab, contentRootRectTransform);
+			levelPassCanvasListItem.Initialize(TableDataManager.instance.levelPassTable.dataArray[i].level, TableDataManager.instance.levelPassTable.dataArray[i].energy);
+			_listLevelPassCanvasListItem.Add(levelPassCanvasListItem);
+		}
+	}
+
+	public void OnClickPurchasedButton()
+	{
+
+	}
+
+
+
 
 	protected override void RequestServerPacket(Product product)
 	{
@@ -36,11 +114,12 @@ public class BigBoostEventCanvas : SimpleCashEventCanvas
 		{
 			// ValidatePurchase함수를 하나만 만들어서 쓰기로 하면서
 			// 재화에 대한 처리를 외부에서 하기로 한다.
-			ShopCashTableData shopCashTableData = TableDataManager.instance.FindShopCashTableData("BigBoost");
+			ShopCashTableData shopCashTableData = TableDataManager.instance.FindShopCashTableData("LevelPass");
 			if (shopCashTableData != null)
 			{
-				CurrencyData.instance.gold += shopCashTableData.buyingGold;
-				CurrencyData.instance.OnRecvRefillEnergy(shopCashTableData.buyingEnergy);
+				CashShopData.instance.PurchaseFlag(CashShopData.eCashFlagType.LevelPass);
+				if (instance != null)
+					instance.RefreshPriceButton();
 			}
 
 			// 결과화면도 보여줘야한다.
@@ -49,7 +128,11 @@ public class BigBoostEventCanvas : SimpleCashEventCanvas
 			//
 			// 간단한 결과창 하나로 처리할 수도 있을거다.
 			WaitingNetworkCanvas.Show(false);
-			OkCanvas.instance.ShowCanvas(true, "title", "message");
+			if (instance != null)
+			{
+				instance.gameObject.SetActive(false);
+				instance.gameObject.SetActive(true);
+			}
 
 			CodelessIAPStoreListener.Instance.StoreController.ConfirmPendingPurchase(product);
 			IAPListenerWrapper.instance.CheckConfirmPendingPurchase(product);

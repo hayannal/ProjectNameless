@@ -162,7 +162,7 @@ public class GachaInfoCanvas : MonoBehaviour
 		int current = CurrencyData.instance.energy;
 		int max = CurrencyData.instance.energyMax;
 		energyRatioSlider.value = (float)current / max;
-		energyText.text = string.Format("{0}/{1}", current, max);
+		energyText.text = string.Format("{0:N0}/{1}", current, max);
 		_lastCurrent = current;
 		if (current >= max)
 		{

@@ -252,7 +252,7 @@ public class PlayFabApiManager : MonoBehaviour
 		CurrencyData.instance.OnRecvCurrencyData(loginResult.InfoResultPayload.UserVirtualCurrency, loginResult.InfoResultPayload.UserVirtualCurrencyRechargeTimes, loginResult.InfoResultPayload.PlayerStatistics);
 		MailData.instance.OnRecvMailData(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics, loginResult.NewlyCreated);
 		SupportData.instance.OnRecvSupportData(loginResult.InfoResultPayload.UserReadOnlyData);
-		CashShopData.instance.OnRecvCashShopData(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData);
+		CashShopData.instance.OnRecvCashShopData(loginResult.InfoResultPayload.UserVirtualCurrency, loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData);
 		PlayerData.instance.OnRecvServerTableData(loginResult.InfoResultPayload.TitleData);
 		AnalysisData.instance.OnRecvAnalysisData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 		GuideQuestData.instance.OnRecvGuideQuestData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
@@ -1533,6 +1533,38 @@ public class PlayFabApiManager : MonoBehaviour
 		{
 			HandleCommonError(error);
 			if (failureCallback != null) failureCallback.Invoke(error);
+		});
+	}
+	#endregion
+
+	#region CashShop
+	public void RequestGetLevelPassReward(int level, int rewardEnergy, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}_{2}", level, rewardEnergy, "qizlrewm");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "GetLevelPassReward",
+			FunctionParameter = new { SeLv = level, SeRw = rewardEnergy, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				CashShopData.instance.OnRecvLevelPassReward(level);
+				CurrencyData.instance.OnRecvRefillEnergy(rewardEnergy);
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
 		});
 	}
 	#endregion

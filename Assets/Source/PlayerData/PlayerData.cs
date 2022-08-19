@@ -354,6 +354,7 @@ public class PlayerData : MonoBehaviour
 			playerActor.actorStatus.InitializeActorStatus();
 
 		TeamManager.instance.InitializeActorStatus();
+		MainCanvas.instance.RefreshCashButton();
 	}
 
 	public void OnRecvCharacterList(List<CharacterResult> characterList, Dictionary<string, GetCharacterStatisticsResult> dicCharacterStatistics)

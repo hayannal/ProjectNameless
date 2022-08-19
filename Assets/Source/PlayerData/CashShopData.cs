@@ -2,6 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Purchasing;
+using CodeStage.AntiCheat.ObscuredTypes;
+using PlayFab;
 using PlayFab.ClientModels;
 
 public class CashShopData : MonoBehaviour
@@ -23,7 +26,33 @@ public class CashShopData : MonoBehaviour
 	// 상품들은 대부분은 각각의 유효기간을 가진다.
 	Dictionary<string, DateTime> _dicExpireTime = new Dictionary<string, DateTime>();
 
-	public void OnRecvCashShopData(Dictionary<string, string> titleData, Dictionary<string, UserDataRecord> userReadOnlyData)
+	// 결제시 CF 항목에다가 플래그로 기록해서 구매여부를 확인하기로 한다.
+	// 0 이라면 아무것도 구매하지 않은 상태일거고
+	// 1 이면 첫번째 항목 구매
+	// 2 면 두번째 항목 구매
+	// 3 이면 첫번째 두번째 둘다 구매
+	// 이런식으로 플래그 조합으로 처리한다.
+	public enum eCashFlagType
+	{
+		LevelPass = 0,
+		StagePass1 = 1,
+
+		Amount,
+	}
+	List<ObscuredBool> _listCashFlag = new List<ObscuredBool>();
+
+	public enum eCashCountType
+	{
+		DailyGold = 0,
+
+		Amount,
+	}
+	List<ObscuredInt> _listCashCount = new List<ObscuredInt>();
+
+	// 레벨패스에서 받았음을 기억해두는 변수인데 어차피 받을때마다 서버검증 하기때문에 Obscured 안쓰고 그냥 사용하기로 한다.
+	List<int> _listLevelPassReward;
+
+	public void OnRecvCashShopData(Dictionary<string, int> userVirtualCurrency, Dictionary<string, string> titleData, Dictionary<string, UserDataRecord> userReadOnlyData)
 	{
 		/*
 		// 아직 언픽스드를 쓸지 안쓸지 모르니
@@ -53,6 +82,36 @@ public class CashShopData : MonoBehaviour
 				}
 			}
 		}
+
+		// 이번 캐시상품의 핵심이 되는 플래그다.
+		_listCashFlag.Clear();
+		if (userVirtualCurrency.ContainsKey("CF"))
+		{
+			int cashFlagValue = userVirtualCurrency["CF"];
+
+			// 하나로 온 int를 쪼개서 플래그 리스트로 분리해서 관리한다.
+			for (int i = 0; i < (int)eCashFlagType.Amount; ++i)
+			{
+				int flagValue = 1 << i;
+				_listCashFlag.Add((flagValue & cashFlagValue) > 0);
+			}
+		}
+
+		// 이건 카운트 처리용
+		if (userVirtualCurrency.ContainsKey("CC"))
+		{
+
+		}
+
+		var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
+		_listLevelPassReward = null;
+		if (userReadOnlyData.ContainsKey("lvPssLst"))
+		{
+			string lvPssLstString = userReadOnlyData["lvPssLst"].Value;
+			if (string.IsNullOrEmpty(lvPssLstString) == false)
+				_listLevelPassReward = serializer.DeserializeObject<List<int>>(lvPssLstString);
+		}
+		levelPassAlarmStateForNoPass = (IsPurchasedFlag(eCashFlagType.LevelPass) == false);
 
 		/*
 		// 일일 무료 아이템 수령기록 데이터. 마지막 오픈 시간을 받는건 일퀘 때와 비슷한 구조다. 상점 슬롯과 별개로 처리된다.
@@ -86,6 +145,23 @@ public class CashShopData : MonoBehaviour
 		*/
 	}
 
+	public bool IsPurchasedFlag(eCashFlagType cashFlagType)
+	{
+		if ((int)cashFlagType < _listCashFlag.Count)
+		{
+			return _listCashFlag[(int)cashFlagType];
+		}
+		return false;
+	}
+
+	public void PurchaseFlag(eCashFlagType cashFlagType)
+	{
+		if ((int)cashFlagType < _listCashFlag.Count)
+			_listCashFlag[(int)cashFlagType] = true;
+	}
+
+
+
 	public void OnRecvOpenCashEvent(string openEventId, string cashEventExpireTimeString)
 	{
 		DateTime cashEventExpireTime = new DateTime();
@@ -118,4 +194,24 @@ public class CashShopData : MonoBehaviour
 			return _dicExpireTime[eventId];
 		return _emptyDateTime;
 	}
+
+	#region Level Pass
+	public bool IsGetLevelPassReward(int level)
+	{
+		if (_listLevelPassReward == null)
+			return false;
+
+		return _listLevelPassReward.Contains(level);
+	}
+
+	public List<int> OnRecvLevelPassReward(int level)
+	{
+		if (_listLevelPassReward == null)
+			_listLevelPassReward = new List<int>();
+		if (_listLevelPassReward.Contains(level) == false)
+			_listLevelPassReward.Add(level);
+		return _listLevelPassReward;
+	}
+	public bool levelPassAlarmStateForNoPass { get; set; }
+	#endregion
 }
