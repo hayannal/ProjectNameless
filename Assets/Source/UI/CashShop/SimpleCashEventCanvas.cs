@@ -8,9 +8,6 @@ public class SimpleCashEventCanvas : SimpleCashCanvas
 {
 	public string cashEventId;
 	public Text remainTimeText;
-	public Text rewardGoldText;
-	public Text rewardDiamondText;
-	public Text rewardSpinText;
 	
 	void OnEnable()
 	{
@@ -26,18 +23,6 @@ public class SimpleCashEventCanvas : SimpleCashCanvas
 		bool isShow = CashShopData.instance.IsShowEvent(cashEventId);
 		if (isShow)
 			_eventExpireDateTime = CashShopData.instance.GetExpireDateTime(cashEventId);
-
-		// 심플은 num을 1일차꺼로 구해와서 보여주면 될거다.
-		EventRewardTableData eventRewardTableData = TableDataManager.instance.FindEventRewardTableData(cashEventId, 1);
-		if (eventRewardTableData != null)
-		{
-			if (rewardGoldText != null)
-				rewardGoldText.text = eventRewardTableData.buyingGold.ToString("N0");
-			if (rewardDiamondText != null)
-				rewardDiamondText.text = eventRewardTableData.buyingGems.ToString("N0");
-			if (rewardSpinText != null)
-				rewardSpinText.text = eventRewardTableData.buyingSpins.ToString("N0");
-		}
 	}
 
 	void Update()

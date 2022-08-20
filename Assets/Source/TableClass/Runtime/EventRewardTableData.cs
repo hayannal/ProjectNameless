@@ -17,23 +17,15 @@ public class EventRewardTableData
   public int num { get { return _num; } set { _num = value; } }
   
   [SerializeField]
-  bool _free;
-  public bool free { get { return _free; } set { _free = value; } }
+  string _rewardType;
+  public string rewardType { get { return _rewardType; } set { _rewardType = value; } }
   
   [SerializeField]
-  string _serverItemId;
-  public string serverItemId { get { return _serverItemId; } set { _serverItemId = value; } }
+  string _rewardValue;
+  public string rewardValue { get { return _rewardValue; } set { _rewardValue = value; } }
   
   [SerializeField]
-  int _buyingGold;
-  public int buyingGold { get { return _buyingGold; } set { _buyingGold = value; } }
-  
-  [SerializeField]
-  int _buyingGems;
-  public int buyingGems { get { return _buyingGems; } set { _buyingGems = value; } }
-  
-  [SerializeField]
-  int _buyingSpins;
-  public int buyingSpins { get { return _buyingSpins; } set { _buyingSpins = value; } }
+  int _rewardCount;
+  public int rewardCount { get { return _rewardCount; } set { _rewardCount = value; } }
   
 }
