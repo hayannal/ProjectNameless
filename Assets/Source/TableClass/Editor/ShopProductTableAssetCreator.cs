@@ -8,12 +8,12 @@ using UnityQuickSheet;
 /// 
 public partial class ExcelDataAssetUtility
 {
-    [MenuItem("Assets/Create/QuickSheet/ExcelData/ShopCashTable", false, 500)]
-    public static void CreateShopCashTableAssetFile()
+    [MenuItem("Assets/Create/QuickSheet/ExcelData/ShopProductTable", false, 500)]
+    public static void CreateShopProductTableAssetFile()
     {
-        ShopCashTable asset = CustomAssetUtility.CreateAsset<ShopCashTable>();
+        ShopProductTable asset = CustomAssetUtility.CreateAsset<ShopProductTable>();
         asset.SheetName = "../Excel/Shop.xlsx";
-        asset.WorksheetName = "ShopCashTable";
+        asset.WorksheetName = "ShopProductTable";
         EditorUtility.SetDirty(asset);        
     }
     

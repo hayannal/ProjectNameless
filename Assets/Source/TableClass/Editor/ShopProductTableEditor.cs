@@ -9,12 +9,12 @@ using UnityQuickSheet;
 ///
 /// !!! Machine generated code !!!
 ///
-[CustomEditor(typeof(ShopCashTable))]
-public class ShopCashTableEditor : BaseExcelEditor<ShopCashTable>
+[CustomEditor(typeof(ShopProductTable))]
+public class ShopProductTableEditor : BaseExcelEditor<ShopProductTable>
 {	    
     public override bool Load()
     {
-        ShopCashTable targetData = target as ShopCashTable;
+        ShopProductTable targetData = target as ShopProductTable;
 
         string path = targetData.SheetName;
 
@@ -28,7 +28,7 @@ public class ShopCashTableEditor : BaseExcelEditor<ShopCashTable>
         ExcelQuery query = new ExcelQuery(path, sheet);
         if (query != null && query.IsValid())
         {
-            targetData.dataArray = query.Deserialize<ShopCashTableData>().ToArray();
+            targetData.dataArray = query.Deserialize<ShopProductTableData>().ToArray();
             EditorUtility.SetDirty(targetData);
             AssetDatabase.SaveAssets();
             return true;

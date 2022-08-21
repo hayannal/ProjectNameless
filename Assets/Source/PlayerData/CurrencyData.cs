@@ -233,4 +233,24 @@ public class CurrencyData : MonoBehaviour
 		if (GachaInfoCanvas.instance != null)
 			GachaInfoCanvas.instance.RefreshEnergy();
 	}
+
+	// 공용 보상 처리때문에 추가하는 함수
+	public void OnRecvProductReward(string type, string value, int count)
+	{
+		switch (type)
+		{
+			case "cu":
+				switch (value)
+				{
+					case "GO": gold += count; break;
+					case "EN": OnRecvRefillEnergy(energy); break;
+				}
+				break;
+			case "it":
+				// 어차피 받아야하는 곳에서 처리하고 있을텐데 이런 공용 처리가 필요할지 모르겠다.
+				// 필요해지면 추가하기로 한다.
+				//CashShopData.instance.OnRecvCashItem(type, value, count);
+				break;
+		}
+	}
 }

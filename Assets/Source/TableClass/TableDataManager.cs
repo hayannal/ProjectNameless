@@ -42,7 +42,7 @@ public class TableDataManager : MonoBehaviour
 
 	public GuideQuestTable guideQuestTable;
 	public GachaTypeTable gachaTypeTable;
-	public ShopCashTable shopCashTable;
+	public ShopProductTable shopProductTable;
 	public LevelPassTable levelPassTable;
 
 	void Awake()
@@ -365,12 +365,12 @@ public class TableDataManager : MonoBehaviour
 		return null;
 	}
 
-	public ShopCashTableData FindShopCashTableData(string productId)
+	public ShopProductTableData FindShopProductTableData(string productId)
 	{
-		for (int i = 0; i < shopCashTable.dataArray.Length; ++i)
+		for (int i = 0; i < shopProductTable.dataArray.Length; ++i)
 		{
-			if (shopCashTable.dataArray[i].productId == productId)
-				return shopCashTable.dataArray[i];
+			if (shopProductTable.dataArray[i].productId == productId)
+				return shopProductTable.dataArray[i];
 		}
 		return null;
 	}

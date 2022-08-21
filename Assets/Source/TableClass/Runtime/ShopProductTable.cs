@@ -11,7 +11,7 @@ using System.Collections.Generic;
 /// 
 [System.Serializable]
 [PreferBinarySerialization]
-public class ShopCashTable : ScriptableObject 
+public class ShopProductTable : ScriptableObject 
 {	
     [HideInInspector] [SerializeField] 
     public string SheetName = "";
@@ -20,7 +20,7 @@ public class ShopCashTable : ScriptableObject
     public string WorksheetName = "";
     
     // Note: initialize in OnEnable() not here.
-    public ShopCashTableData[] dataArray;
+    public ShopProductTableData[] dataArray;
     
     void OnEnable()
     {		
@@ -33,7 +33,7 @@ public class ShopCashTable : ScriptableObject
         //    because OnEnable is called whenever Unity builds.
         // 		
         if (dataArray == null)
-            dataArray = new ShopCashTableData[0];
+            dataArray = new ShopProductTableData[0];
 
     }
     

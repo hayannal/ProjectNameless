@@ -26,12 +26,8 @@ public class CashShopData : MonoBehaviour
 	// 상품들은 대부분은 각각의 유효기간을 가진다.
 	Dictionary<string, DateTime> _dicExpireTime = new Dictionary<string, DateTime>();
 
-	// 결제시 CF 항목에다가 플래그로 기록해서 구매여부를 확인하기로 한다.
-	// 0 이라면 아무것도 구매하지 않은 상태일거고
-	// 1 이면 첫번째 항목 구매
-	// 2 면 두번째 항목 구매
-	// 3 이면 첫번째 두번째 둘다 구매
-	// 이런식으로 플래그 조합으로 처리한다.
+	// CF에다가 비트플래그로 구분하는건 중복 구매시 다음 아이템의 플래그가 켜질 수 있어서 안하기로 한다.
+	// 이 플래그 대신 아이템에다가 접두사로 구분하는 형태로 해서 인벤토리를 검사하는 형태로 변경하기로 한다.
 	public enum eCashFlagType
 	{
 		LevelPass = 0,
@@ -40,6 +36,7 @@ public class CashShopData : MonoBehaviour
 		Amount,
 	}
 	List<ObscuredBool> _listCashFlag = new List<ObscuredBool>();
+	List<string> _listCashFlagKey = new List<string> { "Cash_bLevelPass", "Cash_bStagePass" };
 
 	public enum eCashCountType
 	{
@@ -48,11 +45,12 @@ public class CashShopData : MonoBehaviour
 		Amount,
 	}
 	List<ObscuredInt> _listCashCount = new List<ObscuredInt>();
+	List<string> _listCashCountKey = new List<string> { "Cash_cDailyGold" };
 
 	// 레벨패스에서 받았음을 기억해두는 변수인데 어차피 받을때마다 서버검증 하기때문에 Obscured 안쓰고 그냥 사용하기로 한다.
 	List<int> _listLevelPassReward;
 
-	public void OnRecvCashShopData(Dictionary<string, int> userVirtualCurrency, Dictionary<string, string> titleData, Dictionary<string, UserDataRecord> userReadOnlyData)
+	public void OnRecvCashShopData(List<ItemInstance> userInventory, Dictionary<string, string> titleData, Dictionary<string, UserDataRecord> userReadOnlyData)
 	{
 		/*
 		// 아직 언픽스드를 쓸지 안쓸지 모르니
@@ -85,22 +83,31 @@ public class CashShopData : MonoBehaviour
 
 		// 이번 캐시상품의 핵심이 되는 플래그다.
 		_listCashFlag.Clear();
-		if (userVirtualCurrency.ContainsKey("CF"))
-		{
-			int cashFlagValue = userVirtualCurrency["CF"];
+		for (int i = 0; i < (int)eCashFlagType.Amount; ++i)
+			_listCashFlag.Add(false);
 
-			// 하나로 온 int를 쪼개서 플래그 리스트로 분리해서 관리한다.
-			for (int i = 0; i < (int)eCashFlagType.Amount; ++i)
+		for (int i = 0; i < userInventory.Count; ++i)
+		{
+			if (userInventory[i].ItemId.StartsWith("Cash_") == false)
+				continue;
+
+			for (int j = 0; j < _listCashFlagKey.Count; ++j)
 			{
-				int flagValue = 1 << i;
-				_listCashFlag.Add((flagValue & cashFlagValue) > 0);
+				if (_listCashFlagKey[j] == userInventory[i].ItemId)
+				{
+					_listCashFlag[j] = true;
+					break;
+				}
 			}
-		}
 
-		// 이건 카운트 처리용
-		if (userVirtualCurrency.ContainsKey("CC"))
-		{
-
+			for (int j = 0; j < _listCashCountKey.Count; ++j)
+			{
+				if (_listCashCountKey[j] == userInventory[i].ItemId)
+				{
+					_listCashCount[j] = (userInventory[i].RemainingUses != null) ? (int)userInventory[i].RemainingUses : 0;
+					break;
+				}
+			}
 		}
 
 		var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);

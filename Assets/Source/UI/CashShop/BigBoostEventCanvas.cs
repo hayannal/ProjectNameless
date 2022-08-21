@@ -7,10 +7,10 @@ public class BigBoostEventCanvas : SimpleCashEventCanvas
 {
 	void Start()
 	{
-		ShopCashTableData shopCashTableData = TableDataManager.instance.FindShopCashTableData("BigBoost");
-		if (shopCashTableData == null)
+		ShopProductTableData shopProductTableData = TableDataManager.instance.FindShopProductTableData("BigBoost");
+		if (shopProductTableData == null)
 			return;
-		RefreshPrice(shopCashTableData.serverItemId, shopCashTableData.kor, shopCashTableData.eng);
+		RefreshPrice(shopProductTableData.serverItemId, shopProductTableData.kor, shopProductTableData.eng);
 	}
 
 	protected override void RequestServerPacket(Product product)
@@ -36,11 +36,13 @@ public class BigBoostEventCanvas : SimpleCashEventCanvas
 		{
 			// ValidatePurchase함수를 하나만 만들어서 쓰기로 하면서
 			// 재화에 대한 처리를 외부에서 하기로 한다.
-			ShopCashTableData shopCashTableData = TableDataManager.instance.FindShopCashTableData("BigBoost");
-			if (shopCashTableData != null)
+			ShopProductTableData shopProductTableData = TableDataManager.instance.FindShopProductTableData("BigBoost");
+			if (shopProductTableData != null)
 			{
-				CurrencyData.instance.gold += shopCashTableData.buyingGold;
-				CurrencyData.instance.OnRecvRefillEnergy(shopCashTableData.buyingEnergy);
+				// 원래라면 5개 다 해야겠지만 BigBoost는 3개 넘어서는 사용하지 않을거 같으니 이렇게만 해본다.
+				CurrencyData.instance.OnRecvProductReward(shopProductTableData.rewardType1, shopProductTableData.rewardValue1, shopProductTableData.rewardCount1);
+				CurrencyData.instance.OnRecvProductReward(shopProductTableData.rewardType2, shopProductTableData.rewardValue2, shopProductTableData.rewardCount2);
+				CurrencyData.instance.OnRecvProductReward(shopProductTableData.rewardType3, shopProductTableData.rewardValue3, shopProductTableData.rewardCount3);
 			}
 
 			// 결과화면도 보여줘야한다.
