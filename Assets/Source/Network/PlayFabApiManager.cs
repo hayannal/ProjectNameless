@@ -249,7 +249,7 @@ public class PlayFabApiManager : MonoBehaviour
 
 		ApplyGlobalTable(loginResult.InfoResultPayload.TitleData);
 		AuthManager.instance.OnRecvAccountInfo(loginResult.InfoResultPayload.AccountInfo);
-		CurrencyData.instance.OnRecvCurrencyData(loginResult.InfoResultPayload.UserVirtualCurrency, loginResult.InfoResultPayload.UserVirtualCurrencyRechargeTimes, loginResult.InfoResultPayload.PlayerStatistics);
+		CurrencyData.instance.OnRecvCurrencyData(loginResult.InfoResultPayload.UserVirtualCurrency, loginResult.InfoResultPayload.UserVirtualCurrencyRechargeTimes, loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 		MailData.instance.OnRecvMailData(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics, loginResult.NewlyCreated);
 		SupportData.instance.OnRecvSupportData(loginResult.InfoResultPayload.UserReadOnlyData);
 		CashShopData.instance.OnRecvCashShopData(loginResult.InfoResultPayload.UserInventory, loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData);
@@ -1298,6 +1298,41 @@ public class PlayFabApiManager : MonoBehaviour
 			if (!failure)
 			{
 				CashShopData.instance.OnRecvCloseCashEvent(closeEventId);
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+	#endregion
+
+	#region EventPoint
+	public void RequestStartEventPoint(string startEventPointId, int limitHour, bool oneTime, bool completeRefresh, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}_{2}_{3}", startEventPointId, limitHour, oneTime ? 1 : 0, "qrzlmvix");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "StartEventPoint",
+			FunctionParameter = new { EpntId = startEventPointId, LiHr = limitHour, OnTim = oneTime ? 1 : 0, CoRe = completeRefresh ? 1 : 0, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				jsonResult.TryGetValue("date", out object date);
+
+				// 성공시에는 서버에서 방금 기록한 유효기간 만료 시간이 날아온다.
+				CurrencyData.instance.OnRecvStartEventPoint(startEventPointId, oneTime, (string)date);
+
 				if (successCallback != null) successCallback.Invoke();
 			}
 		}, (error) =>

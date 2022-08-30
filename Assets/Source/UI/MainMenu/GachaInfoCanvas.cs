@@ -22,7 +22,12 @@ public class GachaInfoCanvas : MonoBehaviour
 
 	public Image gaugeImage;
 	public DOTweenAnimation gaugeImageTweenAnimation;
-	public Text nextEventRewardText;
+	public DOTweenAnimation gaugeImageColorTweenAnimation;
+	public GameObject eventPointRewardRootObject;
+	public RewardIcon eventPointRewardIcon;	
+	public RewardIcon eventPointSubRewardIcon;
+	public Image eventPointIconImage;
+	public Text eventPointRewardConditionCountText;
 
 	public GameObject switchGroupObject;
 	public SwitchAnim alarmSwitch;
@@ -84,6 +89,7 @@ public class GachaInfoCanvas : MonoBehaviour
 		*/
 
 		GetComponent<Canvas>().worldCamera = UIInstanceManager.instance.GetCachedCameraMain();
+		_defaultGaugeColor = gaugeImage.color;
 		_ignoreStartEvent = true;
 		_started = true;
 	}
@@ -120,6 +126,7 @@ public class GachaInfoCanvas : MonoBehaviour
 	}
 
 	bool _reserveGaugeMoveTweenAnimation;
+	bool _updateAdjustRewardRootObject;
 	void Update()
 	{
 		if (_reserveGaugeMoveTweenAnimation)
@@ -128,31 +135,28 @@ public class GachaInfoCanvas : MonoBehaviour
 			_reserveGaugeMoveTweenAnimation = false;
 		}
 
+		if (_updateAdjustRewardRootObject)
+		{
+			eventPointRewardRootObject.SetActive(false);
+			eventPointRewardRootObject.SetActive(true);
+		}
+
 		#region Energy
 		UpdateFillRemainTime();
 		UpdateRefresh();
 		#endregion
+
+		#region Event Point
+		UpdateStartEventPoint();
+		UpdateEventPointCountText();
+		#endregion
 	}
 
-	int _currentLevel;
-	float _currentExpPercent;
-	TweenerCore<float, float, FloatOptions> _tweenReferenceForGauge;
 	public void RefreshInfo()
 	{
 		gachaText.text = UIString.instance.GetString("GachaUI_Gacha");
 
-		if (_tweenReferenceForGauge != null)
-			_tweenReferenceForGauge.Kill();
-
-		// gauge
-		float ratio = 0.5f;
-		gaugeImage.fillAmount = 0.0f;
-		_tweenReferenceForGauge = DOTween.To(() => gaugeImage.fillAmount, x => gaugeImage.fillAmount = x, ratio, 0.5f).SetEase(Ease.OutQuad).SetDelay(0.3f);
-		if (_started)
-			gaugeImageTweenAnimation.DORestart();
-		else
-			_reserveGaugeMoveTweenAnimation = true;
-
+		RefreshEventPoint();
 		RefreshAlarm();
 	}
 
@@ -294,6 +298,166 @@ public class GachaInfoCanvas : MonoBehaviour
 #endif
 	}
 
+	#region Event Point
+	EventPointTypeTableData _currentEventPointTypeTableData;
+	EventPointRewardTableData _currentEventPointRewardTableData;
+	TweenerCore<float, float, FloatOptions> _tweenReferenceForGauge;
+	void RefreshEventPoint()
+	{
+		if (_tweenReferenceForGauge != null)
+			_tweenReferenceForGauge.Kill();
+
+		// gauge
+		string currentEventPointId = CurrencyData.instance.eventPointId;
+		if (currentEventPointId == "")
+		{
+			// 비어있으면 fr로 해서 최초 셋팅을 미리 해두기로 한다.
+			currentEventPointId = "fr";
+		}
+
+		_currentEventPointTypeTableData = null;
+		EventPointTypeTableData eventPointTypeTableData = TableDataManager.instance.FindEventPointTypeTableData(currentEventPointId);
+		if (eventPointTypeTableData != null)
+			_currentEventPointTypeTableData = eventPointTypeTableData;
+
+		if (_currentEventPointTypeTableData == null)
+			return;
+
+		int current = CurrencyData.instance.eventPoint;
+		int currentMax = 0;
+
+		// current max
+		_currentEventPointRewardTableData = null;
+		for (int i = 0; i < TableDataManager.instance.eventPointRewardTable.dataArray.Length; ++i)
+		{
+			if (TableDataManager.instance.eventPointRewardTable.dataArray[i].eventPointId != currentEventPointId)
+				continue; 
+
+			if (CurrencyData.instance.eventPoint < TableDataManager.instance.eventPointRewardTable.dataArray[i].requiredAccumulatedEventPoint)
+			{
+				_currentEventPointRewardTableData = TableDataManager.instance.eventPointRewardTable.dataArray[i];
+				currentMax = _currentEventPointRewardTableData.requiredEventPoint;
+				int prevMax = _currentEventPointRewardTableData.requiredAccumulatedEventPoint - currentMax;
+				current -= prevMax;
+				break;
+			}
+		}
+		if (_currentEventPointRewardTableData == null)
+		{
+			// 최고 리워드를 달성한건지 확인해본다.
+			EventPointRewardTableData eventPointRewardTableData = TableDataManager.instance.FindEventPointRewardTableData(eventPointTypeTableData.eventPointId, _currentEventPointTypeTableData.lastRewardNum);
+			if (eventPointRewardTableData != null && CurrencyData.instance.eventPoint >= eventPointRewardTableData.requiredAccumulatedEventPoint)
+			{
+				_currentEventPointRewardTableData = eventPointRewardTableData;
+				currentMax = _currentEventPointRewardTableData.requiredEventPoint;
+				int prevMax = _currentEventPointRewardTableData.requiredAccumulatedEventPoint - currentMax;
+				current -= prevMax;
+			}
+		}
+		if (_currentEventPointRewardTableData == null)
+			return;
+
+		if (currentMax == 0)
+			currentMax = 1;
+		eventPointRewardConditionCountText.text = string.Format("{0:N0} / {1:N0}", current, currentMax);
+		float ratio = (float)current / currentMax;
+		gaugeImage.fillAmount = 0.0f;
+		_tweenReferenceForGauge = DOTween.To(() => gaugeImage.fillAmount, x => gaugeImage.fillAmount = x, ratio, 0.5f).SetEase(Ease.OutQuad).SetDelay(0.3f);
+		if (_started)
+			gaugeImageTweenAnimation.DORestart();
+		else
+			_reserveGaugeMoveTweenAnimation = true;
+
+		// reward 
+		eventPointRewardIcon.RefreshReward(_currentEventPointRewardTableData.rewardType1, _currentEventPointRewardTableData.rewardValue1, _currentEventPointRewardTableData.rewardCount1);
+		eventPointSubRewardIcon.RefreshReward(_currentEventPointRewardTableData.rewardType2, _currentEventPointRewardTableData.rewardValue2, _currentEventPointRewardTableData.rewardCount2);
+		eventPointSubRewardIcon.cachedTransform.parent.gameObject.SetActive(false);
+		_updateAdjustRewardRootObject = true;
+
+		// eventPoint object icon and 3d Object
+		AddressableAssetLoadManager.GetAddressableSprite(_currentEventPointTypeTableData.iconAddress, "Icon", (sprite) =>
+		{
+			eventPointIconImage.sprite = null;
+			eventPointIconImage.sprite = sprite;
+		});
+
+		AddressableAssetLoadManager.GetAddressableGameObject(_currentEventPointTypeTableData.modelAddress, "Object", (prefab) =>
+		{
+			GachaObjects.instance.SetEventPointPrefab(prefab);
+		});
+	}
+
+	bool _waitPacket = false;
+	void UpdateStartEventPoint()
+	{
+		if (_waitPacket)
+			return;
+		if (GachaCanvas.instance.inputLockObject.activeSelf)
+			return;
+		if (WaitingNetworkCanvas.IsShow())
+			return;
+		if (CommonRewardCanvas.instance != null && CommonRewardCanvas.instance.gameObject.activeSelf)
+			return;
+
+		bool send = false;
+		bool completeRefresh = false;
+		if (CurrencyData.instance.eventPointId == "")
+			send = true;
+		if (!send && ServerTime.UtcNow > CurrencyData.instance.eventPointExpireTime)
+			send = true;
+		if (!send)
+		{
+			// 어차피 리스타트 패킷이 있으니 완료한 이벤트도 이 패킷을 이용해서 교체하기로 한다.
+			if (_currentEventPointRewardTableData != null && CurrencyData.instance.eventPointId != "" && _currentEventPointTypeTableData != null)
+			{
+				if (_currentEventPointTypeTableData.lastRewardNum == _currentEventPointRewardTableData.num && CurrencyData.instance.eventPoint >= _currentEventPointRewardTableData.requiredAccumulatedEventPoint)
+				{
+					completeRefresh = true;
+					send = true;
+				}
+			}
+		}
+
+		if (send == false)
+			return;
+
+		string startEventPointId = CurrencyData.instance.GetNextRandomEventPointId();
+		EventPointTypeTableData eventPointTypeTableData = TableDataManager.instance.FindEventPointTypeTableData(startEventPointId);
+		if (eventPointTypeTableData == null)
+			return;
+
+		_waitPacket = true;
+		PlayFabApiManager.instance.RequestStartEventPoint(startEventPointId, eventPointTypeTableData.limitHour, eventPointTypeTableData.oneTime, completeRefresh, () =>
+		{
+			if (CurrencyData.instance.eventPointId != "fr")
+				ToastCanvas.instance.ShowToast(UIString.instance.GetString("GachaUI_StartNewEventPoint"), 2.0f);
+
+			_waitPacket = false;
+			RefreshEventPoint();
+		});
+	}
+
+	bool _updateEventPointCountText = false;
+	float _updateEventPointCountTextRemainTime = 0.0f;
+	int _updateEventPointCountMax;
+	void UpdateEventPointCountText()
+	{
+		if (_updateEventPointCountText == false)
+			return;
+
+		if (_updateEventPointCountTextRemainTime > 0.0f)
+		{
+			_updateEventPointCountTextRemainTime -= Time.deltaTime;
+			if (_updateEventPointCountTextRemainTime <= 0.0f)
+				_updateEventPointCountTextRemainTime = 0.0f;
+			return;
+		}
+
+		eventPointRewardConditionCountText.text = string.Format("{0:N0} / {1:N0}", (gaugeImage.fillAmount * _updateEventPointCountMax), _updateEventPointCountMax);
+		_updateEventPointCountTextRemainTime = 0.1f;
+	}
+	#endregion
+
 	IEnumerator<float> DelayedResetSwitch()
 	{
 		yield return Timing.WaitForOneFrame;
@@ -428,6 +592,8 @@ public class GachaInfoCanvas : MonoBehaviour
 		{
 			_gachaResult = GetRandomGachaResult();
 		}
+
+		_gachaResult = eGachaResult.EventPoint1;
 		
 		Debug.LogFormat("Betting Prepare : {0}", _gachaResult);
 
@@ -501,6 +667,56 @@ public class GachaInfoCanvas : MonoBehaviour
 				}
 				_resultGold = tableResultGold * betRate;
 			}
+
+			#region Event Point
+			// event process
+			if (_resultEvent > 0 && _currentEventPointTypeTableData != null && _currentEventPointRewardTableData != null)
+			{
+				int targetEventPoint = CurrencyData.instance.eventPoint + _resultEvent;
+				for (int i = 0; i < TableDataManager.instance.eventPointRewardTable.dataArray.Length; ++i)
+				{
+					if (TableDataManager.instance.eventPointRewardTable.dataArray[i].eventPointId != _currentEventPointRewardTableData.eventPointId)
+						continue;
+					if (TableDataManager.instance.eventPointRewardTable.dataArray[i].num < _currentEventPointRewardTableData.num)
+						continue;
+
+					if (targetEventPoint < TableDataManager.instance.eventPointRewardTable.dataArray[i].requiredAccumulatedEventPoint)
+						break;
+
+					// sum reward
+					EventPointRewardTableData rewardTableData = TableDataManager.instance.eventPointRewardTable.dataArray[i];
+					switch (rewardTableData.rewardType1)
+					{
+						case "cu":
+							switch (rewardTableData.rewardValue1)
+							{
+								case "GO": _resultGold += rewardTableData.rewardCount1; break;
+								case "EN": _resultEnergy += rewardTableData.rewardCount1; break;
+							}
+							break;
+					}
+
+					// 두번째 리워드를 받을 수 있는 상황이라면
+					if (false)
+					{
+						switch (rewardTableData.rewardType2)
+						{
+							case "cu":
+								switch (rewardTableData.rewardValue2)
+								{
+									case "GO": _resultGold += rewardTableData.rewardCount2; break;
+									case "EN": _resultEnergy += rewardTableData.rewardCount2; break;
+								}
+								break;
+						}
+					}
+
+					// 혹시 이번이 보상의 마지막 단계인지 확인을 해보자.
+					if (_currentEventPointTypeTableData.lastRewardNum == _currentEventPointRewardTableData.num && targetEventPoint >= _currentEventPointRewardTableData.requiredAccumulatedEventPoint)
+						break;
+				}
+			}
+			#endregion
 		}
 	}
 
@@ -571,6 +787,10 @@ public class GachaInfoCanvas : MonoBehaviour
 		{
 			Timing.RunCoroutine(RoomMoveProcess());
 		}
+		else if (_gachaResult == eGachaResult.EventPoint1 || _gachaResult == eGachaResult.EventPoint2 || _gachaResult == eGachaResult.EventPoint10)
+		{
+			Timing.RunCoroutine(EventPointProcess());
+		}
 		else
 		{
 			// 쭉 화면 안쪽으로 당겨지는 애니를 수행해야한다.
@@ -581,9 +801,186 @@ public class GachaInfoCanvas : MonoBehaviour
 			GachaCanvas.instance.inputLockObject.SetActive(false);
 			GachaCanvas.instance.backKeyButton.interactable = true;
 
+			// 재화도 이때 갱신
+			GachaCanvas.instance.currencySmallInfo.RefreshInfo();
+
 			// 
 			OnPostProcess();
 		}
+	}
+
+	Color _defaultGaugeColor;
+	IEnumerator<float> EventPointProcess()
+	{
+		// 쭉 화면 안쪽으로 당겨지는 애니를 수행하는건 우선 똑같다.
+		GachaObjects.instance.GetObject(_gachaResult);
+
+		if (_currentEventPointRewardTableData == null)
+		{
+			// 뭔가 잘못된거면
+			GachaCanvas.instance.inputLockObject.SetActive(false);
+			GachaCanvas.instance.backKeyButton.interactable = true;
+			OnPostProcess();
+			yield break;
+		}
+
+		if (CurrencyData.instance.eventPoint < _currentEventPointRewardTableData.requiredAccumulatedEventPoint)
+		{
+			// 이벤트 포인트가 축적만 되고 보상까지 도달하지 않았을때는 연출로만 나오고 끝나는 형태로 짠다.
+			// 인풋도 바로 락건거 해제해둔다.
+			GachaCanvas.instance.inputLockObject.SetActive(false);
+			GachaCanvas.instance.backKeyButton.interactable = true;
+			OnPostProcess();
+
+			int current = CurrencyData.instance.eventPoint;
+			int currentMax = _currentEventPointRewardTableData.requiredEventPoint;
+			int prevMax = _currentEventPointRewardTableData.requiredAccumulatedEventPoint - currentMax;
+			current -= prevMax;
+			float ratio = (float)current / currentMax;
+
+			yield return Timing.WaitForSeconds(0.8f);
+
+			// 이번 단계의 끝을 넘지 못했으면 차는 연출만 하면서 바로 인풋 풀면 된다.
+			if (_tweenReferenceForGauge != null)
+				_tweenReferenceForGauge.Kill();
+
+			_updateEventPointCountText = true;
+			_updateEventPointCountMax = currentMax;
+			gaugeImageColorTweenAnimation.DORestart();
+			_tweenReferenceForGauge = DOTween.To(() => gaugeImage.fillAmount, x => gaugeImage.fillAmount = x, ratio, 0.3f).SetEase(Ease.OutQuad).OnComplete(() =>
+			{
+				_updateEventPointCountText = false;
+				gaugeImageColorTweenAnimation.DOPause();
+				gaugeImage.color = _defaultGaugeColor;
+				eventPointRewardConditionCountText.text = string.Format("{0:N0} / {1:N0}", current, currentMax);
+			});
+		}
+		else
+		{
+			// 오브젝트 획득을 기다리는건 여기도 마찬가지
+			yield return Timing.WaitForSeconds(0.8f);
+
+			// 여기서부터는 보상이 하나 이상은 들어가는 경우다.
+			for (int i = 0; i < TableDataManager.instance.eventPointRewardTable.dataArray.Length; ++i)
+			{
+				if (TableDataManager.instance.eventPointRewardTable.dataArray[i].eventPointId != _currentEventPointRewardTableData.eventPointId)
+					continue;
+				if (TableDataManager.instance.eventPointRewardTable.dataArray[i].num < _currentEventPointRewardTableData.num)
+					continue;
+
+				bool lastProcess = false;
+				if (CurrencyData.instance.eventPoint < TableDataManager.instance.eventPointRewardTable.dataArray[i].requiredAccumulatedEventPoint)
+					lastProcess = true;
+
+				int current = 0;
+				int currentMax = TableDataManager.instance.eventPointRewardTable.dataArray[i].requiredEventPoint;
+				float ratio = 0.0f;
+				if (lastProcess == false)
+				{
+					current = currentMax;
+					ratio = 1.0f;
+				}
+
+				if (lastProcess)
+				{
+					_currentEventPointRewardTableData = TableDataManager.instance.eventPointRewardTable.dataArray[i];
+					current = CurrencyData.instance.eventPoint;
+					currentMax = _currentEventPointRewardTableData.requiredEventPoint;
+					int prevMax = _currentEventPointRewardTableData.requiredAccumulatedEventPoint - currentMax;
+					current -= prevMax;
+					ratio = (float)current / currentMax;
+				}
+
+				if (ratio == 0.0f)
+				{
+					// 다음 단계로 넘어갔는데 딱 0에서 끝난 형태다. 29/30 이었다가 다음꺼 0/10 같은거로 바뀐 상태
+					// 이땐 그냥 종료시켜야한다.
+					EndEventPointProcess();
+					yield break;
+				}
+
+				// 마지막 단계를 제외하고선 꽉 채울거다.
+				// 이번 단계의 끝을 넘지 못했으면 차는 연출만 하면서 바로 인풋 풀면 된다.
+				if (_tweenReferenceForGauge != null)
+					_tweenReferenceForGauge.Kill();
+
+				_updateEventPointCountText = true;
+				_updateEventPointCountMax = currentMax;
+				gaugeImageColorTweenAnimation.DORestart();
+				_tweenReferenceForGauge = DOTween.To(() => gaugeImage.fillAmount, x => gaugeImage.fillAmount = x, ratio, 0.25f).SetEase(Ease.OutQuad).OnComplete(() =>
+				{
+					_updateEventPointCountText = false;
+					gaugeImageColorTweenAnimation.DOPause();
+					gaugeImage.color = _defaultGaugeColor;
+					eventPointRewardConditionCountText.text = string.Format("{0:N0} / {1:N0}", current, currentMax);
+				});
+	
+				if (lastProcess)
+				{
+					EndEventPointProcess();
+					yield break;
+				}
+
+				yield return Timing.WaitForSeconds(0.2f);
+
+				// 보상 아이콘 점프 애니메이션
+				eventPointRewardRootObject.transform.DOScale(new Vector3(1.7f, 1.7f, 1.7f), 0.25f).SetEase(Ease.OutQuad).OnComplete(() =>
+				{
+					eventPointRewardRootObject.transform.DOScale(new Vector3(1.0f, 1.0f, 1.0f), 0.2f).SetEase(Ease.InQuad);
+				});
+
+				// 대기
+				yield return Timing.WaitForSeconds(0.6f);
+
+				// 다음번 항목이 있으면 갱신해주면 된다.
+				bool lastReward = false;
+				if (_currentEventPointTypeTableData.lastRewardNum == TableDataManager.instance.eventPointRewardTable.dataArray[i].num)
+					lastReward = true;
+
+
+				if (lastReward == false && i + 1 < TableDataManager.instance.eventPointRewardTable.dataArray.Length)
+				{
+					// 완료가 되었다고 생각하면 다음 과정을 0 부터 시작
+					gaugeImage.fillAmount = 0.0f;
+
+					// reward
+					eventPointRewardIcon.RefreshReward(TableDataManager.instance.eventPointRewardTable.dataArray[i + 1].rewardType1, TableDataManager.instance.eventPointRewardTable.dataArray[i + 1].rewardValue1, TableDataManager.instance.eventPointRewardTable.dataArray[i + 1].rewardCount1);
+					eventPointSubRewardIcon.RefreshReward(TableDataManager.instance.eventPointRewardTable.dataArray[i + 1].rewardType2, TableDataManager.instance.eventPointRewardTable.dataArray[i + 1].rewardValue2, TableDataManager.instance.eventPointRewardTable.dataArray[i + 1].rewardCount2);
+					eventPointSubRewardIcon.cachedTransform.parent.gameObject.SetActive(false);
+					_updateAdjustRewardRootObject = true;
+
+					// 카운트 교체
+					eventPointRewardConditionCountText.text = string.Format("0 / {0:N0}", TableDataManager.instance.eventPointRewardTable.dataArray[i + 1].requiredEventPoint);
+					_updateEventPointCountTextRemainTime = 0.1f;
+				}
+				else
+				{
+					// 다음번 항목이 없다는건 이벤트포인트를 다 달성해서 다음거로 넘겨야한다는 것이다.
+					// 가차 패킷에서는 이 처리를 하지 않지만
+					// 가차 절차가 끝나자마자 Update에서 갱신 패킷을 보내게 될 것이다.
+					if (lastReward)
+					{
+						EndEventPointProcess();
+						yield break;
+					}
+				}
+			}
+		}
+	}
+
+	void EndEventPointProcess()
+	{
+		UIInstanceManager.instance.ShowCanvasAsync("CommonRewardCanvas", () =>
+		{
+			GachaCanvas.instance.inputLockObject.SetActive(false);
+			GachaCanvas.instance.backKeyButton.interactable = true;
+
+			GachaCanvas.instance.currencySmallInfo.RefreshInfo();
+			CommonRewardCanvas.instance.RefreshReward(_resultGold, _resultEnergy, () =>
+			{
+				OnPostProcess();
+			});
+		});
 	}
 
 	IEnumerator<float> RoomMoveProcess()
@@ -639,7 +1036,7 @@ public class GachaInfoCanvas : MonoBehaviour
 		// 제일 먼저 하는건 Turn Refresh
 		CheckNeedRefreshTurn();
 
-		// 그리고 하는건 에너지
+		// 그리고 하는건 에너지 팝업 체크
 		CheckCashEvent();
 	}
 	#endregion

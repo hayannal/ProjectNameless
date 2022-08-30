@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using CodeStage.AntiCheat.ObscuredTypes;
+using PlayFab;
 using PlayFab.ClientModels;
 
 public class CurrencyData : MonoBehaviour
@@ -49,10 +50,16 @@ public class CurrencyData : MonoBehaviour
 	public ObscuredInt currentGoldBoxRoomReward { get; set; }
 	public ObscuredInt goldBoxRemainTurn { get; set; }
 	public ObscuredInt ticket { get; set; }
-	public ObscuredInt eventPoint { get; set; }
 	#endregion
 
-	public void OnRecvCurrencyData(Dictionary<string, int> userVirtualCurrency, Dictionary<string, VirtualCurrencyRechargeTime> userVirtualCurrencyRechargeTimes, List<StatisticValue> playerStatistics)
+	#region Event Point
+	public ObscuredInt eventPoint { get; set; }
+	public ObscuredString eventPointId { get; set; }
+	public DateTime eventPointExpireTime { get; set; }
+	public List<string> listEventPointOneTime { get; set; }
+	#endregion
+
+	public void OnRecvCurrencyData(Dictionary<string, int> userVirtualCurrency, Dictionary<string, VirtualCurrencyRechargeTime> userVirtualCurrencyRechargeTimes, Dictionary<string, UserDataRecord> userReadOnlyData, List<StatisticValue> playerStatistics)
 	{
 		if (userVirtualCurrency.ContainsKey("GO"))
 			gold = userVirtualCurrency["GO"];
@@ -106,6 +113,36 @@ public class CurrencyData : MonoBehaviour
 				case "goldBoxValue": goldBoxTargetReward = playerStatistics[i].Value; break;
 			}
 		}
+
+		#region Event Point
+		eventPointId = "";
+		if (userReadOnlyData.ContainsKey("eventPointId"))
+		{
+			if (string.IsNullOrEmpty(userReadOnlyData["eventPointId"].Value) == false)
+				eventPointId = userReadOnlyData["eventPointId"].Value;
+		}
+
+		if (userReadOnlyData.ContainsKey("eventPointExpDat"))
+		{
+			if (string.IsNullOrEmpty(userReadOnlyData["eventPointExpDat"].Value) == false)
+			{
+				DateTime expireDateTime = new DateTime();
+				if (DateTime.TryParse(userReadOnlyData["eventPointExpDat"].Value, out expireDateTime))
+					eventPointExpireTime = expireDateTime.ToUniversalTime();
+			}
+		}
+
+		if (listEventPointOneTime == null)
+			listEventPointOneTime = new List<string>();
+		listEventPointOneTime.Clear();
+		var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
+		if (userReadOnlyData.ContainsKey("eventPointOneTimeLst"))
+		{
+			if (string.IsNullOrEmpty(userReadOnlyData["eventPointOneTimeLst"].Value) == false)
+				listEventPointOneTime = serializer.DeserializeObject<List<string>>(userReadOnlyData["eventPointOneTimeLst"].Value);
+		}
+		#endregion
+
 
 		// 최초로 계정을 생성해서 한번도 굴리지 않은 상태거나 아직 remainTurn이 설정되지 않은 상태라면
 		// 한번도 골드박스룸에 입장하지 않은 상태일거다.
@@ -253,4 +290,82 @@ public class CurrencyData : MonoBehaviour
 				break;
 		}
 	}
+
+	#region Event Point
+	public void OnRecvStartEventPoint(string eventPointId, bool oneTime, string eventPointExpireTimeString)
+	{
+		this.eventPointId = eventPointId;
+		this.eventPoint = 0;
+
+		DateTime eventPointExpireTime = new DateTime();
+		if (DateTime.TryParse(eventPointExpireTimeString, out eventPointExpireTime))
+			this.eventPointExpireTime = eventPointExpireTime.ToUniversalTime();
+
+		if (oneTime)
+		{
+			if (listEventPointOneTime.Contains(eventPointId) == false)
+				listEventPointOneTime.Add(eventPointId);
+		}
+	}
+
+	class RandomEventPointTypeInfo
+	{
+		public EventPointTypeTableData eventPointTypeTableData;
+		public float sumWeight;
+	}
+	List<RandomEventPointTypeInfo> _listEventPointTypeInfo = null;
+	public string GetNextRandomEventPointId()
+	{
+		if (eventPointId == "")
+			return "fr";
+
+		if (_listEventPointTypeInfo == null)
+			_listEventPointTypeInfo = new List<RandomEventPointTypeInfo>();
+		_listEventPointTypeInfo.Clear();
+
+		float sumWeight = 0.0f;
+		for (int i = 0; i < TableDataManager.instance.eventPointTypeTable.dataArray.Length; ++i)
+		{
+			float weight = TableDataManager.instance.eventPointTypeTable.dataArray[i].eventWeight;
+			if (weight <= 0.0f)
+				continue;
+
+			DateTime startDateTime = new DateTime(TableDataManager.instance.eventPointTypeTable.dataArray[i].startYear, TableDataManager.instance.eventPointTypeTable.dataArray[i].startMonth, TableDataManager.instance.eventPointTypeTable.dataArray[i].startDay);
+			if (ServerTime.UtcNow < startDateTime)
+				continue;
+			DateTime endDateTime = new DateTime(TableDataManager.instance.eventPointTypeTable.dataArray[i].endYear, TableDataManager.instance.eventPointTypeTable.dataArray[i].endMonth, TableDataManager.instance.eventPointTypeTable.dataArray[i].endDay);
+			if (ServerTime.UtcNow > endDateTime)
+				continue;
+
+			if (TableDataManager.instance.eventPointTypeTable.dataArray[i].oneTime)
+			{
+				if (listEventPointOneTime.Contains(TableDataManager.instance.eventPointTypeTable.dataArray[i].eventPointId))
+					continue;
+			}
+
+			sumWeight += weight;
+			RandomEventPointTypeInfo newInfo = new RandomEventPointTypeInfo();
+			newInfo.eventPointTypeTableData = TableDataManager.instance.eventPointTypeTable.dataArray[i];
+			newInfo.sumWeight = sumWeight;
+			_listEventPointTypeInfo.Add(newInfo);
+		}
+
+		if (_listEventPointTypeInfo.Count == 0)
+			return "";
+
+		int index = -1;
+		float random = UnityEngine.Random.Range(0.0f, _listEventPointTypeInfo[_listEventPointTypeInfo.Count - 1].sumWeight);
+		for (int i = 0; i < _listEventPointTypeInfo.Count; ++i)
+		{
+			if (random <= _listEventPointTypeInfo[i].sumWeight)
+			{
+				index = i;
+				break;
+			}
+		}
+		if (index == -1)
+			return "";
+		return _listEventPointTypeInfo[index].eventPointTypeTableData.eventPointId;
+	}
+	#endregion
 }

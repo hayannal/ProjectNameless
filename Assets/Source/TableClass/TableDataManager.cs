@@ -309,7 +309,7 @@ public class TableDataManager : MonoBehaviour
 	{
 		for (int i = 0; i < eventPointRewardTable.dataArray.Length; ++i)
 		{
-			if (eventPointRewardTable.dataArray[i].eventPointId == id && eventRewardTable.dataArray[i].num == num)
+			if (eventPointRewardTable.dataArray[i].eventPointId == id && eventPointRewardTable.dataArray[i].num == num)
 				return eventPointRewardTable.dataArray[i];
 		}
 		return null;

@@ -9,6 +9,7 @@ public class GachaObjects : MonoBehaviour
 	
 	public GameObject[] effectRootObjectList;
 	public float[] effectWaitTimeList;
+	public Transform eventPointObjectRootTransform;
 
 	public GameObject[] gachaResultObjectList;
 	public GameObject[] gachaResultEffectObjectList;
@@ -83,6 +84,15 @@ public class GachaObjects : MonoBehaviour
 		return effectRootObjectList[0];
 	}
 
+	GameObject _eventPointObject;
+	public void SetEventPointPrefab(GameObject prefab)
+	{
+		if (_eventPointObject != null)
+			_eventPointObject.SetActive(false);
+
+		_eventPointObject = BattleInstanceManager.instance.GetCachedObject(prefab, eventPointObjectRootTransform);
+	}
+
 	public void ShowSummonResultObject(bool show, GachaInfoCanvas.eGachaResult gachaResult)
 	{
 		int index = (int)gachaResult;
@@ -104,8 +114,20 @@ public class GachaObjects : MonoBehaviour
 		int index = (int)gachaResult;
 		if (index < gachaResultObjectList.Length && gachaResultObjectList[index] != null)
 		{
-			gachaResultObjectList[index].transform.DOScale(0.05f, 0.7f);
-			gachaResultObjectList[index].transform.DOLocalJump(new Vector3(0.2f, -1.0f, -7.0f), 2.0f, 1, 1.2f).OnComplete(() =>
+			bool useScale = false;
+			Vector3 targetPosition = new Vector3(0.2f, -1.0f, -5.0f);
+			switch (gachaResult)
+			{
+				case GachaInfoCanvas.eGachaResult.EventPoint1:
+				case GachaInfoCanvas.eGachaResult.EventPoint2:
+				case GachaInfoCanvas.eGachaResult.EventPoint10:
+					targetPosition = new Vector3(2.0f, -3.0f, 0.0f);
+					useScale = true;
+					break;
+			}
+			if (useScale)
+				gachaResultObjectList[index].transform.DOScale(0.05f, 0.7f);
+			gachaResultObjectList[index].transform.DOLocalJump(targetPosition, 2.0f, 1, 1.2f).OnComplete(() =>
 			{
 				gachaResultObjectList[index].transform.localScale = Vector3.one;
 				gachaResultObjectList[index].transform.localPosition = Vector3.zero;
