@@ -245,6 +245,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9036488262249200027}
   - component: {fileID: 7517030440495172254}
+  - component: {fileID: 5626038082552156555}
   m_Layer: 5
   m_Name: SafeArea
   m_TagString: Untagged
@@ -293,6 +294,18 @@ MonoBehaviour:
   m_VerticalConstraint: 2
   m_DefaultAnchorMin: {x: 0, y: 0}
   m_DefaultAnchorMax: {x: 1, y: 1}
+--- !u!225 &5626038082552156555
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2461382863115972892}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &3079476038903001250
 GameObject:
   m_ObjectHideFlags: 0
@@ -541,6 +554,7 @@ MonoBehaviour:
   questionText: {fileID: 3064892288905879233}
   shakeTween: {fileID: 2915402727309163253}
   textShakeTween: {fileID: 1066734665120761725}
+  safeAreaCanvasGroup: {fileID: 5626038082552156555}
 --- !u!1 &4071050909002863674
 GameObject:
   m_ObjectHideFlags: 0

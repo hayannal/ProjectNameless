@@ -241,6 +241,8 @@ public class MainCanvas : MonoBehaviour
 		inputRectObject.SetActive(!enter);
 		safeAreaCanvasGroup.alpha = enter ? 0.0f : 1.0f;
 		safeAreaCanvasGroup.blocksRaycasts = !enter;
+
+		BossMonsterGaugeCanvas.OnEnterMenu(enter);
 	}
 
 	public bool IsHideState()

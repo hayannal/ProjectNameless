@@ -64,6 +64,13 @@ public class BossMonsterGaugeCanvas : MonoBehaviour
 		return _instance.InternalIsLastAliveMonster(monsterActor);
 	}
 
+	public static void OnEnterMenu(bool enter)
+	{
+		if (IsShow() == false)
+			return;
+		_instance.InternalOnEnterMenu(enter);
+	}
+
 	public Slider hpRatio1Slider;
 	public RectTransform hpFill1RectTransform;
 	public RectTransform lateFill1RectTransform;
@@ -76,6 +83,13 @@ public class BossMonsterGaugeCanvas : MonoBehaviour
 	public Text questionText;
 	public DOTweenAnimation shakeTween;
 	public DOTweenAnimation textShakeTween;
+	public CanvasGroup safeAreaCanvasGroup;
+
+	void OnEnable()
+	{
+		if (MainCanvas.instance.IsHideState())
+			InternalOnEnterMenu(true);
+	}
 
 	void OnDisable()
 	{
@@ -346,5 +360,10 @@ public class BossMonsterGaugeCanvas : MonoBehaviour
 			}
 		}
 		return allDie;
+	}
+
+	public void InternalOnEnterMenu(bool enter)
+	{
+		safeAreaCanvasGroup.alpha = enter ? 0.0f : 1.0f;
 	}
 }
