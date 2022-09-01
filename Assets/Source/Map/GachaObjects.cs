@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using DG.Tweening;
 
 public class GachaObjects : MonoBehaviour
@@ -13,6 +14,10 @@ public class GachaObjects : MonoBehaviour
 
 	public GameObject[] gachaResultObjectList;
 	public GameObject[] gachaResultEffectObjectList;
+
+	public Text gachaResultText;
+	public DOTweenAnimation gachaResultTweenAnimation;
+	public Transform gachaResultTransform;
 
 	void Awake()
 	{
@@ -133,6 +138,19 @@ public class GachaObjects : MonoBehaviour
 				gachaResultObjectList[index].transform.localPosition = Vector3.zero;
 				gachaResultObjectList[index].SetActive(false);
 			});
+		}
+	}
+
+	public void SetResultText(bool show, int value)
+	{
+		if (show)
+		{
+			gachaResultText.text = value.ToString("N0");
+			gachaResultTweenAnimation.DORestart();
+		}
+		else
+		{
+			gachaResultTransform.DOScale(0.0f, 0.2f);
 		}
 	}
 }

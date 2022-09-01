@@ -26,8 +26,12 @@ public class GachaInfoCanvas : MonoBehaviour
 	public GameObject eventPointRewardRootObject;
 	public RewardIcon eventPointRewardIcon;	
 	public RewardIcon eventPointSubRewardIcon;
+	public GameObject eventPointRewardEffectObject;
+	public GameObject eventPointRewardConditionCountRootObject;
 	public Image eventPointIconImage;
+	public DOTweenAnimation eventPointIconTweenAnimation;
 	public Text eventPointRewardConditionCountText;
+	public GameObject eventPointIconEffectObject;
 
 	public GameObject switchGroupObject;
 	public SwitchAnim alarmSwitch;
@@ -127,6 +131,7 @@ public class GachaInfoCanvas : MonoBehaviour
 
 	bool _reserveGaugeMoveTweenAnimation;
 	bool _updateAdjustRewardRootObject;
+	bool _updateAdjustConditionCountRootObject;
 	void Update()
 	{
 		if (_reserveGaugeMoveTweenAnimation)
@@ -139,6 +144,12 @@ public class GachaInfoCanvas : MonoBehaviour
 		{
 			eventPointRewardRootObject.SetActive(false);
 			eventPointRewardRootObject.SetActive(true);
+		}
+
+		if (_updateAdjustConditionCountRootObject)
+		{
+			eventPointRewardConditionCountRootObject.SetActive(false);
+			eventPointRewardConditionCountRootObject.SetActive(true);
 		}
 
 		#region Energy
@@ -331,7 +342,7 @@ public class GachaInfoCanvas : MonoBehaviour
 		for (int i = 0; i < TableDataManager.instance.eventPointRewardTable.dataArray.Length; ++i)
 		{
 			if (TableDataManager.instance.eventPointRewardTable.dataArray[i].eventPointId != currentEventPointId)
-				continue; 
+				continue;
 
 			if (CurrencyData.instance.eventPoint < TableDataManager.instance.eventPointRewardTable.dataArray[i].requiredAccumulatedEventPoint)
 			{
@@ -360,6 +371,7 @@ public class GachaInfoCanvas : MonoBehaviour
 		if (currentMax == 0)
 			currentMax = 1;
 		eventPointRewardConditionCountText.text = string.Format("{0:N0} / {1:N0}", current, currentMax);
+		_updateAdjustConditionCountRootObject = true;
 		float ratio = (float)current / currentMax;
 		gaugeImage.fillAmount = 0.0f;
 		_tweenReferenceForGauge = DOTween.To(() => gaugeImage.fillAmount, x => gaugeImage.fillAmount = x, ratio, 0.5f).SetEase(Ease.OutQuad).SetDelay(0.3f);
@@ -454,6 +466,7 @@ public class GachaInfoCanvas : MonoBehaviour
 		}
 
 		eventPointRewardConditionCountText.text = string.Format("{0:N0} / {1:N0}", (gaugeImage.fillAmount * _updateEventPointCountMax), _updateEventPointCountMax);
+		_updateAdjustConditionCountRootObject = true;
 		_updateEventPointCountTextRemainTime = 0.1f;
 	}
 	#endregion
@@ -592,8 +605,6 @@ public class GachaInfoCanvas : MonoBehaviour
 		{
 			_gachaResult = GetRandomGachaResult();
 		}
-
-		_gachaResult = eGachaResult.EventPoint1;
 		
 		Debug.LogFormat("Betting Prepare : {0}", _gachaResult);
 
@@ -763,6 +774,9 @@ public class GachaInfoCanvas : MonoBehaviour
 		GachaCanvas.instance.inputLockObject.SetActive(true);
 		GachaCanvas.instance.backKeyButton.interactable = false;
 
+		// Text 부터 
+		GachaObjects.instance.SetResultText(false, 0);
+
 		// 이펙트
 		float waitTime = 5.0f;
 		GameObject waitEffectObject = GachaObjects.instance.ShowSummonWaitEffect(_gachaResult, ref waitTime);
@@ -770,6 +784,27 @@ public class GachaInfoCanvas : MonoBehaviour
 
 		// 결과에 따른 소환 오브젝트들 소환
 		GachaObjects.instance.ShowSummonResultObject(true, _gachaResult);
+
+		switch (_gachaResult)
+		{
+			case eGachaResult.Gold1:
+			case eGachaResult.Gold2:
+			case eGachaResult.Gold10:
+				GachaObjects.instance.SetResultText(true, _resultGold);
+				break;
+			case eGachaResult.Energy:
+				GachaObjects.instance.SetResultText(true, _resultEnergy);
+				break;
+			case eGachaResult.EventPoint1:
+			case eGachaResult.EventPoint2:
+			case eGachaResult.EventPoint10:
+				GachaObjects.instance.SetResultText(true, _resultEvent);
+				break;
+			case eGachaResult.BrokenEnergy1:
+			case eGachaResult.BrokenEnergy2:
+				GachaObjects.instance.SetResultText(true, _resultBrokenEnergy);
+				break;
+		}
 
 		// 이펙트 마저 사라질 시간까지 대기 후
 		yield return Timing.WaitForSeconds(1.0f);
@@ -803,6 +838,18 @@ public class GachaInfoCanvas : MonoBehaviour
 
 			// 재화도 이때 갱신
 			GachaCanvas.instance.currencySmallInfo.RefreshInfo();
+
+			switch (_gachaResult)
+			{
+				case eGachaResult.Gold1:
+				case eGachaResult.Gold2:
+				case eGachaResult.Gold10:
+				case eGachaResult.Energy:
+				case eGachaResult.BrokenEnergy1:
+				case eGachaResult.BrokenEnergy2:
+					GachaObjects.instance.SetResultText(false, 0);
+					break;
+			}
 
 			// 
 			OnPostProcess();
@@ -847,12 +894,17 @@ public class GachaInfoCanvas : MonoBehaviour
 			_updateEventPointCountText = true;
 			_updateEventPointCountMax = currentMax;
 			gaugeImageColorTweenAnimation.DORestart();
+			eventPointIconTweenAnimation.DORestart();
+			eventPointIconEffectObject.SetActive(true);
 			_tweenReferenceForGauge = DOTween.To(() => gaugeImage.fillAmount, x => gaugeImage.fillAmount = x, ratio, 0.3f).SetEase(Ease.OutQuad).OnComplete(() =>
 			{
 				_updateEventPointCountText = false;
 				gaugeImageColorTweenAnimation.DOPause();
+				eventPointIconTweenAnimation.DOPause();
 				gaugeImage.color = _defaultGaugeColor;
+				eventPointIconTweenAnimation.transform.localScale = Vector3.one;
 				eventPointRewardConditionCountText.text = string.Format("{0:N0} / {1:N0}", current, currentMax);
+				_updateAdjustConditionCountRootObject = true;
 			});
 		}
 		else
@@ -907,12 +959,17 @@ public class GachaInfoCanvas : MonoBehaviour
 				_updateEventPointCountText = true;
 				_updateEventPointCountMax = currentMax;
 				gaugeImageColorTweenAnimation.DORestart();
+				eventPointIconTweenAnimation.DORestart();
+				eventPointIconEffectObject.SetActive(true);
 				_tweenReferenceForGauge = DOTween.To(() => gaugeImage.fillAmount, x => gaugeImage.fillAmount = x, ratio, 0.25f).SetEase(Ease.OutQuad).OnComplete(() =>
 				{
 					_updateEventPointCountText = false;
 					gaugeImageColorTweenAnimation.DOPause();
+					eventPointIconTweenAnimation.DOPause();
 					gaugeImage.color = _defaultGaugeColor;
+					eventPointIconTweenAnimation.transform.localScale = Vector3.one;
 					eventPointRewardConditionCountText.text = string.Format("{0:N0} / {1:N0}", current, currentMax);
+					_updateAdjustConditionCountRootObject = true;
 				});
 	
 				if (lastProcess)
@@ -924,6 +981,7 @@ public class GachaInfoCanvas : MonoBehaviour
 				yield return Timing.WaitForSeconds(0.2f);
 
 				// 보상 아이콘 점프 애니메이션
+				eventPointRewardEffectObject.SetActive(true);
 				eventPointRewardRootObject.transform.DOScale(new Vector3(1.7f, 1.7f, 1.7f), 0.25f).SetEase(Ease.OutQuad).OnComplete(() =>
 				{
 					eventPointRewardRootObject.transform.DOScale(new Vector3(1.0f, 1.0f, 1.0f), 0.2f).SetEase(Ease.InQuad);
@@ -951,6 +1009,7 @@ public class GachaInfoCanvas : MonoBehaviour
 
 					// 카운트 교체
 					eventPointRewardConditionCountText.text = string.Format("0 / {0:N0}", TableDataManager.instance.eventPointRewardTable.dataArray[i + 1].requiredEventPoint);
+					_updateAdjustConditionCountRootObject = true;
 					_updateEventPointCountTextRemainTime = 0.1f;
 				}
 				else
