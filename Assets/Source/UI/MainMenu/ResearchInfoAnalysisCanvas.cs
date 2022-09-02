@@ -244,7 +244,7 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 			if (centerGaugeSlider.value >= 0.5f)
 				confirmable = true;
 			TimeSpan diffTime = ServerTime.UtcNow - AnalysisData.instance.analysisStartedTime;
-			if (diffTime.TotalMinutes > 30)
+			if (diffTime.TotalMinutes > 10)
 				confirmable = true;
 		}
 
