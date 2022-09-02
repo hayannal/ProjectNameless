@@ -126,7 +126,7 @@ public class GoldBoxRoomGround : MonoBehaviour
 		int getGold = 0;
 		if (_listPercentIndex[0] == index)
 		{
-			getGold = CurrencyData.instance.currentGoldBoxRoomReward - (int)(CurrencyData.instance.currentGoldBoxRoomReward * 0.1666f * 2.0f);
+			getGold = CurrencyData.instance.currentGoldBoxRoomReward - (int)(CurrencyData.instance.currentGoldBoxRoomReward * 0.1666f) - (int)(CurrencyData.instance.currentGoldBoxRoomReward * 0.1666f);
 			Debug.LogFormat("66% : {0:N0}", getGold);
 		}
 		else if (_listPercentIndex[1] == index)
