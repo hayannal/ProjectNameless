@@ -267,7 +267,7 @@ public class CurrencyData : MonoBehaviour
 	#endregion
 
 
-	public void OnRecvRefillEnergy(int refillAmount)
+	public void OnRecvRefillEnergy(int refillAmount, bool ignoreCanvas = false)
 	{
 		bool full = (energy >= energyMax);
 		energy += refillAmount;
@@ -284,6 +284,9 @@ public class CurrencyData : MonoBehaviour
 				ReserveEnergyNotification();
 			}
 		}
+
+		if (ignoreCanvas)
+			return;
 
 		if (GachaInfoCanvas.instance != null)
 			GachaInfoCanvas.instance.RefreshEnergy();

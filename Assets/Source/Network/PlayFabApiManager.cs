@@ -1026,7 +1026,7 @@ public class PlayFabApiManager : MonoBehaviour
 				else if (useEnergy > resultEnergy)
 					CurrencyData.instance.UseEnergy(useEnergy - resultEnergy);
 				else if (useEnergy < resultEnergy)
-					CurrencyData.instance.OnRecvRefillEnergy(resultEnergy - useEnergy);
+					CurrencyData.instance.OnRecvRefillEnergy(resultEnergy - useEnergy, true);
 
 				_serverEnterKeyForRoom = (reserveRoomType != 0) ? roomFlg.ToString() : "";
 
