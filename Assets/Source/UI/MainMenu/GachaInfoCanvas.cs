@@ -31,7 +31,7 @@ public class GachaInfoCanvas : MonoBehaviour
 	public Image eventPointIconImage;
 	public DOTweenAnimation eventPointIconTweenAnimation;
 	public Text eventPointRewardConditionCountText;
-	public GameObject eventPointIconEffectObject;
+	public Transform eventPointIconEffectRootTransform;
 
 	public GameObject switchGroupObject;
 	public SwitchAnim alarmSwitch;
@@ -465,9 +465,10 @@ public class GachaInfoCanvas : MonoBehaviour
 			return;
 		}
 
+		eventPointIconEffectRootTransform.position = eventPointIconImage.transform.position;
 		eventPointRewardConditionCountText.text = string.Format("{0:N0} / {1:N0}", (gaugeImage.fillAmount * _updateEventPointCountMax), _updateEventPointCountMax);
 		_updateAdjustConditionCountRootObject = true;
-		_updateEventPointCountTextRemainTime = 0.1f;
+		_updateEventPointCountTextRemainTime = 0.05f;
 	}
 	#endregion
 
@@ -896,7 +897,8 @@ public class GachaInfoCanvas : MonoBehaviour
 			_updateEventPointCountMax = currentMax;
 			gaugeImageColorTweenAnimation.DORestart();
 			eventPointIconTweenAnimation.DORestart();
-			eventPointIconEffectObject.SetActive(true);
+			eventPointIconEffectRootTransform.position = eventPointIconImage.transform.position;
+			eventPointIconEffectRootTransform.gameObject.SetActive(true);
 			_tweenReferenceForGauge = DOTween.To(() => gaugeImage.fillAmount, x => gaugeImage.fillAmount = x, ratio, 0.3f).SetEase(Ease.OutQuad).OnComplete(() =>
 			{
 				_updateEventPointCountText = false;
@@ -961,7 +963,8 @@ public class GachaInfoCanvas : MonoBehaviour
 				_updateEventPointCountMax = currentMax;
 				gaugeImageColorTweenAnimation.DORestart();
 				eventPointIconTweenAnimation.DORestart();
-				eventPointIconEffectObject.SetActive(true);
+				eventPointIconEffectRootTransform.position = eventPointIconImage.transform.position;
+				eventPointIconEffectRootTransform.gameObject.SetActive(true);
 				_tweenReferenceForGauge = DOTween.To(() => gaugeImage.fillAmount, x => gaugeImage.fillAmount = x, ratio, 0.25f).SetEase(Ease.OutQuad).OnComplete(() =>
 				{
 					_updateEventPointCountText = false;
@@ -1011,7 +1014,7 @@ public class GachaInfoCanvas : MonoBehaviour
 					// 카운트 교체
 					eventPointRewardConditionCountText.text = string.Format("0 / {0:N0}", TableDataManager.instance.eventPointRewardTable.dataArray[i + 1].requiredEventPoint);
 					_updateAdjustConditionCountRootObject = true;
-					_updateEventPointCountTextRemainTime = 0.1f;
+					_updateEventPointCountTextRemainTime = 0.05f;
 				}
 				else
 				{
