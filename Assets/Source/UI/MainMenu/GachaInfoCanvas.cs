@@ -172,9 +172,12 @@ public class GachaInfoCanvas : MonoBehaviour
 	}
 
 	#region Energy
-	public void RefreshEnergy()
+	public void RefreshEnergy(int tempCurrentEnergy = -1)
 	{
 		int current = CurrencyData.instance.energy;
+		if (tempCurrentEnergy != -1)
+			current = tempCurrentEnergy;
+
 		int max = CurrencyData.instance.energyMax;
 		energyRatioSlider.value = (float)current / max;
 		energyText.text = string.Format("{0:N0}/{1}", current, max);
@@ -515,11 +518,15 @@ public class GachaInfoCanvas : MonoBehaviour
 
 		PrepareGacha();
 		PrepareGoldBoxTarget();
+		int currentEnergy = CurrencyData.instance.energy;
 		PlayFabApiManager.instance.RequestGacha(useEnergy, _resultGold, _resultEnergy, _resultBrokenEnergy, _resultEvent, _reserveRoomType, _refreshTurn, _refreshNewTurn, _refreshNewGold, (refreshTurnComplete) =>
 		{
 			// 턴 바꿔야하는걸 기억시켜두고 연출을 진행하면 된다.
 			if (refreshTurnComplete)
 				_needRefreshTurn = true;
+
+			// Energy는 바로 차감 후
+			RefreshEnergy(currentEnergy - useEnergy);
 
 			OnRecvSpinSlot();
 		});
@@ -528,9 +535,6 @@ public class GachaInfoCanvas : MonoBehaviour
 	bool _needRefreshTurn = false;
 	void OnRecvSpinSlot()
 	{
-		// Energy는 바로 차감 후
-		RefreshEnergy();
-
 		// 골드나 다이아는 여기서 갱신하면 안되고 이펙트 뜰때 해야한다.
 		//currencySmallInfo.RefreshInfo();
 		Timing.RunCoroutine(GachaProcess());
@@ -842,6 +846,7 @@ public class GachaInfoCanvas : MonoBehaviour
 
 			// 재화도 이때 갱신
 			GachaCanvas.instance.currencySmallInfo.RefreshInfo();
+			RefreshEnergy();
 
 			switch (_gachaResult)
 			{
