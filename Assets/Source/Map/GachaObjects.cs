@@ -15,6 +15,8 @@ public class GachaObjects : MonoBehaviour
 	public GameObject[] gachaResultObjectList;
 	public GameObject[] gachaResultEffectObjectList;
 
+	public GameObject objectDisappearEffectObject;
+
 	public Text gachaResultText;
 	public DOTweenAnimation gachaResultTweenAnimation;
 	public Transform gachaResultTransform;
@@ -116,6 +118,16 @@ public class GachaObjects : MonoBehaviour
 
 	public void GetObject(GachaInfoCanvas.eGachaResult gachaResult)
 	{
+		switch (gachaResult)
+		{
+			case GachaInfoCanvas.eGachaResult.Gold1:
+			case GachaInfoCanvas.eGachaResult.Gold2:
+			case GachaInfoCanvas.eGachaResult.Gold10:
+				gachaResultObjectList[(int)gachaResult].SetActive(false);
+				objectDisappearEffectObject.SetActive(true);
+				return;
+		}
+
 		int index = (int)gachaResult;
 		if (index < gachaResultObjectList.Length && gachaResultObjectList[index] != null)
 		{

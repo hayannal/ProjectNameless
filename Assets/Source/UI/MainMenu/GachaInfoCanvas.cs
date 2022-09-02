@@ -847,6 +847,7 @@ public class GachaInfoCanvas : MonoBehaviour
 				case eGachaResult.Energy:
 				case eGachaResult.BrokenEnergy1:
 				case eGachaResult.BrokenEnergy2:
+					yield return Timing.WaitForSeconds(0.5f);
 					GachaObjects.instance.SetResultText(false, 0);
 					break;
 			}
