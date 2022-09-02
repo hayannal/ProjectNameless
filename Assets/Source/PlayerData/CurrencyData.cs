@@ -269,6 +269,8 @@ public class CurrencyData : MonoBehaviour
 
 		if (GachaInfoCanvas.instance != null)
 			GachaInfoCanvas.instance.RefreshEnergy();
+		else if (MainCanvas.instance != null)
+			MainCanvas.instance.RefreshGachaAlarmObject();
 	}
 
 	// 공용 보상 처리때문에 추가하는 함수

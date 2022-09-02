@@ -183,13 +183,16 @@ public class GachaInfoCanvas : MonoBehaviour
 		{
 			fillRemainTimeText.text = "";
 			_needUpdate = false;
+			AlarmObject.Show(alarmRootTransform, true, true);
 		}
 		else
 		{
 			_nextFillDateTime = CurrencyData.instance.energyRechargeTime;
 			_needUpdate = true;
 			_lastRemainTimeSecond = -1;
+			AlarmObject.Hide(alarmRootTransform);
 		}
+		MainCanvas.instance.RefreshGachaAlarmObject();
 	}
 
 	bool _needUpdate = false;

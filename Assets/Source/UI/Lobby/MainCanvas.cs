@@ -25,6 +25,7 @@ public class MainCanvas : MonoBehaviour
 
 	public RectTransform mailAlarmRootTransform;
 	public RectTransform analysisAlarmRootTransform;
+	public RectTransform gachaAlarmRootTransform;
 	public RectTransform cashShopAlarmRootTransform;
 	public RectTransform levelPassAlarmRootTransform;
 
@@ -276,6 +277,7 @@ public class MainCanvas : MonoBehaviour
 		//RefreshCharacterAlarmObject();
 		RefreshMailAlarmObject();
 		RefreshAnalysisAlarmObject();
+		RefreshGachaAlarmObject();
 		RefreshLevelPassAlarmObject();
 	}
 
@@ -450,6 +452,16 @@ public class MainCanvas : MonoBehaviour
 	public void RefreshLevelPassAlarmObject()
 	{
 		RefreshAlarmObject(IsAlarmLevelPass(), levelPassAlarmRootTransform);
+	}
+
+	public static bool IsAlarmGacha()
+	{
+		return (CurrencyData.instance.energy >= CurrencyData.instance.energyMax);
+	}
+
+	public void RefreshGachaAlarmObject()
+	{
+		RefreshAlarmObject(IsAlarmGacha(), gachaAlarmRootTransform);
 	}
 
 	void RefreshAlarmObject(bool show, Transform alarmRootTransform)
