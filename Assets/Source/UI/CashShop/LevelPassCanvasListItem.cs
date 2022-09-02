@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class LevelPassCanvasListItem : MonoBehaviour
 {
-	public Text rewardCountText;
+	public RewardIcon rewardIcon;
 	public Text nameText;
 	public Slider proceedingCountSlider;
 	public Text proceedingCountText;
@@ -30,7 +30,7 @@ public class LevelPassCanvasListItem : MonoBehaviour
 		_initialized = true;
 
 		// 리워드
-		rewardCountText.text = energy.ToString("N0");
+		rewardIcon.RefreshReward("cu", "EN", energy);
 		nameText.SetLocalizedText(UIString.instance.GetString("LevelPassUI_LevelAchieved", level));
 
 		// 버튼
@@ -82,8 +82,12 @@ public class LevelPassCanvasListItem : MonoBehaviour
 
 		PlayFabApiManager.instance.RequestGetLevelPassReward(_level, _energy, () =>
 		{
-			Initialize(_level, _energy);
-			MainCanvas.instance.RefreshLevelPassAlarmObject();
+			UIInstanceManager.instance.ShowCanvasAsync("CommonRewardCanvas", () =>
+			{
+				Initialize(_level, _energy);
+				MainCanvas.instance.RefreshLevelPassAlarmObject();
+				CommonRewardCanvas.instance.RefreshReward(0, _energy, null);
+			});
 		});
 	}
 }
