@@ -50,6 +50,7 @@ public class CurrencyData : MonoBehaviour
 	public ObscuredInt currentGoldBoxRoomReward { get; set; }
 	public ObscuredInt goldBoxRemainTurn { get; set; }
 	public ObscuredInt ticket { get; set; }
+	public List<ObscuredInt> listBetInfo { get; set; }
 	#endregion
 
 	#region Event Point
@@ -59,7 +60,7 @@ public class CurrencyData : MonoBehaviour
 	public List<string> listEventPointOneTime { get; set; }
 	#endregion
 
-	public void OnRecvCurrencyData(Dictionary<string, int> userVirtualCurrency, Dictionary<string, VirtualCurrencyRechargeTime> userVirtualCurrencyRechargeTimes, Dictionary<string, UserDataRecord> userReadOnlyData, List<StatisticValue> playerStatistics)
+	public void OnRecvCurrencyData(Dictionary<string, int> userVirtualCurrency, Dictionary<string, VirtualCurrencyRechargeTime> userVirtualCurrencyRechargeTimes, Dictionary<string, UserDataRecord> userReadOnlyData, List<StatisticValue> playerStatistics, Dictionary<string, string> titleData)
 	{
 		if (userVirtualCurrency.ContainsKey("GO"))
 			gold = userVirtualCurrency["GO"];
@@ -114,6 +115,24 @@ public class CurrencyData : MonoBehaviour
 			}
 		}
 
+		// server boost list
+		var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
+		listBetInfo = null;
+		if (titleData.ContainsKey("gBst"))
+		{
+			string gachaBoostLstString = titleData["gBst"];
+			if (string.IsNullOrEmpty(gachaBoostLstString) == false)
+			{
+				List<int> listBoost = serializer.DeserializeObject<List<int>>(gachaBoostLstString);
+				if (listBoost != null && listBoost.Count > 0)
+				{
+					listBetInfo = new List<ObscuredInt>();
+					for (int i = 0; i < listBoost.Count; ++i)
+						listBetInfo.Add(listBoost[i]);
+				}
+			}
+		}
+
 		#region Event Point
 		eventPointId = "";
 		if (userReadOnlyData.ContainsKey("eventPointId"))
@@ -135,7 +154,6 @@ public class CurrencyData : MonoBehaviour
 		if (listEventPointOneTime == null)
 			listEventPointOneTime = new List<string>();
 		listEventPointOneTime.Clear();
-		var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
 		if (userReadOnlyData.ContainsKey("eventPointOneTimeLst"))
 		{
 			if (string.IsNullOrEmpty(userReadOnlyData["eventPointOneTimeLst"].Value) == false)

@@ -249,7 +249,7 @@ public class PlayFabApiManager : MonoBehaviour
 
 		ApplyGlobalTable(loginResult.InfoResultPayload.TitleData);
 		AuthManager.instance.OnRecvAccountInfo(loginResult.InfoResultPayload.AccountInfo);
-		CurrencyData.instance.OnRecvCurrencyData(loginResult.InfoResultPayload.UserVirtualCurrency, loginResult.InfoResultPayload.UserVirtualCurrencyRechargeTimes, loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
+		CurrencyData.instance.OnRecvCurrencyData(loginResult.InfoResultPayload.UserVirtualCurrency, loginResult.InfoResultPayload.UserVirtualCurrencyRechargeTimes, loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics, loginResult.InfoResultPayload.TitleData);
 		MailData.instance.OnRecvMailData(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics, loginResult.NewlyCreated);
 		SupportData.instance.OnRecvSupportData(loginResult.InfoResultPayload.UserReadOnlyData);
 		CashShopData.instance.OnRecvCashShopData(loginResult.InfoResultPayload.UserInventory, loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData);

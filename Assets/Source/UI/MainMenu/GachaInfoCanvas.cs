@@ -38,6 +38,8 @@ public class GachaInfoCanvas : MonoBehaviour
 	public Text alarmOnOffText;
 
 	public Text betText;
+	public GameObject boostOnObject;
+	public RectTransform boostOnAlarmRootTransform;
 
 	public Slider energyRatioSlider;
 	public Text energyText;
@@ -115,13 +117,21 @@ public class GachaInfoCanvas : MonoBehaviour
 
 	void OnEnable()
 	{
+		// default
+		if (_listBetValue.Count == 0)
+		{
+			_listBetValue.Add(1);
+			_listBetValue.Add(2);
+			_listBetValue.Add(3);
+			_listBetValue.Add(4);
+			_defaultBetCount = 4;
+			_currentBetRateIndex = 0;
+		}
+		RefreshBetText();
 		RefreshEnergy();
 
 		MoveTween(false);
 		RefreshInfo();
-
-		// refresh
-		RefreshBet();
 	}
 
 	void OnDisable()
@@ -187,6 +197,7 @@ public class GachaInfoCanvas : MonoBehaviour
 			fillRemainTimeText.text = "";
 			_needUpdate = false;
 			AlarmObject.Show(alarmRootTransform, true, true);
+			RefreshBetAdditional(current);
 		}
 		else
 		{
@@ -242,6 +253,7 @@ public class GachaInfoCanvas : MonoBehaviour
 
 	#region Bet
 	List<int> _listBetValue = new List<int>();
+	int _defaultBetCount;
 	int _currentBetRateIndex;
 	public int GetBetRate()
 	{
@@ -249,19 +261,9 @@ public class GachaInfoCanvas : MonoBehaviour
 			return _listBetValue[_currentBetRateIndex];
 		return 1;
 	}
-	void RefreshBet()
-	{
-		if (_listBetValue.Count == 0)
-		{
-			_listBetValue.Add(1);
-			_listBetValue.Add(2);
-			_listBetValue.Add(3);
-			_listBetValue.Add(5);
-			_listBetValue.Add(10);
-			_listBetValue.Add(20);
-			_currentBetRateIndex = 0;
-		}
 
+	void RefreshBetText()
+	{
 		betText.text = string.Format("BOOST X{0}", _listBetValue[_currentBetRateIndex]);
 	}
 
@@ -271,7 +273,37 @@ public class GachaInfoCanvas : MonoBehaviour
 		if (_currentBetRateIndex >= _listBetValue.Count)
 			_currentBetRateIndex = 0;
 
-		RefreshBet();
+		RefreshBetText();
+
+		AlarmObject.Hide(boostOnAlarmRootTransform);
+	}
+
+	void RefreshBetAdditional(int energy)
+	{
+		if (energy <= CurrencyData.instance.energyMax)
+			return;
+		if (CurrencyData.instance.listBetInfo == null || CurrencyData.instance.listBetInfo.Count == 0)
+			return;
+
+		bool add = false;
+		int result = energy / 10;
+		for (int i = 0; i < CurrencyData.instance.listBetInfo.Count; ++i)
+		{
+			int bet = CurrencyData.instance.listBetInfo[i];
+			if (bet <= result && _listBetValue.Contains(bet) == false)
+			{
+				_listBetValue.Add(bet);
+				add = true;
+			}
+		}
+
+		if (add)
+		{
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GachaUI_MoreBoost"), 2.0f);
+			AlarmObject.Show(boostOnAlarmRootTransform, true, true);
+		}
+
+		boostOnObject.SetActive(_listBetValue.Count > _defaultBetCount);
 	}
 	#endregion
 
