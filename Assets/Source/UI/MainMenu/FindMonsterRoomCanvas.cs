@@ -2,12 +2,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class FindMonsterRoomCanvas : MonoBehaviour
 {
 	public static FindMonsterRoomCanvas instance;
 
 	public Transform roomCameraTransform;
+
+	#region UI
+	public GameObject successObject;
+	public GameObject missObject;
+	public GameObject sumMyObject;
+	public Text sumMyValueText;
+	public Text winText;
+	public DOTweenAnimation winTextTweenAnimation;
+	#endregion
 
 	Vector3 _rootOffsetPosition = new Vector3(0.0f, 0.0f, -200.0f);
 	public Vector3 rootOffsetPosition { get { return _rootOffsetPosition; } }
@@ -58,6 +68,24 @@ public class FindMonsterRoomCanvas : MonoBehaviour
 		CustomFollowCamera.instance.cachedTransform.rotation = roomCameraTransform.localRotation;
 
 		MainCanvas.instance.OnEnterCharacterMenu(true);
+
+		#region UI
+		successObject.SetActive(false);
+		missObject.SetActive(false);
+
+		sumMyValueText.text = "0";
+		_needAdjustRect2 = true;
+
+		_targetValue = 0;
+		_currentValue = 0;
+		sumMyValueText.text = "0";
+
+		int betRate = GachaInfoCanvas.instance.GetBetRate();
+		winText.transform.localScale = Vector3.one;
+		winText.gameObject.SetActive(betRate > 1);
+		if (betRate > 1)
+			winText.text = string.Format("WIN X{0}", betRate);
+		#endregion
 	}
 
 	void OnDisable()
@@ -68,9 +96,17 @@ public class FindMonsterRoomCanvas : MonoBehaviour
 		OnPopStack();
 	}
 
+	bool _needAdjustRect2 = false;
 	void Update()
 	{
-		//UpdateStoleValue();
+		if (_needAdjustRect2)
+		{
+			sumMyObject.SetActive(false);
+			sumMyObject.SetActive(true);
+			_needAdjustRect2 = false;
+		}
+
+		UpdateStoleValue();
 	}
 
 	void OnPopStack()
@@ -98,10 +134,16 @@ public class FindMonsterRoomCanvas : MonoBehaviour
 		MainCanvas.instance.OnEnterCharacterMenu(false);
 	}
 
-	/*
+	#region UI
+	public void ShowSuccess(bool success)
+	{
+		successObject.SetActive(success);
+		missObject.SetActive(!success);
+	}
+
 	public void SetStoleValue(int getGold)
 	{
-		_targetValue += getGold;
+		_targetValue = getGold;
 
 		int diff = (int)(_targetValue - _currentValue);
 		_valueChangeSpeed = diff / valueChangeTime;
@@ -133,5 +175,15 @@ public class FindMonsterRoomCanvas : MonoBehaviour
 			sumMyValueText.text = _lastValue.ToString("N0");
 		}
 	}
-	*/
+
+	public void PunchAnimateWinText()
+	{
+		winTextTweenAnimation.DORestart();
+	}
+
+	public void ScaleZeroWinText()
+	{
+		winText.transform.DOScale(0.0f, 0.3f);
+	}
+	#endregion
 }

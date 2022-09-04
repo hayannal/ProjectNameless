@@ -150,6 +150,13 @@ public class FindMonsterRoomGround : MonoBehaviour
 		targetPosition.y = 0.0f;
 		BattleInstanceManager.instance.GetCachedObject(attackEffectPrefab, targetPosition, Quaternion.identity, cachedTransform);
 
+		StageBetTableData stageBetTableData = TableDataManager.instance.FindStageBetTableData(PlayerData.instance.currentRewardStage);
+		if (stageBetTableData == null)
+		{
+			Debug.LogErrorFormat("Not found StageBetTable! currentHighest = {0} / selected = {1}", PlayerData.instance.highestClearStage, PlayerData.instance.selectedStage);
+			return;
+		}
+
 		// 성공이면 다이모션으로 넘어가면 되려나
 		bool success = (Random.value > 0.5f);
 		if (success)
@@ -165,6 +172,8 @@ public class FindMonsterRoomGround : MonoBehaviour
 			}
 
 			// 성공에 대한 메세지 처리?
+			FindMonsterRoomCanvas.instance.ShowSuccess(true);
+			FindMonsterRoomCanvas.instance.SetStoleValue(stageBetTableData.goblinSuccess);
 		}
 		else
 		{
@@ -173,14 +182,8 @@ public class FindMonsterRoomGround : MonoBehaviour
 			BattleInstanceManager.instance.GetCachedObject(transportEffectPrefab, _listRandomObject[index].transform.position + Vector3.up, Quaternion.identity, cachedTransform);
 
 			// 실패에 대한 메세지 처리?
-
-		}
-
-		StageBetTableData stageBetTableData = TableDataManager.instance.FindStageBetTableData(PlayerData.instance.currentRewardStage);
-		if (stageBetTableData == null)
-		{
-			Debug.LogErrorFormat("Not found StageBetTable! currentHighest = {0} / selected = {1}", PlayerData.instance.highestClearStage, PlayerData.instance.selectedStage);
-			return;
+			FindMonsterRoomCanvas.instance.ShowSuccess(false);
+			FindMonsterRoomCanvas.instance.SetStoleValue(stageBetTableData.goblinFailure);
 		}
 
 		_waitSelect = false;
@@ -188,17 +191,32 @@ public class FindMonsterRoomGround : MonoBehaviour
 		int betRate = GachaInfoCanvas.instance.GetBetRate();
 
 		// 3번째 클릭하자마자 패킷을 보내서 결과 제대로 저장되면
-		PlayFabApiManager.instance.RequestEndBettingRoom(success ? stageBetTableData.goblinSuccess * betRate : stageBetTableData.goblinFailure * betRate, () =>
+		_resultValue = success ? stageBetTableData.goblinSuccess * betRate : stageBetTableData.goblinFailure * betRate;
+		PlayFabApiManager.instance.RequestEndBettingRoom(_resultValue, () =>
 		{
 			Timing.RunCoroutine(ReturnProcess());
 		});
 	}
 
+	ObscuredInt _resultValue;
 	IEnumerator<float> ReturnProcess()
 	{
-		// 마지막 이펙트가 나올 타이밍 정도는 기다려준다.
-		yield return Timing.WaitForSeconds(2.0f);
+		int betRate = GachaInfoCanvas.instance.GetBetRate();
+		if (betRate == 1)
+		{
+			// 마지막 이펙트가 나올 타이밍 정도는 기다려준다.
+			yield return Timing.WaitForSeconds(2.0f);
+		}
+		else
+		{
+			yield return Timing.WaitForSeconds(1.5f);
+			FindMonsterRoomCanvas.instance.PunchAnimateWinText();
+			yield return Timing.WaitForSeconds(0.8f);
 
+			FindMonsterRoomCanvas.instance.ScaleZeroWinText();
+			FindMonsterRoomCanvas.instance.SetStoleValue(_resultValue);
+			yield return Timing.WaitForSeconds(1.5f);
+		}
 
 		FadeCanvas.instance.FadeOut(0.2f, 1.0f, true);
 		yield return Timing.WaitForSeconds(0.2f);

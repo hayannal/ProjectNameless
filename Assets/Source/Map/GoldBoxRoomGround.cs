@@ -144,7 +144,7 @@ public class GoldBoxRoomGround : MonoBehaviour
 		if (GoldBoxRoomCanvas.instance != null)
 			GoldBoxRoomCanvas.instance.UseKey();
 		if (getGold > 0 && GoldBoxRoomCanvas.instance != null)
-			GoldBoxRoomCanvas.instance.SetStoleValue(getGold);
+			GoldBoxRoomCanvas.instance.SetStoleValue(_resultGold);
 		if (getGold > 0)
 			ToastNumberCanvas.instance.ShowToast(getGold.ToString("N0"), 2.0f);
 
@@ -162,9 +162,22 @@ public class GoldBoxRoomGround : MonoBehaviour
 
 	IEnumerator<float> ReturnProcess()
 	{
-		// 마지막 이펙트가 나올 타이밍 정도는 기다려준다.
-		yield return Timing.WaitForSeconds(2.0f);
+		int betRate = GachaInfoCanvas.instance.GetBetRate();
+		if (betRate == 1)
+		{
+			// 마지막 이펙트가 나올 타이밍 정도는 기다려준다.
+			yield return Timing.WaitForSeconds(2.0f);
+		}
+		else
+		{
+			yield return Timing.WaitForSeconds(1.5f);
+			GoldBoxRoomCanvas.instance.PunchAnimateWinText();
+			yield return Timing.WaitForSeconds(0.8f);
 
+			GoldBoxRoomCanvas.instance.ScaleZeroWinText();
+			GoldBoxRoomCanvas.instance.SetStoleValue(_resultGold * betRate, true);
+			yield return Timing.WaitForSeconds(1.5f);
+		}
 
 		FadeCanvas.instance.FadeOut(0.2f, 1.0f, true);
 		yield return Timing.WaitForSeconds(0.2f);

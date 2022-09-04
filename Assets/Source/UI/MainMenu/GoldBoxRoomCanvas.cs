@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class GoldBoxRoomCanvas : RoomShowCanvasBase
 {
@@ -11,6 +12,8 @@ public class GoldBoxRoomCanvas : RoomShowCanvasBase
 	public Text goldBoxRoomTargetValueText;
 	public GameObject sumMyObject;
 	public Text sumMyValueText;
+	public Text winText;
+	public DOTweenAnimation winTextTweenAnimation;
 
 	public GameObject[] remainIconImageList;
 
@@ -38,6 +41,11 @@ public class GoldBoxRoomCanvas : RoomShowCanvasBase
 		_targetValue = 0;
 		_currentValue = 0;
 		sumMyValueText.text = "0";
+
+		int betRate = GachaInfoCanvas.instance.GetBetRate();
+		winText.gameObject.SetActive(betRate > 1);
+		if (betRate > 1)
+			winText.text = string.Format("WIN X{0}", betRate);
 	}
 
 	void OnDisable()
@@ -75,6 +83,8 @@ public class GoldBoxRoomCanvas : RoomShowCanvasBase
 			return;
 		if (MainSceneBuilder.instance == null)
 			return;
+		winText.gameObject.SetActive(false);
+		winText.transform.localScale = Vector3.one;
 		SetInfoCameraMode(false);
 		MainCanvas.instance.OnEnterCharacterMenu(false);
 	}
@@ -91,12 +101,12 @@ public class GoldBoxRoomCanvas : RoomShowCanvasBase
 		}
 	}
 
-	public void SetStoleValue(int getGold)
+	public void SetStoleValue(int setGold, bool fast = false)
 	{
-		_targetValue += getGold;
+		_targetValue = setGold;
 
 		int diff = (int)(_targetValue - _currentValue);
-		_valueChangeSpeed = diff / valueChangeTime;
+		_valueChangeSpeed = diff / (valueChangeTime * (fast ? 0.7f : 1.0f));
 		_updateValueText = true;
 	}
 
@@ -124,5 +134,15 @@ public class GoldBoxRoomCanvas : RoomShowCanvasBase
 			_lastValue = currentValueInt;
 			sumMyValueText.text = _lastValue.ToString("N0");
 		}
+	}
+
+	public void PunchAnimateWinText()
+	{
+		winTextTweenAnimation.DORestart();
+	}
+
+	public void ScaleZeroWinText()
+	{
+		winText.transform.DOScale(0.0f, 0.3f);
 	}
 }
