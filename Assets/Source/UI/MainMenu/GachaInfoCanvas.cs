@@ -927,7 +927,7 @@ public class GachaInfoCanvas : MonoBehaviour
 			current -= prevMax;
 			float ratio = (float)current / currentMax;
 
-			yield return Timing.WaitForSeconds(0.8f);
+			yield return Timing.WaitForSeconds(0.3f);
 
 			// 이번 단계의 끝을 넘지 못했으면 차는 연출만 하면서 바로 인풋 풀면 된다.
 			if (_tweenReferenceForGauge != null)
@@ -953,7 +953,7 @@ public class GachaInfoCanvas : MonoBehaviour
 		else
 		{
 			// 오브젝트 획득을 기다리는건 여기도 마찬가지
-			yield return Timing.WaitForSeconds(0.8f);
+			yield return Timing.WaitForSeconds(0.3f);
 
 			// 여기서부터는 보상이 하나 이상은 들어가는 경우다.
 			for (int i = 0; i < TableDataManager.instance.eventPointRewardTable.dataArray.Length; ++i)
