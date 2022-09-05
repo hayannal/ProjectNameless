@@ -58,12 +58,17 @@ public class GachaInfoCanvas : MonoBehaviour
 		Gold10 = 3,
 		GoldBoxRoom = 4,
 		FindMonsterRoom = 5,
-		Energy = 6,
-		EventPoint1 = 7,
-		EventPoint2 = 8,
-		EventPoint10 = 9,
-		BrokenEnergy1 = 10,
-		BrokenEnergy2 = 11,
+		CardRoom = 6,
+		Energy10 = 7,
+		EventPoint1 = 8,
+		EventPoint2 = 9,
+		EventPoint9 = 10,
+		BrokenEnergy1 = 11,
+		BrokenEnergy2 = 12,
+		BrokenEnergy3 = 13,
+		Junk1 = 14,
+		Junk2 = 15,
+		Junk3 = 16,
 
 		Amount,
 	}
@@ -683,6 +688,11 @@ public class GachaInfoCanvas : MonoBehaviour
 			// EndBettingRoom할때 사용하도록 한다.
 			CurrencyData.instance.currentGoldBoxRoomReward = CurrencyData.instance.goldBoxTargetReward;
 		}
+		else if (_gachaResult == eGachaResult.CardRoom)
+		{
+			_resultGold = 0;
+			_reserveRoomType = (int)eGachaResult.CardRoom;
+		}
 		/*
 		else if (IsAll(eSlotImage.SmallDiamond))
 		{
@@ -690,7 +700,7 @@ public class GachaInfoCanvas : MonoBehaviour
 			_resultDiamond = BattleInstanceManager.instance.GetCachedGlobalConstantInt("Bet3Diamonds") * betRate;
 		}
 		*/
-		else if (_gachaResult == eGachaResult.Energy)
+		else if (_gachaResult == eGachaResult.Energy10)
 		{
 			_resultEnergy = BattleInstanceManager.instance.GetCachedGlobalConstantInt("GachaEnergy") * betRate;
 		}
@@ -700,9 +710,10 @@ public class GachaInfoCanvas : MonoBehaviour
 			{
 				case eGachaResult.EventPoint1: _resultEvent = BattleInstanceManager.instance.GetCachedGlobalConstantInt("Gacha1Event") * betRate; break;
 				case eGachaResult.EventPoint2: _resultEvent = BattleInstanceManager.instance.GetCachedGlobalConstantInt("Gacha2Events") * betRate; break;
-				case eGachaResult.EventPoint10: _resultEvent = BattleInstanceManager.instance.GetCachedGlobalConstantInt("Gacha3Events") * betRate; break;
+				case eGachaResult.EventPoint9: _resultEvent = BattleInstanceManager.instance.GetCachedGlobalConstantInt("Gacha3Events") * betRate; break;
 				case eGachaResult.BrokenEnergy1: _resultBrokenEnergy = BattleInstanceManager.instance.GetCachedGlobalConstantInt("Gacha1BrokenEnergy") * betRate; break;
 				case eGachaResult.BrokenEnergy2: _resultBrokenEnergy = BattleInstanceManager.instance.GetCachedGlobalConstantInt("Gacha2BrokenEnergys") * betRate; break;
+				case eGachaResult.BrokenEnergy3: _resultBrokenEnergy = BattleInstanceManager.instance.GetCachedGlobalConstantInt("Gacha3BrokenEnergys") * betRate; break;
 			}
 
 			// include 형태기 때문에 개수에 따라 결과가 달라질거다.
@@ -832,16 +843,17 @@ public class GachaInfoCanvas : MonoBehaviour
 			case eGachaResult.Gold10:
 				GachaObjects.instance.SetResultText(true, _resultGold);
 				break;
-			case eGachaResult.Energy:
+			case eGachaResult.Energy10:
 				GachaObjects.instance.SetResultText(true, _resultEnergy);
 				break;
 			case eGachaResult.EventPoint1:
 			case eGachaResult.EventPoint2:
-			case eGachaResult.EventPoint10:
+			case eGachaResult.EventPoint9:
 				GachaObjects.instance.SetResultText(true, _resultEvent);
 				break;
 			case eGachaResult.BrokenEnergy1:
 			case eGachaResult.BrokenEnergy2:
+			case eGachaResult.BrokenEnergy3:
 				GachaObjects.instance.SetResultText(true, _resultBrokenEnergy);
 				break;
 		}
@@ -862,7 +874,11 @@ public class GachaInfoCanvas : MonoBehaviour
 		{
 			Timing.RunCoroutine(RoomMoveProcess());
 		}
-		else if (_gachaResult == eGachaResult.EventPoint1 || _gachaResult == eGachaResult.EventPoint2 || _gachaResult == eGachaResult.EventPoint10)
+		else if (_gachaResult == eGachaResult.CardRoom)
+		{
+			Timing.RunCoroutine(RoomMoveProcess());
+		}
+		else if (_gachaResult == eGachaResult.EventPoint1 || _gachaResult == eGachaResult.EventPoint2 || _gachaResult == eGachaResult.EventPoint9)
 		{
 			Timing.RunCoroutine(EventPointProcess());
 		}
@@ -885,9 +901,10 @@ public class GachaInfoCanvas : MonoBehaviour
 				case eGachaResult.Gold1:
 				case eGachaResult.Gold2:
 				case eGachaResult.Gold10:
-				case eGachaResult.Energy:
+				case eGachaResult.Energy10:
 				case eGachaResult.BrokenEnergy1:
 				case eGachaResult.BrokenEnergy2:
+				case eGachaResult.BrokenEnergy3:
 					yield return Timing.WaitForSeconds(0.5f);
 					GachaObjects.instance.SetResultText(false, 0);
 					break;
@@ -1097,6 +1114,9 @@ public class GachaInfoCanvas : MonoBehaviour
 				break;
 			case eGachaResult.FindMonsterRoom:
 				canvasAddress = "FindMonsterRoomCanvas";
+				break;
+			case eGachaResult.CardRoom:
+				canvasAddress = "CardRoomCanvas";
 				break;
 		}
 
