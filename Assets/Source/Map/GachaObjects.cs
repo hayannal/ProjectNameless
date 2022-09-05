@@ -137,7 +137,7 @@ public class GachaObjects : MonoBehaviour
 			{
 				case GachaInfoCanvas.eGachaResult.EventPoint1:
 				case GachaInfoCanvas.eGachaResult.EventPoint2:
-				case GachaInfoCanvas.eGachaResult.EventPoint10:
+				case GachaInfoCanvas.eGachaResult.EventPoint9:
 					targetPosition = new Vector3(2.0f, -3.0f, 0.0f);
 					useScale = true;
 					break;
