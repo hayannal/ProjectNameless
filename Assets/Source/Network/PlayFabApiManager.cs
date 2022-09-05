@@ -1017,7 +1017,7 @@ public class PlayFabApiManager : MonoBehaviour
 				CurrencyData.instance.bettingCount += 1;
 
 				CurrencyData.instance.gold += resultGold;
-				CurrencyData.instance.brokenEnergy += resultBrokenEnergy;
+				CurrencyData.instance.brokenEnergy = Math.Min(CurrencyData.instance.brokenEnergy + resultBrokenEnergy, BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxBrokenEnergy"));
 				CurrencyData.instance.eventPoint += resultEventPoint;
 
 				if (useEnergy == resultEnergy)
