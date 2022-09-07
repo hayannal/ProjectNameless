@@ -111,6 +111,8 @@ public class CharacterShowCanvasBase : MonoBehaviour
 			UIInstanceManager.instance.GetCachedCameraMain().backgroundColor = new Color(0.183f, 0.19f, 0.208f);
 			CustomFollowCamera.instance.cachedTransform.position = infoCameraTransform.localPosition + _rootOffsetPosition;
 			CustomFollowCamera.instance.cachedTransform.rotation = infoCameraTransform.localRotation;
+
+			Thinksquirrel.CShake.CameraShake.CancelAllShakes();
 		}
 		else
 		{
