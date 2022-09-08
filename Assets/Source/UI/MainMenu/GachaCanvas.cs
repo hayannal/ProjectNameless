@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
+using MEC;
 
 public class GachaCanvas : ResearchShowCanvasBase
 {
@@ -12,6 +14,11 @@ public class GachaCanvas : ResearchShowCanvasBase
 	public GameObject gachaGroundObjectPrefab;
 	public GameObject inputLockObject;
 	public Button backKeyButton;
+
+	public GameObject subResultRootObject;
+	public DOTweenAnimation subResultTweenAnimation;
+	public Image subResultIconImage;
+	public Text subResultText;
 
 	void Awake()
 	{
@@ -55,6 +62,11 @@ public class GachaCanvas : ResearchShowCanvasBase
 		OnPopStack();
 	}
 
+	void Update()
+	{
+		UpdateSubResultTargetValue();
+	}
+
 	void OnPopStack()
 	{
 		if (StageManager.instance == null)
@@ -64,4 +76,84 @@ public class GachaCanvas : ResearchShowCanvasBase
 
 		MainCanvas.instance.OnEnterCharacterMenu(false);
 	}
+
+
+	#region SubResult
+	public void ShowSubResult(GachaInfoCanvas.eGachaResult gachaResult, int currentValue, int targetValue)
+	{
+		switch (gachaResult)
+		{
+			case GachaInfoCanvas.eGachaResult.BrokenEnergy1:
+			case GachaInfoCanvas.eGachaResult.BrokenEnergy2:
+			case GachaInfoCanvas.eGachaResult.BrokenEnergy3:
+				//subResultIconImage.sprite = ;
+				break;
+			case GachaInfoCanvas.eGachaResult.Junk1:
+			case GachaInfoCanvas.eGachaResult.Junk2:
+			case GachaInfoCanvas.eGachaResult.Junk3:
+				//subResultIconImage.sprite = ;
+				break;
+		}
+		subResultText.text = currentValue.ToString("N0");
+		_currentValue = currentValue;
+		_targetValue = targetValue;
+		subResultRootObject.SetActive(true);
+	}
+
+	public void OnCompleteSubResultTweenAnimation()
+	{
+		Timing.RunCoroutine(DelayedBackwardSubResultTweenAnimation());
+	}
+
+	IEnumerator<float> DelayedBackwardSubResultTweenAnimation()
+	{
+		yield return Timing.WaitForSeconds(0.3f);
+
+		int diff = (int)(_targetValue - _currentValue);
+		_valueChangeSpeed = diff / valueChangeTime;
+		_updateValueText = true;
+
+		yield return Timing.WaitForSeconds(1.2f);
+
+		// avoid gc
+		if (this == null)
+			yield break;
+
+		subResultTweenAnimation.DOPlayBackwards();
+
+		yield return Timing.WaitForSeconds(0.3f);
+
+		// avoid gc
+		if (this == null)
+			yield break;
+
+		subResultRootObject.SetActive(false);
+	}
+
+	const float valueChangeTime = 0.8f;
+	float _valueChangeSpeed = 0.0f;
+	float _currentValue;
+	int _lastValue;
+	int _targetValue;
+	bool _updateValueText;
+	void UpdateSubResultTargetValue()
+	{
+		if (_updateValueText == false)
+			return;
+
+		_currentValue += _valueChangeSpeed * Time.deltaTime;
+		int currentValueInt = (int)_currentValue;
+		if (currentValueInt >= _targetValue)
+		{
+			currentValueInt = _targetValue;
+			subResultText.text = _targetValue.ToString("N0");
+			_updateValueText = false;
+		}
+		if (currentValueInt != _lastValue)
+		{
+			_lastValue = currentValueInt;
+			subResultText.text = _lastValue.ToString("N0");
+		}
+	}
+	#endregion
 }

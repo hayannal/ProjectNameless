@@ -288,7 +288,7 @@ public class CurrencyData : MonoBehaviour
 		if (ignoreCanvas)
 			return;
 
-		if (GachaInfoCanvas.instance != null)
+		if (GachaInfoCanvas.instance != null && GachaInfoCanvas.instance.gameObject.activeSelf)
 			GachaInfoCanvas.instance.RefreshEnergy();
 		else if (MainCanvas.instance != null)
 			MainCanvas.instance.RefreshGachaAlarmObject();

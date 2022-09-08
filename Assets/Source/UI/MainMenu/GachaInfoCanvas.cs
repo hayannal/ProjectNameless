@@ -32,6 +32,8 @@ public class GachaInfoCanvas : MonoBehaviour
 	public DOTweenAnimation eventPointIconTweenAnimation;
 	public Text eventPointRewardConditionCountText;
 	public Transform eventPointIconEffectRootTransform;
+	public Text eventPointAddText;
+	public RectTransform eventPointAddTextRectTransform;
 
 	public GameObject switchGroupObject;
 	public SwitchAnim alarmSwitch;
@@ -508,6 +510,8 @@ public class GachaInfoCanvas : MonoBehaviour
 			return;
 		}
 
+		eventPointAddTextRectTransform.position = eventPointIconImage.transform.position;
+		eventPointAddTextRectTransform.anchoredPosition += new Vector2(-45.0f, 0.0f);
 		eventPointIconEffectRootTransform.position = eventPointIconImage.transform.position;
 		eventPointRewardConditionCountText.text = string.Format("{0:N0} / {1:N0}", (gaugeImage.fillAmount * _updateEventPointCountMax), _updateEventPointCountMax);
 		_updateAdjustConditionCountRootObject = true;
@@ -543,7 +547,8 @@ public class GachaInfoCanvas : MonoBehaviour
 	{
 		TooltipCanvas.Show(true, TooltipCanvas.eDirection.Bottom, UIString.instance.GetString("GachaUI_GachaMore"), 250, gachaTextTransform, new Vector2(0.0f, -35.0f));
 	}
-	
+
+	int _prevBrokenEnergy;
 	public void OnClickButton()
 	{
 		int useEnergy = _listBetValue[_currentBetRateIndex];
@@ -556,6 +561,7 @@ public class GachaInfoCanvas : MonoBehaviour
 		PrepareGacha();
 		PrepareGoldBoxTarget();
 		int currentEnergy = CurrencyData.instance.energy;
+		_prevBrokenEnergy = CurrencyData.instance.brokenEnergy;
 		PlayFabApiManager.instance.RequestGacha(useEnergy, _resultGold, _resultEnergy, _resultBrokenEnergy, _resultEvent, _reserveRoomType, _refreshTurn, _refreshNewTurn, _refreshNewGold, (refreshTurnComplete) =>
 		{
 			// 턴 바꿔야하는걸 기억시켜두고 연출을 진행하면 된다.
@@ -826,7 +832,7 @@ public class GachaInfoCanvas : MonoBehaviour
 		GachaCanvas.instance.backKeyButton.interactable = false;
 
 		// Text 부터 
-		GachaObjects.instance.SetResultText(false, 0);
+		GachaObjects.instance.SetResultText(false, 0, Color.white);
 
 		// 이펙트
 		float waitTime = 5.0f;
@@ -841,25 +847,40 @@ public class GachaInfoCanvas : MonoBehaviour
 			case eGachaResult.Gold1:
 			case eGachaResult.Gold2:
 			case eGachaResult.Gold10:
-				GachaObjects.instance.SetResultText(true, _resultGold);
+				GachaObjects.instance.SetResultText(true, _resultGold, MailCanvasListItem.GetGoldTextColor());
 				break;
 			case eGachaResult.Energy10:
-				GachaObjects.instance.SetResultText(true, _resultEnergy);
+				GachaObjects.instance.SetResultText(true, _resultEnergy, MailCanvasListItem.GetEnergyTextColor());
 				break;
 			case eGachaResult.EventPoint1:
 			case eGachaResult.EventPoint2:
 			case eGachaResult.EventPoint9:
-				GachaObjects.instance.SetResultText(true, _resultEvent);
+				eventPointAddTextRectTransform.position = eventPointIconImage.transform.position;
+				eventPointAddTextRectTransform.anchoredPosition += new Vector2(-45.0f, 0.0f);
+				eventPointAddText.text = string.Format("+{0:N0}", _resultEvent);
+				eventPointAddText.gameObject.SetActive(true);
 				break;
 			case eGachaResult.BrokenEnergy1:
 			case eGachaResult.BrokenEnergy2:
 			case eGachaResult.BrokenEnergy3:
-				GachaObjects.instance.SetResultText(true, _resultBrokenEnergy);
+				GachaObjects.instance.SetResultText(true, _resultBrokenEnergy, Color.gray * 1.5f);
+				GachaCanvas.instance.ShowSubResult(_gachaResult, _prevBrokenEnergy, CurrencyData.instance.brokenEnergy);
 				break;
 		}
 
 		// 이펙트 마저 사라질 시간까지 대기 후
-		yield return Timing.WaitForSeconds(1.0f);
+		yield return Timing.WaitForSeconds(0.8f);
+
+		switch (_gachaResult)
+		{
+			case eGachaResult.EventPoint1:
+			case eGachaResult.EventPoint2:
+			case eGachaResult.EventPoint9:
+				GachaObjects.instance.HideNumberXObject(_gachaResult);
+				break;
+		}
+
+		yield return Timing.WaitForSeconds(0.2f);
 		waitEffectObject.SetActive(false);
 
 		// 결과에 따른 소환 오브젝트에 따른 이펙트
@@ -906,7 +927,7 @@ public class GachaInfoCanvas : MonoBehaviour
 				case eGachaResult.BrokenEnergy2:
 				case eGachaResult.BrokenEnergy3:
 					yield return Timing.WaitForSeconds(0.5f);
-					GachaObjects.instance.SetResultText(false, 0);
+					GachaObjects.instance.SetResultText(false, 0, Color.white);
 					break;
 			}
 
@@ -1096,6 +1117,7 @@ public class GachaInfoCanvas : MonoBehaviour
 			GachaCanvas.instance.backKeyButton.interactable = true;
 
 			GachaCanvas.instance.currencySmallInfo.RefreshInfo();
+			RefreshEnergy();
 			CommonRewardCanvas.instance.RefreshReward(_resultGold, _resultEnergy, () =>
 			{
 				OnPostProcess();

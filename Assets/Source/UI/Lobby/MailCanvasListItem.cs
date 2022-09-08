@@ -46,6 +46,11 @@ public class MailCanvasListItem : MonoBehaviour
 		return new Color(0.211f, 0.905f, 0.098f);
 	}
 
+	public static Color GetEnergyTextColor()
+	{
+		return new Color(0.211f, 0.818f, 0.955f);
+	}
+
 	public string id { get; set; }
 	public int receiveDay { get; set; }
 	int _addDia, _addGold, _addEnergy;
