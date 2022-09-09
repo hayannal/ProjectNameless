@@ -21,6 +21,7 @@ public class MainCanvas : MonoBehaviour
 	public CanvasGroup questInfoCanvasGroup;
 
 	public GameObject levelPassButtonObject;
+	public GameObject brokenEnergyButtonObject;
 	public CashEventButton[] cashEventButtonList;
 
 	public RectTransform mailAlarmRootTransform;
@@ -513,12 +514,19 @@ public class MainCanvas : MonoBehaviour
 		bool showLevelPass = (PlayerData.instance.playerLevel >= 5);
 		levelPassButtonObject.SetActive(showLevelPass);
 
+		bool showBrokenEnergy = (CurrencyData.instance.brokenEnergy > 0);
+		brokenEnergyButtonObject.SetActive(showBrokenEnergy);
 
 	}
 
 	public void OnClickLevelPassButton()
 	{
 		UIInstanceManager.instance.ShowCanvasAsync("LevelPassCanvas", null);
+	}
+
+	public void OnClickBrokenEnergyButton()
+	{
+		UIInstanceManager.instance.ShowCanvasAsync("BrokenEnergyCanvas", null);
 	}
 	#endregion
 

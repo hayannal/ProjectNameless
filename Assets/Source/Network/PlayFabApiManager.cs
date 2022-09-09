@@ -1020,6 +1020,9 @@ public class PlayFabApiManager : MonoBehaviour
 				CurrencyData.instance.brokenEnergy = Math.Min(CurrencyData.instance.brokenEnergy + resultBrokenEnergy, BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxBrokenEnergy"));
 				CurrencyData.instance.eventPoint += resultEventPoint;
 
+				if (resultBrokenEnergy > 0)
+					MainCanvas.instance.RefreshCashButton();
+
 				if (useEnergy == resultEnergy)
 				{
 				}
@@ -1594,6 +1597,36 @@ public class PlayFabApiManager : MonoBehaviour
 
 				CashShopData.instance.OnRecvLevelPassReward(level);
 				CurrencyData.instance.OnRecvRefillEnergy(rewardEnergy);
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
+	public void RequestConsumeBrokenEnergy(Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+		
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "ConsumeBrokenEnergy",
+			FunctionParameter = new { Con = 1 },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				CashShopData.instance.ConsumeFlag(CashShopData.eCashConsumeFlagType.BrokenEnergy);
+				CurrencyData.instance.OnRecvRefillEnergy(CurrencyData.instance.brokenEnergy);
+				CurrencyData.instance.brokenEnergy = 0;
+				MainCanvas.instance.RefreshCashButton();
 
 				if (successCallback != null) successCallback.Invoke();
 			}
