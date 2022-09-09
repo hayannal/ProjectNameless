@@ -9,6 +9,7 @@ public class BrokenEnergyCanvas : SimpleCashCanvas
 	public static BrokenEnergyCanvas instance;
 
 	public Text valueText;
+	public GameObject maxObject;
 
 	void Awake()
 	{
@@ -25,6 +26,9 @@ public class BrokenEnergyCanvas : SimpleCashCanvas
 
 	void OnEnable()
 	{
+		maxObject.SetActive(false);
+
+		valueText.text = _currentValue.ToString("N0");
 		_currentValue = 0;
 		_targetValue = CurrencyData.instance.brokenEnergy;
 
@@ -56,7 +60,7 @@ public class BrokenEnergyCanvas : SimpleCashCanvas
 		UpdateTargetValue();
 	}
 
-	const float valueChangeTime = 0.8f;
+	const float valueChangeTime = 0.6f;
 	float _valueChangeSpeed = 0.0f;
 	float _currentValue;
 	int _lastValue;
@@ -73,6 +77,7 @@ public class BrokenEnergyCanvas : SimpleCashCanvas
 		{
 			currentValueInt = _targetValue;
 			valueText.text = _targetValue.ToString("N0");
+			maxObject.SetActive((CurrencyData.instance.brokenEnergy >= BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxBrokenEnergy")));
 			_updateValueText = false;
 		}
 		if (currentValueInt != _lastValue)
