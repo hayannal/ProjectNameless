@@ -40,19 +40,6 @@ public class RandomCameraShake : MonoBehaviour
 
 	void PlayShake()
 	{
-		if (MainSceneBuilder.instance != null && MainSceneBuilder.instance.waitCachingObject)
-			return;
-		if (CharacterCanvas.instance != null && CharacterCanvas.instance.gameObject.activeSelf)
-			return;
-		if (CharacterCanvas.instance != null && StackCanvas.IsInStack(CharacterCanvas.instance.gameObject))
-			return;
-		if (GoldBoxRoomCanvas.instance != null && GoldBoxRoomCanvas.instance.gameObject.activeSelf)
-			return;
-		if (FindMonsterRoomCanvas.instance != null && FindMonsterRoomCanvas.instance.gameObject.activeSelf)
-			return;
-		if (MainCanvas.instance != null && MainCanvas.instance.IsHideState())
-			return;
-
 		if (startDelay == 0.0f)
 			Shake();
 		else
@@ -74,6 +61,19 @@ public class RandomCameraShake : MonoBehaviour
 
 	void Shake()
 	{
+		if (MainSceneBuilder.instance != null && MainSceneBuilder.instance.waitCachingObject)
+			return;
+		if (CharacterCanvas.instance != null && CharacterCanvas.instance.gameObject.activeSelf)
+			return;
+		if (CharacterCanvas.instance != null && StackCanvas.IsInStack(CharacterCanvas.instance.gameObject))
+			return;
+		if (GoldBoxRoomCanvas.instance != null && GoldBoxRoomCanvas.instance.gameObject.activeSelf)
+			return;
+		if (FindMonsterRoomCanvas.instance != null && FindMonsterRoomCanvas.instance.gameObject.activeSelf)
+			return;
+		if (MainCanvas.instance != null && MainCanvas.instance.IsHideState())
+			return;
+
 		_cameraShake.Shake(Thinksquirrel.CShake.CameraShake.ShakeType.CameraMatrix,
 			numberOfShakes,
 			new Vector3(
