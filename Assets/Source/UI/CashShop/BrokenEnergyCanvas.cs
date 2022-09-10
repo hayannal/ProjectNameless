@@ -43,6 +43,10 @@ public class BrokenEnergyCanvas : SimpleCashCanvas
 		if (CashShopData.instance.IsPurchasedFlag(CashShopData.eCashConsumeFlagType.BrokenEnergy))
 		{
 			string itemName = "";
+			string id = CashShopData.instance.GetConsumeId(CashShopData.eCashConsumeFlagType.BrokenEnergy);
+			ConsumeItemTableData consumeItemTableData = TableDataManager.instance.FindConsumeItemTableData(id);
+			if (consumeItemTableData != null)
+				itemName = UIString.instance.GetString(consumeItemTableData.name);
 			OkCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("ShopUI_NotDoneBuyingProgress", itemName), () =>
 			{
 				ConsumeProduct();

@@ -38,6 +38,15 @@ public class CashShopData : MonoBehaviour
 	List<ObscuredBool> _listCashFlag = new List<ObscuredBool>();
 	List<string> _listCashFlagKey = new List<string> { "Cash_bLevelPass", "Cash_bStagePass" };
 
+	public enum eCashConsumeFlagType
+	{
+		BrokenEnergy = 0,
+
+		Amount,
+	}
+	List<ObscuredBool> _listCashConsumeFlag = new List<ObscuredBool>();
+	List<string> _listCashConsumeFlagKey = new List<string> { "Cash_sBrokenEnergy" };
+
 	public enum eCashCountType
 	{
 		DailyGold = 0,
@@ -85,6 +94,9 @@ public class CashShopData : MonoBehaviour
 		_listCashFlag.Clear();
 		for (int i = 0; i < (int)eCashFlagType.Amount; ++i)
 			_listCashFlag.Add(false);
+		_listCashConsumeFlag.Clear();
+		for (int i = 0; i < (int)eCashConsumeFlagType.Amount; ++i)
+			_listCashConsumeFlag.Add(false);
 
 		for (int i = 0; i < userInventory.Count; ++i)
 		{
@@ -96,6 +108,15 @@ public class CashShopData : MonoBehaviour
 				if (_listCashFlagKey[j] == userInventory[i].ItemId)
 				{
 					_listCashFlag[j] = true;
+					break;
+				}
+			}
+
+			for (int j = 0; j < _listCashConsumeFlagKey.Count; ++j)
+			{
+				if (_listCashConsumeFlagKey[j] == userInventory[i].ItemId)
+				{
+					_listCashConsumeFlag[j] = true;
 					break;
 				}
 			}
@@ -165,6 +186,34 @@ public class CashShopData : MonoBehaviour
 	{
 		if ((int)cashFlagType < _listCashFlag.Count)
 			_listCashFlag[(int)cashFlagType] = true;
+	}
+
+	public bool IsPurchasedFlag(eCashConsumeFlagType cashConsumeFlagType)
+	{
+		if ((int)cashConsumeFlagType < _listCashConsumeFlag.Count)
+		{
+			return _listCashConsumeFlag[(int)cashConsumeFlagType];
+		}
+		return false;
+	}
+
+	public void PurchaseFlag(eCashConsumeFlagType cashConsumeFlagType)
+	{
+		if ((int)cashConsumeFlagType < _listCashConsumeFlag.Count)
+			_listCashConsumeFlag[(int)cashConsumeFlagType] = true;
+	}
+
+	public void ConsumeFlag(eCashConsumeFlagType cashConsumeFlagType)
+	{
+		if ((int)cashConsumeFlagType < _listCashConsumeFlag.Count)
+			_listCashConsumeFlag[(int)cashConsumeFlagType] = false;
+	}
+
+	public string GetConsumeId(eCashConsumeFlagType cashConsumeFlagType)
+	{
+		if ((int)cashConsumeFlagType < _listCashConsumeFlagKey.Count)
+			return _listCashConsumeFlagKey[(int)cashConsumeFlagType];
+		return "";
 	}
 
 

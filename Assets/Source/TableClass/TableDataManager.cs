@@ -44,6 +44,7 @@ public class TableDataManager : MonoBehaviour
 	public GachaTypeTable gachaTypeTable;
 	public ShopProductTable shopProductTable;
 	public LevelPassTable levelPassTable;
+	public ConsumeItemTable consumeItemTable;
 
 	void Awake()
 	{
@@ -381,6 +382,16 @@ public class TableDataManager : MonoBehaviour
 		{
 			if (levelPassTable.dataArray[i].level == level)
 				return levelPassTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public ConsumeItemTableData FindConsumeItemTableData(string id)
+	{
+		for (int i = 0; i < consumeItemTable.dataArray.Length; ++i)
+		{
+			if (consumeItemTable.dataArray[i].id == id)
+				return consumeItemTable.dataArray[i];
 		}
 		return null;
 	}
