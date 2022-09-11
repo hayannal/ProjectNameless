@@ -681,15 +681,6 @@ public class MainSceneBuilder : MonoBehaviour
 		s_firstTimeAfterLaunch = false;
 	}
 
-	/*
-	GameObject GetCurrentGatePillarPrefab()
-	{
-		if (PlayerData.instance.currentChallengeMode && EventManager.instance.IsCompleteServerEvent(EventManager.eServerEvent.chaos))
-			return StageManager.instance.challengeGatePillarPrefab;
-		return StageManager.instance.gatePillarPrefab;
-	}
-	*/                                                                                                                                                                                                                                                                                               
-
 	// Update is called once per frame
 	List<GameObject> _listCachingObject = null;
 	int _waitUpdateRemainCount;
