@@ -68,6 +68,7 @@ public class CashShopData : MonoBehaviour
 		Login = 1,
 		BossStageFailed = 2,
 		SpinZero = 3,
+		OnApplicationPause = 4,
 	}
 	#endregion
 
@@ -309,7 +310,7 @@ public class CashShopData : MonoBehaviour
 	{
 		for (int i = 0; i < TableDataManager.instance.eventTypeTable.dataArray.Length; ++i)
 		{
-			if ((eEventStartCondition)TableDataManager.instance.eventTypeTable.dataArray[i].triggerCondition != eventStartCondition)
+			if ((eEventStartCondition)TableDataManager.instance.eventTypeTable.dataArray[i].triggerCondition != eventStartCondition && (eEventStartCondition)TableDataManager.instance.eventTypeTable.dataArray[i].subTriggerCondition != eventStartCondition)
 				continue;
 			if (IsShowEvent(TableDataManager.instance.eventTypeTable.dataArray[i].id))
 				continue;
@@ -326,24 +327,24 @@ public class CashShopData : MonoBehaviour
 					continue;
 			}
 
+			if (TableDataManager.instance.eventTypeTable.dataArray[i].prob < 1.0f)
+			{
+				if (UnityEngine.Random.value > TableDataManager.instance.eventTypeTable.dataArray[i].prob)
+					continue;
+			}
+
+			// 아직 이벤트가 다 완성된게 아니니 우선 이거로 막아둔다.
+			if ((eEventStartCondition)TableDataManager.instance.eventTypeTable.dataArray[i].triggerCondition != eEventStartCondition.SpinZero)
+				continue;
+
 			PlayFabApiManager.instance.RequestOpenCashEvent(TableDataManager.instance.eventTypeTable.dataArray[i].id, TableDataManager.instance.eventTypeTable.dataArray[i].givenTime, TableDataManager.instance.eventTypeTable.dataArray[i].coolTime, () =>
 			{
 				if (MainCanvas.instance != null && MainCanvas.instance.gameObject.activeSelf)
-				{
-					bool showButton = true;
-					bool showCanvas = true;
-					switch (eventStartCondition)
-					{
-						case eEventStartCondition.Login:
-							showCanvas = false;
-							break;
-					}
-					MainCanvas.instance.ShowCashEvent(TableDataManager.instance.eventTypeTable.dataArray[i].id, showButton, showCanvas);
-				}
+					MainCanvas.instance.ShowCashEvent(TableDataManager.instance.eventTypeTable.dataArray[i].id, true, true);
 			});
 
-			// 이벤트는 중복해서 열리지 않게 하기 위해 한개라도 열었으면 break 시키는게 맞을까?
-			//break;
+			// 이벤트는 중복해서 열리지 않게 하기 위해 한개라도 열었으면 break 시키는게 맞을거 같다.
+			break;
 		}
 	}
 	#endregion

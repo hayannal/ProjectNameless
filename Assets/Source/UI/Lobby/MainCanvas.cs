@@ -245,6 +245,9 @@ public class MainCanvas : MonoBehaviour
 		safeAreaCanvasGroup.blocksRaycasts = !enter;
 
 		BossMonsterGaugeCanvas.OnEnterMenu(enter);
+
+		if (enter == false)
+			CashShopData.instance.CheckStartEvent(CashShopData.eEventStartCondition.OnApplicationPause);
 	}
 
 	public bool IsHideState()
@@ -578,7 +581,10 @@ public class MainCanvas : MonoBehaviour
 				// 패킷을 보내서 유효한지 확인한다.
 				PlayFabApiManager.instance.RequestNetworkOnce(() =>
 				{
-					// 성공시엔 아무것도 하지 않는다.
+					// 성공시엔 예전엔 아무것도 하지 않았는데
+					// 이젠 이벤트를 발생시켜야한다.
+					CashShopData.instance.CheckStartEvent(CashShopData.eEventStartCondition.OnApplicationPause);
+
 				}, () =>
 				{
 					// 실패시에는 로비냐 아니냐에 따라 나눌까 하다가 
@@ -599,6 +605,10 @@ public class MainCanvas : MonoBehaviour
 					// 여기서는 그냥 CommonErrorHandler로 알아서 처리되고 넘어가면 끝인거로 처리하기로 한다.
 
 				}, false);
+			}
+			else
+			{
+				CashShopData.instance.CheckStartEvent(CashShopData.eEventStartCondition.OnApplicationPause);
 			}
 			_paused = false;
 		}
