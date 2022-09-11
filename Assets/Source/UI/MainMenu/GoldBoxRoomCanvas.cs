@@ -86,7 +86,10 @@ public class GoldBoxRoomCanvas : RoomShowCanvasBase
 		winText.gameObject.SetActive(false);
 		winText.transform.localScale = Vector3.one;
 		SetInfoCameraMode(false);
-		MainCanvas.instance.OnEnterCharacterMenu(false);
+
+		// 닫을때는 어차피 가차창으로 돌아가는거니 해제하지 않는다.
+		// 이거 호출될때 홈화면 돌아가는지 이벤트 검사하니 최대한 피해본다.
+		//MainCanvas.instance.OnEnterCharacterMenu(false);
 	}
 
 	public void UseKey()
