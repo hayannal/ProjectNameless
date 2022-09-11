@@ -1183,6 +1183,9 @@ public class GachaInfoCanvas : MonoBehaviour
 
 		// 그리고 하는건 에너지 팝업 체크
 		CheckCashEvent();
+
+		//if (CurrencyData.instance.energy == 0)
+		//	CashShopData.instance.CheckStartEvent(CashShopData.eEventStartCondition.SpinZero);
 	}
 	#endregion
 
@@ -1212,11 +1215,13 @@ public class GachaInfoCanvas : MonoBehaviour
 
 		if (CashShopData.instance.IsShowEvent(eventTypeTableData.id))
 			return;
+		if (CashShopData.instance.IsCoolTimeEvent(eventTypeTableData.id))
+			return;
 
 		if (UnityEngine.Random.value < 0.333f)
 			return;
 
-		PlayFabApiManager.instance.RequestOpenCashEvent(eventTypeTableData.id, eventTypeTableData.givenTime, () =>
+		PlayFabApiManager.instance.RequestOpenCashEvent(eventTypeTableData.id, eventTypeTableData.givenTime, eventTypeTableData.coolTime, () =>
 		{
 			MainCanvas.instance.ShowCashEvent(eventTypeTableData.id, true, true);
 		});

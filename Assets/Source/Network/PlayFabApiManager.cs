@@ -1256,14 +1256,14 @@ public class PlayFabApiManager : MonoBehaviour
 
 
 	#region CashEvent
-	public void RequestOpenCashEvent(string openEventId, int givenTime, Action successCallback)
+	public void RequestOpenCashEvent(string openEventId, int givenTime, int coolTime, Action successCallback)
 	{
-		string input = string.Format("{0}_{1}_{2}", openEventId, givenTime, "ldruqzvm");
+		string input = string.Format("{0}_{1}_{2}_{3}", openEventId, givenTime, coolTime, "ldruqzvm");
 		string checkSum = CheckSum(input);
 		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "OpenCashEvent",
-			FunctionParameter = new { EvId = openEventId, GiTim = givenTime, Cs = checkSum },
+			FunctionParameter = new { EvId = openEventId, GiTim = givenTime, CoTim = coolTime, Cs = checkSum },
 			GeneratePlayStreamEvent = true,
 		}, (success) =>
 		{
@@ -1276,6 +1276,13 @@ public class PlayFabApiManager : MonoBehaviour
 
 				// 성공시에는 서버에서 방금 기록한 유효기간 만료 시간이 날아온다.
 				CashShopData.instance.OnRecvOpenCashEvent(openEventId, (string)date);
+
+				jsonResult.TryGetValue("cool", out object useCool);
+				if ((useCool.ToString()) == "1")
+				{
+					jsonResult.TryGetValue("cdate", out object cdate);
+					CashShopData.instance.OnRecvCoolTimeCashEvent(openEventId, (string)cdate);
+				}
 
 				if (successCallback != null) successCallback.Invoke();
 			}

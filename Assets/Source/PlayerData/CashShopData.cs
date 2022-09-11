@@ -25,6 +25,8 @@ public class CashShopData : MonoBehaviour
 
 	// 상품들은 대부분은 각각의 유효기간을 가진다.
 	Dictionary<string, DateTime> _dicExpireTime = new Dictionary<string, DateTime>();
+	// 유효기간뿐만 아니라 한번 열린 이벤트를 바로 또다시 여는걸 방지하기 위해서 쿨타임도 가질 수 있다.
+	Dictionary<string, DateTime> _dicCoolTimeExpireTime = new Dictionary<string, DateTime>();
 
 	// CF에다가 비트플래그로 구분하는건 중복 구매시 다음 아이템의 플래그가 켜질 수 있어서 안하기로 한다.
 	// 이 플래그 대신 아이템에다가 접두사로 구분하는 형태로 해서 인벤토리를 검사하는 형태로 변경하기로 한다.
@@ -59,6 +61,16 @@ public class CashShopData : MonoBehaviour
 	// 레벨패스에서 받았음을 기억해두는 변수인데 어차피 받을때마다 서버검증 하기때문에 Obscured 안쓰고 그냥 사용하기로 한다.
 	List<int> _listLevelPassReward;
 
+	#region EventPoint
+	public enum eEventStartCondition
+	{
+		ByCode = 0,
+		Login = 1,
+		BossStageFailed = 2,
+		SpinZero = 3,
+	}
+	#endregion
+
 	public void OnRecvCashShopData(List<ItemInstance> userInventory, Dictionary<string, string> titleData, Dictionary<string, UserDataRecord> userReadOnlyData)
 	{
 		/*
@@ -68,6 +80,7 @@ public class CashShopData : MonoBehaviour
 		*/
 
 		_dicExpireTime.Clear();
+		_dicCoolTimeExpireTime.Clear();
 
 		// 이벤트는 여러개 있고 각각의 유효기간이 있으니 테이블 돌면서
 		for (int i = 0; i < TableDataManager.instance.eventTypeTable.dataArray.Length; ++i)
@@ -88,6 +101,23 @@ public class CashShopData : MonoBehaviour
 					}
 				}
 			}
+
+			if (TableDataManager.instance.eventTypeTable.dataArray[i].coolTime > 0)
+			{
+				string key = string.Format("{0}CoolExpDat", TableDataManager.instance.eventTypeTable.dataArray[i].id);
+				if (userReadOnlyData.ContainsKey(key))
+				{
+					if (string.IsNullOrEmpty(userReadOnlyData[key].Value) == false)
+					{
+						DateTime coolExpireDateTime = new DateTime();
+						if (DateTime.TryParse(userReadOnlyData[key].Value, out coolExpireDateTime))
+						{
+							DateTime universalTime = coolExpireDateTime.ToUniversalTime();
+							_dicCoolTimeExpireTime.Add(TableDataManager.instance.eventTypeTable.dataArray[i].id, universalTime);
+						}
+					}
+				}
+			}
 		}
 
 		// 이번 캐시상품의 핵심이 되는 플래그다.
@@ -97,6 +127,9 @@ public class CashShopData : MonoBehaviour
 		_listCashConsumeFlag.Clear();
 		for (int i = 0; i < (int)eCashConsumeFlagType.Amount; ++i)
 			_listCashConsumeFlag.Add(false);
+		_listCashCount.Clear();
+		for (int i = 0; i < (int)eCashCountType.Amount; ++i)
+			_listCashCount.Add(0);
 
 		for (int i = 0; i < userInventory.Count; ++i)
 		{
@@ -243,6 +276,26 @@ public class CashShopData : MonoBehaviour
 		return false;
 	}
 
+	public void OnRecvCoolTimeCashEvent(string openEventId, string cashEventCoolTimeExpireTimeString)
+	{
+		DateTime cashEventCoolTimeExpireTime = new DateTime();
+		if (DateTime.TryParse(cashEventCoolTimeExpireTimeString, out cashEventCoolTimeExpireTime))
+		{
+			DateTime universalTime = cashEventCoolTimeExpireTime.ToUniversalTime();
+			if (_dicCoolTimeExpireTime.ContainsKey(openEventId))
+				_dicCoolTimeExpireTime[openEventId] = universalTime;
+			else
+				_dicCoolTimeExpireTime.Add(openEventId, universalTime);
+		}
+	}
+
+	public bool IsCoolTimeEvent(string eventId)
+	{
+		if (_dicCoolTimeExpireTime.ContainsKey(eventId) && ServerTime.UtcNow < _dicCoolTimeExpireTime[eventId])
+			return true;
+		return false;
+	}
+
 	DateTime _emptyDateTime = new DateTime();
 	public DateTime GetExpireDateTime(string eventId)
 	{
@@ -250,6 +303,50 @@ public class CashShopData : MonoBehaviour
 			return _dicExpireTime[eventId];
 		return _emptyDateTime;
 	}
+
+	#region Event Start
+	public void CheckStartEvent(eEventStartCondition eventStartCondition)
+	{
+		for (int i = 0; i < TableDataManager.instance.eventTypeTable.dataArray.Length; ++i)
+		{
+			if ((eEventStartCondition)TableDataManager.instance.eventTypeTable.dataArray[i].triggerCondition != eventStartCondition)
+				continue;
+			if (IsShowEvent(TableDataManager.instance.eventTypeTable.dataArray[i].id))
+				continue;
+			if (IsCoolTimeEvent(TableDataManager.instance.eventTypeTable.dataArray[i].id))
+				continue;
+
+			if (TableDataManager.instance.eventTypeTable.dataArray[i].startYear != 0 && TableDataManager.instance.eventTypeTable.dataArray[i].endYear != 0)
+			{
+				DateTime startDateTime = new DateTime(TableDataManager.instance.eventTypeTable.dataArray[i].startYear, TableDataManager.instance.eventTypeTable.dataArray[i].startMonth, TableDataManager.instance.eventTypeTable.dataArray[i].startDay);
+				if (ServerTime.UtcNow < startDateTime)
+					continue;
+				DateTime endDateTime = new DateTime(TableDataManager.instance.eventTypeTable.dataArray[i].endYear, TableDataManager.instance.eventTypeTable.dataArray[i].endMonth, TableDataManager.instance.eventTypeTable.dataArray[i].endDay);
+				if (ServerTime.UtcNow > endDateTime)
+					continue;
+			}
+
+			PlayFabApiManager.instance.RequestOpenCashEvent(TableDataManager.instance.eventTypeTable.dataArray[i].id, TableDataManager.instance.eventTypeTable.dataArray[i].givenTime, TableDataManager.instance.eventTypeTable.dataArray[i].coolTime, () =>
+			{
+				if (MainCanvas.instance != null && MainCanvas.instance.gameObject.activeSelf)
+				{
+					bool showButton = true;
+					bool showCanvas = true;
+					switch (eventStartCondition)
+					{
+						case eEventStartCondition.Login:
+							showCanvas = false;
+							break;
+					}
+					MainCanvas.instance.ShowCashEvent(TableDataManager.instance.eventTypeTable.dataArray[i].id, showButton, showCanvas);
+				}
+			});
+
+			// 이벤트는 중복해서 열리지 않게 하기 위해 한개라도 열었으면 break 시키는게 맞을까?
+			//break;
+		}
+	}
+	#endregion
 
 	#region Level Pass
 	public bool IsGetLevelPassReward(int level)

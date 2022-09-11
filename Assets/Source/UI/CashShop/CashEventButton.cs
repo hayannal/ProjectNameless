@@ -69,6 +69,12 @@ public class CashEventButton : MonoBehaviour
 
 	public static void ShowEventCanvas(string id)
 	{
+		EventTypeTableData eventTypeTableData = TableDataManager.instance.FindEventTypeTableData(id);
+		if (eventTypeTableData != null)
+		{
+			if (string.IsNullOrEmpty(eventTypeTableData.referEvent) == false)
+				id = eventTypeTableData.referEvent;
+		}
 		UIInstanceManager.instance.ShowCanvasAsync(string.Format("{0}CashEventCanvas", id), null);
 	}
 }

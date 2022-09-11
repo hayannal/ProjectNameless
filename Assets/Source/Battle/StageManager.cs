@@ -591,6 +591,9 @@ public class StageManager : MonoBehaviour
 
 		Time.timeScale = 1.0f;
 		_failureProcessed = false;
+
+		yield return new WaitForSecondsRealtime(0.5f);
+		CashShopData.instance.CheckStartEvent(CashShopData.eEventStartCondition.BossStageFailed);
 	}
 
 	/*
