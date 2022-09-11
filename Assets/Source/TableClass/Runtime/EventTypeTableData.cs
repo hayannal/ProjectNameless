@@ -52,4 +52,12 @@ public class EventTypeTableData
   int _triggerCondition;
   public int triggerCondition { get { return _triggerCondition; } set { _triggerCondition = value; } }
   
+  [SerializeField]
+  int _subTriggerCondition;
+  public int subTriggerCondition { get { return _subTriggerCondition; } set { _subTriggerCondition = value; } }
+  
+  [SerializeField]
+  float _prob;
+  public float prob { get { return _prob; } set { _prob = value; } }
+  
 }
