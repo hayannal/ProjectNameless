@@ -52,10 +52,10 @@ public class SupportData : MonoBehaviour
 		var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
 
 		_listMySupportData = null;
-		if (userReadOnlyData.ContainsKey("sptDatLst"))
+		if (userReadOnlyData.ContainsKey("a_sptDatLst"))
 		{
-			if (string.IsNullOrEmpty(userReadOnlyData["sptDatLst"].Value) == false)
-				_listMySupportData = serializer.DeserializeObject<List<MySupportData>>(userReadOnlyData["sptDatLst"].Value);
+			if (string.IsNullOrEmpty(userReadOnlyData["a_sptDatLst"].Value) == false)
+				_listMySupportData = serializer.DeserializeObject<List<MySupportData>>(userReadOnlyData["a_sptDatLst"].Value);
 		}
 
 		// 하나라도 문의한게 있다면 5초 뒤에 리프레쉬 후 한시간 간격으로 갱신(삭제처리를 위해서)
