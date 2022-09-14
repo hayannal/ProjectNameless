@@ -5,6 +5,13 @@ using UnityEngine.Purchasing;
 
 public class BigBoostEventCanvas : SimpleCashEventCanvas
 {
+	public static BigBoostEventCanvas instance;
+
+	void Awake()
+	{
+		instance = this;
+	}
+
 	void Start()
 	{
 		ShopProductTableData shopProductTableData = TableDataManager.instance.FindShopProductTableData("BigBoost");
@@ -51,7 +58,24 @@ public class BigBoostEventCanvas : SimpleCashEventCanvas
 			//
 			// 간단한 결과창 하나로 처리할 수도 있을거다.
 			WaitingNetworkCanvas.Show(false);
-			OkCanvas.instance.ShowCanvas(true, "title", "message");
+			if (shopProductTableData != null)
+			{
+				UIInstanceManager.instance.ShowCanvasAsync("CommonRewardCanvas", () =>
+				{
+					CommonRewardCanvas.instance.RefreshReward(shopProductTableData);
+				});
+			}
+
+			if (instance != null)
+			{
+				PlayFabApiManager.instance.RequestCloseCashEvent(instance.cashEventId, () =>
+				{
+					if (MainCanvas.instance != null && MainCanvas.instance.gameObject.activeSelf)
+						MainCanvas.instance.CloseCashEventButton(instance.cashEventId);
+				});
+				if (instance.gameObject != null)
+					instance.gameObject.SetActive(false);
+			}
 
 			CodelessIAPStoreListener.Instance.StoreController.ConfirmPendingPurchase(product);
 			IAPListenerWrapper.instance.CheckConfirmPendingPurchase(product);
