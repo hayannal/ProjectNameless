@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using MEC;
 
 public class LoadingCanvas : MonoBehaviour
 {
@@ -113,6 +114,8 @@ public class LoadingCanvas : MonoBehaviour
 
 	public void OnEnterLobby()
 	{
+		Timing.RunCoroutine(Process());
+
 		// 우선순위 높은거부터 처리할게 있는지 판단한다.
 		// Event를 진행할게 있다면 튕겨서 재접한 상황은 아니라 정상적인 종료나 패배일거다. 처음 켤때만 호출되는 곳이니 서버 이벤트만 있는지 검사하면 된다.
 		// 클라이벤트는 씬 재시작시 어차피 사라지기 때문에 서버이벤트 여부만 판단해도 충분하다.
@@ -133,10 +136,11 @@ public class LoadingCanvas : MonoBehaviour
 			LobbyCanvas.instance.CheckClientSaveData();
 		else
 		*/
+		/*
 		{
 			// 아무것도 처리할게 없을때 언어옵션이 한국어라면 약관 띄울 준비를 한다.
 			// 약관창 뜬 상태에서 네트워크 오류로 씬 재시작시 checkRestartScene플래그가 켜지기 때문에 다시 이쪽으로 들어오게 될거다.
-			if (PlayerData.instance.termsConfirmed == false && /*ContentsManager.IsTutorialChapter() == false &&*/ OptionManager.instance.language == "KOR")
+			if (PlayerData.instance.termsConfirmed == false && /*ContentsManager.IsTutorialChapter() == false &&*/ /*OptionManager.instance.language == "KOR")
 			{
 				UIInstanceManager.instance.ShowCanvasAsync("TermsConfirmCanvas", () =>
 				{
@@ -152,9 +156,55 @@ public class LoadingCanvas : MonoBehaviour
 						if (EventManager.instance.IsStandbyClientEvent(EventManager.eClientEvent.NewChapter) && showTitleCanvas == false)
 							EventManager.instance.OnCompleteLobbyEvent();
 						*/
+						/*
 					});
 				});
 			}
 		}
+		*/
+	}
+
+	IEnumerator<float> Process()
+	{
+		if (PlayerData.instance.termsConfirmed == false && /*ContentsManager.IsTutorialChapter() == false &&*/ OptionManager.instance.language == "KOR")
+		{
+			bool termsConfirmed = false;
+			UIInstanceManager.instance.ShowCanvasAsync("TermsConfirmCanvas", () =>
+			{
+				TermsConfirmCanvas.instance.ShowCanvas(() =>
+				{
+					termsConfirmed = true;
+				});
+			});
+
+			while (termsConfirmed == false)
+				yield return Timing.WaitForOneFrame;
+			Debug.Log("terms confirmed");
+		}
+
+		bool showAttendance = false;
+		if (showAttendance)
+		{
+			Debug.Log("attendance confirmed");
+		}
+
+		// 아래 3가지는 너무 다 제각각이라서 end를 측정하기 어렵다.
+		// 
+		bool result = CashShopData.instance.CheckPendingProduct();
+		if (result)
+		{
+			Debug.Log("CheckPendingProduct");
+			yield break;
+		}
+
+		result = CashShopData.instance.CheckUncomsumeProduct();
+		if (result)
+		{
+			Debug.Log("CheckUncomsumeProduct");
+			yield break;
+		}
+
+		Debug.Log("checkStartEvent.Login");
+		CashShopData.instance.CheckStartEvent(CashShopData.eEventStartCondition.Login);
 	}
 }
