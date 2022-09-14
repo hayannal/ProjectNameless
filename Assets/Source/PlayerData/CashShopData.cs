@@ -368,4 +368,75 @@ public class CashShopData : MonoBehaviour
 	}
 	public bool levelPassAlarmStateForNoPass { get; set; }
 	#endregion
+
+
+	#region Pending Product
+	public bool CheckPendingProduct()
+	{
+		// 초기화가 안되어도 캐시샵이 열리는 구조로 바꾸면서 체크
+		if (CodelessIAPStoreListener.initializationComplete == false)
+			return false;
+
+		if (IAPListenerWrapper.instance.pendingProduct == null)
+			return false;
+
+		Product pendingProduct = IAPListenerWrapper.instance.pendingProduct;
+		Debug.LogFormat("Check IAPListener pending product id : {0}", pendingProduct.definition.id);
+		//Debug.LogFormat("IAPListener failed product storeSpecificId : {0}", failedProduct.definition.storeSpecificId);
+
+		// 완료되지 않은 구매상품의 아이디에 따라 뭘 진행시킬지 판단해야한다.
+		if (pendingProduct.definition.id == "bigboost")
+		{
+			BigBoostEventCanvas.ExternalRetryPurchase(pendingProduct);
+		}
+		else if (pendingProduct.definition.id == "levelpass")
+		{
+			LevelPassCanvas.ExternalRetryPurchase(pendingProduct);
+		}
+		else if (pendingProduct.definition.id == "brokenenergy")
+		{
+			BrokenEnergyCanvas.ExternalRetryPurchase(pendingProduct);
+		}
+		else
+		{
+
+		}
+
+
+		return true;
+	}
+
+	public bool CheckUncomsumeProduct()
+	{
+		// 위 펜딩 상품이 없을때는 DB에서 소모시켜야할 아이템이 남아있는지 확인해서 처리해주면 된다.
+		for (int i = 0; i < (int)eCashConsumeFlagType.Amount; ++i)
+		{
+			if (IsPurchasedFlag((eCashConsumeFlagType)i) == false)
+				continue;
+
+			bool process = false;
+			string itemName = "";
+			switch ((eCashConsumeFlagType)i)
+			{
+				case eCashConsumeFlagType.BrokenEnergy:
+					ConsumeItemTableData consumeItemTableData = TableDataManager.instance.FindConsumeItemTableData(_listCashConsumeFlagKey[i]);
+					if (consumeItemTableData != null)
+						itemName = UIString.instance.GetString(consumeItemTableData.name);
+					process = true;
+					break;
+			}
+
+			if (process == false)
+				continue;
+
+			OkCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("ShopUI_NotDoneBuyingProgress", itemName), () =>
+			{
+				BrokenEnergyCanvas.ConsumeProduct();
+			}, -1, true);
+			return true;
+		}
+
+		return false;
+	}
+	#endregion
 }
