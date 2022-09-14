@@ -77,9 +77,67 @@ public class CommonRewardCanvas : MonoBehaviour
 	}
 
 	// 테이블 행 하나를 받아서 처리하는 경우도 있을거다.
-	public void RefreshReward(ShopProductTableData shopProductTableData)
+	public void RefreshReward(ShopProductTableData shopProductTableData, System.Action okAction = null)
 	{
 		// 필요에 따라 변환해서 사용하면 될듯
+		_okAction = okAction;
+
+		_listCommonRewardData.Clear();
+
+		CommonRewardData commonRewardData = null;
+
+		if (string.IsNullOrEmpty(shopProductTableData.rewardType1) == false)
+		{
+			commonRewardData = new CommonRewardData();
+			commonRewardData.type = shopProductTableData.rewardType1;
+			commonRewardData.value = shopProductTableData.rewardValue1;
+			commonRewardData.count = shopProductTableData.rewardCount1;
+			_listCommonRewardData.Add(commonRewardData);
+		}
+
+		if (string.IsNullOrEmpty(shopProductTableData.rewardType2) == false)
+		{
+			commonRewardData = new CommonRewardData();
+			commonRewardData.type = shopProductTableData.rewardType2;
+			commonRewardData.value = shopProductTableData.rewardValue2;
+			commonRewardData.count = shopProductTableData.rewardCount2;
+			_listCommonRewardData.Add(commonRewardData);
+		}
+
+		if (string.IsNullOrEmpty(shopProductTableData.rewardType3) == false)
+		{
+			commonRewardData = new CommonRewardData();
+			commonRewardData.type = shopProductTableData.rewardType3;
+			commonRewardData.value = shopProductTableData.rewardValue3;
+			commonRewardData.count = shopProductTableData.rewardCount3;
+			_listCommonRewardData.Add(commonRewardData);
+		}
+
+		if (string.IsNullOrEmpty(shopProductTableData.rewardType4) == false)
+		{
+			commonRewardData = new CommonRewardData();
+			commonRewardData.type = shopProductTableData.rewardType4;
+			commonRewardData.value = shopProductTableData.rewardValue4;
+			commonRewardData.count = shopProductTableData.rewardCount4;
+			_listCommonRewardData.Add(commonRewardData);
+		}
+
+		if (string.IsNullOrEmpty(shopProductTableData.rewardType5) == false)
+		{
+			commonRewardData = new CommonRewardData();
+			commonRewardData.type = shopProductTableData.rewardType5;
+			commonRewardData.value = shopProductTableData.rewardValue5;
+			commonRewardData.count = shopProductTableData.rewardCount5;
+			_listCommonRewardData.Add(commonRewardData);
+		}
+
+		if (_listCommonRewardData.Count == 0)
+		{
+			gameObject.SetActive(false);
+			return;
+		}
+
+		Timing.RunCoroutine(RewardProcess());
 	}
 
 	IEnumerator<float> RewardProcess()

@@ -376,6 +376,16 @@ public class TableDataManager : MonoBehaviour
 		return null;
 	}
 
+	public ShopProductTableData FindShopProductTableDataByServerItemId(string serverItemId)
+	{
+		for (int i = 0; i < shopProductTable.dataArray.Length; ++i)
+		{
+			if (shopProductTable.dataArray[i].serverItemId == serverItemId)
+				return shopProductTable.dataArray[i];
+		}
+		return null;
+	}
+
 	public LevelPassTableData FindLevelPassTableData(int level)
 	{
 		for (int i = 0; i < levelPassTable.dataArray.Length; ++i)

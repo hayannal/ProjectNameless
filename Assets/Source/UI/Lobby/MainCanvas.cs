@@ -550,6 +550,18 @@ public class MainCanvas : MonoBehaviour
 			}
 		}
 	}
+
+	public void CloseCashEventButton(string cashEventId)
+	{
+		for (int i = 0; i < cashEventButtonList.Length; ++i)
+		{
+			if (cashEventButtonList[i].cashEventId == cashEventId)
+			{
+				cashEventButtonList[i].ShowButton(false);
+				break;
+			}
+		}
+	}
 	#endregion
 
 
