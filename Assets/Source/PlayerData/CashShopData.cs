@@ -28,6 +28,9 @@ public class CashShopData : MonoBehaviour
 	// 유효기간뿐만 아니라 한번 열린 이벤트를 바로 또다시 여는걸 방지하기 위해서 쿨타임도 가질 수 있다.
 	Dictionary<string, DateTime> _dicCoolTimeExpireTime = new Dictionary<string, DateTime>();
 
+	// 추가 정보들이 필요한 이벤트도 있다.
+	Dictionary<string, int> _dicContinuousProductStep = new Dictionary<string, int>();
+
 	// CF에다가 비트플래그로 구분하는건 중복 구매시 다음 아이템의 플래그가 켜질 수 있어서 안하기로 한다.
 	// 이 플래그 대신 아이템에다가 접두사로 구분하는 형태로 해서 인벤토리를 검사하는 형태로 변경하기로 한다.
 	public enum eCashFlagType
@@ -43,11 +46,12 @@ public class CashShopData : MonoBehaviour
 	public enum eCashConsumeFlagType
 	{
 		BrokenEnergy = 0,
+		Ev4ContiNext = 1,
 
 		Amount,
 	}
 	List<ObscuredBool> _listCashConsumeFlag = new List<ObscuredBool>();
-	List<string> _listCashConsumeFlagKey = new List<string> { "Cash_sBrokenEnergy" };
+	List<string> _listCashConsumeFlagKey = new List<string> { "Cash_sBrokenEnergy", "Cash_sEv4ContiNext" };
 
 	public enum eCashCountType
 	{
@@ -82,6 +86,7 @@ public class CashShopData : MonoBehaviour
 
 		_dicExpireTime.Clear();
 		_dicCoolTimeExpireTime.Clear();
+		_dicContinuousProductStep.Clear();
 
 		// 이벤트는 여러개 있고 각각의 유효기간이 있으니 테이블 돌면서
 		for (int i = 0; i < TableDataManager.instance.eventTypeTable.dataArray.Length; ++i)
@@ -117,6 +122,30 @@ public class CashShopData : MonoBehaviour
 							_dicCoolTimeExpireTime.Add(TableDataManager.instance.eventTypeTable.dataArray[i].id, universalTime);
 						}
 					}
+				}
+			}
+
+			// 추가 정보를 얻기 위해서 eventSub를 검사해본다.
+			if (string.IsNullOrEmpty(TableDataManager.instance.eventTypeTable.dataArray[i].eventSub) == false)
+			{
+				switch (TableDataManager.instance.eventTypeTable.dataArray[i].eventSub)
+				{
+					case "oneofthree":
+						break;
+					case "conti":
+						string key = string.Format("{0}ContiNum", TableDataManager.instance.eventTypeTable.dataArray[i].id);
+						if (userReadOnlyData.ContainsKey(key))
+						{
+							if (string.IsNullOrEmpty(userReadOnlyData[key].Value) == false)
+							{
+								int intValue = 0;
+								if (int.TryParse(userReadOnlyData[key].Value, out intValue))
+									_dicContinuousProductStep.Add(TableDataManager.instance.eventTypeTable.dataArray[i].id, intValue);
+							}
+						}
+						break;
+					case "oneplustwo":
+						break;
 				}
 			}
 		}
@@ -334,10 +363,10 @@ public class CashShopData : MonoBehaviour
 			}
 
 			// 아직 이벤트가 다 완성된게 아니니 우선 이거로 막아둔다.
-			if ((eEventStartCondition)TableDataManager.instance.eventTypeTable.dataArray[i].triggerCondition != eEventStartCondition.SpinZero)
-				continue;
+			//if ((eEventStartCondition)TableDataManager.instance.eventTypeTable.dataArray[i].triggerCondition != eEventStartCondition.SpinZero)
+			//	continue;
 
-			PlayFabApiManager.instance.RequestOpenCashEvent(TableDataManager.instance.eventTypeTable.dataArray[i].id, TableDataManager.instance.eventTypeTable.dataArray[i].givenTime, TableDataManager.instance.eventTypeTable.dataArray[i].coolTime, () =>
+			PlayFabApiManager.instance.RequestOpenCashEvent(TableDataManager.instance.eventTypeTable.dataArray[i].id, TableDataManager.instance.eventTypeTable.dataArray[i].eventSub, TableDataManager.instance.eventTypeTable.dataArray[i].givenTime, TableDataManager.instance.eventTypeTable.dataArray[i].coolTime, () =>
 			{
 				if (MainCanvas.instance != null && MainCanvas.instance.gameObject.activeSelf)
 					MainCanvas.instance.ShowCashEvent(TableDataManager.instance.eventTypeTable.dataArray[i].id, true, true);
@@ -369,6 +398,29 @@ public class CashShopData : MonoBehaviour
 	public bool levelPassAlarmStateForNoPass { get; set; }
 	#endregion
 
+	#region Continuous Product
+	public int GetContinuousProductStep(string cashEventId)
+	{
+		if (_dicContinuousProductStep.ContainsKey(cashEventId))
+			return _dicContinuousProductStep[cashEventId];
+		return 0;
+	}
+
+	public void AddContinuousProductStep(string cashEventId, int add)
+	{
+		if (_dicContinuousProductStep.ContainsKey(cashEventId))
+			_dicContinuousProductStep[cashEventId] += add;
+		else
+			_dicContinuousProductStep.Add(cashEventId, add);
+	}
+
+	public void ResetContinuousProductStep(string cashEventId)
+	{
+		if (_dicContinuousProductStep.ContainsKey(cashEventId))
+			_dicContinuousProductStep.Remove(cashEventId);
+	}
+	#endregion
+
 
 	#region Pending Product
 	public bool CheckPendingProduct()
@@ -397,9 +449,13 @@ public class CashShopData : MonoBehaviour
 		{
 			BrokenEnergyCanvas.ExternalRetryPurchase(pendingProduct);
 		}
-		else
+		else if (pendingProduct.definition.id.Contains("_oneofthree"))
 		{
-
+			OneOfThreeCanvas.ExternalRetryPurchase(pendingProduct);
+		}
+		else if (pendingProduct.definition.id.Contains("_conti"))
+		{
+			ContinuousShopProductCanvas.ExternalRetryPurchase(pendingProduct);
 		}
 
 
@@ -423,6 +479,13 @@ public class CashShopData : MonoBehaviour
 					if (consumeItemTableData != null)
 						itemName = UIString.instance.GetString(consumeItemTableData.name);
 					process = true;
+					break;
+				case eCashConsumeFlagType.Ev4ContiNext:
+					int currentCompleteStep = GetContinuousProductStep("ev4");
+					string id = string.Format("ev4_conti_{0}", currentCompleteStep + 1);
+					ShopProductTableData shopProductTableData = TableDataManager.instance.FindShopProductTableData(id);
+					bool cashStep = (shopProductTableData != null && shopProductTableData.free == false);
+					PlayFabApiManager.instance.RequestConsumeContinuousNext("ev4", cashStep, null);
 					break;
 			}
 

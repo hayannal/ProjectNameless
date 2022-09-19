@@ -6,8 +6,6 @@ using UnityEngine.Purchasing;
 
 public class OneOfThreeCanvas : SimpleCashEventCanvas
 {
-	public static OneOfThreeCanvas instance;
-
 	public Text price1Text;
 	public Text price2Text;
 	public Text price3Text;
@@ -18,17 +16,11 @@ public class OneOfThreeCanvas : SimpleCashEventCanvas
 	public Button iapBridge2Button;
 	public Button iapBridge3Button;
 
-	void Awake()
-	{
-		instance = this;
-	}
-
 	List<ShopProductTableData> _listShopProductTableData = new List<ShopProductTableData>();
 	void Start()
 	{
 		string tableId = cashEventId;
-		if (tableId[0] == 'e') tableId = string.Format("E{0}", cashEventId.Substring(1));
-		string id = string.Format("{0}_OneOfThree1", tableId);
+		string id = string.Format("{0}_oneofthree_1", tableId);
 		ShopProductTableData shopProductTableData = TableDataManager.instance.FindShopProductTableData(id);
 		if (shopProductTableData != null)
 		{
@@ -38,7 +30,7 @@ public class OneOfThreeCanvas : SimpleCashEventCanvas
 			iap1Button.productId = shopProductTableData.serverItemId;
 		}
 
-		id = string.Format("{0}_OneOfThree2", tableId);
+		id = string.Format("{0}_oneofthree_2", tableId);
 		shopProductTableData = TableDataManager.instance.FindShopProductTableData(id);
 		if (shopProductTableData != null)
 		{
@@ -48,7 +40,7 @@ public class OneOfThreeCanvas : SimpleCashEventCanvas
 			iap2Button.productId = shopProductTableData.serverItemId;
 		}
 
-		id = string.Format("{0}_OneOfThree3", tableId);
+		id = string.Format("{0}_oneofthree_3", tableId);
 		shopProductTableData = TableDataManager.instance.FindShopProductTableData(id);
 		if (shopProductTableData != null)
 		{
@@ -61,6 +53,7 @@ public class OneOfThreeCanvas : SimpleCashEventCanvas
 
 	void OnEnable()
 	{
+		SetInfo();
 		MainCanvas.instance.OnEnterCharacterMenu(true);
 	}
 
@@ -103,10 +96,10 @@ public class OneOfThreeCanvas : SimpleCashEventCanvas
 
 	protected override void RequestServerPacket(Product product)
 	{
-		ExternalRequestServerPacket(product);
+		ExternalRequestServerPacket(product, this);
 	}
 
-	public static void ExternalRequestServerPacket(Product product)
+	public static void ExternalRequestServerPacket(Product product, OneOfThreeCanvas instance)
 	{
 #if UNITY_ANDROID
 		GooglePurchaseData data = new GooglePurchaseData(product.receipt);
@@ -139,16 +132,26 @@ public class OneOfThreeCanvas : SimpleCashEventCanvas
 				});
 			}
 
-			if (instance != null)
+			#region Default Process
+			string cashEventId = "";
+			if (instance != null) cashEventId = instance.cashEventId;
+			else
 			{
-				PlayFabApiManager.instance.RequestCloseCashEvent(instance.cashEventId, () =>
+				string[] split = product.definition.id.Split('_');
+				if (split.Length == 3 && split[0].Contains("ev"))
+					cashEventId = split[0];
+			}
+			if (CashShopData.instance.IsShowEvent(cashEventId))
+			{
+				PlayFabApiManager.instance.RequestCloseCashEvent(cashEventId, () =>
 				{
 					if (MainCanvas.instance != null && MainCanvas.instance.gameObject.activeSelf)
-						MainCanvas.instance.CloseCashEventButton(instance.cashEventId);
+						MainCanvas.instance.CloseCashEventButton(cashEventId);
 				});
-				if (instance.gameObject != null)
-					instance.gameObject.SetActive(false);
 			}
+			if (instance.gameObject != null)
+				instance.gameObject.SetActive(false);
+			#endregion
 
 			CodelessIAPStoreListener.Instance.StoreController.ConfirmPendingPurchase(product);
 			IAPListenerWrapper.instance.CheckConfirmPendingPurchase(product);
@@ -176,7 +179,7 @@ public class OneOfThreeCanvas : SimpleCashEventCanvas
 		YesNoCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("ShopUI_NotDoneBuyingProgress", product.metadata.localizedTitle), () =>
 		{
 			WaitingNetworkCanvas.Show(true);
-			ExternalRequestServerPacket(product);
+			ExternalRequestServerPacket(product, null);
 		}, () =>
 		{
 		}, true);

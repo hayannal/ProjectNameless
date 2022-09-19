@@ -30,7 +30,7 @@ public class LevelPassCanvas : SimpleCashCanvas
 	{
 		contentItemPrefab.SetActive(false);
 
-		ShopProductTableData shopProductTableData = TableDataManager.instance.FindShopProductTableData("LevelPass");
+		ShopProductTableData shopProductTableData = TableDataManager.instance.FindShopProductTableData("test_levelpass");
 		if (shopProductTableData == null)
 			return;
 		RefreshPrice(shopProductTableData.serverItemId, shopProductTableData.kor, shopProductTableData.eng);
@@ -114,7 +114,7 @@ public class LevelPassCanvas : SimpleCashCanvas
 		{
 			// ValidatePurchase함수를 하나만 만들어서 쓰기로 하면서
 			// 재화에 대한 처리를 외부에서 하기로 한다.
-			ShopProductTableData shopProductTableData = TableDataManager.instance.FindShopProductTableData("LevelPass");
+			ShopProductTableData shopProductTableData = TableDataManager.instance.FindShopProductTableData("test_levelpass");
 			if (shopProductTableData != null)
 			{
 				CashShopData.instance.PurchaseFlag(CashShopData.eCashFlagType.LevelPass);

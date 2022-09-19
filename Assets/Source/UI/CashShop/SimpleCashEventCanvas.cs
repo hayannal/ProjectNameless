@@ -14,7 +14,7 @@ public class SimpleCashEventCanvas : SimpleCashCanvas
 		SetInfo();
 	}
 
-	void SetInfo()
+	protected void SetInfo()
 	{
 		if (string.IsNullOrEmpty(cashEventId))
 			return;

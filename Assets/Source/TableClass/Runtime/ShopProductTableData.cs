@@ -13,6 +13,10 @@ public class ShopProductTableData
   public string productId { get { return _productId; } set { _productId = value; } }
   
   [SerializeField]
+  int _indexSub;
+  public int indexSub { get { return _indexSub; } set { _indexSub = value; } }
+  
+  [SerializeField]
   bool _free;
   public bool free { get { return _free; } set { _free = value; } }
   
@@ -27,6 +31,10 @@ public class ShopProductTableData
   [SerializeField]
   string _serverItemId;
   public string serverItemId { get { return _serverItemId; } set { _serverItemId = value; } }
+  
+  [SerializeField]
+  int _key;
+  public int key { get { return _key; } set { _key = value; } }
   
   [SerializeField]
   string _rewardType1;

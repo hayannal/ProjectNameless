@@ -13,8 +13,12 @@ public class EventTypeTableData
   public string id { get { return _id; } set { _id = value; } }
   
   [SerializeField]
-  string _referEvent;
-  public string referEvent { get { return _referEvent; } set { _referEvent = value; } }
+  string _eventSub;
+  public string eventSub { get { return _eventSub; } set { _eventSub = value; } }
+  
+  [SerializeField]
+  int _productCount;
+  public int productCount { get { return _productCount; } set { _productCount = value; } }
   
   [SerializeField]
   int _givenTime;

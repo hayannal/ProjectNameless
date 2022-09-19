@@ -1256,14 +1256,14 @@ public class PlayFabApiManager : MonoBehaviour
 
 
 	#region CashEvent
-	public void RequestOpenCashEvent(string openEventId, int givenTime, int coolTime, Action successCallback)
+	public void RequestOpenCashEvent(string openEventId, string eventSub, int givenTime, int coolTime, Action successCallback)
 	{
-		string input = string.Format("{0}_{1}_{2}_{3}", openEventId, givenTime, coolTime, "ldruqzvm");
+		string input = string.Format("{0}_{1}_{2}_{3}_{4}", openEventId, eventSub, givenTime, coolTime, "ldruqzvm");
 		string checkSum = CheckSum(input);
 		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "OpenCashEvent",
-			FunctionParameter = new { EvId = openEventId, GiTim = givenTime, CoTim = coolTime, Cs = checkSum },
+			FunctionParameter = new { EvId = openEventId, EvSub = eventSub, GiTim = givenTime, CoTim = coolTime, Cs = checkSum },
 			GeneratePlayStreamEvent = true,
 		}, (success) =>
 		{
@@ -1282,6 +1282,16 @@ public class PlayFabApiManager : MonoBehaviour
 				{
 					jsonResult.TryGetValue("cdate", out object cdate);
 					CashShopData.instance.OnRecvCoolTimeCashEvent(openEventId, (string)cdate);
+				}
+
+				if (string.IsNullOrEmpty(eventSub) == false)
+				{
+					switch (eventSub)
+					{
+						case "conti":
+							CashShopData.instance.ResetContinuousProductStep(openEventId);
+							break;
+					}
 				}
 
 				if (successCallback != null) successCallback.Invoke();
@@ -1633,6 +1643,66 @@ public class PlayFabApiManager : MonoBehaviour
 				CashShopData.instance.ConsumeFlag(CashShopData.eCashConsumeFlagType.BrokenEnergy);
 				CurrencyData.instance.OnRecvRefillEnergy(CurrencyData.instance.brokenEnergy);
 				CurrencyData.instance.brokenEnergy = 0;
+				MainCanvas.instance.RefreshCashButton();
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
+	public void RequestGetContinuousProduct(string cashEventId, ShopProductTableData shopProductTableData, int contiNum, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}_{2}_{3}_{4}", cashEventId, shopProductTableData.productId, contiNum, shopProductTableData.key, "zqilrkxm");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "GetContinuousProduct",
+			FunctionParameter = new { EvId = cashEventId, SpId = shopProductTableData.productId, ContiNum = contiNum, InfCs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				CashShopData.instance.AddContinuousProductStep(cashEventId, 1);
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
+	public void RequestConsumeContinuousNext(string cashEventId, bool cashStep, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "ConsumeContiNext",
+			FunctionParameter = new { EvId = cashEventId, Cash = cashStep ? 1 : 0 },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				if (cashEventId == "ev4")
+					CashShopData.instance.ConsumeFlag(CashShopData.eCashConsumeFlagType.Ev4ContiNext);
+				CashShopData.instance.AddContinuousProductStep(cashEventId, 1);
 				MainCanvas.instance.RefreshCashButton();
 
 				if (successCallback != null) successCallback.Invoke();

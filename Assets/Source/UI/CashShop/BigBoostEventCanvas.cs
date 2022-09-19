@@ -14,7 +14,7 @@ public class BigBoostEventCanvas : SimpleCashEventCanvas
 
 	void Start()
 	{
-		ShopProductTableData shopProductTableData = TableDataManager.instance.FindShopProductTableData("BigBoost");
+		ShopProductTableData shopProductTableData = TableDataManager.instance.FindShopProductTableData("bigboost");
 		if (shopProductTableData == null)
 			return;
 		RefreshPrice(shopProductTableData.serverItemId, shopProductTableData.kor, shopProductTableData.eng);
@@ -43,7 +43,7 @@ public class BigBoostEventCanvas : SimpleCashEventCanvas
 		{
 			// ValidatePurchase함수를 하나만 만들어서 쓰기로 하면서
 			// 재화에 대한 처리를 외부에서 하기로 한다.
-			ShopProductTableData shopProductTableData = TableDataManager.instance.FindShopProductTableData("BigBoost");
+			ShopProductTableData shopProductTableData = TableDataManager.instance.FindShopProductTableData("bigboost");
 			if (shopProductTableData != null)
 			{
 				// 원래라면 5개 다 해야겠지만 BigBoost는 3개 넘어서는 사용하지 않을거 같으니 이렇게만 해본다.
@@ -68,11 +68,14 @@ public class BigBoostEventCanvas : SimpleCashEventCanvas
 
 			if (instance != null)
 			{
-				PlayFabApiManager.instance.RequestCloseCashEvent(instance.cashEventId, () =>
+				if (CashShopData.instance.IsShowEvent(instance.cashEventId))
 				{
-					if (MainCanvas.instance != null && MainCanvas.instance.gameObject.activeSelf)
-						MainCanvas.instance.CloseCashEventButton(instance.cashEventId);
-				});
+					PlayFabApiManager.instance.RequestCloseCashEvent(instance.cashEventId, () =>
+					{
+						if (MainCanvas.instance != null && MainCanvas.instance.gameObject.activeSelf)
+							MainCanvas.instance.CloseCashEventButton(instance.cashEventId);
+					});
+				}
 				if (instance.gameObject != null)
 					instance.gameObject.SetActive(false);
 			}

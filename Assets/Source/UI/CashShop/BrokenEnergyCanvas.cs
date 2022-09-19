@@ -18,7 +18,7 @@ public class BrokenEnergyCanvas : SimpleCashCanvas
 
 	void Start()
 	{
-		ShopProductTableData shopProductTableData = TableDataManager.instance.FindShopProductTableData("BrokenEnergy");
+		ShopProductTableData shopProductTableData = TableDataManager.instance.FindShopProductTableData("brokenenergy");
 		if (shopProductTableData == null)
 			return;
 		RefreshPrice(shopProductTableData.serverItemId, shopProductTableData.kor, shopProductTableData.eng);
@@ -116,7 +116,7 @@ public class BrokenEnergyCanvas : SimpleCashCanvas
 		{
 			// ValidatePurchase함수를 하나만 만들어서 쓰기로 하면서
 			// 재화에 대한 처리를 외부에서 하기로 한다.
-			ShopProductTableData shopProductTableData = TableDataManager.instance.FindShopProductTableData("BrokenEnergy");
+			ShopProductTableData shopProductTableData = TableDataManager.instance.FindShopProductTableData("brokenenergy");
 			if (shopProductTableData != null)
 			{
 				CashShopData.instance.PurchaseFlag(CashShopData.eCashConsumeFlagType.BrokenEnergy);
