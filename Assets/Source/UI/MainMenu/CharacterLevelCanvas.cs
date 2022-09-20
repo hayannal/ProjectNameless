@@ -343,7 +343,7 @@ public class CharacterLevelCanvas : MonoBehaviour
 
 			RefreshInfo();
 			CharacterCanvas.instance.currencySmallInfo.RefreshInfo();
-			BattleInstanceManager.instance.GetCachedObject(subLevelUpEffectPrefab, CharacterCanvas.instance.rootOffsetPosition, Quaternion.identity, null);
+			BattleInstanceManager.instance.GetCachedObject(levelUpEffectPrefab, CharacterCanvas.instance.rootOffsetPosition, Quaternion.identity, null);
 
 			// 변경 완료를 알리고
 			UIInstanceManager.instance.ShowCanvasAsync("ChangePowerCanvas", () =>
