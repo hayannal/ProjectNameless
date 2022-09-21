@@ -16,6 +16,8 @@ public class RewardIcon : MonoBehaviour
 	public Coffee.UIExtensions.UIGradient gradient;
 	public Image lineColorImage;
 
+	public GameObject[] frameObjectList;
+
 	void OnEnable()
 	{
 		if (eventRewardId == "")
@@ -42,13 +44,27 @@ public class RewardIcon : MonoBehaviour
 				if (lineColorImage != null) lineColorImage.color = new Color(0.5f, 0.5f, 0.5f);
 				switch (rewardValue)
 				{
-					case "GO": goldObject.SetActive(true); break;
-					case "EN": energyObject.SetActive(true); break;
+					case "GO":
+						goldObject.SetActive(true);
+						countText.color = _showOnlyIcon ? MailCanvasListItem.GetGoldTextColor() : Color.white;
+						break;
+					case "EN":
+						energyObject.SetActive(true);
+						countText.color = _showOnlyIcon ? MailCanvasListItem.GetEnergyTextColor() : Color.white;
+						break;
 				}
 				break;
 			case "it":
 				break;
 		}
+	}
+
+	bool _showOnlyIcon = false;
+	public void ShowOnlyIcon(bool onlyIcon)
+	{
+		_showOnlyIcon = onlyIcon;
+		for (int i = 0; i < frameObjectList.Length; ++i)
+			frameObjectList[i].SetActive(!onlyIcon);
 	}
 
 
