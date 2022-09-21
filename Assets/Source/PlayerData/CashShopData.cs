@@ -64,6 +64,8 @@ public class CashShopData : MonoBehaviour
 
 	// 레벨패스에서 받았음을 기억해두는 변수인데 어차피 받을때마다 서버검증 하기때문에 Obscured 안쓰고 그냥 사용하기로 한다.
 	List<int> _listLevelPassReward;
+	// 구조가 거의 비슷해서 그대로 비슷하게 구현해본다.
+	List<int> _listEnergyPaybackReward;
 
 	#region EventPoint
 	public enum eEventStartCondition
@@ -76,7 +78,7 @@ public class CashShopData : MonoBehaviour
 	}
 	#endregion
 
-	public void OnRecvCashShopData(List<ItemInstance> userInventory, Dictionary<string, string> titleData, Dictionary<string, UserDataRecord> userReadOnlyData)
+	public void OnRecvCashShopData(List<ItemInstance> userInventory, Dictionary<string, string> titleData, Dictionary<string, UserDataRecord> userReadOnlyData, List<StatisticValue> playerStatistics)
 	{
 		/*
 		// 아직 언픽스드를 쓸지 안쓸지 모르니
@@ -203,6 +205,24 @@ public class CashShopData : MonoBehaviour
 				_listLevelPassReward = serializer.DeserializeObject<List<int>>(lvPssLstString);
 		}
 		levelPassAlarmStateForNoPass = (IsPurchasedFlag(eCashFlagType.LevelPass) == false);
+
+		_listEnergyPaybackReward = null;
+		if (userReadOnlyData.ContainsKey("enPbkLst"))
+		{
+			string enPbkLstString = userReadOnlyData["enPbkLst"].Value;
+			if (string.IsNullOrEmpty(enPbkLstString) == false)
+				_listEnergyPaybackReward = serializer.DeserializeObject<List<int>>(enPbkLstString);
+		}
+
+		energyUseForPayback = 0;
+		for (int i = 0; i < playerStatistics.Count; ++i)
+		{
+			if (playerStatistics[i].StatisticName == "energyUseForPayback")
+			{
+				energyUseForPayback = playerStatistics[i].Value;
+				break;
+			}
+		}
 
 		/*
 		// 일일 무료 아이템 수령기록 데이터. 마지막 오픈 시간을 받는건 일퀘 때와 비슷한 구조다. 상점 슬롯과 별개로 처리된다.
@@ -376,6 +396,23 @@ public class CashShopData : MonoBehaviour
 			break;
 		}
 	}
+
+	public void OnOpenCashEvent(string openEventId, string eventSub)
+	{
+		if (string.IsNullOrEmpty(eventSub) == false)
+		{
+			switch (eventSub)
+			{
+				case "conti":
+					ResetContinuousProductStep(openEventId);
+					break;
+				case "energypayback":
+					energyUseForPayback = 0;
+					_listEnergyPaybackReward = null;
+					break;
+			}
+		}
+	}
 	#endregion
 
 	#region Level Pass
@@ -396,6 +433,26 @@ public class CashShopData : MonoBehaviour
 		return _listLevelPassReward;
 	}
 	public bool levelPassAlarmStateForNoPass { get; set; }
+	#endregion
+
+	#region Energy Payback
+	public bool IsGetEnergyPaybackReward(int use)
+	{
+		if (_listEnergyPaybackReward == null)
+			return false;
+
+		return _listEnergyPaybackReward.Contains(use);
+	}
+
+	public List<int> OnRecvEnergyPaybackReward(int use)
+	{
+		if (_listEnergyPaybackReward == null)
+			_listEnergyPaybackReward = new List<int>();
+		if (_listEnergyPaybackReward.Contains(use) == false)
+			_listEnergyPaybackReward.Add(use);
+		return _listEnergyPaybackReward;
+	}
+	public ObscuredInt energyUseForPayback { get; set; }
 	#endregion
 
 	#region Continuous Product

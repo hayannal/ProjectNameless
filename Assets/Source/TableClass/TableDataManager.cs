@@ -45,6 +45,7 @@ public class TableDataManager : MonoBehaviour
 	public ShopProductTable shopProductTable;
 	public LevelPassTable levelPassTable;
 	public ConsumeItemTable consumeItemTable;
+	public EnergyUsePaybackTable energyUsePaybackTable;
 
 	void Awake()
 	{

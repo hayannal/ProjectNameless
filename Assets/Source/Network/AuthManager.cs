@@ -230,6 +230,7 @@ public class AuthManager : MonoBehaviour
 		playerStatisticNames.Add("goldBoxValue");
 		playerStatisticNames.Add("analysisExp");
 		playerStatisticNames.Add("guideQuestIndex");
+		playerStatisticNames.Add("energyUseForPayback");
 		/*
 		playerStatisticNames.Add("highestValue");
 		playerStatisticNames.Add("nodClLv");

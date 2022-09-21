@@ -252,7 +252,7 @@ public class PlayFabApiManager : MonoBehaviour
 		CurrencyData.instance.OnRecvCurrencyData(loginResult.InfoResultPayload.UserVirtualCurrency, loginResult.InfoResultPayload.UserVirtualCurrencyRechargeTimes, loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics, loginResult.InfoResultPayload.TitleData);
 		MailData.instance.OnRecvMailData(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics, loginResult.NewlyCreated);
 		SupportData.instance.OnRecvSupportData(loginResult.InfoResultPayload.UserReadOnlyData);
-		CashShopData.instance.OnRecvCashShopData(loginResult.InfoResultPayload.UserInventory, loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData);
+		CashShopData.instance.OnRecvCashShopData(loginResult.InfoResultPayload.UserInventory, loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 		PlayerData.instance.OnRecvServerTableData(loginResult.InfoResultPayload.TitleData);
 		AnalysisData.instance.OnRecvAnalysisData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 		GuideQuestData.instance.OnRecvGuideQuestData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
@@ -995,13 +995,16 @@ public class PlayFabApiManager : MonoBehaviour
 	{
 		WaitingNetworkCanvas.Show(true);
 
+		// hardcode
+		bool checkPayback = CashShopData.instance.IsShowEvent("ev6");
+
 		int intRefreshTurn = refreshTurn ? 1 : 0;
 		string input = string.Format("{0}_{1}_{2}_{3}_{4}_{5}_{6}_{7}_{8}_{9}", CurrencyData.instance.bettingCount + 1, useEnergy, resultGold, resultEnergy, resultBrokenEnergy, resultEventPoint, reserveRoomType, intRefreshTurn, newTurn, "azirjwlm");
 		string checkSum = CheckSum(input);
 		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "Gacha",
-			FunctionParameter = new { Cnt = CurrencyData.instance.bettingCount + 1, Bet = useEnergy, AddGo = resultGold, AddEn = resultEnergy, AddBrEn = resultBrokenEnergy, AddEv = resultEventPoint, ResRoomTp = reserveRoomType, RefreshTurn = intRefreshTurn, NewTurn = newTurn, NewGold = newGold, Cs = checkSum },
+			FunctionParameter = new { Cnt = CurrencyData.instance.bettingCount + 1, Bet = useEnergy, AddGo = resultGold, AddEn = resultEnergy, AddBrEn = resultBrokenEnergy, AddEv = resultEventPoint, ResRoomTp = reserveRoomType, RefreshTurn = intRefreshTurn, NewTurn = newTurn, NewGold = newGold, Cp = checkPayback ? 1 : 0, Cs = checkSum },
 			GeneratePlayStreamEvent = true,
 		}, (success) =>
 		{
@@ -1044,6 +1047,13 @@ public class PlayFabApiManager : MonoBehaviour
 				{
 					if (CurrencyData.instance.goldBoxRemainTurn > 1)
 						CurrencyData.instance.goldBoxRemainTurn -= 1;
+				}
+
+				if (checkPayback)
+				{
+					jsonResult.TryGetValue("applyPayback", out object applyPayback);
+					if ((applyPayback.ToString()) == "1")
+						CashShopData.instance.energyUseForPayback += useEnergy;
 				}
 
 				if (successCallback != null) successCallback.Invoke(refreshTurnComplete);
@@ -1284,15 +1294,8 @@ public class PlayFabApiManager : MonoBehaviour
 					CashShopData.instance.OnRecvCoolTimeCashEvent(openEventId, (string)cdate);
 				}
 
-				if (string.IsNullOrEmpty(eventSub) == false)
-				{
-					switch (eventSub)
-					{
-						case "conti":
-							CashShopData.instance.ResetContinuousProductStep(openEventId);
-							break;
-					}
-				}
+				// 추가로 해야할 설정들이 있는지 확인
+				CashShopData.instance.OnOpenCashEvent(openEventId, eventSub);
 
 				if (successCallback != null) successCallback.Invoke();
 			}
@@ -1614,6 +1617,37 @@ public class PlayFabApiManager : MonoBehaviour
 
 				CashShopData.instance.OnRecvLevelPassReward(level);
 				CurrencyData.instance.OnRecvRefillEnergy(rewardEnergy);
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
+	public void RequestGetEnergyPaybackReward(int use, int rewardPayback, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string cashEventId = EnergyPaybackCanvas.instance.cashEventId;
+		string input = string.Format("{0}_{1}_{2}_{3}", cashEventId, use, rewardPayback, "azixpmlr");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "GetEnergyPaybackReward",
+			FunctionParameter = new { EvId = cashEventId, SeUs = use, SeRw = rewardPayback, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				CashShopData.instance.OnRecvEnergyPaybackReward(use);
+				CurrencyData.instance.OnRecvRefillEnergy(rewardPayback);
 
 				if (successCallback != null) successCallback.Invoke();
 			}
