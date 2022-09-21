@@ -15,6 +15,14 @@ public class ContinuousShopProductInfo : SimpleCashCanvas
 
 	SimpleCashEventCanvas _simpleCashEventCanvas;
 	ShopProductTableData _shopProductTableData;
+
+	void Awake()
+	{
+		RewardIcon[] listRewardIcon = GetComponentsInChildren<RewardIcon>(true);
+		for (int i = 0; i < listRewardIcon.Length; ++i)
+			listRewardIcon[i].ShowOnlyIcon(true);
+	}
+
 	void Start()
 	{
 		string cashEventId = "ev1";
