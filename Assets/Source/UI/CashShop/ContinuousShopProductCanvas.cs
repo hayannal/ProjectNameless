@@ -43,6 +43,11 @@ public class ContinuousShopProductCanvas : SimpleCashEventCanvas
 		if (_continuousShopProductInfoList == null)
 			return;
 
+		RefreshActiveList();
+	}
+
+	public void RefreshActiveList()
+	{
 		for (int i = 0; i < _continuousShopProductInfoList.Length; ++i)
 			_continuousShopProductInfoList[i].RefreshActive();
 	}

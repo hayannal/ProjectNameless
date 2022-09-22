@@ -12,6 +12,7 @@ public class ContinuousShopProductInfo : SimpleCashCanvas
 	public IAPButton iapButton;
 	public GameObject cashButtonObject;
 	public GameObject freeButtonObject;
+	public RectTransform alarmRootTransform;
 
 	SimpleCashEventCanvas _simpleCashEventCanvas;
 	ShopProductTableData _shopProductTableData;
@@ -67,6 +68,23 @@ public class ContinuousShopProductInfo : SimpleCashCanvas
 			gameObject.SetActive(false);
 			return;
 		}
+
+		// alarm
+		if (_shopProductTableData != null)
+		{
+			if (_shopProductTableData.free)
+			{
+				if (num == (currentCompleteStep + 1))
+					AlarmObject.Show(alarmRootTransform);
+				else
+					AlarmObject.Hide(alarmRootTransform);
+			}
+			else
+			{
+				AlarmObject.Hide(alarmRootTransform);
+			}
+		}
+
 		gameObject.SetActive(true);
 	}
 
@@ -160,6 +178,12 @@ public class ContinuousShopProductInfo : SimpleCashCanvas
 
 		if (infoInstance != null)
 			infoInstance.gameObject.SetActive(false);
+		if (instance != null)
+		{
+			ContinuousShopProductCanvas continuousShopProductCanvas = instance.GetComponent<ContinuousShopProductCanvas>();
+			if (continuousShopProductCanvas != null)
+				continuousShopProductCanvas.RefreshActiveList();
+		}
 
 		string cashEventId = "";
 		if (instance != null) cashEventId = instance.cashEventId;
@@ -169,10 +193,15 @@ public class ContinuousShopProductInfo : SimpleCashCanvas
 			if (split.Length == 3 && split[0].Contains("ev"))
 				cashEventId = split[0];
 		}
-		if (cashEventId == "ev4" && product != null)
+		if (cashEventId == "ev4")
 		{
-			CashShopData.instance.PurchaseFlag(CashShopData.eCashConsumeFlagType.Ev4ContiNext);
-			PlayFabApiManager.instance.RequestConsumeContinuousNext(cashEventId, true, null);
+			if (MainCanvas.instance != null)
+				MainCanvas.instance.RefreshContinuousProduct1AlarmObject();
+			if (product != null)
+			{
+				CashShopData.instance.PurchaseFlag(CashShopData.eCashConsumeFlagType.Ev4ContiNext);
+				PlayFabApiManager.instance.RequestConsumeContinuousNext(cashEventId, true, null);
+			}
 		}
 		bool closeCanvas = false;
 		EventTypeTableData eventTypeTableData = TableDataManager.instance.FindEventTypeTableData(cashEventId);

@@ -538,6 +538,7 @@ public class CashShopData : MonoBehaviour
 					process = true;
 					break;
 				case eCashConsumeFlagType.Ev4ContiNext:
+					// hardcode
 					int currentCompleteStep = GetContinuousProductStep("ev4");
 					string id = string.Format("ev4_conti_{0}", currentCompleteStep + 1);
 					ShopProductTableData shopProductTableData = TableDataManager.instance.FindShopProductTableData(id);
