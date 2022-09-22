@@ -29,6 +29,10 @@ public class MainCanvas : MonoBehaviour
 	public RectTransform gachaAlarmRootTransform;
 	public RectTransform cashShopAlarmRootTransform;
 	public RectTransform levelPassAlarmRootTransform;
+	public RectTransform energyPaybackAlarmRootTransform;   // ev6
+
+	public RectTransform continuousProduct1AlarmRootTransform;  // ev4
+	
 
 	List<Vector2> _listBasePosition = new List<Vector2>();
 	void Awake()
@@ -283,6 +287,8 @@ public class MainCanvas : MonoBehaviour
 		RefreshAnalysisAlarmObject();
 		RefreshGachaAlarmObject();
 		RefreshLevelPassAlarmObject();
+		RefreshEnergyPaybackAlarmObject();
+		RefreshContinuousProduct1AlarmObject();
 	}
 
 	public static bool IsAlarmCashShop()
@@ -458,6 +464,27 @@ public class MainCanvas : MonoBehaviour
 		RefreshAlarmObject(IsAlarmLevelPass(), levelPassAlarmRootTransform);
 	}
 
+	public static bool IsAlarmEnergyPayback()
+	{
+		bool getable = false;
+		for (int i = 0; i < TableDataManager.instance.energyUsePaybackTable.dataArray.Length; ++i)
+		{
+			int use = TableDataManager.instance.energyUsePaybackTable.dataArray[i].use;
+			if (use <= CashShopData.instance.energyUseForPayback && CashShopData.instance.IsGetEnergyPaybackReward(use) == false)
+			{
+				getable = true;
+				break;
+			}
+		}
+
+		return getable;
+	}
+
+	public void RefreshEnergyPaybackAlarmObject()
+	{
+		RefreshAlarmObject(IsAlarmEnergyPayback(), energyPaybackAlarmRootTransform);
+	}
+
 	public static bool IsAlarmGacha()
 	{
 		return (CurrencyData.instance.energy >= CurrencyData.instance.energyMax);
@@ -466,6 +493,24 @@ public class MainCanvas : MonoBehaviour
 	public void RefreshGachaAlarmObject()
 	{
 		RefreshAlarmObject(IsAlarmGacha(), gachaAlarmRootTransform);
+	}
+
+	public static bool IsAlarmContinuousProduct1()
+	{
+		// hardcode
+		string cashEventId = "ev4";
+		if (CashShopData.instance.IsShowEvent(cashEventId) == false)
+			return false;
+
+		int currentCompleteStep = CashShopData.instance.GetContinuousProductStep(cashEventId);
+		string id = string.Format("{1}_conti_{0}", currentCompleteStep + 1, cashEventId);
+		ShopProductTableData shopProductTableData = TableDataManager.instance.FindShopProductTableData(id);
+		return (shopProductTableData != null && shopProductTableData.free);
+	}
+
+	public void RefreshContinuousProduct1AlarmObject()
+	{
+		RefreshAlarmObject(IsAlarmContinuousProduct1(), continuousProduct1AlarmRootTransform);
 	}
 
 	void RefreshAlarmObject(bool show, Transform alarmRootTransform)
