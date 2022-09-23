@@ -8,6 +8,7 @@ public class ContinuousShopProductCanvas : SimpleCashEventCanvas
 	public static ContinuousShopProductCanvas instance;
 
 	public GameObject[] allPurchasedObjectList;
+	public Sprite[] backgroundSpriteList;
 
 	void Awake()
 	{

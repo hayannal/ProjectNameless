@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class RewardIcon : MonoBehaviour
 {
@@ -17,6 +18,8 @@ public class RewardIcon : MonoBehaviour
 	public Image lineColorImage;
 
 	public GameObject[] frameObjectList;
+	public Transform iconRootTransform;
+	public DOTweenAnimation punchTweenAnimation;
 
 	void OnEnable()
 	{
@@ -65,6 +68,16 @@ public class RewardIcon : MonoBehaviour
 		_showOnlyIcon = onlyIcon;
 		for (int i = 0; i < frameObjectList.Length; ++i)
 			frameObjectList[i].SetActive(!onlyIcon);
+
+		iconRootTransform.localScale = onlyIcon ? new Vector3(1.5f, 1.5f, 1.5f) : Vector3.one;
+	}
+
+	public void ActivePunchAnimation(bool active)
+	{
+		if (active)
+			punchTweenAnimation.DORestart();
+		else
+			punchTweenAnimation.DOPause();
 	}
 
 

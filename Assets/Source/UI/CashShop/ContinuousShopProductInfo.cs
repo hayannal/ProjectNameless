@@ -14,20 +14,16 @@ public class ContinuousShopProductInfo : SimpleCashCanvas
 	public GameObject freeButtonObject;
 	public RectTransform alarmRootTransform;
 
-	SimpleCashEventCanvas _simpleCashEventCanvas;
-	ShopProductTableData _shopProductTableData;
+	public Image blurImage;
+	public Image backgroundImge;
 
-	void Awake()
-	{
-		RewardIcon[] listRewardIcon = GetComponentsInChildren<RewardIcon>(true);
-		for (int i = 0; i < listRewardIcon.Length; ++i)
-			listRewardIcon[i].ShowOnlyIcon(true);
-	}
+	ContinuousShopProductCanvas _simpleCashEventCanvas;
+	ShopProductTableData _shopProductTableData;
 
 	void Start()
 	{
 		string cashEventId = "ev1";
-		SimpleCashEventCanvas simpleCashEventCanvas = transform.GetComponentInParent<SimpleCashEventCanvas>();
+		ContinuousShopProductCanvas simpleCashEventCanvas = transform.GetComponentInParent<ContinuousShopProductCanvas>();
 		if (simpleCashEventCanvas != null)
 		{
 			cashEventId = simpleCashEventCanvas.cashEventId;
@@ -54,7 +50,18 @@ public class ContinuousShopProductInfo : SimpleCashCanvas
 
 		_shopProductTableData = shopProductTableData;
 
+		blurImage.color = (shopProductTableData.free == false) ? new Color(0.945f, 0.945f, 0.094f, 0.42f) : new Color(0.094f, 0.945f, 0.871f, 0.42f);
+		backgroundImge.color = (shopProductTableData.free == false) ? new Color(1.0f, 1.0f, 1.0f, 0.42f) : new Color(0.0f, 1.0f, 0.749f, 0.42f);
+		backgroundImge.sprite = _simpleCashEventCanvas.backgroundSpriteList[(shopProductTableData.free == false) ? 0 : 1];
+
 		RefreshActive();
+
+		RewardIcon[] listRewardIcon = GetComponentsInChildren<RewardIcon>(true);
+		for (int i = 0; i < listRewardIcon.Length; ++i)
+		{
+			listRewardIcon[i].ShowOnlyIcon(true);
+			listRewardIcon[i].ActivePunchAnimation(true);
+		}
 	}
 
 	public void RefreshActive()
