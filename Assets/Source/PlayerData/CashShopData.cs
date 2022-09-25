@@ -30,6 +30,7 @@ public class CashShopData : MonoBehaviour
 
 	// 추가 정보들이 필요한 이벤트도 있다.
 	Dictionary<string, int> _dicContinuousProductStep = new Dictionary<string, int>();
+	Dictionary<string, List<int>> _dicOnePlusTwoReward = new Dictionary<string, List<int>>();
 
 	// CF에다가 비트플래그로 구분하는건 중복 구매시 다음 아이템의 플래그가 켜질 수 있어서 안하기로 한다.
 	// 이 플래그 대신 아이템에다가 접두사로 구분하는 형태로 해서 인벤토리를 검사하는 형태로 변경하기로 한다.
@@ -47,11 +48,12 @@ public class CashShopData : MonoBehaviour
 	{
 		BrokenEnergy = 0,
 		Ev4ContiNext = 1,
+		Ev5OnePlTwoCash = 2,
 
 		Amount,
 	}
 	List<ObscuredBool> _listCashConsumeFlag = new List<ObscuredBool>();
-	List<string> _listCashConsumeFlagKey = new List<string> { "Cash_sBrokenEnergy", "Cash_sEv4ContiNext" };
+	List<string> _listCashConsumeFlagKey = new List<string> { "Cash_sBrokenEnergy", "Cash_sEv4ContiNext", "Cash_sEv5OnePlTwoCash" };
 
 	public enum eCashCountType
 	{
@@ -89,8 +91,10 @@ public class CashShopData : MonoBehaviour
 		_dicExpireTime.Clear();
 		_dicCoolTimeExpireTime.Clear();
 		_dicContinuousProductStep.Clear();
+		_dicOnePlusTwoReward.Clear();
 
 		// 이벤트는 여러개 있고 각각의 유효기간이 있으니 테이블 돌면서
+		var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
 		for (int i = 0; i < TableDataManager.instance.eventTypeTable.dataArray.Length; ++i)
 		{
 			if (TableDataManager.instance.eventTypeTable.dataArray[i].givenTime > 0)
@@ -130,12 +134,13 @@ public class CashShopData : MonoBehaviour
 			// 추가 정보를 얻기 위해서 eventSub를 검사해본다.
 			if (string.IsNullOrEmpty(TableDataManager.instance.eventTypeTable.dataArray[i].eventSub) == false)
 			{
+				string key = "";
 				switch (TableDataManager.instance.eventTypeTable.dataArray[i].eventSub)
 				{
 					case "oneofthree":
 						break;
 					case "conti":
-						string key = string.Format("{0}ContiNum", TableDataManager.instance.eventTypeTable.dataArray[i].id);
+						key = string.Format("{0}ContiNum", TableDataManager.instance.eventTypeTable.dataArray[i].id);
 						if (userReadOnlyData.ContainsKey(key))
 						{
 							if (string.IsNullOrEmpty(userReadOnlyData[key].Value) == false)
@@ -147,6 +152,15 @@ public class CashShopData : MonoBehaviour
 						}
 						break;
 					case "oneplustwo":
+						key = string.Format("{0}OnePlTwoLst", TableDataManager.instance.eventTypeTable.dataArray[i].id);
+						if (userReadOnlyData.ContainsKey(key))
+						{
+							if (string.IsNullOrEmpty(userReadOnlyData[key].Value) == false)
+							{
+								List<int> listOnePlusTwoReward = serializer.DeserializeObject<List<int>>(userReadOnlyData[key].Value);
+								_dicOnePlusTwoReward.Add(TableDataManager.instance.eventTypeTable.dataArray[i].id, listOnePlusTwoReward);
+							}
+						}
 						break;
 				}
 			}
@@ -196,7 +210,6 @@ public class CashShopData : MonoBehaviour
 			}
 		}
 
-		var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
 		_listLevelPassReward = null;
 		if (userReadOnlyData.ContainsKey("lvPssLst"))
 		{
@@ -410,6 +423,9 @@ public class CashShopData : MonoBehaviour
 					energyUseForPayback = 0;
 					_listEnergyPaybackReward = null;
 					break;
+				case "oneplustwo":
+					ResetOnePlusTwoReward(openEventId);
+					break;
 			}
 		}
 	}
@@ -478,6 +494,44 @@ public class CashShopData : MonoBehaviour
 	}
 	#endregion
 
+	#region OnePlusTwo
+	public bool IsGetOnePlusTwoReward(string cashEventId, int index)
+	{
+		if (_dicOnePlusTwoReward == null)
+			return false;
+
+		if (_dicOnePlusTwoReward.ContainsKey(cashEventId) == false)
+			return false;
+
+		List<int> listReward = _dicOnePlusTwoReward[cashEventId];
+		return listReward.Contains(index);
+	}
+
+	public List<int> OnRecvOnePlusTwoReward(string cashEventId, int index)
+	{
+		if (_dicOnePlusTwoReward.ContainsKey(cashEventId))
+		{
+			List<int> listReward = _dicOnePlusTwoReward[cashEventId];
+			if (listReward.Contains(index) == false)
+				listReward.Add(index);
+			return listReward;
+		}
+		else
+		{
+			List<int> listReward = new List<int>();
+			listReward.Add(index);
+			_dicOnePlusTwoReward.Add(cashEventId, listReward);
+			return listReward;
+		}
+	}
+
+	public void ResetOnePlusTwoReward(string cashEventId)
+	{
+		if (_dicOnePlusTwoReward.ContainsKey(cashEventId))
+			_dicOnePlusTwoReward.Remove(cashEventId);
+	}
+	#endregion
+
 
 	#region Pending Product
 	public bool CheckPendingProduct()
@@ -514,6 +568,10 @@ public class CashShopData : MonoBehaviour
 		{
 			ContinuousShopProductCanvas.ExternalRetryPurchase(pendingProduct);
 		}
+		else if (pendingProduct.definition.id.Contains("_oneplustwo"))
+		{
+			OnePlusTwoCanvas.ExternalRetryPurchase(pendingProduct);
+		}
 
 
 		return true;
@@ -544,6 +602,10 @@ public class CashShopData : MonoBehaviour
 					ShopProductTableData shopProductTableData = TableDataManager.instance.FindShopProductTableData(id);
 					bool cashStep = (shopProductTableData != null && shopProductTableData.free == false);
 					PlayFabApiManager.instance.RequestConsumeContinuousNext("ev4", cashStep, null);
+					break;
+				case eCashConsumeFlagType.Ev5OnePlTwoCash:
+					// hardcode
+					PlayFabApiManager.instance.RequestConsumeOnePlusTwoCash("ev5", null);
 					break;
 			}
 

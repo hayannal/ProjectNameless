@@ -32,7 +32,8 @@ public class MainCanvas : MonoBehaviour
 	public RectTransform energyPaybackAlarmRootTransform;   // ev6
 
 	public RectTransform continuousProduct1AlarmRootTransform;  // ev4
-	
+	public RectTransform onePlusTwo1AlarmRootTransform;  // ev5
+
 
 	List<Vector2> _listBasePosition = new List<Vector2>();
 	void Awake()
@@ -289,6 +290,7 @@ public class MainCanvas : MonoBehaviour
 		RefreshLevelPassAlarmObject();
 		RefreshEnergyPaybackAlarmObject();
 		RefreshContinuousProduct1AlarmObject();
+		RefreshOnePlusTwo1AlarmObject();
 	}
 
 	public static bool IsAlarmCashShop()
@@ -511,6 +513,26 @@ public class MainCanvas : MonoBehaviour
 	public void RefreshContinuousProduct1AlarmObject()
 	{
 		RefreshAlarmObject(IsAlarmContinuousProduct1(), continuousProduct1AlarmRootTransform);
+	}
+
+	public static bool IsAlarmOnePlusTwo1()
+	{
+		// hardcode
+		string cashEventId = "ev5";
+		if (CashShopData.instance.IsShowEvent(cashEventId) == false)
+			return false;
+
+		if (CashShopData.instance.IsGetOnePlusTwoReward(cashEventId, 0))
+		{
+			if (CashShopData.instance.IsGetOnePlusTwoReward(cashEventId, 1) == false || CashShopData.instance.IsGetOnePlusTwoReward(cashEventId, 2) == false)
+				return true;
+		}
+		return false;
+	}
+
+	public void RefreshOnePlusTwo1AlarmObject()
+	{
+		RefreshAlarmObject(IsAlarmOnePlusTwo1(), onePlusTwo1AlarmRootTransform);
 	}
 
 	void RefreshAlarmObject(bool show, Transform alarmRootTransform)

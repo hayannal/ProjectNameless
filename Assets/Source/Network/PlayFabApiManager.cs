@@ -1746,6 +1746,67 @@ public class PlayFabApiManager : MonoBehaviour
 			HandleCommonError(error);
 		});
 	}
+
+	public void RequestGetOnePlusTwoProduct(string cashEventId, ShopProductTableData shopProductTableData, int index, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}_{2}_{3}_{4}", cashEventId, shopProductTableData.productId, index, shopProductTableData.key, "zqilrkxc");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "GetOnePlusTwoProduct",
+			FunctionParameter = new { EvId = cashEventId, SpId = shopProductTableData.productId, Idx = index, InfCs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				CashShopData.instance.OnRecvOnePlusTwoReward(cashEventId, index);
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
+	public void RequestConsumeOnePlusTwoCash(string cashEventId, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "ConsumeOnePlusTwoCash",
+			FunctionParameter = new { EvId = cashEventId },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				if (cashEventId == "ev5")
+					CashShopData.instance.ConsumeFlag(CashShopData.eCashConsumeFlagType.Ev5OnePlTwoCash);
+				CashShopData.instance.OnRecvOnePlusTwoReward(cashEventId, 0);
+				if (cashEventId == "ev5")
+					MainCanvas.instance.RefreshOnePlusTwo1AlarmObject();
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
 	#endregion
 
 
