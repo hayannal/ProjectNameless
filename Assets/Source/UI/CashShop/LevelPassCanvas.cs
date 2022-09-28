@@ -49,10 +49,16 @@ public class LevelPassCanvas : SimpleCashCanvas
 	{
 		RefreshPriceButton();
 		MainCanvas.instance.OnEnterCharacterMenu(true);
+
+		if (DragThresholdController.instance != null)
+			DragThresholdController.instance.ApplyUIDragThreshold();
 	}
 
 	void OnDisable()
 	{
+		if (DragThresholdController.instance != null)
+			DragThresholdController.instance.ResetUIDragThreshold();
+
 		MainCanvas.instance.OnEnterCharacterMenu(false);
 	}
 

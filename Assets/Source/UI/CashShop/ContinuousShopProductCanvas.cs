@@ -29,6 +29,9 @@ public class ContinuousShopProductCanvas : SimpleCashEventCanvas
 
 		MainCanvas.instance.OnEnterCharacterMenu(true);
 
+		if (DragThresholdController.instance != null)
+			DragThresholdController.instance.ApplyUIDragThreshold();
+
 		bool allPurchased = false;
 		EventTypeTableData eventTypeTableData = TableDataManager.instance.FindEventTypeTableData(cashEventId);
 		if (eventTypeTableData != null)
@@ -55,6 +58,9 @@ public class ContinuousShopProductCanvas : SimpleCashEventCanvas
 
 	void OnDisable()
 	{
+		if (DragThresholdController.instance != null)
+			DragThresholdController.instance.ResetUIDragThreshold();
+
 		MainCanvas.instance.OnEnterCharacterMenu(false);
 	}
 
