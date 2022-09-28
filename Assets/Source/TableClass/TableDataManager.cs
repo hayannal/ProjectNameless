@@ -47,6 +47,10 @@ public class TableDataManager : MonoBehaviour
 	public ConsumeItemTable consumeItemTable;
 	public EnergyUsePaybackTable energyUsePaybackTable;
 
+	public SevenDaysTypeTable sevenDaysTypeTable;
+	public SevenDaysRewardTable sevenDaysRewardTable;
+	public SevenSumTable sevenSumTable;
+
 	void Awake()
 	{
 		instance = this;
@@ -403,6 +407,36 @@ public class TableDataManager : MonoBehaviour
 		{
 			if (consumeItemTable.dataArray[i].id == id)
 				return consumeItemTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public SevenDaysTypeTableData FindSevenDaysTypeTableData(int group)
+	{
+		for (int i = 0; i < sevenDaysTypeTable.dataArray.Length; ++i)
+		{
+			if (sevenDaysTypeTable.dataArray[i].groupId == group)
+				return sevenDaysTypeTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public SevenDaysRewardTableData FindSevenDaysRewardTableData(int group, int day, int num)
+	{
+		for (int i = 0; i < sevenDaysRewardTable.dataArray.Length; ++i)
+		{
+			if (sevenDaysRewardTable.dataArray[i].group == group && sevenDaysRewardTable.dataArray[i].day == day && sevenDaysRewardTable.dataArray[i].num == num)
+				return sevenDaysRewardTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public SevenSumTableData FindSevenDaysSumTableData(int group, int count)
+	{
+		for (int i = 0; i < sevenSumTable.dataArray.Length; ++i)
+		{
+			if (sevenSumTable.dataArray[i].groupId == group && sevenSumTable.dataArray[i].count == count)
+				return sevenSumTable.dataArray[i];
 		}
 		return null;
 	}
