@@ -49,6 +49,9 @@ public class PlayerData : MonoBehaviour
 	public ObscuredInt playerLevel { get; set; }
 	#endregion
 
+	// 클라가 들고있는 날짜 갱신 타임.
+	public DateTime dayRefreshTime { get; private set; }
+
 	// 서버 테이블 갱신시간. 플레이어 데이터와 상관없이 하루 단위로 받아서 갱신하는거다.
 	public DateTime serverTableRefreshTime { get; private set; }
 
@@ -60,7 +63,23 @@ public class PlayerData : MonoBehaviour
 
 	void Update()
 	{
+		UpdateDayRefreshTime();
 		UpdateServerTableRefreshTime();
+	}
+
+	void UpdateDayRefreshTime()
+	{
+		if (loginned == false)
+			return;
+
+		if (DateTime.Compare(ServerTime.UtcNow, dayRefreshTime) < 0)
+			return;
+
+		dayRefreshTime += TimeSpan.FromDays(1);
+
+		// 날짜 변경이 되었음을 알린다.
+		MissionData.instance.OnRefreshDay();
+		//CashShopData.instance.OnRefreshDay();
 	}
 
 	List<string> _listTitleKey;
@@ -152,7 +171,7 @@ public class PlayerData : MonoBehaviour
 	public void OnRecvServerTableData(Dictionary<string, string> titleData)
 	{
 		// 일일 상점같은 서버 테이블을 매일 받아두기 위해 만든 함수.
-		// 특이한건 딱 날짜 넘어가는 타이밍에 받으면 잠깐 데이터가 틀어질 수 있기 때문에 5분전에 미리 받는거로 해둔다.
+		// 특이한건 딱 날짜 넘어가는 타이밍에 받으면 잠깐 데이터가 틀어질 수 있기 때문에 3분전에 미리 받는거로 해둔다.
 		// 이럼 다음날에 되자마자 바로 갱신하는데 쓰일 수 있다.
 		// 사실 당일 데이터를 바꿔놨다면 저 3분 사이에 다른템이 나올 수 있다는건데
 		// 이런식으로 당일 데이터를 바꾸는 일은 없을테니까 할 수 있는 방식이다.
@@ -164,6 +183,9 @@ public class PlayerData : MonoBehaviour
 		}
 		else
 			serverTableRefreshTime += TimeSpan.FromDays(1);
+
+		// 날짜 변경 감지
+		dayRefreshTime = new DateTime(ServerTime.UtcNow.Year, ServerTime.UtcNow.Month, ServerTime.UtcNow.Day) + TimeSpan.FromDays(1);
 
 		/*
 		_listDailyShopSlotInfo = null;

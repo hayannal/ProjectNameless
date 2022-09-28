@@ -76,6 +76,22 @@ public class CommonRewardCanvas : MonoBehaviour
 		Timing.RunCoroutine(RewardProcess());
 	}
 
+	// 이런식으로 하나짜리 받을 수도 있을거고
+	public void RefreshReward(string type, string value, int count, System.Action okAction = null)
+	{
+		_okAction = okAction;
+
+		_listCommonRewardData.Clear();
+
+		CommonRewardData commonRewardData = null;
+		commonRewardData.type = type;
+		commonRewardData.value = value;
+		commonRewardData.count = count;
+		_listCommonRewardData.Add(commonRewardData);
+
+		Timing.RunCoroutine(RewardProcess());
+	}
+
 	// 테이블 행 하나를 받아서 처리하는 경우도 있을거다.
 	public void RefreshReward(ShopProductTableData shopProductTableData, System.Action okAction = null)
 	{

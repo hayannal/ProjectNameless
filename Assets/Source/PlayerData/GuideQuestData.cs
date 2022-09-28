@@ -117,6 +117,9 @@ public class GuideQuestData : MonoBehaviour
 
 	public void OnQuestEvent(eQuestClearType questClearType)
 	{
+		// 호출은 가이드가 받아서 전달하기로 한다.
+		MissionData.instance.OnQuestEvent(questClearType);
+
 		/*
 		if (ContentsManager.IsTutorialChapter())
 			return;

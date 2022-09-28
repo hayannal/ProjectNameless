@@ -256,6 +256,7 @@ public class PlayFabApiManager : MonoBehaviour
 		PlayerData.instance.OnRecvServerTableData(loginResult.InfoResultPayload.TitleData);
 		AnalysisData.instance.OnRecvAnalysisData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 		GuideQuestData.instance.OnRecvGuideQuestData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
+		MissionData.instance.OnRecvMissionData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 
 		/*
 		DailyShopData.instance.OnRecvShopData(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData);		
@@ -1799,6 +1800,102 @@ public class PlayFabApiManager : MonoBehaviour
 				CashShopData.instance.OnRecvOnePlusTwoReward(cashEventId, 0);
 				if (cashEventId == "ev5")
 					MainCanvas.instance.RefreshOnePlusTwo1AlarmObject();
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+	#endregion
+
+
+	#region SevenDays
+	public void RequestStartSevenDays(int newGroupId, int givenTime, int coolTime, Action successCallback, Action failureCallback)
+	{
+		string input = string.Format("{0}_{1}_{2}_{3}", newGroupId, givenTime, coolTime, "vmpqalxj");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "StartSevenDays",
+			FunctionParameter = new { SdGrpId = newGroupId, GiTim = givenTime, CoTim = coolTime, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				jsonResult.TryGetValue("date", out object date);
+
+				// 성공시에는 서버에서 방금 기록한 유효기간 만료 시간이 날아온다.
+				MissionData.instance.OnRecvSevenDaysStartInfo((string)date);
+
+				jsonResult.TryGetValue("cool", out object useCool);
+				if ((useCool.ToString()) == "1")
+				{
+					jsonResult.TryGetValue("cdate", out object cdate);
+					MissionData.instance.OnRecvSevenDaysCoolTimeInfo((string)cdate);
+				}
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			//HandleCommonError(error);
+			if (failureCallback != null) failureCallback.Invoke();
+		});
+	}
+
+	public void RequestSevenDaysProceedingCount(int type, int addCount, int expectCount, Action successCallback)
+	{
+		string input = string.Format("{0}_{1}_{2}_{3}", type, addCount, expectCount, "wxiopljz");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "SevenDaysProceedingCount",
+			FunctionParameter = new { Tp = type, Add = addCount, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (failure)
+				HandleCommonError();
+			else
+			{
+				MissionData.instance.SetProceedingCount(type, addCount, expectCount);
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
+	public void RequestGetSevenDaysReward(SevenDaysRewardTableData sevenDaysRewardTableData, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}_{2}_{3}_{4}", MissionData.instance.sevenDaysId, sevenDaysRewardTableData.day, sevenDaysRewardTableData.num, sevenDaysRewardTableData.key, "qizolrms");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "GetSevenDaysReward",
+			FunctionParameter = new { SdGrpId = (int)MissionData.instance.sevenDaysId, Day = sevenDaysRewardTableData.day, Num = sevenDaysRewardTableData.num, InfCs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				//MissionData.instance.OnRecvGetSevenDaysReward(sevenDaysRewardTableData.day, sevenDaysRewardTableData.num);
 
 				if (successCallback != null) successCallback.Invoke();
 			}
