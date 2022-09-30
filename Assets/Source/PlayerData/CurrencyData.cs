@@ -303,7 +303,7 @@ public class CurrencyData : MonoBehaviour
 				switch (value)
 				{
 					case "GO": gold += count; break;
-					case "EN": OnRecvRefillEnergy(energy); break;
+					case "EN": OnRecvRefillEnergy(count); break;
 				}
 				break;
 			case "it":
