@@ -58,7 +58,7 @@ public class CashEventButton : MonoBehaviour
 			// 이벤트 기간이 끝났으면 닫아버리는게 제일 편하다.
 			// 토스트 출력은 열어둔 창에 대해서만 할테니 버튼은 그냥 닫으면 될거같다.
 			//ToastCanvas.instance.ShowToast(UIString.instance.GetString("LoginUI_EventExpired"), 2.0f);
-			buttonRootObject.SetActive(false);
+			ShowButton(false);
 		}
 	}
 
