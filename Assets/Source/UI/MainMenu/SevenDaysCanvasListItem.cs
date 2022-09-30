@@ -32,8 +32,7 @@ public class SevenDaysCanvasListItem : MonoBehaviour
 		int currentCount = MissionData.instance.GetProceedingCount(sevenDaysRewardTableData.typeId);
 		proceedingCountText.text = string.Format("{0:N0} / {1:N0}", Mathf.Min(currentCount, sevenDaysRewardTableData.needCount), sevenDaysRewardTableData.needCount);
 		proceedingCountSlider.value = (float)currentCount / sevenDaysRewardTableData.needCount;
-		//bool received = CashShopData.instance.IsGetEnergyPaybackReward(use);
-		bool received = false;
+		bool received = MissionData.instance.IsGetSevenDaysReward(sevenDaysRewardTableData.day, sevenDaysRewardTableData.num);
 		receivedTextObject.SetActive(received);
 		blackObject.SetActive(received);
 		AlarmObject.Hide(alarmRootTransform);
@@ -78,7 +77,10 @@ public class SevenDaysCanvasListItem : MonoBehaviour
 			UIInstanceManager.instance.ShowCanvasAsync("CommonRewardCanvas", () =>
 			{
 				Initialize(_sevenDaysRewardTableData);
-				//MainCanvas.instance.RefreshEnergyPaybackAlarmObject();
+				SevenDaysCanvas.instance.currencySmallInfo.RefreshInfo();
+				SevenDaysCanvas.instance.RefreshSumReward();
+				SevenDaysCanvas.instance.RefreshDayAlarmObject();
+				MainCanvas.instance.RefreshSevenDaysAlarmObject();
 				CommonRewardCanvas.instance.RefreshReward(_sevenDaysRewardTableData.rewardType, _sevenDaysRewardTableData.rewardValue, _sevenDaysRewardTableData.rewardCount);
 			});
 		});

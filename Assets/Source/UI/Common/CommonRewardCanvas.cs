@@ -83,7 +83,7 @@ public class CommonRewardCanvas : MonoBehaviour
 
 		_listCommonRewardData.Clear();
 
-		CommonRewardData commonRewardData = null;
+		CommonRewardData commonRewardData = new CommonRewardData();
 		commonRewardData.type = type;
 		commonRewardData.value = value;
 		commonRewardData.count = count;

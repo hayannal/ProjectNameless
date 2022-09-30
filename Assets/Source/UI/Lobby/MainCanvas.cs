@@ -22,6 +22,7 @@ public class MainCanvas : MonoBehaviour
 
 	public GameObject levelPassButtonObject;
 	public GameObject brokenEnergyButtonObject;
+	public GameObject sevenDaysButtonObject;
 	public CashEventButton[] cashEventButtonList;
 
 	public RectTransform mailAlarmRootTransform;
@@ -29,6 +30,7 @@ public class MainCanvas : MonoBehaviour
 	public RectTransform gachaAlarmRootTransform;
 	public RectTransform cashShopAlarmRootTransform;
 	public RectTransform levelPassAlarmRootTransform;
+	public RectTransform sevenDaysAlarmRootTransform;
 	public RectTransform energyPaybackAlarmRootTransform;   // ev6
 
 	public RectTransform continuousProduct1AlarmRootTransform;  // ev4
@@ -52,6 +54,7 @@ public class MainCanvas : MonoBehaviour
 			basePositionRectTransformList[i].anchoredPosition = _listBasePosition[i];
 
 		RefreshCashButton();
+		RefreshCashAdditionalButton();
 		RefreshAlarmObjectList();
 	}
 
@@ -287,6 +290,7 @@ public class MainCanvas : MonoBehaviour
 		RefreshMailAlarmObject();
 		RefreshAnalysisAlarmObject();
 		RefreshGachaAlarmObject();
+		RefreshSevenDaysAlarmObject();
 		RefreshLevelPassAlarmObject();
 		RefreshEnergyPaybackAlarmObject();
 		RefreshContinuousProduct1AlarmObject();
@@ -487,6 +491,49 @@ public class MainCanvas : MonoBehaviour
 		RefreshAlarmObject(IsAlarmEnergyPayback(), energyPaybackAlarmRootTransform);
 	}
 
+	public static bool IsAlarmSevenDays()
+	{
+		bool getable = false;
+		for (int i = 0; i < TableDataManager.instance.sevenDaysRewardTable.dataArray.Length; ++i)
+		{
+			if (TableDataManager.instance.sevenDaysRewardTable.dataArray[i].group != MissionData.instance.sevenDaysId)
+				continue;
+			if (MissionData.instance.IsOpenDay(TableDataManager.instance.sevenDaysRewardTable.dataArray[i].day) == false)
+				continue;
+
+			int currentCount = MissionData.instance.GetProceedingCount(TableDataManager.instance.sevenDaysRewardTable.dataArray[i].typeId);
+			if (currentCount < TableDataManager.instance.sevenDaysRewardTable.dataArray[i].needCount)
+				continue;
+			if (MissionData.instance.IsGetSevenDaysReward(TableDataManager.instance.sevenDaysRewardTable.dataArray[i].day, TableDataManager.instance.sevenDaysRewardTable.dataArray[i].num))
+				continue;
+			
+			getable = true;
+			break;
+		}
+		if (getable == false)
+		{
+			// check sum reward
+			for (int i = 0; i < TableDataManager.instance.sevenSumTable.dataArray.Length; ++i)
+			{
+				if (TableDataManager.instance.sevenSumTable.dataArray[i].groupId != MissionData.instance.sevenDaysId)
+					continue;
+				if (MissionData.instance.sevenDaysSumPoint < TableDataManager.instance.sevenSumTable.dataArray[i].count)
+					continue;
+				if (MissionData.instance.IsGetSevenDaysSumReward(TableDataManager.instance.sevenSumTable.dataArray[i].count))
+					continue;
+
+				getable = true;
+				break;
+			}
+		}
+		return getable;
+	}
+
+	public void RefreshSevenDaysAlarmObject()
+	{
+		RefreshAlarmObject(IsAlarmSevenDays(), sevenDaysAlarmRootTransform);
+	}
+
 	public static bool IsAlarmGacha()
 	{
 		return (CurrencyData.instance.energy >= CurrencyData.instance.energyMax);
@@ -599,6 +646,12 @@ public class MainCanvas : MonoBehaviour
 		UIInstanceManager.instance.ShowCanvasAsync("BrokenEnergyCanvas", null);
 	}
 	#endregion
+
+	void RefreshCashAdditionalButton()
+	{
+		bool showSevenDays = (MissionData.instance.sevenDaysId != 0 && ServerTime.UtcNow < MissionData.instance.sevenDaysExpireTime);
+		sevenDaysButtonObject.SetActive(showSevenDays);
+	}
 
 	#region CashEvent
 	public void ShowCashEvent(string cashEventId, bool showButton, bool showCanvas)

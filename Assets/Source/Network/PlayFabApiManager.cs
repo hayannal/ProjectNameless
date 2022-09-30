@@ -1895,7 +1895,40 @@ public class PlayFabApiManager : MonoBehaviour
 			{
 				WaitingNetworkCanvas.Show(false);
 
-				//MissionData.instance.OnRecvGetSevenDaysReward(sevenDaysRewardTableData.day, sevenDaysRewardTableData.num);
+				CurrencyData.instance.OnRecvProductReward(sevenDaysRewardTableData.rewardType, sevenDaysRewardTableData.rewardValue, sevenDaysRewardTableData.rewardCount);
+				MissionData.instance.sevenDaysSumPoint += sevenDaysRewardTableData.sumPoint;
+				MissionData.instance.OnRecvGetSevenDaysReward(sevenDaysRewardTableData.day, sevenDaysRewardTableData.num);
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
+	public void RequestGetSevenDaysSumReward(SevenSumTableData sevenSumTableData, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}_{2}_{3}", MissionData.instance.sevenDaysId, sevenSumTableData.count, sevenSumTableData.key, "jfskeimz");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "GetSevenDaysSumReward",
+			FunctionParameter = new { SdGrpId = (int)MissionData.instance.sevenDaysId, Cnt = sevenSumTableData.count, InfCs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				CurrencyData.instance.OnRecvProductReward(sevenSumTableData.rewardType, sevenSumTableData.rewardValue, sevenSumTableData.rewardCount);
+				MissionData.instance.OnRecvGetSevenDaysSumReward(sevenSumTableData.count);
 
 				if (successCallback != null) successCallback.Invoke();
 			}

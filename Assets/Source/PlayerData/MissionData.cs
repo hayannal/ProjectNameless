@@ -34,7 +34,12 @@ public class MissionData : MonoBehaviour
 	public DateTime sevenDaysCoolExpireTime { get; private set; }
 
 	// 현재 Sum포인트
-	public ObscuredInt sevenDaysSumPoint { get; private set; }
+	public ObscuredInt sevenDaysSumPoint { get; set; }
+
+	// 리워드 리스트
+	List<string> _listSevenDaysReward;
+	// Sum리워드 리스트
+	List<int> _listSevenDaysSumReward;
 
 
 	List<GuideQuestData.eQuestClearType> _listAvailableQuestType = new List<GuideQuestData.eQuestClearType>();
@@ -104,6 +109,10 @@ public class MissionData : MonoBehaviour
 		PlayFabApiManager.instance.RequestStartSevenDays(sevenDaysTypeTableData.groupId, sevenDaysTypeTableData.givenTime, sevenDaysTypeTableData.coolTime, () =>
 		{
 			sevenDaysId = sevenDaysTypeTableData.groupId;
+
+			if (MainCanvas.instance != null)
+				MainCanvas.instance.sevenDaysButtonObject.SetActive(true);
+
 			_waitPacket = false;
 		}, () =>
 		{
@@ -135,11 +144,13 @@ public class MissionData : MonoBehaviour
 		}
 
 		sevenDaysSumPoint = 0;
-		if (userReadOnlyData.ContainsKey("sevenDaysSumPoint"))
+		for (int i = 0; i < playerStatistics.Count; ++i)
 		{
-			int intValue = 0;
-			if (int.TryParse(userReadOnlyData["sevenDaysSumPoint"].Value, out intValue))
-				sevenDaysSumPoint = intValue;
+			if (playerStatistics[i].StatisticName == "sevenDaysSumPoint")
+			{
+				sevenDaysSumPoint = playerStatistics[i].Value;
+				break;
+			}
 		}
 
 		var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
@@ -162,12 +173,20 @@ public class MissionData : MonoBehaviour
 			}
 
 			// 획득 상태도 불러야한다.
-			List<string> listSevenDaysReward = null;
+			_listSevenDaysReward = null;
 			if (userReadOnlyData.ContainsKey("sevenDaysRewardLst"))
 			{
 				string sevenDaysRewardLstString = userReadOnlyData["sevenDaysRewardLst"].Value;
 				if (string.IsNullOrEmpty(sevenDaysRewardLstString) == false)
-					listSevenDaysReward = serializer.DeserializeObject<List<string>>(sevenDaysRewardLstString);
+					_listSevenDaysReward = serializer.DeserializeObject<List<string>>(sevenDaysRewardLstString);
+			}
+
+			_listSevenDaysSumReward = null;
+			if (userReadOnlyData.ContainsKey("sevenDaysSumRewardLst"))
+			{
+				string sevenDaysSumRewardLstString = userReadOnlyData["sevenDaysSumRewardLst"].Value;
+				if (string.IsNullOrEmpty(sevenDaysSumRewardLstString) == false)
+					_listSevenDaysSumReward = serializer.DeserializeObject<List<int>>(sevenDaysSumRewardLstString);
 			}
 		}
 
@@ -189,6 +208,9 @@ public class MissionData : MonoBehaviour
 
 		// 시작할때 카운트는 항상 초기화해두고 시작해야한다.
 		_dicSevenDaysProceedingInfo.Clear();
+		if (_listSevenDaysReward != null) _listSevenDaysReward.Clear();
+		if (_listSevenDaysSumReward != null) _listSevenDaysSumReward.Clear();
+		sevenDaysSumPoint = 0;
 	}
 
 	public void OnRecvSevenDaysCoolTimeInfo(string lastSevenDaysCoolExpireTimeString)
@@ -272,7 +294,46 @@ public class MissionData : MonoBehaviour
 	{
 		// 테이블 검사해서 알람표시
 		//GuideQuestInfo.instance.RefreshCountInfo();
-		//if (IsCompleteQuest())
-		//	GuideQuestInfo.instance.RefreshAlarmObject();
+		if (MainCanvas.instance != null && MainCanvas.instance.gameObject.activeSelf && MainCanvas.instance.IsHideState() == false)
+			MainCanvas.instance.RefreshSevenDaysAlarmObject();
+	}
+
+
+	public bool IsGetSevenDaysReward(int day, int num)
+	{
+		if (_listSevenDaysReward == null)
+			return false;
+
+		string key = string.Format("{0}_{1}", day, num);
+		return _listSevenDaysReward.Contains(key);
+	}
+
+	public List<string> OnRecvGetSevenDaysReward(int day, int num)
+	{
+		if (_listSevenDaysReward == null)
+			_listSevenDaysReward = new List<string>();
+
+		string key = string.Format("{0}_{1}", day, num);
+		if (_listSevenDaysReward.Contains(key) == false)
+			_listSevenDaysReward.Add(key);
+		return _listSevenDaysReward;
+	}
+
+	public bool IsGetSevenDaysSumReward(int count)
+	{
+		if (_listSevenDaysSumReward == null)
+			return false;
+
+		return _listSevenDaysSumReward.Contains(count);
+	}
+
+	public List<int> OnRecvGetSevenDaysSumReward(int count)
+	{
+		if (_listSevenDaysSumReward == null)
+			_listSevenDaysSumReward = new List<int>();
+
+		if (_listSevenDaysSumReward.Contains(count) == false)
+			_listSevenDaysSumReward.Add(count);
+		return _listSevenDaysSumReward;
 	}
 }

@@ -8,15 +8,20 @@ public class SevenDaysCanvas : MonoBehaviour
 {
 	public static SevenDaysCanvas instance;
 
+	public CurrencySmallInfo currencySmallInfo;
 	public Text remainTimeText;
 
 	public Text currentSumPointText;
 	public Text[] sumTextList;
 	public Slider[] progressSliderList;
 	public RewardIcon[] sumRewardIconList;
+	public GameObject[] sumRewardBlackObjectList;
+	public RectTransform[] sumRewardAlarmRootTransformList;
 
+	// 하단 탭
 	public Transform[] buttonImageTransformList;
 	public Transform[] lockImageTransformList;
+	public RectTransform[] dayAlarmRootTransformList;
 
 	public GameObject contentItemPrefab;
 	public RectTransform contentRootRectTransform;
@@ -31,11 +36,14 @@ public class SevenDaysCanvas : MonoBehaviour
 		instance = this;
 	}
 
+	bool _started = false;
 	void Start()
 	{
 		contentItemPrefab.SetActive(false);
 
 		OnValueChangedToggle(0);
+
+		_started = true;
 	}
 
 	void OnEnable()
@@ -43,6 +51,10 @@ public class SevenDaysCanvas : MonoBehaviour
 		SetRemainTimeInfo();
 		RefreshSumReward();
 		RefreshLockObjectList();
+		RefreshDayAlarmObject();
+
+		if (_started)
+			RefreshGrid(_lastIndex + 1);
 
 		MainCanvas.instance.OnEnterCharacterMenu(true);
 
@@ -120,13 +132,15 @@ public class SevenDaysCanvas : MonoBehaviour
 		}
 	}
 
+	#region SumReward
 	public void RefreshSumReward()
 	{
 		// current progress
-		int currentPoint = 830;
+		int currentPoint = MissionData.instance.sevenDaysSumPoint;
 		currentSumPointText.text = currentPoint.ToString("N0");
 
 		// sum reward
+		_listSumRewardCount.Clear();
 		int currentIndex = 0;
 		for (int i = 0; i < TableDataManager.instance.sevenSumTable.dataArray.Length; ++i)
 		{
@@ -141,27 +155,39 @@ public class SevenDaysCanvas : MonoBehaviour
 
 			if (currentIndex < progressSliderList.Length)
 			{
-				if (currentPoint > TableDataManager.instance.sevenSumTable.dataArray[i].count)
+				bool rewarded = (MissionData.instance.IsGetSevenDaysSumReward(TableDataManager.instance.sevenSumTable.dataArray[i].count));
+				sumRewardBlackObjectList[currentIndex].SetActive(rewarded);
+
+				if (currentPoint >= TableDataManager.instance.sevenSumTable.dataArray[i].count)
 				{
 					progressSliderList[currentIndex].value = 1.0f;
 					sumTextList[currentIndex].color = new Color(0.262f, 0.915f, 0.092f);
+
+					if (rewarded)
+						AlarmObject.Hide(sumRewardAlarmRootTransformList[currentIndex]);
+					else
+						AlarmObject.Show(sumRewardAlarmRootTransformList[currentIndex]);
 				}
 				else
 				{
 					int max = TableDataManager.instance.sevenSumTable.dataArray[i].count;
+					int current = currentPoint;
 					if (i > 0)
+					{
 						max -= TableDataManager.instance.sevenSumTable.dataArray[i - 1].count;
-					int current = currentPoint - TableDataManager.instance.sevenSumTable.dataArray[i - 1].count;
+						current -= TableDataManager.instance.sevenSumTable.dataArray[i - 1].count;
+					}
 					progressSliderList[currentIndex].value = (float)current / max;
 					sumTextList[currentIndex].color = Color.white;
+					AlarmObject.Hide(sumRewardAlarmRootTransformList[currentIndex]);
 				}
 			}
 
+			_listSumRewardCount.Add(TableDataManager.instance.sevenSumTable.dataArray[i].count);
 			currentIndex += 1;
 		}
 
 		// progress
-		
 		for (int i = 0; i < TableDataManager.instance.sevenSumTable.dataArray.Length; ++i)
 		{
 			if (TableDataManager.instance.sevenSumTable.dataArray[i].groupId != MissionData.instance.sevenDaysId)
@@ -177,11 +203,51 @@ public class SevenDaysCanvas : MonoBehaviour
 		}
 	}
 
-	public void RefreshLockObjectList()
+	List<int> _listSumRewardCount = new List<int>();
+	public void OnClickSumRewardIcon(int index)
 	{
-		for (int i = 0; i < lockImageTransformList.Length; ++i)
-			lockImageTransformList[i].gameObject.SetActive(MissionData.instance.IsOpenDay(i + 1) == false);
+		if (index >= _listSumRewardCount.Count)
+		{
+			Debug.LogFormat("invalid index : {0}", index);
+			return;
+		}
+
+		int point = _listSumRewardCount[index];
+		Debug.LogFormat("point : {0}", point);
+
+		SevenSumTableData sevenSumTableData = TableDataManager.instance.FindSevenDaysSumTableData(MissionData.instance.sevenDaysId, point);
+		if (sevenSumTableData == null)
+		{
+			Debug.LogFormat("invalid point : {0}", point);
+			return;
+		}
+
+		if (sumRewardBlackObjectList[index].activeSelf)
+		{
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("LevelPassUI_AlreadyClaimed"), 2.0f);
+			return;
+		}
+
+		if (MissionData.instance.sevenDaysSumPoint < point)
+		{
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("SevenDaysUI_NotEnoughtTotal"), 2.0f);
+			return;
+		}
+
+		PlayFabApiManager.instance.RequestGetSevenDaysSumReward(sevenSumTableData, () =>
+		{
+			UIInstanceManager.instance.ShowCanvasAsync("CommonRewardCanvas", () =>
+			{
+				currencySmallInfo.RefreshInfo();
+				RefreshSumReward();
+				RefreshDayAlarmObject();
+				MainCanvas.instance.RefreshSevenDaysAlarmObject();
+				CommonRewardCanvas.instance.RefreshReward(sevenSumTableData.rewardType, sevenSumTableData.rewardValue, sevenSumTableData.rewardCount);
+			});
+		});
 	}
+	#endregion
+
 
 
 
@@ -199,6 +265,46 @@ public class SevenDaysCanvas : MonoBehaviour
 		RefreshGrid(index + 1);
 
 		_lastIndex = index;
+	}
+
+	public void RefreshLockObjectList()
+	{
+		for (int i = 0; i < lockImageTransformList.Length; ++i)
+			lockImageTransformList[i].gameObject.SetActive(MissionData.instance.IsOpenDay(i + 1) == false);
+	}
+
+	public void RefreshDayAlarmObject()
+	{
+		for (int i = 0; i < dayAlarmRootTransformList.Length; ++i)
+		{
+			bool dayAlarm = IsDayAlarm(i + 1);
+			if (dayAlarm)
+				AlarmObject.Show(dayAlarmRootTransformList[i]);
+			else
+				AlarmObject.Hide(dayAlarmRootTransformList[i]);
+		}
+	}
+
+	bool IsDayAlarm(int day)
+	{
+		for (int i = 0; i < TableDataManager.instance.sevenDaysRewardTable.dataArray.Length; ++i)
+		{
+			if (TableDataManager.instance.sevenDaysRewardTable.dataArray[i].group != MissionData.instance.sevenDaysId)
+				continue;
+			if (day != TableDataManager.instance.sevenDaysRewardTable.dataArray[i].day)
+				continue;
+			if (MissionData.instance.IsOpenDay(TableDataManager.instance.sevenDaysRewardTable.dataArray[i].day) == false)
+				continue;
+
+			int currentCount = MissionData.instance.GetProceedingCount(TableDataManager.instance.sevenDaysRewardTable.dataArray[i].typeId);
+			if (currentCount < TableDataManager.instance.sevenDaysRewardTable.dataArray[i].needCount)
+				continue;
+			if (MissionData.instance.IsGetSevenDaysReward(TableDataManager.instance.sevenDaysRewardTable.dataArray[i].day, TableDataManager.instance.sevenDaysRewardTable.dataArray[i].num))
+				continue;
+
+			return true;
+		}
+		return false;
 	}
 	#endregion
 }
