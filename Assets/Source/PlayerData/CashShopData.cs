@@ -596,7 +596,7 @@ public class CashShopData : MonoBehaviour
 					process = true;
 					break;
 				case eCashConsumeFlagType.Ev4ContiNext:
-					// hardcode
+					// hardcode ev4
 					int currentCompleteStep = GetContinuousProductStep("ev4");
 					string id = string.Format("ev4_conti_{0}", currentCompleteStep + 1);
 					ShopProductTableData shopProductTableData = TableDataManager.instance.FindShopProductTableData(id);
@@ -604,7 +604,7 @@ public class CashShopData : MonoBehaviour
 					PlayFabApiManager.instance.RequestConsumeContinuousNext("ev4", cashStep, null);
 					break;
 				case eCashConsumeFlagType.Ev5OnePlTwoCash:
-					// hardcode
+					// hardcode ev5
 					PlayFabApiManager.instance.RequestConsumeOnePlusTwoCash("ev5", null);
 					break;
 			}

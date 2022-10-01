@@ -546,7 +546,7 @@ public class MainCanvas : MonoBehaviour
 
 	public static bool IsAlarmContinuousProduct1()
 	{
-		// hardcode
+		// hardcode ev4
 		string cashEventId = "ev4";
 		if (CashShopData.instance.IsShowEvent(cashEventId) == false)
 			return false;
@@ -564,7 +564,7 @@ public class MainCanvas : MonoBehaviour
 
 	public static bool IsAlarmOnePlusTwo1()
 	{
-		// hardcode
+		// hardcode ev5
 		string cashEventId = "ev5";
 		if (CashShopData.instance.IsShowEvent(cashEventId) == false)
 			return false;

@@ -996,7 +996,7 @@ public class PlayFabApiManager : MonoBehaviour
 	{
 		WaitingNetworkCanvas.Show(true);
 
-		// hardcode
+		// hardcode ev6
 		bool checkPayback = CashShopData.instance.IsShowEvent("ev6");
 
 		int intRefreshTurn = refreshTurn ? 1 : 0;

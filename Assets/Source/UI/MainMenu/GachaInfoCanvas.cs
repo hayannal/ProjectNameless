@@ -428,7 +428,9 @@ public class GachaInfoCanvas : MonoBehaviour
 		// reward 
 		eventPointRewardIcon.RefreshReward(_currentEventPointRewardTableData.rewardType1, _currentEventPointRewardTableData.rewardValue1, _currentEventPointRewardTableData.rewardCount1);
 		eventPointSubRewardIcon.RefreshReward(_currentEventPointRewardTableData.rewardType2, _currentEventPointRewardTableData.rewardValue2, _currentEventPointRewardTableData.rewardCount2);
-		eventPointSubRewardIcon.cachedTransform.parent.gameObject.SetActive(false);
+		// hardcode ev7
+		bool subReward = CashShopData.instance.IsShowEvent("ev7");
+		eventPointSubRewardIcon.cachedTransform.parent.gameObject.SetActive(subReward);
 		_updateAdjustRewardRootObject = true;
 
 		// eventPoint object icon and 3d Object
@@ -765,7 +767,9 @@ public class GachaInfoCanvas : MonoBehaviour
 					}
 
 					// 두번째 리워드를 받을 수 있는 상황이라면
-					if (false)
+					// hardcode ev7
+					bool subReward = CashShopData.instance.IsShowEvent("ev7");
+					if (subReward)
 					{
 						switch (rewardTableData.rewardType2)
 						{
@@ -1086,7 +1090,9 @@ public class GachaInfoCanvas : MonoBehaviour
 					// reward
 					eventPointRewardIcon.RefreshReward(TableDataManager.instance.eventPointRewardTable.dataArray[i + 1].rewardType1, TableDataManager.instance.eventPointRewardTable.dataArray[i + 1].rewardValue1, TableDataManager.instance.eventPointRewardTable.dataArray[i + 1].rewardCount1);
 					eventPointSubRewardIcon.RefreshReward(TableDataManager.instance.eventPointRewardTable.dataArray[i + 1].rewardType2, TableDataManager.instance.eventPointRewardTable.dataArray[i + 1].rewardValue2, TableDataManager.instance.eventPointRewardTable.dataArray[i + 1].rewardCount2);
-					eventPointSubRewardIcon.cachedTransform.parent.gameObject.SetActive(false);
+					// hardcode ev7
+					bool subReward = CashShopData.instance.IsShowEvent("ev7");
+					eventPointSubRewardIcon.cachedTransform.parent.gameObject.SetActive(subReward);
 					_updateAdjustRewardRootObject = true;
 
 					// 카운트 교체
