@@ -12,6 +12,7 @@ public class RewardIcon : MonoBehaviour
 	public Text countText;
 	public GameObject goldObject;
 	public GameObject energyObject;
+	public GameObject sevenDaysObject;
 
 	public Image blurImage;
 	public Coffee.UIExtensions.UIGradient gradient;
@@ -37,6 +38,7 @@ public class RewardIcon : MonoBehaviour
 	{
 		goldObject.SetActive(false);
 		energyObject.SetActive(false);
+		sevenDaysObject.SetActive(false);
 		countText.text = rewardCount.ToString("N0");
 		switch (rewardType)
 		{
@@ -58,18 +60,25 @@ public class RewardIcon : MonoBehaviour
 				}
 				break;
 			case "it":
+				switch (rewardValue)
+				{
+					case "Cash_sEv8SevenSumPoint":
+						sevenDaysObject.SetActive(true);
+						countText.color = Color.white;
+						break;
+				}
 				break;
 		}
 	}
 
 	bool _showOnlyIcon = false;
-	public void ShowOnlyIcon(bool onlyIcon)
+	public void ShowOnlyIcon(bool onlyIcon, float onlyIconScale = 1.5f)
 	{
 		_showOnlyIcon = onlyIcon;
 		for (int i = 0; i < frameObjectList.Length; ++i)
 			frameObjectList[i].SetActive(!onlyIcon);
 
-		iconRootTransform.localScale = onlyIcon ? new Vector3(1.5f, 1.5f, 1.5f) : Vector3.one;
+		iconRootTransform.localScale = onlyIcon ? new Vector3(onlyIconScale, onlyIconScale, onlyIconScale) : Vector3.one;
 	}
 
 	public void ActivePunchAnimation(bool active)
