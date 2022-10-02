@@ -278,6 +278,16 @@ public class MainCanvas : MonoBehaviour
 	{
 		UIInstanceManager.instance.ShowCanvasAsync("MailCanvas", null);
 	}
+
+	public void OnClickRankingButton()
+	{
+		UIInstanceManager.instance.ShowCanvasAsync("RankingListCanvas", null);
+	}
+
+	public void OnClickContentsButton()
+	{
+
+	}
 	#endregion
 
 
