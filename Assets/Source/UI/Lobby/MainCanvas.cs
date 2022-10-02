@@ -23,6 +23,7 @@ public class MainCanvas : MonoBehaviour
 	public GameObject levelPassButtonObject;
 	public GameObject brokenEnergyButtonObject;
 	public GameObject sevenDaysButtonObject;
+	public GameObject sevenTotalButtonObject;
 	public CashEventButton[] cashEventButtonList;
 
 	public RectTransform mailAlarmRootTransform;
@@ -651,6 +652,7 @@ public class MainCanvas : MonoBehaviour
 	{
 		bool showSevenDays = (MissionData.instance.sevenDaysId != 0 && ServerTime.UtcNow < MissionData.instance.sevenDaysExpireTime);
 		sevenDaysButtonObject.SetActive(showSevenDays);
+		sevenTotalButtonObject.SetActive(showSevenDays);
 	}
 
 	#region CashEvent

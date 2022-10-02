@@ -8,6 +8,7 @@ public class SevenDaysMenuButton : MonoBehaviour
 {
 	public Text remainTimeText;
 	public GameObject buttonRootObject;
+	public bool totalMenuButton;
 
 	void OnEnable()
 	{
@@ -54,6 +55,9 @@ public class SevenDaysMenuButton : MonoBehaviour
 
 	public void OnClickButton()
 	{
-		UIInstanceManager.instance.ShowCanvasAsync("SevenDaysCanvas", null);
+		if (totalMenuButton == false)
+			UIInstanceManager.instance.ShowCanvasAsync("SevenDaysCanvas", null);
+		else
+			UIInstanceManager.instance.ShowCanvasAsync("SevenTotalCanvas", null);
 	}
 }

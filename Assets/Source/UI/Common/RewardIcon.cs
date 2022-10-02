@@ -62,7 +62,7 @@ public class RewardIcon : MonoBehaviour
 			case "it":
 				switch (rewardValue)
 				{
-					case "Cash_sEv8SevenSumPoint":
+					case "Cash_sSevenTotal":
 						sevenDaysObject.SetActive(true);
 						countText.color = Color.white;
 						break;

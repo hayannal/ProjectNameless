@@ -49,11 +49,16 @@ public class CashShopData : MonoBehaviour
 		BrokenEnergy = 0,
 		Ev4ContiNext = 1,
 		Ev5OnePlTwoCash = 2,
+		SevenTotal = 3,
+		SevenSlot0 = 4,
+		SevenSlot1 = 5,
+		SevenSlot2 = 6,
+		SevenSlot3 = 7,
 
 		Amount,
 	}
 	List<ObscuredBool> _listCashConsumeFlag = new List<ObscuredBool>();
-	List<string> _listCashConsumeFlagKey = new List<string> { "Cash_sBrokenEnergy", "Cash_sEv4ContiNext", "Cash_sEv5OnePlTwoCash" };
+	List<string> _listCashConsumeFlagKey = new List<string> { "Cash_sBrokenEnergy", "Cash_sEv4ContiNext", "Cash_sEv5OnePlTwoCash", "Cash_sSevenTotal", "Cash_sSevenSlot0", "Cash_sSevenSlot1", "Cash_sSevenSlot2", "Cash_sSevenSlot3" };
 
 	public enum eCashCountType
 	{
@@ -572,6 +577,10 @@ public class CashShopData : MonoBehaviour
 		{
 			OnePlusTwoCanvas.ExternalRetryPurchase(pendingProduct);
 		}
+		else if (pendingProduct.definition.id.Contains("seventotal"))
+		{
+			SevenTotalCanvas.ExternalRetryPurchase(pendingProduct);
+		}
 
 
 		return true;
@@ -606,6 +615,18 @@ public class CashShopData : MonoBehaviour
 				case eCashConsumeFlagType.Ev5OnePlTwoCash:
 					// hardcode ev5
 					PlayFabApiManager.instance.RequestConsumeOnePlusTwoCash("ev5", null);
+					break;
+				case eCashConsumeFlagType.SevenSlot0:
+					PlayFabApiManager.instance.RequestConsumeSevenSlot(0, null);
+					break;
+				case eCashConsumeFlagType.SevenSlot1:
+					PlayFabApiManager.instance.RequestConsumeSevenSlot(1, null);
+					break;
+				case eCashConsumeFlagType.SevenSlot2:
+					PlayFabApiManager.instance.RequestConsumeSevenSlot(2, null);
+					break;
+				case eCashConsumeFlagType.SevenSlot3:
+					PlayFabApiManager.instance.RequestConsumeSevenSlot(3, null);
 					break;
 			}
 

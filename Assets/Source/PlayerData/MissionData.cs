@@ -41,6 +41,10 @@ public class MissionData : MonoBehaviour
 	// Sum리워드 리스트
 	List<int> _listSevenDaysSumReward;
 
+	#region SevenDays Total Cash Product
+	List<int> _listSevenCashSlotPurchased;
+	#endregion
+
 
 	List<GuideQuestData.eQuestClearType> _listAvailableQuestType = new List<GuideQuestData.eQuestClearType>();
 	void Awake()
@@ -111,7 +115,10 @@ public class MissionData : MonoBehaviour
 			sevenDaysId = sevenDaysTypeTableData.groupId;
 
 			if (MainCanvas.instance != null)
+			{
 				MainCanvas.instance.sevenDaysButtonObject.SetActive(true);
+				MainCanvas.instance.sevenTotalButtonObject.SetActive(true);
+			}
 
 			_waitPacket = false;
 		}, () =>
@@ -188,6 +195,16 @@ public class MissionData : MonoBehaviour
 				if (string.IsNullOrEmpty(sevenDaysSumRewardLstString) == false)
 					_listSevenDaysSumReward = serializer.DeserializeObject<List<int>>(sevenDaysSumRewardLstString);
 			}
+
+			#region SevenDays Total Cash Product
+			_listSevenCashSlotPurchased = null;
+			if (userReadOnlyData.ContainsKey("sevenDaysCashSlotLst"))
+			{
+				string sevenDaysCashSlotLstString = userReadOnlyData["sevenDaysCashSlotLst"].Value;
+				if (string.IsNullOrEmpty(sevenDaysCashSlotLstString) == false)
+					_listSevenCashSlotPurchased = serializer.DeserializeObject<List<int>>(sevenDaysCashSlotLstString);
+			}
+			#endregion
 		}
 
 		// 로그인 할때마다 시작 상태가 아니라면 초기화를 진행해야한다.
@@ -210,6 +227,7 @@ public class MissionData : MonoBehaviour
 		_dicSevenDaysProceedingInfo.Clear();
 		if (_listSevenDaysReward != null) _listSevenDaysReward.Clear();
 		if (_listSevenDaysSumReward != null) _listSevenDaysSumReward.Clear();
+		if (_listSevenCashSlotPurchased != null) _listSevenCashSlotPurchased.Clear();
 		sevenDaysSumPoint = 0;
 	}
 
@@ -336,4 +354,24 @@ public class MissionData : MonoBehaviour
 			_listSevenDaysSumReward.Add(count);
 		return _listSevenDaysSumReward;
 	}
+
+	#region SevenDays Total Cash Product
+	public bool IsPurchasedCashSlot(int index)
+	{
+		if (_listSevenCashSlotPurchased == null)
+			return false;
+
+		return _listSevenCashSlotPurchased.Contains(index);
+	}
+
+	public List<int> OnRecvPurchasedCashSlot(int index)
+	{
+		if (_listSevenCashSlotPurchased == null)
+			_listSevenCashSlotPurchased = new List<int>();
+
+		if (_listSevenCashSlotPurchased.Contains(index) == false)
+			_listSevenCashSlotPurchased.Add(index);
+		return _listSevenCashSlotPurchased;
+	}
+	#endregion
 }
