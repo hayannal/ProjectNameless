@@ -188,7 +188,7 @@ public class OnePlusTwoCanvas : SimpleCashEventCanvas
 			if (cashEventId == "ev5")
 			{
 				//if (MainCanvas.instance != null)
-				//	MainCanvas.instance.RefreshContinuousProduct1AlarmObject();
+				//	MainCanvas.instance.RefreshOnePlusTwo1AlarmObject();
 				if (product != null)
 				{
 					CashShopData.instance.PurchaseFlag(CashShopData.eCashConsumeFlagType.Ev5OnePlTwoCash);
