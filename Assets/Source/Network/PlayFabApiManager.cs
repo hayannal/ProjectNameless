@@ -257,13 +257,13 @@ public class PlayFabApiManager : MonoBehaviour
 		AnalysisData.instance.OnRecvAnalysisData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 		GuideQuestData.instance.OnRecvGuideQuestData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 		MissionData.instance.OnRecvMissionData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
+		RankingData.instance.OnRecvRankingData(loginResult.InfoResultPayload.TitleData);
 
 		/*
 		DailyShopData.instance.OnRecvShopData(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData);		
 		QuestData.instance.OnRecvQuestData(loginResult.InfoResultPayload.UserReadOnlyData);
 		PlayerData.instance.OnRecvLevelPackageResetInfo(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData, loginResult.NewlyCreated);
 		CumulativeEventData.instance.OnRecvCumulativeEventData(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics, loginResult.NewlyCreated);
-		RankingData.instance.OnRecvRankingData(loginResult.InfoResultPayload.TitleData);
 		*/
 
 		if (loginResult.NewlyCreated)
@@ -1964,6 +1964,138 @@ public class PlayFabApiManager : MonoBehaviour
 		{
 			HandleCommonError(error);
 		});
+	}
+	#endregion
+
+
+	#region Ranking
+	public void RequestRegisterName(string name, Action successCallback, Action<PlayFabError> failureCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		PlayFabClientAPI.UpdateUserTitleDisplayName(new UpdateUserTitleDisplayNameRequest()
+		{
+			DisplayName = name,
+		}, (success) =>
+		{
+			WaitingNetworkCanvas.Show(false);
+
+			PlayerData.instance.displayName = name;
+			if (successCallback != null) successCallback.Invoke();
+		}, (error) =>
+		{
+			WaitingNetworkCanvas.Show(false);
+
+			if (error.Error == PlayFabErrorCode.InvalidParams || error.Error == PlayFabErrorCode.NameNotAvailable)
+			{
+				if (failureCallback != null) failureCallback.Invoke(error);
+				return;
+			}
+			HandleCommonError(error);
+		});
+	}
+
+	public void RequestGetStageRanking(Action<List<PlayerLeaderboardEntry>, List<PlayerLeaderboardEntry>> successCallback)
+	{
+		// 두번으로 나눠받아야하니 이렇게 처리한다.
+		_leaderboardStageIndex = 0;
+		_leaderboardStageCheatIndex = 0;
+		_leaderboardStageSuccessCallback = successCallback;
+
+		PlayerProfileViewConstraints playerProfileViewConstraints = new PlayerProfileViewConstraints();
+		playerProfileViewConstraints.ShowDisplayName = true;
+
+		PlayFabClientAPI.GetLeaderboard(new GetLeaderboardRequest()
+		{
+			MaxResultsCount = 100,
+			ProfileConstraints = playerProfileViewConstraints,
+			StartPosition = 0,
+			StatisticName = "highestClearStage",
+		}, (success) =>
+		{
+			OnRecvGetLeaderboard(success.Leaderboard);
+		}, (error) =>
+		{
+			// wait 캔버스 없이 하는거니 에러처리 하지 않기로 한다.
+			//HandleCommonError(error);
+		});
+
+		PlayFabClientAPI.GetLeaderboard(new GetLeaderboardRequest()
+		{
+			MaxResultsCount = 100,
+			ProfileConstraints = playerProfileViewConstraints,
+			StartPosition = 100,
+			StatisticName = "highestClearStage",
+		}, (success) =>
+		{
+			OnRecvGetLeaderboard(success.Leaderboard);
+		}, (error) =>
+		{
+			//HandleCommonError(error);
+		});
+
+		PlayFabClientAPI.GetLeaderboard(new GetLeaderboardRequest()
+		{
+			MaxResultsCount = 100,
+			ProfileConstraints = playerProfileViewConstraints,
+			StartPosition = 0,
+			StatisticName = "chtRnkSus",
+		}, (success) =>
+		{
+			OnRecvGetCheatLeaderboard(success.Leaderboard);
+		}, (error) =>
+		{
+			//HandleCommonError(error);
+		});
+	}
+
+	int _leaderboardStageIndex = 0;
+	Action<List<PlayerLeaderboardEntry>, List<PlayerLeaderboardEntry>> _leaderboardStageSuccessCallback;
+	List<PlayerLeaderboardEntry> _listResultLeaderboardStage;
+	void OnRecvGetLeaderboard(List<PlayerLeaderboardEntry> leaderboard)
+	{
+		if (_leaderboardStageIndex == 0)
+		{
+			if (_listResultLeaderboardStage == null)
+				_listResultLeaderboardStage = new List<PlayerLeaderboardEntry>();
+			_listResultLeaderboardStage.Clear();
+
+			_listResultLeaderboardStage.AddRange(leaderboard);
+			++_leaderboardStageIndex;
+		}
+		else if (_leaderboardStageIndex == 1)
+		{
+			_listResultLeaderboardStage.AddRange(leaderboard);
+			++_leaderboardStageIndex;
+
+			CheckRecvLeaderboard();
+		}
+		else if (_leaderboardStageIndex == 2)
+		{
+			// something wrong
+		}
+	}
+
+	int _leaderboardStageCheatIndex = 0;
+	List<PlayerLeaderboardEntry> _listCheatLeaderboardStage;
+	void OnRecvGetCheatLeaderboard(List<PlayerLeaderboardEntry> leaderboard)
+	{
+		if (_listCheatLeaderboardStage == null)
+			_listCheatLeaderboardStage = new List<PlayerLeaderboardEntry>();
+		_listCheatLeaderboardStage.Clear();
+		_listCheatLeaderboardStage.AddRange(leaderboard);
+		++_leaderboardStageCheatIndex;
+
+		CheckRecvLeaderboard();
+	}
+
+	void CheckRecvLeaderboard()
+	{
+		if (_leaderboardStageCheatIndex == 1 && _leaderboardStageIndex == 2)
+		{
+			if (_leaderboardStageSuccessCallback != null)
+				_leaderboardStageSuccessCallback.Invoke(_listResultLeaderboardStage, _listCheatLeaderboardStage);
+		}
 	}
 	#endregion
 

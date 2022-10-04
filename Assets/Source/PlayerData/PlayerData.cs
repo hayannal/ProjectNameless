@@ -41,6 +41,7 @@ public class PlayerData : MonoBehaviour
 			return Mathf.Max(highestClearStage, selectedStage);
 		}
 	}
+	public ObscuredInt cheatRankSus { get; set; }
 
 	#region Player Property
 	public static int SubLevelCount = 3;
@@ -57,6 +58,9 @@ public class PlayerData : MonoBehaviour
 
 	// 이용약관 확인용 변수. 값이 있으면 기록된거로 간주하고 true로 해둔다.
 	public ObscuredBool termsConfirmed { get; set; }
+
+	// 디스플레이 네임
+	public string displayName { get; set; }
 
 	// 네트워크 오류로 인해 씬을 재시작할때는 타이틀 떠서 진입하듯 초기 프로세스들을 검사해야한다.
 	public bool checkRestartScene { get; set; }
@@ -137,7 +141,9 @@ public class PlayerData : MonoBehaviour
 		OnRecvPlayerStatistics(null);
 
 		selectedStage = 1;
+		cheatRankSus = 0;
 		termsConfirmed = false;
+		displayName = "";
 
 		leftCharacterId = rightCharacterId = "";
 
@@ -232,10 +238,10 @@ public class PlayerData : MonoBehaviour
 				case "subLevel0": _listSubLevel[0] = playerStatistics[i].Value; break;
 				case "subLevel1": _listSubLevel[1] = playerStatistics[i].Value; break;
 				case "subLevel2": _listSubLevel[2] = playerStatistics[i].Value; break;
+				case "chtRnkSus": cheatRankSus = playerStatistics[i].Value; break;
 				//case "highestValue": highestValue = playerStatistics[i].Value; break;
 				//case "nodClLv": nodeWarClearLevel = playerStatistics[i].Value; break;
 				//case "chaosFragment": chaosFragmentCount = playerStatistics[i].Value; break;
-				//case "chtRnkSus": cheatRankSus = playerStatistics[i].Value; break;
 			}
 		}
 	}
@@ -331,11 +337,11 @@ public class PlayerData : MonoBehaviour
 
 		/*
 		ContentsData.instance.OnRecvContentsData(userData, userReadOnlyData);
+		*/
 
 		displayName = "";
 		if (string.IsNullOrEmpty(playerProfile.DisplayName) == false)
 			displayName = playerProfile.DisplayName;
-		*/
 
 		if (userReadOnlyData.ContainsKey("delAccDat"))
 		{

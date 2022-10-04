@@ -232,12 +232,12 @@ public class AuthManager : MonoBehaviour
 		playerStatisticNames.Add("guideQuestIndex");
 		playerStatisticNames.Add("energyUseForPayback");
 		playerStatisticNames.Add("sevenDaysSumPoint");
+		playerStatisticNames.Add("chtRnkSus");
 		/*
 		playerStatisticNames.Add("highestValue");
 		playerStatisticNames.Add("nodClLv");
 		playerStatisticNames.Add("chaosFragment");
 		playerStatisticNames.Add("pointShopPoint");
-		playerStatisticNames.Add("chtRnkSus");
 		*/
 		GetPlayerCombinedInfoRequestParams parameters = new GetPlayerCombinedInfoRequestParams();
 		parameters.GetCharacterList = true;

@@ -6,10 +6,15 @@ public class RankingListCanvas : MonoBehaviour
 {
 	void OnEnable()
 	{
-		MainCanvas.instance.OnEnterCharacterMenu(true);
+		bool restore = StackCanvas.Push(gameObject, false, null, OnPopStack);
 
 		if (DragThresholdController.instance != null)
 			DragThresholdController.instance.ApplyUIDragThreshold();
+
+		if (restore)
+			return;
+
+		MainCanvas.instance.OnEnterCharacterMenu(true);
 	}
 
 	void OnDisable()
@@ -17,11 +22,29 @@ public class RankingListCanvas : MonoBehaviour
 		if (DragThresholdController.instance != null)
 			DragThresholdController.instance.ResetUIDragThreshold();
 
+		if (StackCanvas.Pop(gameObject))
+			return;
+
+		OnPopStack();
+	}
+
+	void OnPopStack()
+	{
+		if (StageManager.instance == null)
+			return;
+		if (MainSceneBuilder.instance == null)
+			return;
+
 		MainCanvas.instance.OnEnterCharacterMenu(false);
 	}
 
 	public void OnClickButton(int index)
 	{
-
+		switch (index)
+		{
+			case 0:
+				UIInstanceManager.instance.ShowCanvasAsync("StageRankingCanvas", null);
+				break;
+		}
 	}
 }
