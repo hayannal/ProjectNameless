@@ -8,7 +8,7 @@ public class RankingCanvasListItem : MonoBehaviour
 {
 	public Text rankText;
 	public Text nameText;
-	public Text stageText;
+	public Text valueText;
 
 	int _defaultFontSize;
 	Color _defaultFontColor;
@@ -44,16 +44,7 @@ public class RankingCanvasListItem : MonoBehaviour
 
 		nameText.text = displayName;
 
-		int stage = value;
-		if (stage > PlayerData.instance.highestClearStage)
-		{
-			stageText.text = "???";
-			stageText.color = new Color(0.6f, 0.6f, 0.6f);
-		}
-		else
-		{
-			stageText.text = string.Format("{0:N0}", stage.ToString());
-			stageText.color = Color.white;
-		}
+		valueText.text = string.Format("{0:N0}", value.ToString());
+		valueText.color = Color.white;
 	}
 }
