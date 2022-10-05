@@ -8,8 +8,8 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: P08_cloth_B
-  m_Shader: {fileID: 4800000, guid: ca035891872022e4f80c952b3916e450, type: 3}
-  m_ShaderKeywords: _ _EMISSIVE_SIMPLE _OUTLINE_NML
+  m_Shader: {fileID: 4800000, guid: af96cba0ce400244e8f086910e74d586, type: 3}
+  m_ShaderKeywords: _ _EMISSIVE_SIMPLE _FLOW_CHANNEL_R _MATCAP_SINGLE _NORMAL _OUTLINE_NML
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -136,6 +136,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _FlowTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _GlitterColorTex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -185,7 +189,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: cc451de27e0d978469501f30b11b4dfe, type: 3}
+        m_Texture: {fileID: 2800000, guid: 041f5d46cfaae454cb828264cd7bfaa6, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MaskTex:
+        m_Texture: {fileID: 2800000, guid: 8d65c7126f64a4549819fd3331e1d48c, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MatCap2ndBlendMask:
@@ -262,6 +270,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _RimColorTex:
         m_Texture: {fileID: 2800000, guid: a6fe85605303bd74bb5db06b2f25cb30, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RimMaskTex:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Set_1st_ShadePosition:
@@ -387,6 +399,7 @@ Material:
     - _CameraRolling_Stabilizer: 0
     - _ClippingMode: 0
     - _Clipping_Level: 0
+    - _ColorIntensity: 1
     - _ColorMask: 15
     - _ColorShift_Speed: 0
     - _Cull: 0
@@ -413,6 +426,8 @@ Material:
     - _EmissionUseGrad: 0
     - _Farthest_Distance: 100
     - _FlipNormal: 0
+    - _FlowPower: 1
+    - _Flow_Channel: 0
     - _GI_Intensity: 0
     - _GlitterApplyTransparency: 1
     - _GlitterBackfaceMask: 0
@@ -511,6 +526,7 @@ Material:
     - _MatCapBumpScale: 1
     - _MatCapCustomNormal: 0
     - _MatCapEnableLighting: 1
+    - _MatCapIntensity: 0.33
     - _MatCapLod: 0
     - _MatCapNormalStrength: 1
     - _MatCapPerspective: 1
@@ -584,6 +600,7 @@ Material:
     - _RimLight_InsideMask: 0.2
     - _RimLight_Power: 0.85
     - _RimNormalStrength: 1
+    - _RimPower: 0
     - _RimShadowMask: 0
     - _RimVRParallaxStrength: 1
     - _Rotate_EmissiveUV: 0
@@ -653,16 +670,21 @@ Material:
     - _UseBacklight: 0
     - _UseBump2ndMap: 0
     - _UseBumpMap: 1
+    - _UseCutoff: 0
     - _UseEmission: 0
     - _UseEmission2nd: 0
+    - _UseEmissive: 0
+    - _UseFlow: 0
     - _UseGlitter: 0
     - _UseMain2ndTex: 0
     - _UseMain3rdTex: 0
     - _UseMatCap: 1
     - _UseMatCap2nd: 0
+    - _UseNormal: 1
     - _UseParallax: 0
     - _UseReflection: 1
     - _UseRim: 1
+    - _UseRimLight: 0
     - _UseShadow: 1
     - _Use_1stAs2nd: 1
     - _Use_BaseAs1st: 1
@@ -717,7 +739,9 @@ Material:
     - _EmissionBlink: {r: 0, g: 0, b: 3.141593, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 0}
     - _EmissionMap_ScrollRotate: {r: 0, g: 0, b: 0, a: 0}
+    - _EmissiveColor: {r: 1, g: 1, b: 1, a: 1}
     - _Emissive_Color: {r: 0, g: 0, b: 0, a: 1}
+    - _FlowSpeed: {r: 0, g: 0, b: 0, a: 0}
     - _GlitterColor: {r: 1, g: 1, b: 1, a: 1}
     - _GlitterParams1: {r: 256, g: 256, b: 0.16, a: 50}
     - _GlitterParams2: {r: 0.25, g: 0, b: 0, a: 0}
