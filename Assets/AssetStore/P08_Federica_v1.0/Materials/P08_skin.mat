@@ -8,8 +8,8 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: P08_skin
-  m_Shader: {fileID: 4800000, guid: e8e7d781c3155254b9ea8956c5bd1218, type: 3}
-  m_ShaderKeywords: _ _EMISSIVE_SIMPLE _OUTLINE_POS
+  m_Shader: {fileID: 4800000, guid: f2351d8d2e5dd9940a4a4bcc10290f9d, type: 3}
+  m_ShaderKeywords: _ _EMISSIVE_SIMPLE _NORMAL _OUTLINE_POS _SHADOWSHIFT
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -169,7 +169,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 0cb0afa9006241846b3f64751e3d8e82, type: 3}
+        m_Texture: {fileID: 2800000, guid: da5f842b5c1534e4ca2e015c6e267658, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MatCap2ndBlendMask:
@@ -427,6 +427,7 @@ Material:
     - _Is_ViewCoord_Scroll: 0
     - _Is_ViewShift: 0
     - _LightDirection_MaskOn: 1
+    - _LightIntensity: 0.35
     - _LightMaxLimit: 1
     - _LightMinLimit: 0.05
     - _Main2ndDissolveNoiseStrength: 0.1
@@ -484,6 +485,7 @@ Material:
     - _Metallic: 0
     - _MonochromeLighting: 0
     - _Nearest_Distance: 0.5
+    - _NormalLerp: 0.85
     - _OUTLINE: 1
     - _OffsetFactor: 0
     - _OffsetUnits: 0
@@ -555,6 +557,7 @@ Material:
     - _Scroll_EmissiveV: 0
     - _Set_SystemShadowsToBase: 0
     - _ShadeColor_Step: 0.35
+    - _ShadeShift: 0.5
     - _Shadow2ndBlur: 0.05
     - _Shadow2ndBorder: 0.15
     - _Shadow2ndNormalStrength: 1
@@ -604,6 +607,7 @@ Material:
     - _UseBacklight: 0
     - _UseBump2ndMap: 0
     - _UseBumpMap: 0
+    - _UseCutoff: 0
     - _UseEmission: 0
     - _UseEmission2nd: 0
     - _UseGlitter: 0
@@ -611,10 +615,12 @@ Material:
     - _UseMain3rdTex: 0
     - _UseMatCap: 0
     - _UseMatCap2nd: 0
+    - _UseNormal: 1
     - _UseParallax: 0
     - _UseReflection: 0
     - _UseRim: 0
     - _UseShadow: 1
+    - _UseShadowShift: 1
     - _Use_1stAs2nd: 1
     - _Use_BaseAs1st: 1
     - _VertexLightStrength: 0
@@ -702,7 +708,8 @@ Material:
     - _ShadowAOShift: {r: 1, g: 0, b: 1, a: 0}
     - _ShadowAOShift2: {r: 1, g: 0, b: 1, a: 0}
     - _ShadowBorderColor: {r: 1, g: 0, b: 0, a: 1}
-    - _ShadowColor: {r: 0.925, g: 0.7, b: 0.74, a: 1}
+    - _ShadowColor: {r: 0.74509805, g: 0.74509805, b: 0.74509805, a: 1}
+    - _TintColor: {r: 0.6037736, g: 0.568821, b: 0.56105375, a: 0.5}
     - _ViewShift: {r: 0, g: 0, b: 0, a: 1}
     - _e2ga0: {r: 1, g: 0, b: 0, a: 0}
     - _e2ga1: {r: 1, g: 0, b: 0, a: 1}
