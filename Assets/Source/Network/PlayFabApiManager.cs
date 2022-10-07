@@ -833,16 +833,16 @@ public class PlayFabApiManager : MonoBehaviour
 	#endregion
 
 	#region Player Character
-	public void RequestSubLevelUp(int subLevelIndex, int price, Action successCallback)
+	public void RequestSubLevelUp(int subLevelIndex, int price, bool salePrice, Action successCallback)
 	{
 		WaitingNetworkCanvas.Show(true);
 
-		string input = string.Format("{0}_{1}_{2}", subLevelIndex, price, "izerdjqa");
+		string input = string.Format("{0}_{1}_{2}_{3}", subLevelIndex, price, salePrice ? 1 : 0, "izerdjqa");
 		string checkSum = CheckSum(input);
 		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "PlayerSubLevelUp",
-			FunctionParameter = new { SubLevelIndex = subLevelIndex, Pr = price, Cs = checkSum },
+			FunctionParameter = new { SubLevelIndex = subLevelIndex, Pr = price, Sa = salePrice ? 1 : 0, Cs = checkSum },
 			GeneratePlayStreamEvent = true,
 		}, (success) =>
 		{
@@ -862,16 +862,16 @@ public class PlayFabApiManager : MonoBehaviour
 		});
 	}
 
-	public void RequestLevelUp(int price, Action successCallback)
+	public void RequestLevelUp(int price, bool salePrice, Action successCallback)
 	{
 		WaitingNetworkCanvas.Show(true);
 
-		string input = string.Format("{0}_{1}", price, "qizlrnmo");
+		string input = string.Format("{0}_{1}_{2}", price, salePrice ? 1 : 0, "qizlrnmo");
 		string checkSum = CheckSum(input);
 		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "PlayerLevelUp",
-			FunctionParameter = new { Pr = price, Cs = checkSum },
+			FunctionParameter = new { Pr = price, Sa = salePrice ? 1 : 0, Cs = checkSum },
 			GeneratePlayStreamEvent = true,
 		}, (success) =>
 		{

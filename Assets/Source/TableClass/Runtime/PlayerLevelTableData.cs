@@ -41,11 +41,27 @@ public class PlayerLevelTableData
   public string thirdGold { get { return _thirdGold; } set { _thirdGold = value; } }
   
   [SerializeField]
+  string _saleFirstGold;
+  public string saleFirstGold { get { return _saleFirstGold; } set { _saleFirstGold = value; } }
+  
+  [SerializeField]
+  string _saleSecondGold;
+  public string saleSecondGold { get { return _saleSecondGold; } set { _saleSecondGold = value; } }
+  
+  [SerializeField]
+  string _saleThirdGold;
+  public string saleThirdGold { get { return _saleThirdGold; } set { _saleThirdGold = value; } }
+  
+  [SerializeField]
   int _addedAtk;
   public int addedAtk { get { return _addedAtk; } set { _addedAtk = value; } }
   
   [SerializeField]
   int _requiredGold;
   public int requiredGold { get { return _requiredGold; } set { _requiredGold = value; } }
+  
+  [SerializeField]
+  int _saleRequiredGold;
+  public int saleRequiredGold { get { return _saleRequiredGold; } set { _saleRequiredGold = value; } }
   
 }

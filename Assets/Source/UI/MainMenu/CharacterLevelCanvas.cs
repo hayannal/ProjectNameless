@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
+using CodeStage.AntiCheat.ObscuredTypes;
 
 public class CharacterLevelCanvas : MonoBehaviour
 {
@@ -53,6 +54,7 @@ public class CharacterLevelCanvas : MonoBehaviour
 	}
 
 	#region Info
+	ObscuredBool _salePrice = false;
 	List<int> _listFirstGoldPrice = new List<int>();
 	List<int> _listSecondGoldPrice = new List<int>();
 	List<int> _listThirdGoldPrice = new List<int>();
@@ -63,6 +65,9 @@ public class CharacterLevelCanvas : MonoBehaviour
 		if (playerLevelTableData == null)
 			return;
 
+		// hardcode ev8
+		_salePrice = CashShopData.instance.IsShowEvent("ev8");
+
 		int subLevel0 = PlayerData.instance.listSubLevel[0];
 		int subLevel1 = PlayerData.instance.listSubLevel[1];
 		int subLevel2 = PlayerData.instance.listSubLevel[2];
@@ -72,9 +77,19 @@ public class CharacterLevelCanvas : MonoBehaviour
 		bool subLevelComplete = (subLevel0 == playerLevelTableData.firstCount && subLevel1 == playerLevelTableData.secondCount && subLevel2 == playerLevelTableData.thirdCount);
 
 
-		StringUtil.SplitIntList(playerLevelTableData.firstGold, ref _listFirstGoldPrice);
-		StringUtil.SplitIntList(playerLevelTableData.secondGold, ref _listSecondGoldPrice);
-		StringUtil.SplitIntList(playerLevelTableData.thirdGold, ref _listThirdGoldPrice);
+		if (_salePrice)
+		{
+			StringUtil.SplitIntList(playerLevelTableData.saleFirstGold, ref _listFirstGoldPrice);
+			StringUtil.SplitIntList(playerLevelTableData.saleSecondGold, ref _listSecondGoldPrice);
+			StringUtil.SplitIntList(playerLevelTableData.saleThirdGold, ref _listThirdGoldPrice);
+		}
+		else
+		{
+			StringUtil.SplitIntList(playerLevelTableData.firstGold, ref _listFirstGoldPrice);
+			StringUtil.SplitIntList(playerLevelTableData.secondGold, ref _listSecondGoldPrice);
+			StringUtil.SplitIntList(playerLevelTableData.thirdGold, ref _listThirdGoldPrice);
+		}
+		
 		for (int i = 0; i < subPriceButtonImageList.Length; ++i)
 		{
 			int price = 0;
@@ -113,7 +128,7 @@ public class CharacterLevelCanvas : MonoBehaviour
 		{
 			PlayerLevelTableData nextPlayerLevelTableData = TableDataManager.instance.FindPlayerLevelTableData(level + 1);
 
-			int requiredGold = nextPlayerLevelTableData.requiredGold;
+			int requiredGold = _salePrice ? nextPlayerLevelTableData.saleRequiredGold : nextPlayerLevelTableData.requiredGold;
 			priceText.text = requiredGold.ToString("N0");
 			bool disablePrice = (CurrencyData.instance.gold < requiredGold || subLevelComplete == false);
 			priceButtonImage.color = !disablePrice ? Color.white : ColorUtil.halfGray;
@@ -247,7 +262,7 @@ public class CharacterLevelCanvas : MonoBehaviour
 			return;
 
 		float prevValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
-		PlayFabApiManager.instance.RequestSubLevelUp(subLevelIndex, price, () =>
+		PlayFabApiManager.instance.RequestSubLevelUp(subLevelIndex, price, _salePrice, () =>
 		{
 			GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.EnhanceCharacter);
 
@@ -335,7 +350,7 @@ public class CharacterLevelCanvas : MonoBehaviour
 		}
 
 		float prevValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
-		PlayFabApiManager.instance.RequestLevelUp(_price, () =>
+		PlayFabApiManager.instance.RequestLevelUp(_price, _salePrice, () =>
 		{
 			GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.LevelUpCharacter);
 
