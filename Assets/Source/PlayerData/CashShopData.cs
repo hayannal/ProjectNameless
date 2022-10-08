@@ -581,6 +581,10 @@ public class CashShopData : MonoBehaviour
 		{
 			SevenTotalCanvas.ExternalRetryPurchase(pendingProduct);
 		}
+		else if (pendingProduct.definition.id.Contains("cashshopenergy"))
+		{
+			CashShopEnergyListItem.ExternalRetryPurchase(pendingProduct);
+		}
 
 
 		return true;
