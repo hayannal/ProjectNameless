@@ -647,6 +647,11 @@ public class MainCanvas : MonoBehaviour
 
 	}
 
+	public void OnClickCashShopButton()
+	{
+		UIInstanceManager.instance.ShowCanvasAsync("CashShopCanvas", null);
+	}
+
 	public void OnClickLevelPassButton()
 	{
 		UIInstanceManager.instance.ShowCanvasAsync("LevelPassCanvas", null);
