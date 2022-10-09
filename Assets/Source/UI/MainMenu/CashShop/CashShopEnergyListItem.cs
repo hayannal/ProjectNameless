@@ -27,9 +27,9 @@ public class CashShopEnergyListItem : SimpleCashCanvas
 		if (shopProductTableData == null)
 			return;
 
-		string saleId = string.Format("{0}_sale", id);
-		ShopProductTableData saleShopProductTableData = TableDataManager.instance.FindShopProductTableData(saleId);
-		if (saleShopProductTableData == null)
+		string moreId = string.Format("{0}_more", id);
+		ShopProductTableData moreShopProductTableData = TableDataManager.instance.FindShopProductTableData(moreId);
+		if (moreShopProductTableData == null)
 			return;
 
 		if (eventApplied)
@@ -37,11 +37,11 @@ public class CashShopEnergyListItem : SimpleCashCanvas
 			prevCountText.text = shopProductTableData.rewardCount1.ToString("N0");
 			prevCountText.gameObject.SetActive(false);
 			prevCountText.gameObject.SetActive(true);
-			countText.text = saleShopProductTableData.rewardCount1.ToString("N0");
-			RefreshPrice(saleShopProductTableData.serverItemId, saleShopProductTableData.kor, saleShopProductTableData.eng);
+			countText.text = moreShopProductTableData.rewardCount1.ToString("N0");
+			RefreshPrice(moreShopProductTableData.serverItemId, moreShopProductTableData.kor, moreShopProductTableData.eng);
 			RefreshLineImage();
 			_updateRefreshLineImageCount = 3;
-			_shopProductTableData = saleShopProductTableData;
+			_shopProductTableData = moreShopProductTableData;
 		}
 		else
 		{
