@@ -20,7 +20,7 @@ public class CashShopEnergyListItem : SimpleCashCanvas
 	void OnEnable()
 	{
 		bool eventApplied = CashShopData.instance.IsShowEvent("ev9");
-		eventApplied = true;
+		//eventApplied = true;
 
 		string id = string.Format("{0}_{1}", productId, num);
 		ShopProductTableData shopProductTableData = TableDataManager.instance.FindShopProductTableData(id);
