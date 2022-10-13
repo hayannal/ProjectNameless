@@ -8,16 +8,15 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: P03_skin
-  m_Shader: {fileID: 4800000, guid: b4c58e4c77437344c9597cef480cf15f, type: 3}
+  m_Shader: {fileID: 4800000, guid: f2351d8d2e5dd9940a4a4bcc10290f9d, type: 3}
   m_ShaderKeywords: _ _EMISSIVE_SIMPLE _IS_ANGELRING_OFF _IS_TRANSCLIPPING_OFF _MatCap
-    _OUTLINE_NML _SHADINGGRADEMAP
+    _NORMAL _OUTLINE_NML _SHADINGGRADEMAP _SHADOWSHIFT
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap:
     IgnoreProjection: False
-    RenderType: Opaque
   disabledShaderPasses: []
   m_SavedProperties:
     serializedVersion: 3
@@ -55,7 +54,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 8074dfe3d4a443743992f0e4766d18d4, type: 3}
+        m_Texture: {fileID: 2800000, guid: 33a1e7ba82c37924f867682d89427e6b, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MatCap_Sampler:
@@ -127,7 +126,9 @@ Material:
     - _ClippingMode: 0
     - _Clipping_Level: 0
     - _ColorShift_Speed: 0
+    - _Cull: 2
     - _CullMode: 2
+    - _Cutoff: 0.5
     - _EMISSIVE: 0
     - _Farthest_Distance: 100
     - _GI_Intensity: 0
@@ -166,8 +167,10 @@ Material:
     - _Is_ViewCoord_Scroll: 0
     - _Is_ViewShift: 0
     - _LightDirection_MaskOn: 1
+    - _LightIntensity: 0.35
     - _MatCap: 1
     - _Nearest_Distance: 0.5
+    - _NormalLerp: 0.85
     - _OUTLINE: 0
     - _Offset_X_Axis_BLD: -0.05
     - _Offset_Y_Axis_BLD: 0.09
@@ -186,6 +189,7 @@ Material:
     - _Scroll_EmissiveV: 0
     - _Set_SystemShadowsToBase: 1
     - _ShadeColor_Step: 0.15
+    - _ShadeShift: 0.5
     - _StencilComp: 0
     - _StencilMode: 0
     - _StencilNo: 1
@@ -204,6 +208,9 @@ Material:
     - _Tweak_SystemShadowsLevel: 0
     - _Tweak_transparency: 0
     - _Unlit_Intensity: 1
+    - _UseCutoff: 0
+    - _UseNormal: 1
+    - _UseShadowShift: 1
     - _Use_1stAs2nd: 1
     - _Use_BaseAs1st: 1
     - _ZOverDrawMode: 0
@@ -228,4 +235,6 @@ Material:
     - _MatCapColor: {r: 0.254717, g: 0.254717, b: 0.254717, a: 1}
     - _Outline_Color: {r: 0.509434, g: 0.34362763, b: 0.37184998, a: 1}
     - _RimLightColor: {r: 0.3584906, g: 0.31959775, b: 0.3455263, a: 1}
+    - _ShadowColor: {r: 0.74509805, g: 0.74509805, b: 0.74509805, a: 1}
+    - _TintColor: {r: 0.6039216, g: 0.5686275, b: 0.56078434, a: 0.5}
     - _ViewShift: {r: 0, g: 0, b: 0, a: 1}
