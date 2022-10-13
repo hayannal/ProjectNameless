@@ -6,7 +6,7 @@ using PlayFab.DataModels;
 
 public class CharacterData
 {
-	public static string s_PlayerActorId = "Actor0201";
+	public static string s_PlayerActorId = "Actor0245";
 
 	public ObscuredString actorId;
 	public EntityKey entityKey;
