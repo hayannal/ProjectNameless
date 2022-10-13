@@ -172,7 +172,7 @@ public class SevenDaysCanvas : MonoBehaviour
 				{
 					int max = TableDataManager.instance.sevenSumTable.dataArray[i].count;
 					int current = currentPoint;
-					if (i > 0)
+					if (currentIndex > 0)
 					{
 						max -= TableDataManager.instance.sevenSumTable.dataArray[i - 1].count;
 						current -= TableDataManager.instance.sevenSumTable.dataArray[i - 1].count;
