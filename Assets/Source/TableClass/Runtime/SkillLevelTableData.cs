@@ -21,6 +21,10 @@ public class SkillLevelTableData
   public float cooltime { get { return _cooltime; } set { _cooltime = value; } }
   
   [SerializeField]
+  int _accumulatedAtk;
+  public int accumulatedAtk { get { return _accumulatedAtk; } set { _accumulatedAtk = value; } }
+  
+  [SerializeField]
   string _mecanimName;
   public string mecanimName { get { return _mecanimName; } set { _mecanimName = value; } }
   

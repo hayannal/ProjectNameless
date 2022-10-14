@@ -52,7 +52,7 @@ public class PlayerAI : MonoBehaviour
 		UpdateTargetingObject();
 		UpdateAttack();
 		UpdateAttackRange();
-		UpdateSkill();
+		UpdateSpell();
 	}
 
 	float _currentFindDelay;
@@ -401,8 +401,8 @@ public class PlayerAI : MonoBehaviour
 
 
 
-	Cooltime _globalSkillCooltime;
-	void UpdateSkill()
+	Cooltime _globalSpellCooltime;
+	void UpdateSpell()
 	{
 		if (useTeamMemberAI)
 			return;
@@ -412,7 +412,7 @@ public class PlayerAI : MonoBehaviour
 			return;
 
 		// 스킬이 동시에 다 나가는게 별로면 전역 딜레이라도 두는게 낫지 않을까.
-		if (_globalSkillCooltime != null && _globalSkillCooltime.CheckCooltime())
+		if (_globalSpellCooltime != null && _globalSpellCooltime.CheckCooltime())
 			return;
 
 		// 움직일 수 없다면 스킬도 안나가는게 맞는건가?
@@ -429,9 +429,7 @@ public class PlayerAI : MonoBehaviour
 		if (!autoSkillUsable)
 			return;
 
-		if (skillProcessor.UseRandomAutoSkill())
-		{
-			_globalSkillCooltime = actor.cooltimeProcessor.GetCooltime(SkillProcessor.GlobalSkillCooltimeId);
-		}
+		if (skillProcessor.UseRandomAutoSpell())
+			_globalSpellCooltime = actor.cooltimeProcessor.GetCooltime(SkillProcessor.GlobalSpellCooltimeId);
 	}
 }

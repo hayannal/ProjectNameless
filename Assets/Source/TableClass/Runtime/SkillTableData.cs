@@ -21,16 +21,24 @@ public class SkillTableData
   public int skillType { get { return _skillType; } set { _skillType = value; } }
   
   [SerializeField]
-  string _icon;
-  public string icon { get { return _icon; } set { _icon = value; } }
+  int _grade;
+  public int grade { get { return _grade; } set { _grade = value; } }
+  
+  [SerializeField]
+  string _iconPrefab;
+  public string iconPrefab { get { return _iconPrefab; } set { _iconPrefab = value; } }
   
   [SerializeField]
   float _cooltime;
   public float cooltime { get { return _cooltime; } set { _cooltime = value; } }
   
   [SerializeField]
-  bool _autoSkill;
-  public bool autoSkill { get { return _autoSkill; } set { _autoSkill = value; } }
+  float _gachaWeight;
+  public float gachaWeight { get { return _gachaWeight; } set { _gachaWeight = value; } }
+  
+  [SerializeField]
+  bool _spell;
+  public bool spell { get { return _spell; } set { _spell = value; } }
   
   [SerializeField]
   string[] _tableAffectorValueId = new string[0];

@@ -684,6 +684,7 @@ public class PlayFabApiManager : MonoBehaviour
 		ClearCliSusQueue();
 		enableCliSusQueue = true;
 		PlayerData.instance.OnRecvPlayerStatistics(_loginResult.InfoResultPayload.PlayerStatistics);
+		SpellManager.instance.OnRecvSpellInventory(_loginResult.InfoResultPayload.UserInventory, _loginResult.InfoResultPayload.UserData, _loginResult.InfoResultPayload.UserReadOnlyData);
 		/*
 		TimeSpaceData.instance.OnRecvEquipInventory(_loginResult.InfoResultPayload.UserInventory, _loginResult.InfoResultPayload.UserData, _loginResult.InfoResultPayload.UserReadOnlyData);
 		*/
@@ -2096,6 +2097,41 @@ public class PlayFabApiManager : MonoBehaviour
 			if (_leaderboardStageSuccessCallback != null)
 				_leaderboardStageSuccessCallback.Invoke(_listResultLeaderboardStage, _listCheatLeaderboardStage);
 		}
+	}
+	#endregion
+
+
+	#region Spell
+	public void RequestSpellBox(List<string> listSpellId, Action<bool, string> successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string checkSum = "";
+		List<ItemGrantRequest> listItemGrantRequest = SpellManager.instance.GenerateGrantInfo(listSpellId, ref checkSum);
+		ExecuteCloudScriptRequest request = new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "OpenSpellBox",
+			FunctionParameter = new { Lst = listItemGrantRequest, LstCs = checkSum },
+			GeneratePlayStreamEvent = true,
+		};
+
+		PlayFabClientAPI.ExecuteCloudScript(request, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+				
+				jsonResult.TryGetValue("itmRet", out object itmRet);
+
+				if (successCallback != null) successCallback.Invoke(failure, (string)itmRet);
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
 	}
 	#endregion
 
