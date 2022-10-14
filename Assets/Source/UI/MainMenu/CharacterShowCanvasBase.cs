@@ -147,7 +147,7 @@ public class CharacterShowCanvasBase : MonoBehaviour
 			if (_cachedActorInfoTableData != null)
 			{
 				if (_cachedActorInfoTableData.useInfoIdle)
-					_playerActor.actionController.PlayActionByActionName("Idle");
+					_playerActor.actionController.animator.Play("Idle");
 				_cachedActorInfoTableData = null;
 			}
 

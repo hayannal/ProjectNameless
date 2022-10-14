@@ -61,13 +61,14 @@ public class CharacterCanvas : CharacterShowCanvasBase
 		if (_playerActor == null || _playerActor.gameObject == null)
 			return;
 
+		SetInfoCameraMode(false, "");
+		MainCanvas.instance.OnEnterCharacterMenu(false);
+
 		if (_playerActor != null)
 		{
 			_playerActor.gameObject.SetActive(false);
 			_playerActor = null;
 		}
-		SetInfoCameraMode(false, "");
-		MainCanvas.instance.OnEnterCharacterMenu(false);
 		//_playerActor.RefreshWingHide();
 	}
 
