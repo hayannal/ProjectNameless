@@ -13,6 +13,7 @@ public class MainCanvas : MonoBehaviour
 	public RectTransform[] targetPositionRectTransformList;
 	public float noInputTime = 15.0f;
 
+	public RectTransform challengeButtonRootTransform;
 	public GameObject challengeButtonObject;
 	public GameObject cancelChallengeButtonObject;
 
@@ -24,6 +25,7 @@ public class MainCanvas : MonoBehaviour
 	public GameObject brokenEnergyButtonObject;
 	public GameObject sevenDaysButtonObject;
 	public GameObject sevenTotalButtonObject;
+	public Transform cashEventButtonRootTransform;
 	public CashEventButton[] cashEventButtonList;
 
 	public RectTransform mailAlarmRootTransform;
@@ -686,6 +688,8 @@ public class MainCanvas : MonoBehaviour
 				break;
 			}
 		}
+
+		CheckCashEventButtonCount();
 	}
 
 	public void CloseCashEventButton(string cashEventId)
@@ -698,6 +702,20 @@ public class MainCanvas : MonoBehaviour
 				break;
 			}
 		}
+
+		CheckCashEventButtonCount();
+	}
+
+	public void CheckCashEventButtonCount()
+	{
+		int count = 0;
+		for (int i = 0; i < cashEventButtonRootTransform.childCount; ++i)
+		{
+			if (cashEventButtonRootTransform.GetChild(0).gameObject.activeSelf)
+				++count;
+		}
+
+		challengeButtonRootTransform.anchoredPosition = new Vector2(0.0f, count > 9 ? -240.0f : -170.0f);
 	}
 	#endregion
 
