@@ -32,6 +32,9 @@ public class CashEventButton : MonoBehaviour
 		if (buttonRootObject == null)
 			buttonRootObject = gameObject;
 		buttonRootObject.SetActive(show);
+
+		if (MainCanvas.instance != null)
+			MainCanvas.instance.CheckCashEventButtonCount();
 	}
 
 	DateTime _eventExpireDateTime;
