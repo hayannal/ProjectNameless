@@ -27,7 +27,7 @@ public class SkillProcessor : MonoBehaviour
 		public string skillId;
 		public int skillLevel;
 		public eSkillType skillType;
-		public string iconName;
+		public string iconPrefab;
 		public float cooltime;
 		public int actionNameHash;
 		public string[] tableAffectorValueIdList;
@@ -71,7 +71,7 @@ public class SkillProcessor : MonoBehaviour
 			info.skillId = skillTableData.id;
 			info.skillLevel = skillLevel;
 			info.skillType = (eSkillType)skillTableData.skillType;
-			info.iconName = skillTableData.iconPrefab;
+			info.iconPrefab = skillTableData.iconPrefab;
 			info.cooltime = skillTableData.cooltime;
 			info.actionNameHash = 0;
 			info.tableAffectorValueIdList = skillTableData.tableAffectorValueId;
@@ -129,6 +129,16 @@ public class SkillProcessor : MonoBehaviour
 		{
 			if (_listSkillInfo[i].skillId == skillId)
 				return _listSkillInfo[i];
+		}
+		return null;
+	}
+
+	public SkillInfo GetSpellInfo(string skillId)
+	{
+		for (int i = 0; i < _listSpellInfo.Count; ++i)
+		{
+			if (_listSpellInfo[i].skillId == skillId)
+				return _listSpellInfo[i];
 		}
 		return null;
 	}
