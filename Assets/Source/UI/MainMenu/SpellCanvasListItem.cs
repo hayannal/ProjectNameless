@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using CodeStage.AntiCheat.ObscuredTypes;
 
 public class SpellCanvasListItem : MonoBehaviour
 {
@@ -16,8 +17,25 @@ public class SpellCanvasListItem : MonoBehaviour
 	public Text proceedingCountText;
 	public RectTransform alarmRootTransform;
 
-	public void Initialize(SkillProcessor.SkillInfo skillInfo, SkillTableData skillTableData, SkillLevelTableData skillLevelTableData)
+	string _id = "";
+	bool _noGain = false;
+	ObscuredInt _level;
+	SpellData _spellData;
+	SkillTableData _skillTableData;
+	public void Initialize(SpellData spellData, SkillTableData skillTableData)
 	{
+		_id = spellData.spellId;
+		_level = spellData.level;
+		_noGain = false;
+		_spellData = spellData;
+		_skillTableData = skillTableData;
+
+		// 안구해질리 없을거다.
+		SkillProcessor.SkillInfo skillInfo = BattleInstanceManager.instance.playerActor.skillProcessor.GetSpellInfo(_id);
+		SkillLevelTableData skillLevelTableData = TableDataManager.instance.FindSkillLevelTableData(_id, spellData.level);
+		if (skillInfo == null || skillLevelTableData == null)
+			return;
+
 		RefreshInfo(skillInfo.iconPrefab, skillInfo.nameId, skillInfo.descriptionId, skillLevelTableData);
 
 		for (int i = 0; i < noGainGrayTextList.Length; ++i)
@@ -28,6 +46,7 @@ public class SpellCanvasListItem : MonoBehaviour
 
 	public void InitializeForNoGain(SkillTableData skillTableData, SkillLevelTableData skillLevelTableData)
 	{
+		_noGain = true;
 		RefreshInfo(skillTableData.iconPrefab,
 			skillTableData.useNameIdOverriding ? skillLevelTableData.nameId : skillTableData.nameId,
 			skillTableData.useDescriptionIdOverriding ? skillLevelTableData.descriptionId : skillTableData.descriptionId,
@@ -44,10 +63,15 @@ public class SpellCanvasListItem : MonoBehaviour
 	GameObject _cachedImageObject;
 	void RefreshInfo(string iconPrefabAddress, string nameId, string descriptionId, SkillLevelTableData skillLevelTableData)
 	{
+		atkText.text = skillLevelTableData.accumulatedAtk.ToString("N0");
 
 		levelText.text = UIString.instance.GetString("GameUI_LevelPackLv", skillLevelTableData.level);
 		nameText.SetLocalizedText(UIString.instance.GetString(nameId));
 		_descString = UIString.instance.GetString(descriptionId, skillLevelTableData.parameter);
+
+		int count = 0;
+		if (_spellData != null) count = _spellData.count;
+		proceedingCountText.text = string.Format("{0:N0} / {1:N0}", count, 20);
 
 		if (_cachedImageObject != null)
 		{
@@ -60,6 +84,11 @@ public class SpellCanvasListItem : MonoBehaviour
 			AddressableAssetLoadManager.GetAddressableGameObject(iconPrefabAddress, "Preview", (prefab) =>
 			{
 				_cachedImageObject = UIInstanceManager.instance.GetCachedObject(prefab, iconPrefabRootTransform);
+
+				Coffee.UIExtensions.UIShiny shinyComponent = _cachedImageObject.GetComponentInChildren<Coffee.UIExtensions.UIShiny>();
+				Image image = shinyComponent.GetComponent<Image>();
+				shinyComponent.enabled = _noGain ? false : true;
+				image.color = _noGain ? Color.gray : Color.white;
 			});
 		}
 	}
@@ -72,6 +101,17 @@ public class SpellCanvasListItem : MonoBehaviour
 
 	public void OnClickLevelUpButton()
 	{
+		if (_noGain)
+		{
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("SpellUI_NoGainSkill"), 2.0f);
+			return;
+		}
+
+		PlayFabApiManager.instance.RequestLevelUpSpell(_spellData, (_level + 1), () =>
+		{
+			Initialize(_spellData, _skillTableData);
+			//MainCanvas.instance.RefreshLevelPassAlarmObject();
+		});
 	}
 
 

@@ -55,4 +55,12 @@ public class SpellData
 				_mainStatusValue = skillLevelTableData.accumulatedAtk;
 		}
 	}
+
+
+	public void OnLevelUp(int targetLevel)
+	{
+		_level = targetLevel;
+		RefreshCachedStatus();
+		SpellManager.instance.OnChangedStatus();
+	}
 }

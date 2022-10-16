@@ -14,6 +14,7 @@ public class SpellCanvas : ResearchShowCanvasBase
 	public Text proceedingCountText;
 	public Text skillTotalLevelText;
 	public Text skillTotalLevelValueText;
+	public RectTransform alarmRootTransform;
 
 	public Transform separateLineTransform;
 
@@ -52,6 +53,7 @@ public class SpellCanvas : ResearchShowCanvasBase
 		MainCanvas.instance.OnEnterCharacterMenu(true);
 
 		// refresh
+		RefreshSpellLevel();
 		RefreshGrid();
 	}
 
@@ -76,6 +78,15 @@ public class SpellCanvas : ResearchShowCanvasBase
 		MainCanvas.instance.OnEnterCharacterMenu(false);
 	}
 
+	void RefreshSpellLevel()
+	{
+		// gauge
+		proceedingCountText.text = string.Format("{0:N0} / {1:N0}", SpellManager.instance.GetSumSpellCount(), 500);
+
+		// level
+		skillTotalLevelText.text = string.Format("Lv. {0:N0}", SpellManager.instance.spellTotalLevel);
+		skillTotalLevelValueText.text = "175";
+	}
 
 	List<SpellCanvasListItem> _listSpellCanvasListItem = new List<SpellCanvasListItem>();
 	public void RefreshGrid()
@@ -91,21 +102,15 @@ public class SpellCanvas : ResearchShowCanvasBase
 			if (TableDataManager.instance.skillTable.dataArray[i].spell == false)
 				continue;
 
-			int skillLevel = SpellManager.instance.GetSpellLevel(TableDataManager.instance.skillTable.dataArray[i].id);
-			if (skillLevel == 0)
+			SpellData spellData = SpellManager.instance.GetSpellData(TableDataManager.instance.skillTable.dataArray[i].id);
+			if (spellData == null)
 			{
 				++noGainCount;
 				continue;
 			}
-			SkillLevelTableData skillLevelTableData = TableDataManager.instance.FindSkillLevelTableData(TableDataManager.instance.skillTable.dataArray[i].id, skillLevel);
-			if (skillLevelTableData == null)
-				continue;
-			SkillProcessor.SkillInfo skillInfo = BattleInstanceManager.instance.playerActor.skillProcessor.GetSpellInfo(TableDataManager.instance.skillTable.dataArray[i].id);
-			if (skillInfo == null)
-				continue;
 
 			SpellCanvasListItem spellCanvasListItem = _container.GetCachedItem(contentItemPrefab, contentRootRectTransform);
-			spellCanvasListItem.Initialize(skillInfo, TableDataManager.instance.skillTable.dataArray[i], skillLevelTableData);
+			spellCanvasListItem.Initialize(spellData, TableDataManager.instance.skillTable.dataArray[i]);
 			spellCanvasListItem.cachedTransform.SetAsLastSibling();
 			_listSpellCanvasListItem.Add(spellCanvasListItem);
 		}
@@ -121,7 +126,7 @@ public class SpellCanvas : ResearchShowCanvasBase
 			if (TableDataManager.instance.skillTable.dataArray[i].spell == false)
 				continue;
 
-			if (SpellManager.instance.GetSpellLevel(TableDataManager.instance.skillTable.dataArray[i].id) > 0)
+			if (SpellManager.instance.GetSpellData(TableDataManager.instance.skillTable.dataArray[i].id) != null)
 				continue;
 			SkillLevelTableData skillLevelTableData = TableDataManager.instance.FindSkillLevelTableData(TableDataManager.instance.skillTable.dataArray[i].id, 1);
 			if (skillLevelTableData == null)

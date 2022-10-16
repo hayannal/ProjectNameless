@@ -85,6 +85,16 @@ public class ActorStatus : MonoBehaviour
 				_statusBase.valueList[(int)eActorStatus.Attack] += addValue;
 			}
 		}
+
+		// spell
+		_statusBase.valueList[(int)eActorStatus.Attack] += SpellManager.instance.cachedValue;
+
+		// team
+
+		// pet
+
+		// equip
+
 		_statusBase.valueList[(int)eActorStatus.CombatPower] = _statusBase.valueList[(int)eActorStatus.Attack];
 		_statusBase.valueList[(int)eActorStatus.AttackMulti] = actorTableData.multiAtk;
 

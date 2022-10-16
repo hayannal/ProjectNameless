@@ -33,10 +33,22 @@ public class SpellManager : MonoBehaviour
 	}
 	static SpellManager _instance = null;
 
+	public ObscuredInt spellTotalLevel { get; set; }
+	public ObscuredInt cachedValue { get; set; }
+
 	List<SpellData> _listSpellData = new List<SpellData>();
-	public void OnRecvSpellInventory(List<ItemInstance> userInventory, Dictionary<string, UserDataRecord> userData, Dictionary<string, UserDataRecord> userReadOnlyData)
+	public void OnRecvSpellInventory(List<ItemInstance> userInventory, Dictionary<string, UserDataRecord> userData, Dictionary<string, UserDataRecord> userReadOnlyData, List<StatisticValue> playerStatistics)
 	{
 		ClearInventory();
+
+		spellTotalLevel = 1;
+		for (int i = 0; i < playerStatistics.Count; ++i)
+		{
+			switch (playerStatistics[i].StatisticName)
+			{
+				case "spellLevel": spellTotalLevel = playerStatistics[i].Value; break;
+			}
+		}
 
 		// list
 		for (int i = 0; i < userInventory.Count; ++i)
@@ -54,7 +66,7 @@ public class SpellManager : MonoBehaviour
 			newSpellData.Initialize((userInventory[i].RemainingUses != null) ? (int)userInventory[i].RemainingUses : 0, userInventory[i].CustomData);
 			_listSpellData.Add(newSpellData);
 		}
-		
+
 		// status
 		RefreshCachedStatus();
 	}
@@ -69,19 +81,56 @@ public class SpellManager : MonoBehaviour
 
 	void RefreshCachedStatus()
 	{
+		cachedValue = 0;
 
+		// total level status
+
+		// spell level status
+		for (int i = 0; i < _listSpellData.Count; ++i)
+			cachedValue += _listSpellData[i].mainStatusValue;
 	}
 
+	public void OnChangedStatus()
+	{
+		RefreshCachedStatus();
+		PlayerData.instance.OnChangedStatus();
+	}
 
-	public int GetSpellLevel(string id)
+	public int GetSumSpellCount()
+	{
+		int sumSpellCount = 0;
+		for (int i = 0; i < _listSpellData.Count; ++i)
+			sumSpellCount += _listSpellData[i].count;
+		return sumSpellCount;
+	}
+
+	public SpellData GetSpellData(string id)
 	{
 		for (int i = 0; i < _listSpellData.Count; ++i)
 		{
 			if (_listSpellData[i].spellId == id)
-				return _listSpellData[i].level;
+				return _listSpellData[i];
 		}
+		return null;
+	}
+
+	public int GetSpellLevel(string id)
+	{
+		SpellData spellData = GetSpellData(id);
+		if (spellData != null)
+			return spellData.level;
 		return 0;
 	}
+
+
+	#region Total
+	public void OnLevelUpTotalSpell(int targetLevel)
+	{
+		if ((spellTotalLevel + 1) == targetLevel)
+			spellTotalLevel = targetLevel;
+		OnChangedStatus();
+	}
+	#endregion
 
 
 	#region Grant
@@ -141,5 +190,47 @@ public class SpellManager : MonoBehaviour
 	}
 
 	// 대부분의 아이템 획득은 이걸 써서 처리하게 될거다.
+	public void OnRecvItemGrantResult(string jsonItemGrantResults, int expectCount = 0)
+	{
+		List<ItemInstance> listItemInstance = DeserializeItemGrantResult(jsonItemGrantResults);
+		if (expectCount != 0 && listItemInstance.Count != expectCount)
+			return;
+
+		for (int i = 0; i < listItemInstance.Count; ++i)
+		{
+			SkillTableData skillTableData = TableDataManager.instance.FindSkillTableData(listItemInstance[i].ItemId);
+			if (skillTableData == null)
+				continue;
+
+			SpellData currentSpellData = null;
+			for (int j = 0; j < _listSpellData.Count; ++j)
+			{
+				if (_listSpellData[j].spellId == listItemInstance[i].ItemId)
+				{
+					currentSpellData = _listSpellData[j];
+					break;
+				}
+			}
+
+			if (currentSpellData != null)
+			{
+				currentSpellData.Initialize((listItemInstance[i].RemainingUses != null) ? (int)listItemInstance[i].RemainingUses : 0, listItemInstance[i].CustomData);
+
+				//if (BattleInstanceManager.instance.playerActor != null)
+				//	BattleInstanceManager.instance.playerActor.skillProcessor.RefreshSpellLevel(currentSpellData);
+			}
+			else
+			{
+				SpellData newSpellData = new SpellData();
+				newSpellData.uniqueId = listItemInstance[i].ItemInstanceId;
+				newSpellData.spellId = listItemInstance[i].ItemId;
+				newSpellData.Initialize((listItemInstance[i].RemainingUses != null) ? (int)listItemInstance[i].RemainingUses : 0, listItemInstance[i].CustomData);
+				_listSpellData.Add(newSpellData);
+
+				//if (BattleInstanceManager.instance.playerActor != null)
+				//	BattleInstanceManager.instance.playerActor.skillProcessor.AddSpell(currentSpellData);
+			}
+		}
+	}
 	#endregion
 }

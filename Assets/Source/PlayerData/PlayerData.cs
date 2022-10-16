@@ -362,12 +362,7 @@ public class PlayerData : MonoBehaviour
 		if (subLevelIndex < _listSubLevel.Count)
 			_listSubLevel[subLevelIndex] += 1;
 
-		// 캐릭터 데이터가 변경되면 이걸 사용하는 PlayerActor의 ActorStatus도 새로 스탯을 계산해야한다.
-		PlayerActor playerActor = BattleInstanceManager.instance.playerActor;
-		if (playerActor != null)
-			playerActor.actorStatus.InitializeActorStatus();
-
-		TeamManager.instance.InitializeActorStatus();
+		OnChangedStatus();
 	}
 
 	public void OnLevelUp()
@@ -376,13 +371,18 @@ public class PlayerData : MonoBehaviour
 		for (int i = 0; i < _listSubLevel.Count; ++i)
 			_listSubLevel[i] = 0;
 
+		MainCanvas.instance.RefreshCashButton();
+		OnChangedStatus();
+	}
+
+	public void OnChangedStatus()
+	{
 		// 캐릭터 데이터가 변경되면 이걸 사용하는 PlayerActor의 ActorStatus도 새로 스탯을 계산해야한다.
 		PlayerActor playerActor = BattleInstanceManager.instance.playerActor;
 		if (playerActor != null)
 			playerActor.actorStatus.InitializeActorStatus();
 
 		TeamManager.instance.InitializeActorStatus();
-		MainCanvas.instance.RefreshCashButton();
 	}
 
 	public void OnRecvCharacterList(List<CharacterResult> characterList, Dictionary<string, GetCharacterStatisticsResult> dicCharacterStatistics)

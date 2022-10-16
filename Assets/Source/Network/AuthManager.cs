@@ -233,6 +233,7 @@ public class AuthManager : MonoBehaviour
 		playerStatisticNames.Add("energyUseForPayback");
 		playerStatisticNames.Add("sevenDaysSumPoint");
 		playerStatisticNames.Add("chtRnkSus");
+		playerStatisticNames.Add("spellLevel");
 		/*
 		playerStatisticNames.Add("highestValue");
 		playerStatisticNames.Add("nodClLv");

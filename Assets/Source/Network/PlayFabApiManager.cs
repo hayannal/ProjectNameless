@@ -684,7 +684,7 @@ public class PlayFabApiManager : MonoBehaviour
 		ClearCliSusQueue();
 		enableCliSusQueue = true;
 		PlayerData.instance.OnRecvPlayerStatistics(_loginResult.InfoResultPayload.PlayerStatistics);
-		SpellManager.instance.OnRecvSpellInventory(_loginResult.InfoResultPayload.UserInventory, _loginResult.InfoResultPayload.UserData, _loginResult.InfoResultPayload.UserReadOnlyData);
+		SpellManager.instance.OnRecvSpellInventory(_loginResult.InfoResultPayload.UserInventory, _loginResult.InfoResultPayload.UserData, _loginResult.InfoResultPayload.UserReadOnlyData, _loginResult.InfoResultPayload.PlayerStatistics);
 		/*
 		TimeSpaceData.instance.OnRecvEquipInventory(_loginResult.InfoResultPayload.UserInventory, _loginResult.InfoResultPayload.UserData, _loginResult.InfoResultPayload.UserReadOnlyData);
 		*/
@@ -2127,6 +2127,65 @@ public class PlayFabApiManager : MonoBehaviour
 				jsonResult.TryGetValue("itmRet", out object itmRet);
 
 				if (successCallback != null) successCallback.Invoke(failure, (string)itmRet);
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
+	public void RequestLevelUpSpell(SpellData spellData, int targetLevel, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}_{2}_{3}", (string)spellData.spellId, spellData.count, targetLevel, "zlireplm");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "LevelUpSpell",
+			FunctionParameter = new { ItmId = (string)spellData.uniqueId, T = targetLevel, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				spellData.OnLevelUp(targetLevel);
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
+	public void RequestLevelUpTotalSpell(int targetLevel, int price, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}_{2}", targetLevel, price, "xlireplq");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "LevelUpTotalSpell",
+			FunctionParameter = new { T = targetLevel, Pr = price, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				CurrencyData.instance.gold -= price;
+				SpellManager.instance.OnLevelUpTotalSpell(targetLevel);
+
+				if (successCallback != null) successCallback.Invoke();
 			}
 		}, (error) =>
 		{
