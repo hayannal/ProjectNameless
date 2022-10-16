@@ -13,6 +13,10 @@ public class MainCanvas : MonoBehaviour
 	public RectTransform[] targetPositionRectTransformList;
 	public float noInputTime = 15.0f;
 
+	public GameObject teamButtonObject;
+	public GameObject petButtonObject;
+	public GameObject equipButtonObject;
+
 	public RectTransform challengeButtonRootTransform;
 	public GameObject challengeButtonObject;
 	public GameObject cancelChallengeButtonObject;
@@ -58,6 +62,7 @@ public class MainCanvas : MonoBehaviour
 
 		RefreshCashButton();
 		RefreshCashAdditionalButton();
+		RefreshMenuButton();
 		RefreshAlarmObjectList();
 	}
 
@@ -128,7 +133,15 @@ public class MainCanvas : MonoBehaviour
 	}
 
 	public void OnClickOptionButton()
-	{ 
+	{
+		List<string> listSpellId = new List<string>();
+		listSpellId.Add("Spell_0001");
+		//listSpellId.Add("Spell_0002");
+		PlayFabApiManager.instance.RequestSpellBox(listSpellId, (failure, itemResult) =>
+		{
+
+		});
+
 		UIInstanceManager.instance.ShowCanvasAsync("SettingCanvas", null);
 	}
 
@@ -244,9 +257,21 @@ public class MainCanvas : MonoBehaviour
 	#endregion
 
 	#region Menu
+	public void RefreshMenuButton()
+	{
+		teamButtonObject.SetActive(true);
+		petButtonObject.SetActive(false);
+		equipButtonObject.SetActive(false);
+	}
+
 	public void OnClickCharacterButton()
 	{
 		UIInstanceManager.instance.ShowCanvasAsync("CharacterCanvas", null);
+	}
+
+	public void OnClickSpellButton()
+	{
+		UIInstanceManager.instance.ShowCanvasAsync("SpellCanvas", null);
 	}
 
 	public void OnEnterCharacterMenu(bool enter)
@@ -265,7 +290,9 @@ public class MainCanvas : MonoBehaviour
 	{
 		return (safeAreaCanvasGroup.alpha == 0.0f);
 	}
+	#endregion
 
+	#region Sub Menu Button
 	public void OnClickGachaButton()
 	{
 		UIInstanceManager.instance.ShowCanvasAsync("GachaCanvas", null);
