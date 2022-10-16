@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class ResearchShowCanvasBase : MonoBehaviour
 {
-	// CharacterShowCanvasBase 처럼 ResearchShowCanvasBase같은걸 만들까 하다가 연구는 여러개로 나눠서 상속받을 일이 없을거 같아서
-	// 하나의 클래스 안에 넣기로 한다.
 	public Transform infoCameraTransform;
 	public float infoCameraFov = 43.0f;
 
