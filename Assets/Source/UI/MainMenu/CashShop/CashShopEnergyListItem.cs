@@ -9,6 +9,7 @@ public class CashShopEnergyListItem : SimpleCashCanvas
 	public string productId = "cashshopenergy";
 	public int num = 1;
 
+	public GameObject moreTextObject;
 	public Text countText;
 	public Text prevCountText;
 	public RectTransform lineImageRectTransform;
@@ -34,6 +35,7 @@ public class CashShopEnergyListItem : SimpleCashCanvas
 
 		if (eventApplied)
 		{
+			moreTextObject.SetActive(true);
 			prevCountText.text = shopProductTableData.rewardCount1.ToString("N0");
 			prevCountText.gameObject.SetActive(false);
 			prevCountText.gameObject.SetActive(true);
@@ -45,6 +47,7 @@ public class CashShopEnergyListItem : SimpleCashCanvas
 		}
 		else
 		{
+			moreTextObject.SetActive(false);
 			prevCountText.gameObject.SetActive(false);
 			countText.text = shopProductTableData.rewardCount1.ToString("N0");
 			RefreshPrice(shopProductTableData.serverItemId, shopProductTableData.kor, shopProductTableData.eng);

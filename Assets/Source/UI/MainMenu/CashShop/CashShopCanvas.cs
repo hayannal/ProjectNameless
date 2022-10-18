@@ -72,14 +72,17 @@ public class CashShopCanvas : MonoBehaviour
 
 	void OnEnable()
 	{
-		RefreshInfo();
-
-		StackCanvas.Push(gameObject);
-
-		MainCanvas.instance.OnEnterCharacterMenu(true);
+		bool restore = StackCanvas.Push(gameObject, false, null, OnPopStack);
 
 		if (DragThresholdController.instance != null)
 			DragThresholdController.instance.ApplyUIDragThreshold();
+
+		if (restore)
+			return;
+
+		MainCanvas.instance.OnEnterCharacterMenu(true);
+
+		RefreshInfo();
 
 		termsGroupObject.SetActive(OptionManager.instance.language == "KOR");
 		emptyTermsGroupObject.SetActive(OptionManager.instance.language != "KOR");
@@ -93,11 +96,24 @@ public class CashShopCanvas : MonoBehaviour
 		if (DragThresholdController.instance != null)
 			DragThresholdController.instance.ResetUIDragThreshold();
 
-		MainCanvas.instance.OnEnterCharacterMenu(false);
+		if (StackCanvas.Pop(gameObject))
+			return;
 
-		StackCanvas.Pop(gameObject);
+		OnPopStack();
 	}
-	
+
+	void OnPopStack()
+	{
+		if (StageManager.instance == null)
+			return;
+		if (MainSceneBuilder.instance == null)
+			return;
+		if (MainCanvas.instance == null)
+			return;
+
+		MainCanvas.instance.OnEnterCharacterMenu(false);
+	}
+
 	void RefreshInfo()
 	{
 		iapInitializeFailedRectObject.SetActive(!CodelessIAPStoreListener.initializationComplete);
