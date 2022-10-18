@@ -62,7 +62,7 @@ public class ChangePowerCanvas : MonoBehaviour
 	}
 
 
-	const float valueChangeTime = 0.45f;
+	const float valueChangeTime = 0.35f;
 	float _valueChangeRemainTime;
 	float _valueChangeSpeed = 0.0f;
 	float _currentValue;
