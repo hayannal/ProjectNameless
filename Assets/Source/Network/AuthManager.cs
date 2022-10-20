@@ -219,9 +219,7 @@ public class AuthManager : MonoBehaviour
 		//playerStatisticNames.Add("highestPlayChapter");
 		playerStatisticNames.Add("highestClearStage");
 		playerStatisticNames.Add("playerLevel");
-		playerStatisticNames.Add("subLevel0");
-		playerStatisticNames.Add("subLevel1");
-		playerStatisticNames.Add("subLevel2");
+		playerStatisticNames.Add("playerSubLevel");
 		playerStatisticNames.Add("betCnt");
 		playerStatisticNames.Add("brokenEnergy");
 		playerStatisticNames.Add("ticket");

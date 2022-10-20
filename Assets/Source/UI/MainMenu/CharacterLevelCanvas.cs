@@ -13,19 +13,12 @@ public class CharacterLevelCanvas : MonoBehaviour
 	public GameObject subLevelUpEffectPrefab;
 	public GameObject levelUpEffectPrefab;
 
-	public Image[] subLevel0ImageList;
-	public Image[] subLevel1ImageList;
-	public Image[] subLevel2ImageList;
+	public Image gradeBackImage;
+	public Text gradeText;
+	public Text nameText;
 
-	//public Text changeWingText;
-	//public Transform changeWingTextTransform;
-	public GameObject[] subPriceButtonObjectList;
-	public Image[] subPriceButtonImageList;
-	public Text[] subPriceTextList;
-	public Coffee.UIExtensions.UIEffect[] subPriceGrayscaleEffectList;
-	public GameObject[] subMaxButtonObjectList;
-	public Image[] subMaxButtonImageList;
-	public Text[] subMaxButtonTextList;
+	public Image[] subLevelImageList;
+	public Image[] subLevelUpImagEffectList;
 
 	public Text playerLevelText;
 	public Text atkText;
@@ -50,72 +43,42 @@ public class CharacterLevelCanvas : MonoBehaviour
 
 	void OnEnable()
 	{
+		// hardcode ev8
+		_salePrice = CashShopData.instance.IsShowEvent("ev8");
+
 		RefreshInfo();
 	}
 
 	#region Info
 	ObscuredBool _salePrice = false;
-	List<int> _listFirstGoldPrice = new List<int>();
-	List<int> _listSecondGoldPrice = new List<int>();
-	List<int> _listThirdGoldPrice = new List<int>();
+	List<int> _listSubGoldPrice = new List<int>();
 	public void RefreshInfo()
 	{
+		int playerClass = 0;
+		switch (playerClass)
+		{
+			case 0:
+				gradeBackImage.color = new Color(0.5f, 0.5f, 0.5f);
+				break;
+			case 1:
+				gradeBackImage.color = new Color(0.0f, 0.51f, 1.0f);
+				break;
+			case 2:
+				gradeBackImage.color = new Color(1.0f, 0.5f, 0.0f);
+				break;
+		}
+		gradeText.SetLocalizedText(UIString.instance.GetString(string.Format("GameUI_PlayerClass{0}", playerClass)));
+		nameText.SetLocalizedText(UIString.instance.GetString("GameUI_PlayerName"));
+
 		int level = PlayerData.instance.playerLevel;
 		PlayerLevelTableData playerLevelTableData = TableDataManager.instance.FindPlayerLevelTableData(level);
 		if (playerLevelTableData == null)
 			return;
 
-		// hardcode ev8
-		_salePrice = CashShopData.instance.IsShowEvent("ev8");
-
-		int subLevel0 = PlayerData.instance.listSubLevel[0];
-		int subLevel1 = PlayerData.instance.listSubLevel[1];
-		int subLevel2 = PlayerData.instance.listSubLevel[2];
-		FillSubLevelImage(subLevel0, playerLevelTableData.firstCount, subLevel0ImageList);
-		FillSubLevelImage(subLevel1, playerLevelTableData.secondCount, subLevel1ImageList);
-		FillSubLevelImage(subLevel2, playerLevelTableData.thirdCount, subLevel2ImageList);
-		bool subLevelComplete = (subLevel0 == playerLevelTableData.firstCount && subLevel1 == playerLevelTableData.secondCount && subLevel2 == playerLevelTableData.thirdCount);
-
-
-		if (_salePrice)
-		{
-			StringUtil.SplitIntList(playerLevelTableData.saleFirstGold, ref _listFirstGoldPrice);
-			StringUtil.SplitIntList(playerLevelTableData.saleSecondGold, ref _listSecondGoldPrice);
-			StringUtil.SplitIntList(playerLevelTableData.saleThirdGold, ref _listThirdGoldPrice);
-		}
-		else
-		{
-			StringUtil.SplitIntList(playerLevelTableData.firstGold, ref _listFirstGoldPrice);
-			StringUtil.SplitIntList(playerLevelTableData.secondGold, ref _listSecondGoldPrice);
-			StringUtil.SplitIntList(playerLevelTableData.thirdGold, ref _listThirdGoldPrice);
-		}
-		
-		for (int i = 0; i < subPriceButtonImageList.Length; ++i)
-		{
-			int price = 0;
-			bool max = false;
-			switch (i)
-			{
-				case 0:
-					max = (subLevel0 == playerLevelTableData.firstCount);
-					if (!max) price = _subLevelUp1Price = _listFirstGoldPrice[subLevel0];
-					break;
-				case 1:
-					max = (subLevel1 == playerLevelTableData.secondCount);
-					if (!max) price = _subLevelUp2Price = _listSecondGoldPrice[subLevel1];
-					break;
-				case 2:
-					max = (subLevel2 == playerLevelTableData.thirdCount);
-					if (!max) price = _subLevelUp3Price = _listThirdGoldPrice[subLevel2];
-					break;
-			}
-			SetSubLevelPriceButton(i, price, max);
-		}
-
 		playerLevelText.text = UIString.instance.GetString("GameUI_CharPower", level);
 		atkText.text = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower).ToString("N0");
 
-
+		bool maxLevel = false;
 		if (level >= BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxPlayerLevel"))
 		{
 			priceButtonObject.SetActive(false);
@@ -123,14 +86,64 @@ public class CharacterLevelCanvas : MonoBehaviour
 			maxButtonImage.color = ColorUtil.halfGray;
 			maxButtonText.color = ColorUtil.halfGray;
 			maxButtonObject.SetActive(true);
+			maxLevel = true;
 		}
-		else
-		{
-			PlayerLevelTableData nextPlayerLevelTableData = TableDataManager.instance.FindPlayerLevelTableData(level + 1);
 
-			int requiredGold = _salePrice ? nextPlayerLevelTableData.saleRequiredGold : nextPlayerLevelTableData.requiredGold;
+		int subLevel = PlayerData.instance.subLevel;
+		if (maxLevel)
+		{
+			// 최대 레벨에 도달하면 서브레벨은 0이지만 최대로 가득 찬것처럼 표현해야한다.
+			PlayerLevelTableData prevPlayerLevelTableData = TableDataManager.instance.FindPlayerLevelTableData(level - 1);
+			subLevel = prevPlayerLevelTableData.subLevelCount;
+		}
+		for (int i = 0; i < subLevelImageList.Length; ++i)
+		{
+			int imageStep = 0;
+			int offset = 0;
+			if (i == 0) offset = 8;
+			else if (i == 1) offset = 7;
+			else if (i == 2) offset = 6;
+			else if (i == 3) offset = 5;
+			else if (i == 4) offset = 4;
+			else if (i == 5) offset = 3;
+			else if (i == 6) offset = 2;
+			else if (i == 7) offset = 1;
+			else if (i == 8) offset = 0;
+			imageStep = (subLevel + offset) / subLevelImageList.Length;
+
+			switch (imageStep)
+			{
+				case 0: subLevelImageList[i].color = Color.clear; break;
+				case 1: subLevelImageList[i].color = Color.white; break;
+				case 2: subLevelImageList[i].color = Color.yellow; break;
+				case 3: subLevelImageList[i].color = Color.green; break;
+				case 4: subLevelImageList[i].color = Color.red; break;
+			}
+		}
+
+		if (!maxLevel)
+		{
+			int requiredGold = 0;
+			// 여기서는 가격 표시
+			bool subLevelComplete = (subLevel == playerLevelTableData.subLevelCount);
+			if (subLevelComplete)
+			{
+				// 여기서는 다음 레벨업을 위한 비용을 표시하면 되고
+				PlayerLevelTableData nextPlayerLevelTableData = TableDataManager.instance.FindPlayerLevelTableData(level + 1);
+				requiredGold = _salePrice ? nextPlayerLevelTableData.saleRequiredGold : nextPlayerLevelTableData.requiredGold;
+			}
+			else
+			{
+				// 여기서는 서브 레벨업을 위한 비용을 표시하면 된다.
+				if (_salePrice)
+					StringUtil.SplitIntList(playerLevelTableData.subGoldSale, ref _listSubGoldPrice);
+				else
+					StringUtil.SplitIntList(playerLevelTableData.subGold, ref _listSubGoldPrice);
+				requiredGold = _listSubGoldPrice[subLevel];
+			}
+
 			priceText.text = requiredGold.ToString("N0");
-			bool disablePrice = (CurrencyData.instance.gold < requiredGold || subLevelComplete == false);
+			bool disablePrice = (CurrencyData.instance.gold < requiredGold);
 			priceButtonImage.color = !disablePrice ? Color.white : ColorUtil.halfGray;
 			priceText.color = !disablePrice ? Color.white : Color.gray;
 			priceGrayscaleEffect.enabled = disablePrice;
@@ -171,119 +184,37 @@ public class CharacterLevelCanvas : MonoBehaviour
 		_prevWingLookId = characterData.wingLookId;
 		*/
 	}
-
-	void FillSubLevelImage(int subLevel, int subLevelMax, Image[] subLevelImageList)
-	{
-		for (int i = 0; i < subLevelImageList.Length; ++i)
-		{
-			int imageStep = 0;
-			int offset = 0;
-			if (i == 0) offset = 2;
-			else if (i == 1) offset = 1;
-			else if (i == 2) offset = 0;
-			imageStep = (subLevel + offset) / subLevelImageList.Length;
-			
-			switch (imageStep)
-			{
-				case 0: subLevelImageList[i].color = Color.clear; break;
-				case 1: subLevelImageList[i].color = Color.white; break;
-				case 2: subLevelImageList[i].color = Color.yellow; break;
-				case 3: subLevelImageList[i].color = Color.green; break;
-				case 4: subLevelImageList[i].color = Color.red; break;
-			}
-		}
-	}
-
-	void SetSubLevelPriceButton(int subLevelIndex, int subLevelUpPrice, bool max)
-	{
-		if (max)
-		{
-			subPriceButtonObjectList[subLevelIndex].SetActive(false);
-
-			subMaxButtonImageList[subLevelIndex].color = ColorUtil.halfGray;
-			subMaxButtonTextList[subLevelIndex].color = ColorUtil.halfGray;
-			subMaxButtonObjectList[subLevelIndex].SetActive(true);
-		}
-		else
-		{
-			int requiredGold = subLevelUpPrice;
-			subPriceTextList[subLevelIndex].text = requiredGold.ToString("N0");
-			bool disablePrice = (CurrencyData.instance.gold < requiredGold);
-			subPriceButtonImageList[subLevelIndex].color = !disablePrice ? Color.white : ColorUtil.halfGray;
-			subPriceTextList[subLevelIndex].color = !disablePrice ? Color.white : Color.gray;
-			subPriceGrayscaleEffectList[subLevelIndex].enabled = disablePrice;
-			subPriceButtonObjectList[subLevelIndex].SetActive(true);
-			subMaxButtonObjectList[subLevelIndex].SetActive(false);
-			//_price = price;
-		}
-	}
 	#endregion
 
-
-	int _subLevelUp1Price;
-	public void OnClickSubLevelUp1Button()
+	public void OnClickClassEnhanceButton()
 	{
-		if (CurrencyData.instance.gold < _subLevelUp1Price)
-		{
-			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughGold"), 2.0f);
-			return;
-		}
 
-		RequestSubLevelUp(0, _subLevelUp1Price);
 	}
 
-	int _subLevelUp2Price;
-	public void OnClickSubLevelUp2Button()
+	public void OnClickStoryButton()
 	{
-		if (CurrencyData.instance.gold < _subLevelUp2Price)
-		{
-			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughGold"), 2.0f);
-			return;
-		}
-
-		RequestSubLevelUp(1, _subLevelUp2Price);
-	}
-
-	int _subLevelUp3Price;
-	public void OnClickSubLevelUp3Button()
-	{
-		if (CurrencyData.instance.gold < _subLevelUp3Price)
-		{
-			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughGold"), 2.0f);
-			return;
-		}
-
-		RequestSubLevelUp(2, _subLevelUp3Price);
-	}
-
-	void RequestSubLevelUp(int subLevelIndex, int price)
-	{
-		if (CheatingListener.detectedCheatTable)
+		ActorTableData actorTableData = TableDataManager.instance.FindActorTableData(CharacterData.s_PlayerActorId);
+		if (actorTableData == null)
 			return;
 
-		float prevValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
-		PlayFabApiManager.instance.RequestSubLevelUp(subLevelIndex, price, _salePrice, () =>
-		{
-			GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.EnhanceCharacter);
+		string story = UIString.instance.GetString(actorTableData.storyId);
+		string desc = UIString.instance.GetString(actorTableData.descId);
+		TooltipCanvas.Show(true, TooltipCanvas.eDirection.StoryInfo, string.Format("{0}\n\n{1}", story, desc), 400, nameText.transform, new Vector2(0.0f, -35.0f));
 
-			float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
-
-			RefreshInfo();
-			CharacterCanvas.instance.currencySmallInfo.RefreshInfo();
-			BattleInstanceManager.instance.GetCachedObject(subLevelUpEffectPrefab, CharacterCanvas.instance.rootOffsetPosition, Quaternion.identity, null);
-
-			// 변경 완료를 알리고
-			UIInstanceManager.instance.ShowCanvasAsync("ChangePowerCanvas", () =>
-			{
-				ChangePowerCanvas.instance.ShowInfo(prevValue, nextValue);
-			});
-		});
+		// 뽑기창에서는 이와 다르게
+		// Char CharDesc는 기본으로 나오고 돋보기로만 Story를 본다.
 	}
 
-	public void OnClickSubLevelMaxButton()
+	public void OnClickAtkTextButton()
 	{
-		ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_MaxReachToast"), 2.0f);
+
 	}
+
+	public void OnClickCostumeButton()
+	{
+
+	}
+
 
 	/*
 	GameObject _nextWingPrefab;
@@ -332,41 +263,174 @@ public class CharacterLevelCanvas : MonoBehaviour
 		CharacterInfoCanvas.instance.inputLockObject.SetActive(false);
 	}
 	*/
-
-	int _price;
+	
+	ObscuredInt _price;
 	bool _subLevelComplete;
 	public void OnClickLevelUpButton()
 	{
-		if (_subLevelComplete == false)
-		{
-			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotCompleteSubLevel"), 2.0f);
-			return;
-		}
-
 		if (CurrencyData.instance.gold < _price)
 		{
 			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughGold"), 2.0f);
 			return;
 		}
 
-		float prevValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
-		PlayFabApiManager.instance.RequestLevelUp(_price, _salePrice, () =>
+		if (_subLevelComplete)
 		{
-			GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.LevelUpCharacter);
+			float prevValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
+			PlayFabApiManager.instance.RequestLevelUp(_price, _salePrice, () =>
+			{
+				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.LevelUpCharacter);
+
+				float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
+
+				RefreshInfo();
+				CharacterCanvas.instance.currencySmallInfo.RefreshInfo();
+				BattleInstanceManager.instance.GetCachedObject(levelUpEffectPrefab, CharacterCanvas.instance.rootOffsetPosition, Quaternion.identity, null);
+
+				// 변경 완료를 알리고
+				UIInstanceManager.instance.ShowCanvasAsync("ChangePowerCanvas", () =>
+				{
+					ChangePowerCanvas.instance.ShowInfo(prevValue, nextValue);
+				});
+			});
+		}
+		else
+		{
+			float prevValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
+			PlayFabApiManager.instance.RequestSubLevelUp(_price, _salePrice, () =>
+			{
+				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.EnhanceCharacter);
+
+				float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
+
+				RefreshInfo();
+				CharacterCanvas.instance.currencySmallInfo.RefreshInfo();
+				BattleInstanceManager.instance.GetCachedObject(subLevelUpEffectPrefab, CharacterCanvas.instance.rootOffsetPosition, Quaternion.identity, null);
+
+				// 변경 완료를 알리고
+				UIInstanceManager.instance.ShowCanvasAsync("ChangePowerCanvas", () =>
+				{
+					ChangePowerCanvas.instance.ShowInfo(prevValue, nextValue);
+				});
+			});
+		}
+	}
+
+	#region Press LevelUp
+	// 홀드로 레벨업 할땐 클릭으로 할때와 다르게 클라에서 선처리 해야한다.
+	float _prevCombatValue;
+	int _prevLevel;
+	int _prevSubLevel;
+	int _prevGold;
+	int _levelUpCount;
+	int _subLevelUpCount;
+	bool _pressed = false;
+	public void OnPressInitialize()
+	{
+		// 패킷에 전송할만한 초기화 내용을 기억해둔다.
+		_prevCombatValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
+		_prevLevel = PlayerData.instance.playerLevel;
+		_prevSubLevel = PlayerData.instance.subLevel;
+		_prevGold = CurrencyData.instance.gold;
+		_levelUpCount = _subLevelUpCount = 0;
+		_pressed = true;
+	}
+
+	public void OnPressLevelUp()
+	{
+		if (_pressed == false)
+			return;
+
+		if (CurrencyData.instance.gold < _price)
+		{
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughGold"), 2.0f);
+			if (_pressed)
+			{
+				OnPressUpSync();
+				_pressed = false;
+			}
+			return;
+		}
+
+		// 맥스 넘어가는거도 막아놔야한다.
+		if (PlayerData.instance.playerLevel >= BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxPlayerLevel"))
+		{
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_MaxReachToast"), 2.0f);
+			if (_pressed)
+			{
+				OnPressUpSync();
+				_pressed = false;
+			}
+			return;
+		}
+
+		if (_subLevelComplete)
+		{
+			_levelUpCount += 1;
+			CurrencyData.instance.gold -= _price;
+			PlayerData.instance.OnLevelUp();
+			PlayLevelUpEffect();
+		}
+		else
+		{
+			int subLevelUpImageEffectIndex = PlayerData.instance.subLevel % subLevelUpImagEffectList.Length;
+			subLevelUpImagEffectList[subLevelUpImageEffectIndex].gameObject.SetActive(true);
+			_subLevelUpCount += 1;
+			CurrencyData.instance.gold -= _price;
+			PlayerData.instance.OnSubLevelUp();
+			PlaySubLevelUpEffect();
+		}
+		RefreshInfo();
+		CharacterCanvas.instance.currencySmallInfo.RefreshInfo();
+	}
+
+	float _lastLevelUpEffectTime;
+	void PlayLevelUpEffect()
+	{
+		if (Time.time < _lastLevelUpEffectTime + 2.0f)
+			return;
+		BattleInstanceManager.instance.GetCachedObject(levelUpEffectPrefab, CharacterCanvas.instance.rootOffsetPosition, Quaternion.identity, null);
+		_lastLevelUpEffectTime = Time.time;
+	}
+
+	float _lastSubLevelUpEffectTime;
+	void PlaySubLevelUpEffect()
+	{
+		if (Time.time < _lastSubLevelUpEffectTime + 0.8f)
+			return;
+		BattleInstanceManager.instance.GetCachedObject(subLevelUpEffectPrefab, CharacterCanvas.instance.rootOffsetPosition, Quaternion.identity, null);
+		_lastSubLevelUpEffectTime = Time.time;
+	}
+
+	public void OnPressUpSync()
+	{
+		if (_pressed == false)
+			return;
+		_pressed = false;
+
+		if (_levelUpCount == 0 && _subLevelUpCount == 0)
+			return;
+		if (_prevLevel > PlayerData.instance.playerLevel)
+			return;
+		if (_prevGold < CurrencyData.instance.gold)
+			return;
+
+		PlayFabApiManager.instance.RequestPressLevelUp(_prevLevel, _prevSubLevel, _prevGold, PlayerData.instance.playerLevel, PlayerData.instance.subLevel, CurrencyData.instance.gold, _levelUpCount, _subLevelUpCount, _salePrice, () =>
+		{
+			if (_levelUpCount > 0)
+				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.LevelUpCharacter, _levelUpCount);
+			if (_subLevelUpCount > 0)
+				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.EnhanceCharacter, _subLevelUpCount);
 
 			float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
-
-			RefreshInfo();
-			CharacterCanvas.instance.currencySmallInfo.RefreshInfo();
-			BattleInstanceManager.instance.GetCachedObject(levelUpEffectPrefab, CharacterCanvas.instance.rootOffsetPosition, Quaternion.identity, null);
-
-			// 변경 완료를 알리고
 			UIInstanceManager.instance.ShowCanvasAsync("ChangePowerCanvas", () =>
 			{
-				ChangePowerCanvas.instance.ShowInfo(prevValue, nextValue);
+				ChangePowerCanvas.instance.ShowInfo(_prevCombatValue, nextValue);
 			});
 		});
 	}
+	#endregion
+
 
 	public void OnClickLevelMaxButton()
 	{

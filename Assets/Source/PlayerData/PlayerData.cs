@@ -44,10 +44,8 @@ public class PlayerData : MonoBehaviour
 	public ObscuredInt cheatRankSus { get; set; }
 
 	#region Player Property
-	public static int SubLevelCount = 3;
-	List<ObscuredInt> _listSubLevel = new List<ObscuredInt>();
-	public List<ObscuredInt> listSubLevel { get { return _listSubLevel; } }
 	public ObscuredInt playerLevel { get; set; }
+	public ObscuredInt subLevel { get; set; }
 	#endregion
 
 	// 클라가 들고있는 날짜 갱신 타임.
@@ -216,13 +214,7 @@ public class PlayerData : MonoBehaviour
 
 		// 레벨은 1로 시작하는게 맞다.
 		playerLevel = 1;
-		if (_listSubLevel.Count == 0)
-		{
-			for (int i = 0; i < SubLevelCount; ++i)
-				_listSubLevel.Add(0);
-		}
-		for (int i = 0; i < _listSubLevel.Count; ++i)
-			_listSubLevel[i] = 0;
+		subLevel = 0;
 
 		if (playerStatistics == null)
 			return;
@@ -235,9 +227,7 @@ public class PlayerData : MonoBehaviour
 				//case "highestPlayChapter": highestPlayChapter = playerStatistics[i].Value; break;
 				case "highestClearStage": highestClearStage = playerStatistics[i].Value; break;
 				case "playerLevel": playerLevel = playerStatistics[i].Value; break;
-				case "subLevel0": _listSubLevel[0] = playerStatistics[i].Value; break;
-				case "subLevel1": _listSubLevel[1] = playerStatistics[i].Value; break;
-				case "subLevel2": _listSubLevel[2] = playerStatistics[i].Value; break;
+				case "playerSubLevel": subLevel = playerStatistics[i].Value; break;
 				case "chtRnkSus": cheatRankSus = playerStatistics[i].Value; break;
 				//case "highestValue": highestValue = playerStatistics[i].Value; break;
 				//case "nodClLv": nodeWarClearLevel = playerStatistics[i].Value; break;
@@ -357,10 +347,9 @@ public class PlayerData : MonoBehaviour
 		loginned = true;
 	}
 
-	public void OnSubLevelUp(int subLevelIndex)
+	public void OnSubLevelUp()
 	{
-		if (subLevelIndex < _listSubLevel.Count)
-			_listSubLevel[subLevelIndex] += 1;
+		subLevel += 1;
 
 		OnChangedStatus();
 	}
@@ -368,8 +357,7 @@ public class PlayerData : MonoBehaviour
 	public void OnLevelUp()
 	{
 		playerLevel += 1;
-		for (int i = 0; i < _listSubLevel.Count; ++i)
-			_listSubLevel[i] = 0;
+		subLevel = 0;
 
 		MainCanvas.instance.RefreshCashButton();
 		OnChangedStatus();

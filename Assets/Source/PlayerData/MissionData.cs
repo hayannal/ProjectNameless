@@ -273,7 +273,7 @@ public class MissionData : MonoBehaviour
 		StartSevenDays();
 	}
 
-	public void OnQuestEvent(GuideQuestData.eQuestClearType questClearType)
+	public void OnQuestEvent(GuideQuestData.eQuestClearType questClearType, int addValue = 1)
 	{
 		// 진행중이지 않다면 패스
 		if (sevenDaysId == 0 || ServerTime.UtcNow > sevenDaysExpireTime)
@@ -283,7 +283,7 @@ public class MissionData : MonoBehaviour
 		if (_listAvailableQuestType.Contains(questClearType) == false)
 			return;
 
-		PlayFabApiManager.instance.RequestSevenDaysProceedingCount((int)questClearType, 1, GetProceedingCount((int)questClearType) + 1, () =>
+		PlayFabApiManager.instance.RequestSevenDaysProceedingCount((int)questClearType, addValue, GetProceedingCount((int)questClearType) + addValue, () =>
 		{
 			OnQuestProceedingCount();
 		});

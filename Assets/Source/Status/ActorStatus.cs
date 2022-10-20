@@ -58,32 +58,18 @@ public class ActorStatus : MonoBehaviour
 		PlayerLevelTableData playerLevelTableData = TableDataManager.instance.FindPlayerLevelTableData(actorLevel);
 		_statusBase.valueList[(int)eActorStatus.MaxHp] = 9999.0f;
 		_statusBase.valueList[(int)eActorStatus.Attack] = playerLevelTableData.accumulatedAtk;
-		for (int i = 0; i < PlayerData.instance.listSubLevel.Count; ++i)
+		int subLevel = PlayerData.instance.subLevel;
+		for (int i = 1; i <= subLevel; ++i)
 		{
-			int subLevel = PlayerData.instance.listSubLevel[i];
-			for (int j = 1; j <= subLevel; ++j)
+			int addValue = 0;
+			int value = (i - 1) / 9;
+			switch (value)
 			{
-				int addValue = 0;
-				switch (j)
-				{
-					case 1:
-					case 2:
-					case 3:
-						addValue = BattleInstanceManager.instance.GetCachedGlobalConstantInt("SubLevelFightValueLine1");
-						break;
-					case 4:
-					case 5:
-					case 6:
-						addValue = BattleInstanceManager.instance.GetCachedGlobalConstantInt("SubLevelFightValueLine2");
-						break;
-					case 7:
-					case 8:
-					case 9:
-						addValue = BattleInstanceManager.instance.GetCachedGlobalConstantInt("SubLevelFightValueLine2");
-						break;
-				}
-				_statusBase.valueList[(int)eActorStatus.Attack] += addValue;
+				case 0: addValue = BattleInstanceManager.instance.GetCachedGlobalConstantInt("SubLevelFightValueLine1"); break;
+				case 1: addValue = BattleInstanceManager.instance.GetCachedGlobalConstantInt("SubLevelFightValueLine2"); break;
+				default: addValue = BattleInstanceManager.instance.GetCachedGlobalConstantInt("SubLevelFightValueLine3"); break;
 			}
+			_statusBase.valueList[(int)eActorStatus.Attack] += addValue;
 		}
 
 		// spell

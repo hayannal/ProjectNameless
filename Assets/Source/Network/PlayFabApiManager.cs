@@ -834,16 +834,16 @@ public class PlayFabApiManager : MonoBehaviour
 	#endregion
 
 	#region Player Character
-	public void RequestSubLevelUp(int subLevelIndex, int price, bool salePrice, Action successCallback)
+	public void RequestSubLevelUp(int price, bool salePrice, Action successCallback)
 	{
 		WaitingNetworkCanvas.Show(true);
 
-		string input = string.Format("{0}_{1}_{2}_{3}", subLevelIndex, price, salePrice ? 1 : 0, "izerdjqa");
+		string input = string.Format("{0}_{1}_{2}", price, salePrice ? 1 : 0, "izerdjqa");
 		string checkSum = CheckSum(input);
 		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "PlayerSubLevelUp",
-			FunctionParameter = new { SubLevelIndex = subLevelIndex, Pr = price, Sa = salePrice ? 1 : 0, Cs = checkSum },
+			FunctionParameter = new { Pr = price, Sa = salePrice ? 1 : 0, Cs = checkSum },
 			GeneratePlayStreamEvent = true,
 		}, (success) =>
 		{
@@ -854,7 +854,7 @@ public class PlayFabApiManager : MonoBehaviour
 				WaitingNetworkCanvas.Show(false);
 
 				CurrencyData.instance.gold -= price;
-				PlayerData.instance.OnSubLevelUp(subLevelIndex);
+				PlayerData.instance.OnSubLevelUp();
 				if (successCallback != null) successCallback.Invoke();
 			}
 		}, (error) =>
@@ -884,6 +884,33 @@ public class PlayFabApiManager : MonoBehaviour
 
 				CurrencyData.instance.gold -= price;
 				PlayerData.instance.OnLevelUp();
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
+	public void RequestPressLevelUp(int prevLevel, int prevSubLevel, int prevGold, int level, int subLevel, int gold, int levelUpCount, int subLevelUpCount, bool salePrice, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}_{2}_{3}_{4}_{5}_{6}_{7}_{8}_{9}", prevLevel, prevSubLevel, prevGold, level, subLevel, gold, levelUpCount, subLevelUpCount, salePrice ? 1 : 0, "qizlrnmo");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "PlayerPressLevelUp",
+			FunctionParameter = new { PvLv = prevLevel, PvSub = prevSubLevel, PvGo = prevGold, Lv = level, Sub = subLevel, Go = gold, LvCnt = levelUpCount, SubCnt = subLevelUpCount, Sa = salePrice ? 1 : 0, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
 				if (successCallback != null) successCallback.Invoke();
 			}
 		}, (error) =>

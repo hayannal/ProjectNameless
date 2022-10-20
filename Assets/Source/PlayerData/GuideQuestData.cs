@@ -115,10 +115,10 @@ public class GuideQuestData : MonoBehaviour
 		return (GetProceedingCount() >= guideQuestTableData.needCount);
 	}
 
-	public void OnQuestEvent(eQuestClearType questClearType)
+	public void OnQuestEvent(eQuestClearType questClearType, int addValue = 1)
 	{
 		// 호출은 가이드가 받아서 전달하기로 한다.
-		MissionData.instance.OnQuestEvent(questClearType);
+		MissionData.instance.OnQuestEvent(questClearType, addValue);
 
 		/*
 		if (ContentsManager.IsTutorialChapter())
@@ -181,7 +181,6 @@ public class GuideQuestData : MonoBehaviour
 		else
 		{
 			// 나머지 항목들은 바로 보내는게 맞다.
-			int addValue = 1;
 			if (currentGuideQuestIndex == clientCacheIndex)
 				addValue += clientCacheCount;
 
