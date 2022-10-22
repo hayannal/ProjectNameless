@@ -709,7 +709,7 @@ public class MainCanvas : MonoBehaviour
 				if (showButton)
 					cashEventButtonList[i].ShowButton(true);
 
-				if (showCanvas)
+				if (showCanvas && IsHideState() == false)
 					CashEventButton.ShowEventCanvas(cashEventId);
 
 				break;
