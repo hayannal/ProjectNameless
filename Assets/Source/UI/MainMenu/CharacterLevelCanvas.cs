@@ -212,7 +212,7 @@ public class CharacterLevelCanvas : MonoBehaviour
 
 	public void OnClickCostumeButton()
 	{
-
+		UIInstanceManager.instance.ShowCanvasAsync("CostumeListCanvas", null);
 	}
 
 
