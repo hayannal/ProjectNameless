@@ -589,6 +589,10 @@ public class CashShopData : MonoBehaviour
 		{
 			CashShopEnergyListItem.ExternalRetryPurchase(pendingProduct);
 		}
+		else if (pendingProduct.definition.id.Contains("costume_"))
+		{
+			CostumeCanvasListItem.ExternalRetryPurchase(pendingProduct);
+		}
 
 
 		return true;

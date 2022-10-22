@@ -685,6 +685,7 @@ public class PlayFabApiManager : MonoBehaviour
 		enableCliSusQueue = true;
 		PlayerData.instance.OnRecvPlayerStatistics(_loginResult.InfoResultPayload.PlayerStatistics);
 		SpellManager.instance.OnRecvSpellInventory(_loginResult.InfoResultPayload.UserInventory, _loginResult.InfoResultPayload.UserData, _loginResult.InfoResultPayload.UserReadOnlyData, _loginResult.InfoResultPayload.PlayerStatistics);
+		CostumeManager.instance.OnRecvCostumeInventory(_loginResult.InfoResultPayload.UserInventory, _loginResult.InfoResultPayload.PlayerStatistics);
 		/*
 		TimeSpaceData.instance.OnRecvEquipInventory(_loginResult.InfoResultPayload.UserInventory, _loginResult.InfoResultPayload.UserData, _loginResult.InfoResultPayload.UserReadOnlyData);
 		*/
@@ -1857,6 +1858,41 @@ public class PlayFabApiManager : MonoBehaviour
 				CashShopData.instance.ConsumeFlag(CashShopData.eCashConsumeFlagType.SevenSlot0 + buttonIndex);
 				MissionData.instance.OnRecvPurchasedCashSlot(buttonIndex);
 				
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+	#endregion
+
+	#region Costume
+	public void RequestPurchaseCostumeByGold(string costumeId, int price, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}_{2}", costumeId, price, "qizlrmnd");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "PurchaseCostumeByGold",
+			FunctionParameter = new { CosId = costumeId, Pr = price, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				CurrencyData.instance.gold -= price;
+
+				jsonResult.TryGetValue("id", out object id);
+				CostumeManager.instance.OnRecvPurchase((string)id);
+
 				if (successCallback != null) successCallback.Invoke();
 			}
 		}, (error) =>

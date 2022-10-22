@@ -33,6 +33,7 @@ public class TableDataManager : MonoBehaviour
 
 	public ActorInfoTable actorInfoTable;
 	public PlayerLevelTable playerLevelTable;
+	public CostumeTable costumeTable;
 
 	public EventPointTypeTable eventPointTypeTable;
 	public EventPointRewardTable eventPointRewardTable;
@@ -297,6 +298,16 @@ public class TableDataManager : MonoBehaviour
 		{
 			if (playerLevelTable.dataArray[i].playerLevel == level)
 				return playerLevelTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public CostumeTableData FindCostumeTableData(string id)
+	{
+		for (int i = 0; i < costumeTable.dataArray.Length; ++i)
+		{
+			if (costumeTable.dataArray[i].costumeId == id)
+				return costumeTable.dataArray[i];
 		}
 		return null;
 	}

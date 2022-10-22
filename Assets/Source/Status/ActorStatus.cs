@@ -72,6 +72,9 @@ public class ActorStatus : MonoBehaviour
 			_statusBase.valueList[(int)eActorStatus.Attack] += addValue;
 		}
 
+		// costume
+		_statusBase.valueList[(int)eActorStatus.Attack] += CostumeManager.instance.cachedValue;
+
 		// spell
 		_statusBase.valueList[(int)eActorStatus.Attack] += SpellManager.instance.cachedValue;
 
