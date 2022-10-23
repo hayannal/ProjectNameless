@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -244,13 +245,71 @@ public class CharacterShowCanvasBase : MonoBehaviour
 		}
 	}
 
+	string _idWithCostume;
+	Action _completeCallback;
+	public void ShowCanvasPlayerActorWithCostume(string overridePreviewCostumeId, Action completeCallback)
+	{
+		if (_wait)
+			return;
+
+		// back이나 홈키 누르면서 동시에 누르면 이상하게 열리는듯 한데 우선 이렇게라도 체크해본다.
+		if (gameObject.activeSelf == false)
+		{
+			if (CostumeListCanvas.instance == null || CostumeListCanvas.instance.gameObject.activeSelf == false)
+				return;
+		}
+
+		string address = "";
+		string idWithCostume = "";
+		if (string.IsNullOrEmpty(overridePreviewCostumeId))
+		{
+			idWithCostume = string.Format("{0}_{1}", CharacterData.s_PlayerActorId, CostumeManager.instance.selectedCostumeId);
+			address = CostumeManager.instance.GetCurrentPlayerPrefabAddress();
+		}
+		else
+		{
+			idWithCostume = string.Format("{0}_{1}", CharacterData.s_PlayerActorId, overridePreviewCostumeId);
+			address = CostumeManager.GetAddressByCostumeId(overridePreviewCostumeId);
+		}
+		_idWithCostume = idWithCostume;
+
+		// 캐릭터 교체는 이 캔버스 담당이다.
+		// 액터가 혹시나 미리 만들어져있다면 등록되어있을거니 가져다쓴다.
+		PlayerActor playerActor = BattleInstanceManager.instance.GetCachedCanvasPlayerActor(idWithCostume);
+		if (playerActor != null)
+		{
+			if (playerActor != _playerActor)
+			{
+				// 현재 캐릭터 하이드 시키고
+				if (_playerActor != null)
+					_playerActor.gameObject.SetActive(false);
+				_playerActor = playerActor;
+				_playerActor.gameObject.SetActive(true);
+				OnLoadedPlayerActor(true);
+				if (completeCallback != null) completeCallback.Invoke();
+			}
+		}
+		else
+		{
+			// 없다면 로딩 걸어두고 SetInfoCameraMode를 호출해둔다.
+			// SetInfoCameraMode 안에는 이미 캐릭터가 없을때를 대비해서 코드가 짜여져있긴 하다.
+			_wait = true;
+			_completeCallback = completeCallback;
+			AddressableAssetLoadManager.GetAddressableGameObject(address, "", OnLoadedPlayerActor);
+		}
+	}
+
 	void OnLoadedPlayerActor(GameObject prefab)
 	{
 		// 플레이어 캐릭터가 아닌 다른 캐릭터를 선택 후 Ok 누른다음에 로딩이 완료되기 전에 창을 나가버리면
 		// 새 캐릭터를 만들 이유도 없고 인포창으로 넘어가서도 안된다.
 		if (this == null) return;
 		if (gameObject == null) return;
-		if (gameObject.activeSelf == false) return;
+		if (gameObject.activeSelf == false)
+		{
+			if (CostumeListCanvas.instance == null || CostumeListCanvas.instance.gameObject.activeSelf == false)
+				return;
+		}
 
 #if UNITY_EDITOR
 		GameObject newObject = Instantiate<GameObject>(prefab);
@@ -270,7 +329,7 @@ public class CharacterShowCanvasBase : MonoBehaviour
 		playerActor.playerAI.enabled = false;
 		playerActor.baseCharacterController.enabled = false;
 		playerActor.enabled = false;
-		BattleInstanceManager.instance.AddCanvasPlayerActor(playerActor, playerActor.actorId);
+		BattleInstanceManager.instance.AddCanvasPlayerActor(playerActor, _idWithCostume);
 
 		if (playerActor != _playerActor)
 		{
@@ -279,6 +338,7 @@ public class CharacterShowCanvasBase : MonoBehaviour
 			_playerActor = playerActor;
 		}
 		OnLoadedPlayerActor(true);
+		if (_completeCallback != null) _completeCallback.Invoke();
 	}
 	#endregion
 }

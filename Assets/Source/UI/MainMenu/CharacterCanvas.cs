@@ -8,6 +8,7 @@ public class CharacterCanvas : CharacterShowCanvasBase
 
 	public CurrencySmallInfo currencySmallInfo;
 	public GameObject innerMenuPrefab;
+	public GameObject previewPrefab;
 
 	void Awake()
 	{
@@ -34,7 +35,8 @@ public class CharacterCanvas : CharacterShowCanvasBase
 			return;
 
 		SetInfoCameraMode(true, BattleInstanceManager.instance.playerActor.actorId);
-		ShowCanvasPlayerActor(BattleInstanceManager.instance.playerActor.actorId);
+		//ShowCanvasPlayerActor(BattleInstanceManager.instance.playerActor.actorId);
+		ShowCanvasPlayerActorWithCostume("", null);
 		MainCanvas.instance.OnEnterCharacterMenu(true);
 		//_playerActor.RefreshWingHide();
 		//RefreshGrid(true);
@@ -70,10 +72,30 @@ public class CharacterCanvas : CharacterShowCanvasBase
 			_playerActor = null;
 		}
 		//_playerActor.RefreshWingHide();
+
+		if (_previewObject != null && _previewObject.activeSelf)
+			_previewObject.SetActive(false);
 	}
 
 	public void OnClickDetailButton()
 	{
 		UIInstanceManager.instance.ShowCanvasAsync("CharacterDetailCanvas", null);
+	}
+
+	GameObject _previewObject;
+	public void ShowPreviewObject(bool show)
+	{
+		if (show)
+		{
+			if (_previewObject == null)
+				_previewObject = Instantiate<GameObject>(previewPrefab, _rootOffsetPosition, Quaternion.identity);
+			else
+				_previewObject.SetActive(show);
+		}
+		else
+		{
+			if (_previewObject != null)
+				_previewObject.SetActive(false);
+		}
 	}
 }

@@ -370,7 +370,7 @@ public class MainSceneBuilder : MonoBehaviour
 #if !UNITY_EDITOR
 		Debug.LogWarning("666666666");
 #endif
-		_handleStartCharacter = Addressables.LoadAssetAsync<GameObject>("Tenebro");  // CharacterData.GetAddressByActorId(PlayerData.instance.mainCharacterId)
+		_handleStartCharacter = Addressables.LoadAssetAsync<GameObject>(CostumeManager.instance.GetCurrentPlayerPrefabAddress());
 #if !UNITY_EDITOR
 		Debug.LogWarning("777777777");
 #endif

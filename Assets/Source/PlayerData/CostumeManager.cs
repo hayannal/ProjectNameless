@@ -21,10 +21,19 @@ public class CostumeManager : MonoBehaviour
 	}
 	static CostumeManager _instance = null;
 
+	public ObscuredString selectedCostumeId { get; set; }
 	public ObscuredInt cachedValue { get; set; }
 
+	public static string GetAddressByCostumeId(string costumeId)
+	{
+		CostumeTableData costumeTableData = TableDataManager.instance.FindCostumeTableData(costumeId);
+		if (costumeTableData == null)
+			return "";
+		return costumeTableData.prefabAddress;
+	}
+
 	List<ObscuredString> _listCostumeId = new List<ObscuredString>();
-	public void OnRecvCostumeInventory(List<ItemInstance> userInventory, List<StatisticValue> playerStatistics)
+	public void OnRecvCostumeInventory(List<ItemInstance> userInventory, Dictionary<string, UserDataRecord> userReadOnlyData, List<StatisticValue> playerStatistics)
 	{
 		ClearInventory();
 
@@ -38,6 +47,19 @@ public class CostumeManager : MonoBehaviour
 			if (costumeTableData == null)
 				continue;
 			_listCostumeId.Add(userInventory[i].ItemId);
+		}
+
+		selectedCostumeId = "";
+		if (userReadOnlyData.ContainsKey("selectedCostumeId"))
+		{
+			string costumeId = userReadOnlyData["selectedCostumeId"].Value;
+			if (string.IsNullOrEmpty(costumeId) == false && Contains(costumeId))
+				selectedCostumeId = costumeId;
+			else
+			{
+				selectedCostumeId = "";
+				//PlayFabApiManager.instance.RequestIncCliSus(ClientSuspect.eClientSuspectCode.InvalidMainCharacter);
+			}
 		}
 
 		// status
@@ -85,5 +107,16 @@ public class CostumeManager : MonoBehaviour
 		if (_listCostumeId.Contains(costumeId) == false)
 			_listCostumeId.Add(costumeId);
 		OnChangedStatus();
+	}
+
+	public string GetCurrentPlayerPrefabAddress()
+	{
+		if (string.IsNullOrEmpty(selectedCostumeId) == false)
+		{
+			CostumeTableData costumeTableData = TableDataManager.instance.FindCostumeTableData(selectedCostumeId);
+			if (costumeTableData != null)
+				return costumeTableData.prefabAddress;
+		}
+		return CharacterData.GetAddressByActorId(CharacterData.s_PlayerActorId);
 	}
 }

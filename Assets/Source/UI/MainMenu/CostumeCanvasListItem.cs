@@ -66,7 +66,11 @@ public class CostumeCanvasListItem : SimpleCashCanvas
 
 	public void OnClickPreviewButton()
 	{
-		// 갈아입기와 마찬가지인데 플래그 하나만 더 추가로 보내서 preview 모드를 활성화하면 된다.
+		CharacterCanvas.instance.ShowCanvasPlayerActorWithCostume(_costumeTableData.costumeId, () =>
+		{
+			CostumeListCanvas.instance.gameObject.SetActive(false);
+			CharacterCanvas.instance.ShowPreviewObject(true);
+		});
 	}
 
 	// SimpleCashCanvas 과 다르게 구현하는거만 처리
@@ -75,7 +79,14 @@ public class CostumeCanvasListItem : SimpleCashCanvas
 		if (_contains)
 		{
 			// 보유하고 있다면 바로 입어보면 되는거다.
-
+			PlayFabApiManager.instance.RequestSelectCostume(_costumeTableData.costumeId, () =>
+			{
+				CharacterCanvas.instance.ShowCanvasPlayerActorWithCostume("", () =>
+				{
+					CostumeListCanvas.instance.gameObject.SetActive(false);
+					CharacterCanvas.instance.ShowPreviewObject(false);
+				});
+			});
 			return;
 		}
 
