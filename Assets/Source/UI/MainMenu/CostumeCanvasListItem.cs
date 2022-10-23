@@ -38,7 +38,7 @@ public class CostumeCanvasListItem : SimpleCashCanvas
 				eventGainObject.SetActive(false);
 				priceObject.SetActive(true);
 				goldIconObject.SetActive(true);
-				priceTextRectTransform.anchoredPosition = new Vector2(20.0f, 0.0f);
+				priceTextRectTransform.anchoredPosition = new Vector2(16.0f, 0.0f);
 			}
 			else
 			{
