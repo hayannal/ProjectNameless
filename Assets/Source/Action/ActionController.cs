@@ -29,6 +29,11 @@ public class ActionController : MonoBehaviour {
 	List<ActionInfo> _listActionInfo;
 	void Awake()
 	{
+		PreInitializeComponent();
+	}
+
+	public void PreInitializeComponent()
+	{
 		animator = GetComponentInChildren<Animator>();
 
 		mecanimState = animator.GetComponent<MecanimState>();

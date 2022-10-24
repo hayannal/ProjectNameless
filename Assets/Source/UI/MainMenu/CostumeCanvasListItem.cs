@@ -70,6 +70,7 @@ public class CostumeCanvasListItem : SimpleCashCanvas
 		{
 			CostumeListCanvas.instance.gameObject.SetActive(false);
 			CharacterCanvas.instance.ShowPreviewObject(true);
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("CostumeUI_ChangeCostumeToast"), 2.0f);
 		});
 	}
 
@@ -85,6 +86,10 @@ public class CostumeCanvasListItem : SimpleCashCanvas
 				{
 					CostumeListCanvas.instance.gameObject.SetActive(false);
 					CharacterCanvas.instance.ShowPreviewObject(false);
+					ToastCanvas.instance.ShowToast(UIString.instance.GetString("CostumeUI_ChangeCostumeToast"), 2.0f);
+
+					// 이 타이밍에 맞춰서 캐릭터 변경도 해야한다.
+					CostumeManager.instance.ChangeCostume();
 				});
 			});
 			return;

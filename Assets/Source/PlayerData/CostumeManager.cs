@@ -4,6 +4,10 @@ using UnityEngine;
 using PlayFab;
 using PlayFab.ClientModels;
 using CodeStage.AntiCheat.ObscuredTypes;
+#if UNITY_EDITOR
+using UnityEditor.AddressableAssets;
+using UnityEditor.AddressableAssets.Settings;
+#endif
 
 public class CostumeManager : MonoBehaviour
 {
@@ -119,4 +123,52 @@ public class CostumeManager : MonoBehaviour
 		}
 		return CharacterData.GetAddressByActorId(CharacterData.s_PlayerActorId);
 	}
+
+
+	#region Player Costume Prafab
+	bool _wait;
+	public void ChangeCostume()
+	{
+		if (_wait)
+			return;
+
+		_wait = true;
+		AddressableAssetLoadManager.GetAddressableGameObject(GetCurrentPlayerPrefabAddress(), "", OnLoadedCostume);
+	}
+
+	void OnLoadedCostume(GameObject prefab)
+	{
+#if UNITY_EDITOR
+		GameObject newObject = Instantiate<GameObject>(prefab);
+		AddressableAssetSettings settings = AddressableAssetSettingsDefaultObject.Settings;
+		if (settings.ActivePlayModeDataBuilderIndex == 2)
+			ObjectUtil.ReloadShader(newObject);
+#else
+		GameObject newObject = Instantiate<GameObject>(prefab);
+#endif
+
+		_wait = false;
+		PlayerActor playerActor = newObject.GetComponent<PlayerActor>();
+		if (playerActor == null)
+			return;
+		playerActor.playerAI.enabled = false;
+		playerActor.baseCharacterController.enabled = false;
+		playerActor.enabled = false;
+		// 캐싱할게 아니기 때문에 등록절차가 필요없다.
+		//BattleInstanceManager.instance.AddCanvasPlayerActor(playerActor, _idWithCostume);
+
+		// 애니메이터 오브젝트 교체. 본 메시 다 교체하는거다.
+		if (BattleInstanceManager.instance.playerActor == null)
+			return;
+		if (playerActor == null)
+			return;
+
+		playerActor.cachedTransform.position = BattleInstanceManager.instance.playerActor.cachedTransform.position;
+		Animator animator = playerActor.GetComponentInChildren<Animator>();
+		BattleInstanceManager.instance.playerActor.actionController.animator.gameObject.SetActive(false);
+		animator.transform.parent = BattleInstanceManager.instance.playerActor.actionController.transform;
+		BattleInstanceManager.instance.playerActor.actionController.PreInitializeComponent();
+		playerActor.gameObject.SetActive(false);
+	}
+	#endregion
 }
