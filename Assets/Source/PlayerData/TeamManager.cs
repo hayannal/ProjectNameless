@@ -105,6 +105,7 @@ public class TeamManager : MonoBehaviour
 		if (playerActor == null)
 			return;
 		playerActor.playerAI.useTeamMemberAI = true;
+		BattleInstanceManager.instance.OnInitializePlayerActor(playerActor, playerActor.actorId);
 
 		ePosition positionType = ePosition.Left;
 		if (_dicPositionInfo.ContainsKey(playerActor.actorId))

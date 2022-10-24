@@ -742,20 +742,16 @@ public class BattleInstanceManager : MonoBehaviour
 	Dictionary<string, PlayerActor> _dicCachedPlayerActor = new Dictionary<string, PlayerActor>();
 	public void OnInitializePlayerActor(PlayerActor playerActor, string actorId)
 	{
-		/*
 		if (_dicCachedPlayerActor.ContainsKey(actorId))
 			return;
 
 		_dicCachedPlayerActor.Add(actorId, playerActor);
-		*/
 	}
 
 	public PlayerActor GetCachedPlayerActor(string actorId)
 	{
-		/*
 		if (_dicCachedPlayerActor.ContainsKey(actorId))
 			return _dicCachedPlayerActor[actorId];
-		*/
 		return null;
 	}
 	#endregion
