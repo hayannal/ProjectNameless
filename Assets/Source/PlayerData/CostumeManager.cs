@@ -25,6 +25,8 @@ public class CostumeManager : MonoBehaviour
 	}
 	static CostumeManager _instance = null;
 
+	public static string s_DefaultCostumeId = "Costume_00";
+
 	public ObscuredString selectedCostumeId { get; set; }
 	public ObscuredInt cachedValue { get; set; }
 
@@ -52,6 +54,8 @@ public class CostumeManager : MonoBehaviour
 				continue;
 			_listCostumeId.Add(userInventory[i].ItemId);
 		}
+		if (TableDataManager.instance.costumeTable.dataArray[0].costumeId == s_DefaultCostumeId)
+			_listCostumeId.Add(s_DefaultCostumeId);
 
 		selectedCostumeId = "";
 		if (userReadOnlyData.ContainsKey("selectedCostumeId"))

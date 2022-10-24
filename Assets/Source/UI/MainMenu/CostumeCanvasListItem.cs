@@ -17,13 +17,20 @@ public class CostumeCanvasListItem : SimpleCashCanvas
 	public GameObject priceObject;
 	public GameObject completeObject;
 	public GameObject eventGainObject;
+	public GameObject baseCostumeObject;
 
+	public GameObject equippedObject;
+
+	bool _baseCostume;
 	bool _contains;
 	CostumeTableData _costumeTableData;
 	public void Initialize(bool contains, CostumeTableData costumeTableData)
 	{
+		_baseCostume = (costumeTableData.costumeId == CostumeManager.s_DefaultCostumeId);
+
 		costumeImage.sprite = CostumeListCanvas.instance.GetSprite(costumeTableData.spriteName);
 		atkText.text = costumeTableData.atk.ToString("N0");
+		atkText.gameObject.SetActive(!_baseCostume);
 
 		if (contains == false)
 		{
@@ -50,13 +57,26 @@ public class CostumeCanvasListItem : SimpleCashCanvas
 				iapButton.productId = costumeTableData.serverItemId;
 				RefreshPrice(costumeTableData.serverItemId, costumeTableData.kor, costumeTableData.eng);
 			}
+			equippedObject.SetActive(false);
+			completeObject.SetActive(false);
+			baseCostumeObject.SetActive(false);
 		}
 		else
 		{
 			eventGainObject.SetActive(false);
 			priceObject.SetActive(false);
+			completeObject.SetActive(!_baseCostume);
+			baseCostumeObject.SetActive(_baseCostume);
+
+			equippedObject.SetActive(false);
+			if (_baseCostume && CostumeManager.instance.selectedCostumeId == "")
+			{
+				equippedObject.SetActive(true);
+				contains = true;
+			}
+			else if (!_baseCostume && CostumeManager.instance.selectedCostumeId == costumeTableData.costumeId)
+				equippedObject.SetActive(true);
 		}
-		completeObject.SetActive(contains);
 		previewObject.SetActive(!contains);
 
 		_contains = contains;
@@ -66,10 +86,16 @@ public class CostumeCanvasListItem : SimpleCashCanvas
 
 	public void OnClickPreviewButton()
 	{
+		if (CharacterCanvas.instance.previewId == _costumeTableData.costumeId)
+		{
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("CostumeUI_AlreadyCostumeToast"), 2.0f);
+			return;
+		}
+
 		CharacterCanvas.instance.ShowCanvasPlayerActorWithCostume(_costumeTableData.costumeId, () =>
 		{
 			CostumeListCanvas.instance.gameObject.SetActive(false);
-			CharacterCanvas.instance.ShowPreviewObject(true);
+			CharacterCanvas.instance.ShowPreviewObject(true, _costumeTableData.costumeId);
 			ToastCanvas.instance.ShowToast(UIString.instance.GetString("CostumeUI_ChangeCostumeToast"), 2.0f);
 		});
 	}
@@ -79,13 +105,21 @@ public class CostumeCanvasListItem : SimpleCashCanvas
 	{
 		if (_contains)
 		{
+			if (equippedObject.activeSelf)
+			{
+				ToastCanvas.instance.ShowToast(UIString.instance.GetString("CostumeUI_AlreadyCostumeToast"), 2.0f);
+				return;
+			}
+
 			// 보유하고 있다면 바로 입어보면 되는거다.
-			PlayFabApiManager.instance.RequestSelectCostume(_costumeTableData.costumeId, () =>
+			string costumeId = _costumeTableData.costumeId;
+			if (_baseCostume) costumeId = "";
+			PlayFabApiManager.instance.RequestSelectCostume(costumeId, () =>
 			{
 				CharacterCanvas.instance.ShowCanvasPlayerActorWithCostume("", () =>
 				{
 					CostumeListCanvas.instance.gameObject.SetActive(false);
-					CharacterCanvas.instance.ShowPreviewObject(false);
+					CharacterCanvas.instance.ShowPreviewObject(false, "");
 					ToastCanvas.instance.ShowToast(UIString.instance.GetString("CostumeUI_ChangeCostumeToast"), 2.0f);
 
 					// 이 타이밍에 맞춰서 캐릭터 변경도 해야한다.

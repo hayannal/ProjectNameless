@@ -73,8 +73,7 @@ public class CharacterCanvas : CharacterShowCanvasBase
 		}
 		//_playerActor.RefreshWingHide();
 
-		if (_previewObject != null && _previewObject.activeSelf)
-			_previewObject.SetActive(false);
+		ShowPreviewObject(false, "");
 	}
 
 	public void OnClickDetailButton()
@@ -82,8 +81,9 @@ public class CharacterCanvas : CharacterShowCanvasBase
 		UIInstanceManager.instance.ShowCanvasAsync("CharacterDetailCanvas", null);
 	}
 
+	public string previewId { get; private set; }
 	GameObject _previewObject;
-	public void ShowPreviewObject(bool show)
+	public void ShowPreviewObject(bool show, string id)
 	{
 		if (show)
 		{
@@ -91,11 +91,13 @@ public class CharacterCanvas : CharacterShowCanvasBase
 				_previewObject = Instantiate<GameObject>(previewPrefab, _rootOffsetPosition, Quaternion.identity);
 			else
 				_previewObject.SetActive(show);
+			previewId = id;
 		}
 		else
 		{
 			if (_previewObject != null)
 				_previewObject.SetActive(false);
+			previewId = "";
 		}
 	}
 }
