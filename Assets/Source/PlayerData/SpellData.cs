@@ -50,9 +50,9 @@ public class SpellData
 		_mainStatusValue = 0;
 		if (_level > 0)
 		{
-			SkillLevelTableData skillLevelTableData = TableDataManager.instance.FindSkillLevelTableData(spellId, _level);
-			if (skillLevelTableData != null)
-				_mainStatusValue = skillLevelTableData.accumulatedAtk;
+			SpellGradeLevelTableData spellGradeLevelTableData = TableDataManager.instance.FindSpellGradeLevelTableData(cachedSkillTableData.grade, cachedSkillTableData.star, level);
+			if (spellGradeLevelTableData != null)
+				_mainStatusValue = spellGradeLevelTableData.accumulatedAtk;
 		}
 	}
 
@@ -62,5 +62,19 @@ public class SpellData
 		_level = targetLevel;
 		RefreshCachedStatus();
 		SpellManager.instance.OnChangedStatus();
+	}
+
+
+
+
+	SkillTableData _cachedSkillTableData = null;
+	public SkillTableData cachedSkillTableData
+	{
+		get
+		{
+			if (_cachedSkillTableData == null)
+				_cachedSkillTableData = TableDataManager.instance.FindSkillTableData(spellId);
+			return _cachedSkillTableData;
+		}
 	}
 }

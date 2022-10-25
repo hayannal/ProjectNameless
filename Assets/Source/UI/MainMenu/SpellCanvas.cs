@@ -80,12 +80,28 @@ public class SpellCanvas : ResearchShowCanvasBase
 
 	void RefreshSpellLevel()
 	{
-		// gauge
-		proceedingCountText.text = string.Format("{0:N0} / {1:N0}", SpellManager.instance.GetSumSpellCount(), 500);
+		SpellTotalTableData spellTotalTableData = TableDataManager.instance.FindSpellTotalTableData(SpellManager.instance.spellTotalLevel);
+		skillTotalLevelValueText.text = spellTotalTableData.accumulatedAtk.ToString("N0");
 
-		// level
-		skillTotalLevelText.text = string.Format("Lv. {0:N0}", SpellManager.instance.spellTotalLevel);
-		skillTotalLevelValueText.text = "175";
+		if (SpellManager.instance.spellTotalLevel >= TableDataManager.instance.GetGlobalConstantInt("MaxTotalSkillLevel"))
+		{
+			// level
+			skillTotalLevelText.text = string.Format("Lv. {0:N0}", "Max");
+		}
+		else
+		{
+			// level
+			skillTotalLevelText.text = string.Format("Lv. {0:N0}", SpellManager.instance.spellTotalLevel);
+
+			SpellTotalTableData nextSpellTotalTableData = TableDataManager.instance.FindSpellTotalTableData(SpellManager.instance.spellTotalLevel + 1);
+			if (nextSpellTotalTableData != null)
+			{
+				// gauge
+				int current = SpellManager.instance.GetSumSpellCount() - spellTotalTableData.requiredAccumulatedCount;				
+				proceedingCountText.text = string.Format("{0:N0} / {1:N0}", current, nextSpellTotalTableData.requiredCount);
+				proceedingCountSlider.value = (float)current / nextSpellTotalTableData.requiredAccumulatedCount;
+			}
+		}
 	}
 
 	List<SpellCanvasListItem> _listSpellCanvasListItem = new List<SpellCanvasListItem>();
@@ -131,9 +147,12 @@ public class SpellCanvas : ResearchShowCanvasBase
 			SkillLevelTableData skillLevelTableData = TableDataManager.instance.FindSkillLevelTableData(TableDataManager.instance.skillTable.dataArray[i].id, 1);
 			if (skillLevelTableData == null)
 				continue;
+			SpellGradeLevelTableData spellGradeLevelTableData = TableDataManager.instance.FindSpellGradeLevelTableData(TableDataManager.instance.skillTable.dataArray[i].grade, TableDataManager.instance.skillTable.dataArray[i].star, 1);
+			if (spellGradeLevelTableData == null)
+				continue;
 
 			SpellCanvasListItem spellCanvasListItem = _container.GetCachedItem(contentItemPrefab, contentRootRectTransform);
-			spellCanvasListItem.InitializeForNoGain(TableDataManager.instance.skillTable.dataArray[i], skillLevelTableData);
+			spellCanvasListItem.InitializeForNoGain(TableDataManager.instance.skillTable.dataArray[i], skillLevelTableData, spellGradeLevelTableData);
 			spellCanvasListItem.cachedTransform.SetAsLastSibling();
 			_listSpellCanvasListItem.Add(spellCanvasListItem);
 		}

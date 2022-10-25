@@ -84,6 +84,9 @@ public class SpellManager : MonoBehaviour
 		cachedValue = 0;
 
 		// total level status
+		SpellTotalTableData spellTotalTableData = TableDataManager.instance.FindSpellTotalTableData(spellTotalLevel);
+		if (spellTotalTableData != null)
+			cachedValue = spellTotalTableData.accumulatedAtk;
 
 		// spell level status
 		for (int i = 0; i < _listSpellData.Count; ++i)

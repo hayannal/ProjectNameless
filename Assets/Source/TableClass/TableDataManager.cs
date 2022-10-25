@@ -34,6 +34,8 @@ public class TableDataManager : MonoBehaviour
 	public ActorInfoTable actorInfoTable;
 	public PlayerLevelTable playerLevelTable;
 	public CostumeTable costumeTable;
+	public SpellGradeLevelTable spellGradeLevelTable;
+	public SpellTotalTable spellTotalTable;
 
 	public EventPointTypeTable eventPointTypeTable;
 	public EventPointRewardTable eventPointRewardTable;
@@ -308,6 +310,26 @@ public class TableDataManager : MonoBehaviour
 		{
 			if (costumeTable.dataArray[i].costumeId == id)
 				return costumeTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public SpellGradeLevelTableData FindSpellGradeLevelTableData(int grade, int star, int level)
+	{
+		for (int i = 0; i < spellGradeLevelTable.dataArray.Length; ++i)
+		{
+			if (spellGradeLevelTable.dataArray[i].grade == grade && spellGradeLevelTable.dataArray[i].star == star && spellGradeLevelTable.dataArray[i].level == level)
+				return spellGradeLevelTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public SpellTotalTableData FindSpellTotalTableData(int level)
+	{
+		for (int i = 0; i < spellTotalTable.dataArray.Length; ++i)
+		{
+			if (spellTotalTable.dataArray[i].level == level)
+				return spellTotalTable.dataArray[i];
 		}
 		return null;
 	}

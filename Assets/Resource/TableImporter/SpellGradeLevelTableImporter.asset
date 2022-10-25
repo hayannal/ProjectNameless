@@ -10,51 +10,44 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 80e14a72067f1ad408ec8d661bc560ce, type: 3}
-  m_Name: SkillLevelTableImporter
+  m_Name: SpellGradeLevelTableImporter
   m_EditorClassIdentifier: 
   templatePath: AssetStore/QuickSheet/ExcelPlugin/Templates
   scriptFilePath: Source/TableClass/Runtime
   editorScriptFilePath: Source/TableClass/Editor
-  sheetName: Action.xlsx
-  workSheetName: SkillLevelTable
+  sheetName: Spell.xlsx
+  workSheetName: SpellGradeLevelTable
   columnHeaderList:
-  - type: 1
-    name: skillId
+  - type: 3
+    name: grade
+    isEnable: 0
+    isArray: 0
+  - type: 3
+    name: star
     isEnable: 0
     isArray: 0
   - type: 3
     name: level
     isEnable: 0
     isArray: 0
-  - type: 5
-    name: cooltime
+  - type: 3
+    name: accumulatedAtk
     isEnable: 0
     isArray: 0
-  - type: 1
-    name: mecanimName
+  - type: 3
+    name: requiredPowerPoint
     isEnable: 0
     isArray: 0
-  - type: 1
-    name: tableAffectorValueId
-    isEnable: 0
-    isArray: 1
-  - type: 1
-    name: nameId
+  - type: 3
+    name: requiredAccumulatedPowerPoint
     isEnable: 0
     isArray: 0
-  - type: 1
-    name: descriptionId
+  - type: 3
+    name: requiredGold
     isEnable: 0
     isArray: 0
-  - type: 1
-    name: parameter
-    isEnable: 0
-    isArray: 1
-  excelFilePath: ../Excel/Action.xlsx
+  excelFilePath: ../Excel/Spell.xlsx
   SheetNames:
-  - ActionTable
-  - ControlTable
-  - CastingTable
-  - SkillTable
-  - SkillLevelTable
-  currentSelectedSheet: 4
+  - SpellGradeLevelTable
+  - SpellTotalTable
+  currentSelectedSheet: 0

@@ -6,7 +6,7 @@ using CodeStage.AntiCheat.ObscuredTypes;
 
 public class SpellCanvasListItem : MonoBehaviour
 {
-	public Transform iconPrefabRootTransform;
+	public SkillIcon skillIcon;
 	public Text levelText;
 	public Text nameText;
 	public Transform tooltipRootTransform;
@@ -15,6 +15,7 @@ public class SpellCanvasListItem : MonoBehaviour
 	public Image[] noGainGrayImageList;
 	public Slider proceedingCountSlider;
 	public Text proceedingCountText;
+	public GameObject blinkObject;
 	public RectTransform alarmRootTransform;
 
 	string _id = "";
@@ -33,10 +34,12 @@ public class SpellCanvasListItem : MonoBehaviour
 		// 안구해질리 없을거다.
 		SkillProcessor.SkillInfo skillInfo = BattleInstanceManager.instance.playerActor.skillProcessor.GetSpellInfo(_id);
 		SkillLevelTableData skillLevelTableData = TableDataManager.instance.FindSkillLevelTableData(_id, spellData.level);
-		if (skillInfo == null || skillLevelTableData == null)
+		SpellGradeLevelTableData spellGradeLevelTableData = TableDataManager.instance.FindSpellGradeLevelTableData(skillTableData.grade, skillTableData.star, spellData.level);
+		if (skillInfo == null || skillLevelTableData == null || spellGradeLevelTableData == null)
 			return;
 
-		RefreshInfo(skillInfo.iconPrefab, skillInfo.nameId, skillInfo.descriptionId, skillLevelTableData);
+		skillIcon.SetInfo(skillTableData, false);
+		RefreshInfo(skillInfo.iconPrefab, skillInfo.nameId, skillInfo.descriptionId, skillLevelTableData, spellGradeLevelTableData);
 
 		for (int i = 0; i < noGainGrayTextList.Length; ++i)
 			noGainGrayTextList[i].color = Color.white;
@@ -44,13 +47,15 @@ public class SpellCanvasListItem : MonoBehaviour
 			noGainGrayImageList[i].color = Color.white;
 	}
 
-	public void InitializeForNoGain(SkillTableData skillTableData, SkillLevelTableData skillLevelTableData)
+	public void InitializeForNoGain(SkillTableData skillTableData, SkillLevelTableData skillLevelTableData, SpellGradeLevelTableData spellGradeLevelTableData)
 	{
 		_noGain = true;
+		skillIcon.SetInfo(skillTableData, true);
 		RefreshInfo(skillTableData.iconPrefab,
 			skillTableData.useNameIdOverriding ? skillLevelTableData.nameId : skillTableData.nameId,
 			skillTableData.useDescriptionIdOverriding ? skillLevelTableData.descriptionId : skillTableData.descriptionId,
-			skillLevelTableData);
+			skillLevelTableData,
+			spellGradeLevelTableData);
 
 		for (int i = 0; i < noGainGrayTextList.Length; ++i)
 			noGainGrayTextList[i].color = Color.gray;
@@ -60,37 +65,17 @@ public class SpellCanvasListItem : MonoBehaviour
 		proceedingCountSlider.value = 0.0f;
 	}
 
-	GameObject _cachedImageObject;
-	void RefreshInfo(string iconPrefabAddress, string nameId, string descriptionId, SkillLevelTableData skillLevelTableData)
+	void RefreshInfo(string iconPrefabAddress, string nameId, string descriptionId, SkillLevelTableData skillLevelTableData, SpellGradeLevelTableData spellGradeLevelTableData)
 	{
-		atkText.text = skillLevelTableData.accumulatedAtk.ToString("N0");
+		atkText.text = spellGradeLevelTableData.accumulatedAtk.ToString("N0");
 
-		levelText.text = UIString.instance.GetString("GameUI_LevelPackLv", skillLevelTableData.level);
+		levelText.text = UIString.instance.GetString("GameUI_LevelPackLv", spellGradeLevelTableData.level);
 		nameText.SetLocalizedText(UIString.instance.GetString(nameId));
 		_descString = UIString.instance.GetString(descriptionId, skillLevelTableData.parameter);
 
 		int count = 0;
 		if (_spellData != null) count = _spellData.count;
 		proceedingCountText.text = string.Format("{0:N0} / {1:N0}", count, 20);
-
-		if (_cachedImageObject != null)
-		{
-			_cachedImageObject.SetActive(false);
-			_cachedImageObject = null;
-		}
-
-		if (string.IsNullOrEmpty(iconPrefabAddress) == false)
-		{
-			AddressableAssetLoadManager.GetAddressableGameObject(iconPrefabAddress, "Preview", (prefab) =>
-			{
-				_cachedImageObject = UIInstanceManager.instance.GetCachedObject(prefab, iconPrefabRootTransform);
-
-				Coffee.UIExtensions.UIShiny shinyComponent = _cachedImageObject.GetComponentInChildren<Coffee.UIExtensions.UIShiny>();
-				Image image = shinyComponent.GetComponent<Image>();
-				shinyComponent.enabled = _noGain ? false : true;
-				image.color = _noGain ? Color.gray : Color.white;
-			});
-		}
 	}
 
 	string _descString = "";

@@ -25,6 +25,14 @@ public class SkillTableData
   public int grade { get { return _grade; } set { _grade = value; } }
   
   [SerializeField]
+  int _star;
+  public int star { get { return _star; } set { _star = value; } }
+  
+  [SerializeField]
+  int _maxLevel;
+  public int maxLevel { get { return _maxLevel; } set { _maxLevel = value; } }
+  
+  [SerializeField]
   string _iconPrefab;
   public string iconPrefab { get { return _iconPrefab; } set { _iconPrefab = value; } }
   
