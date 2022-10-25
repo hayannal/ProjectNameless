@@ -105,6 +105,17 @@ public class CostumeCanvasListItem : SimpleCashCanvas
 	{
 		if (_contains)
 		{
+			if (string.IsNullOrEmpty(CharacterCanvas.instance.previewId) == false && equippedObject.activeSelf)
+			{
+				CharacterCanvas.instance.ShowCanvasPlayerActorWithCostume("", () =>
+				{
+					CostumeListCanvas.instance.gameObject.SetActive(false);
+					CharacterCanvas.instance.ShowPreviewObject(false, "");
+					ToastCanvas.instance.ShowToast(UIString.instance.GetString("CostumeUI_ChangeCostumeToast"), 2.0f);
+				});
+				return;
+			}
+
 			if (equippedObject.activeSelf)
 			{
 				ToastCanvas.instance.ShowToast(UIString.instance.GetString("CostumeUI_AlreadyCostumeToast"), 2.0f);
