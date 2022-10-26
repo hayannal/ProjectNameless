@@ -50,6 +50,7 @@ public class SpellCanvasListItem : MonoBehaviour
 	public void InitializeForNoGain(SkillTableData skillTableData, SkillLevelTableData skillLevelTableData, SpellGradeLevelTableData spellGradeLevelTableData)
 	{
 		_noGain = true;
+		_skillTableData = skillTableData;
 		skillIcon.SetInfo(skillTableData, true);
 		RefreshInfo(skillTableData.iconPrefab,
 			skillTableData.useNameIdOverriding ? skillLevelTableData.nameId : skillTableData.nameId,
@@ -81,7 +82,10 @@ public class SpellCanvasListItem : MonoBehaviour
 	string _descString = "";
 	public void OnClickDetailButton()
 	{
-		TooltipCanvas.Show(true, TooltipCanvas.eDirection.Bottom, _descString, 200, tooltipRootTransform, new Vector2(0.0f, 0.0f));
+		UIInstanceManager.instance.ShowCanvasAsync("SpellInfoCanvas", () =>
+		{
+			SpellInfoCanvas.instance.SetInfo(_skillTableData, levelText.text, nameText.text, _descString);
+		});
 	}
 
 	public void OnClickLevelUpButton()
