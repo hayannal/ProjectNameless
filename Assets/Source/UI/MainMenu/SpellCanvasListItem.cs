@@ -13,8 +13,8 @@ public class SpellCanvasListItem : MonoBehaviour
 	public Text atkText;
 	public Text[] noGainGrayTextList;
 	public Image[] noGainGrayImageList;
-	public Slider proceedingCountSlider;
 	public Text proceedingCountText;
+	public Text levelUpCostText;
 	public GameObject blinkObject;
 	public RectTransform alarmRootTransform;
 
@@ -62,8 +62,6 @@ public class SpellCanvasListItem : MonoBehaviour
 			noGainGrayTextList[i].color = Color.gray;
 		for (int i = 0; i < noGainGrayImageList.Length; ++i)
 			noGainGrayImageList[i].color = Color.gray;
-
-		proceedingCountSlider.value = 0.0f;
 	}
 
 	void RefreshInfo(string iconPrefabAddress, string nameId, string descriptionId, SkillLevelTableData skillLevelTableData, SpellGradeLevelTableData spellGradeLevelTableData)
@@ -75,8 +73,16 @@ public class SpellCanvasListItem : MonoBehaviour
 		_descString = UIString.instance.GetString(descriptionId, skillLevelTableData.parameter);
 
 		int count = 0;
-		if (_spellData != null) count = _spellData.count;
-		proceedingCountText.text = string.Format("{0:N0} / {1:N0}", count, 20);
+		if (_spellData != null) count = _spellData.count - spellGradeLevelTableData.requiredAccumulatedPowerPoint;
+		int maxCount = 0;
+		if (spellGradeLevelTableData != null)
+		{
+			SpellGradeLevelTableData nextSpellGradeLevelTableData = TableDataManager.instance.FindSpellGradeLevelTableData(spellGradeLevelTableData.grade, spellGradeLevelTableData.star, spellGradeLevelTableData.level + 1);
+			maxCount = nextSpellGradeLevelTableData.requiredPowerPoint;
+			levelUpCostText.text = nextSpellGradeLevelTableData.requiredGold.ToString("N0");
+		}
+		proceedingCountText.text = string.Format("{0:N0} / {1:N0}", count, maxCount);
+		
 	}
 
 	string _descString = "";
@@ -96,10 +102,20 @@ public class SpellCanvasListItem : MonoBehaviour
 			return;
 		}
 
+		float prevValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
 		PlayFabApiManager.instance.RequestLevelUpSpell(_spellData, (_level + 1), () =>
 		{
+			float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
+
+			blinkObject.SetActive(true);
 			Initialize(_spellData, _skillTableData);
 			//MainCanvas.instance.RefreshLevelPassAlarmObject();
+
+			// 변경 완료를 알리고
+			UIInstanceManager.instance.ShowCanvasAsync("ChangePowerCanvas", () =>
+			{
+				ChangePowerCanvas.instance.ShowInfo(prevValue, nextValue);
+			});
 		});
 	}
 

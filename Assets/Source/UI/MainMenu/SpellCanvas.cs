@@ -14,6 +14,7 @@ public class SpellCanvas : ResearchShowCanvasBase
 	public Text proceedingCountText;
 	public Text skillTotalLevelText;
 	public Text skillTotalLevelValueText;
+	public Text skillTotalLevelUpCostText;
 	public RectTransform alarmRootTransform;
 
 	public Transform separateLineTransform;
@@ -100,6 +101,7 @@ public class SpellCanvas : ResearchShowCanvasBase
 				int current = SpellManager.instance.GetSumSpellCount() - spellTotalTableData.requiredAccumulatedCount;				
 				proceedingCountText.text = string.Format("{0:N0} / {1:N0}", current, nextSpellTotalTableData.requiredCount);
 				proceedingCountSlider.value = (float)current / nextSpellTotalTableData.requiredAccumulatedCount;
+				skillTotalLevelUpCostText.text = nextSpellTotalTableData.requiredGold.ToString("N0");
 			}
 		}
 	}
