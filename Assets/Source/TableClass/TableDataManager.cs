@@ -54,6 +54,8 @@ public class TableDataManager : MonoBehaviour
 	public SevenDaysRewardTable sevenDaysRewardTable;
 	public SevenSumTable sevenSumTable;
 
+	public GachaSpellTable gachaSpellTable;
+
 	void Awake()
 	{
 		instance = this;
