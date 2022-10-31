@@ -31,6 +31,8 @@ public class CharacterLevelCanvas : MonoBehaviour
 	public Image maxButtonImage;
 	public Text maxButtonText;
 
+	public RectTransform alarmRootTransform;
+
 	void Awake()
 	{
 		instance = this;
@@ -78,6 +80,7 @@ public class CharacterLevelCanvas : MonoBehaviour
 		playerLevelText.text = UIString.instance.GetString("GameUI_CharPower", level);
 		atkText.text = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower).ToString("N0");
 
+		AlarmObject.Hide(alarmRootTransform);
 		bool maxLevel = false;
 		if (level >= BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxPlayerLevel"))
 		{
@@ -151,6 +154,9 @@ public class CharacterLevelCanvas : MonoBehaviour
 			maxButtonObject.SetActive(false);
 			_price = requiredGold;
 			_subLevelComplete = subLevelComplete;
+
+			if (!disablePrice)
+				AlarmObject.Show(alarmRootTransform);
 		}
 
 		/*

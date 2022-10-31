@@ -11,7 +11,7 @@ using System.Collections.Generic;
 /// 
 [System.Serializable]
 [PreferBinarySerialization]
-public class GachaTypeTable : ScriptableObject 
+public class SummonTypeTable : ScriptableObject 
 {	
     [HideInInspector] [SerializeField] 
     public string SheetName = "";
@@ -20,7 +20,7 @@ public class GachaTypeTable : ScriptableObject
     public string WorksheetName = "";
     
     // Note: initialize in OnEnable() not here.
-    public GachaTypeTableData[] dataArray;
+    public SummonTypeTableData[] dataArray;
     
     void OnEnable()
     {		
@@ -33,7 +33,7 @@ public class GachaTypeTable : ScriptableObject
         //    because OnEnable is called whenever Unity builds.
         // 		
         if (dataArray == null)
-            dataArray = new GachaTypeTableData[0];
+            dataArray = new SummonTypeTableData[0];
 
     }
     

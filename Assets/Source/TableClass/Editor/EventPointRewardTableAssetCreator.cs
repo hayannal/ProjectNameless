@@ -12,7 +12,7 @@ public partial class ExcelDataAssetUtility
     public static void CreateEventPointRewardTableAssetFile()
     {
         EventPointRewardTable asset = CustomAssetUtility.CreateAsset<EventPointRewardTable>();
-        asset.SheetName = "../Excel/Gacha.xlsx";
+        asset.SheetName = "../Excel/Summon.xlsx";
         asset.WorksheetName = "EventPointRewardTable";
         EditorUtility.SetDirty(asset);        
     }

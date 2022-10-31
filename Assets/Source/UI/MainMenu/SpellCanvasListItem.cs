@@ -73,6 +73,7 @@ public class SpellCanvasListItem : MonoBehaviour
 		nameText.SetLocalizedText(UIString.instance.GetString(nameId));
 		_descString = UIString.instance.GetString(descriptionId, skillLevelTableData.parameter);
 
+		AlarmObject.Hide(alarmRootTransform);
 		if (spellGradeLevelTableData.level >= maxLevel)
 		{
 			levelText.text = UIString.instance.GetString("GameUI_LevelPackMaxLv");
@@ -99,6 +100,9 @@ public class SpellCanvasListItem : MonoBehaviour
 				maxReachedTextObject.SetActive(false);
 				_price = nextSpellGradeLevelTableData.requiredGold;
 				_needAccumulatedCount = nextSpellGradeLevelTableData.requiredAccumulatedPowerPoint;
+
+				if (CurrencyData.instance.gold >= _price && count >= maxCount)
+					AlarmObject.Show(alarmRootTransform);
 			}
 			proceedingCountText.text = string.Format("{0:N0} / {1:N0}", count, maxCount);
 		}

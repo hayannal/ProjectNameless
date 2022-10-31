@@ -586,41 +586,41 @@ public class GachaInfoCanvas : MonoBehaviour
 	}
 
 	#region Prepare
-	class RandomGachaTypeInfo
+	class RandomSummonTypeInfo
 	{
-		public GachaTypeTableData gachaTypeTableData;
+		public SummonTypeTableData summonTypeTableData;
 		public float sumWeight;
 	}
-	List<RandomGachaTypeInfo> _listGachaTypeInfo = null;
+	List<RandomSummonTypeInfo> _listSummonTypeInfo = null;
 
 	public eGachaResult GetRandomGachaResult()
 	{
-		if (_listGachaTypeInfo == null)
-			_listGachaTypeInfo = new List<RandomGachaTypeInfo>();
-		_listGachaTypeInfo.Clear();
+		if (_listSummonTypeInfo == null)
+			_listSummonTypeInfo = new List<RandomSummonTypeInfo>();
+		_listSummonTypeInfo.Clear();
 
 		float sumWeight = 0.0f;
-		for (int i = 0; i < TableDataManager.instance.gachaTypeTable.dataArray.Length; ++i)
+		for (int i = 0; i < TableDataManager.instance.summonTypeTable.dataArray.Length; ++i)
 		{
-			float weight = TableDataManager.instance.gachaTypeTable.dataArray[i].gachaWeight;
+			float weight = TableDataManager.instance.summonTypeTable.dataArray[i].gachaWeight;
 			if (weight <= 0.0f)
 				continue;
 
 			sumWeight += weight;
-			RandomGachaTypeInfo newInfo = new RandomGachaTypeInfo();
-			newInfo.gachaTypeTableData = TableDataManager.instance.gachaTypeTable.dataArray[i];
+			RandomSummonTypeInfo newInfo = new RandomSummonTypeInfo();
+			newInfo.summonTypeTableData = TableDataManager.instance.summonTypeTable.dataArray[i];
 			newInfo.sumWeight = sumWeight;
-			_listGachaTypeInfo.Add(newInfo);
+			_listSummonTypeInfo.Add(newInfo);
 		}
 
-		if (_listGachaTypeInfo.Count == 0)
+		if (_listSummonTypeInfo.Count == 0)
 			return eGachaResult.Gold1;
 
 		int index = -1;
-		float random = UnityEngine.Random.Range(0.0f, _listGachaTypeInfo[_listGachaTypeInfo.Count - 1].sumWeight);
-		for (int i = 0; i < _listGachaTypeInfo.Count; ++i)
+		float random = UnityEngine.Random.Range(0.0f, _listSummonTypeInfo[_listSummonTypeInfo.Count - 1].sumWeight);
+		for (int i = 0; i < _listSummonTypeInfo.Count; ++i)
 		{
-			if (random <= _listGachaTypeInfo[i].sumWeight)
+			if (random <= _listSummonTypeInfo[i].sumWeight)
 			{
 				index = i;
 				break;
@@ -629,7 +629,7 @@ public class GachaInfoCanvas : MonoBehaviour
 		if (index == -1)
 			return eGachaResult.Gold1;
 
-		string id = _listGachaTypeInfo[index].gachaTypeTableData.gachaId;
+		string id = _listSummonTypeInfo[index].summonTypeTableData.gachaId;
 		int intId = 0;
 		int.TryParse(id, out intId);
 		if (intId == 0)
@@ -647,6 +647,7 @@ public class GachaInfoCanvas : MonoBehaviour
 	ObscuredInt _resultBrokenEnergy;
 	ObscuredInt _resultEvent;
 	ObscuredInt _reserveRoomType;
+	public eGachaResult prepareResult;
 	void PrepareGacha()
 	{
 		bool fixedResult = false;
@@ -658,7 +659,9 @@ public class GachaInfoCanvas : MonoBehaviour
 		{
 			_gachaResult = GetRandomGachaResult();
 		}
-		
+
+		_gachaResult = prepareResult;
+
 		Debug.LogFormat("Betting Prepare : {0}", _gachaResult);
 
 		// 리셋

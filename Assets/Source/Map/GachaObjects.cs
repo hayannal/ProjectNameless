@@ -39,8 +39,8 @@ public class GachaObjects : MonoBehaviour
 	public GameObject ShowSummonWaitEffect(GachaInfoCanvas.eGachaResult gachaResult, ref float effectWaitTime)
 	{
 		string stringId = ((int)gachaResult).ToString();
-		GachaTypeTableData gachaTypeTableData = TableDataManager.instance.FindeGachaTypeTableData(stringId);
-		if (gachaTypeTableData == null)
+		SummonTypeTableData summonTypeTableData = TableDataManager.instance.FindeSummonTypeTableData(stringId);
+		if (summonTypeTableData == null)
 			return null;
 
 		if (_listGachaEffectInfo == null)
@@ -53,10 +53,10 @@ public class GachaObjects : MonoBehaviour
 			float weight = 0.0f;
 			switch (i)
 			{
-				case 0: weight = gachaTypeTableData.effectLen_1; break;
-				case 1: weight = gachaTypeTableData.effectLen_2; break;
-				case 2: weight = gachaTypeTableData.effectLen_3; break;
-				case 3: weight = gachaTypeTableData.effectLen_4; break;
+				case 0: weight = summonTypeTableData.effectLen_1; break;
+				case 1: weight = summonTypeTableData.effectLen_2; break;
+				case 2: weight = summonTypeTableData.effectLen_3; break;
+				case 3: weight = summonTypeTableData.effectLen_4; break;
 			}
 			if (weight <= 0.0f)
 				continue;

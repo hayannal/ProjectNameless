@@ -9,12 +9,12 @@ using UnityQuickSheet;
 ///
 /// !!! Machine generated code !!!
 ///
-[CustomEditor(typeof(GachaTypeTable))]
-public class GachaTypeTableEditor : BaseExcelEditor<GachaTypeTable>
+[CustomEditor(typeof(SummonTypeTable))]
+public class SummonTypeTableEditor : BaseExcelEditor<SummonTypeTable>
 {	    
     public override bool Load()
     {
-        GachaTypeTable targetData = target as GachaTypeTable;
+        SummonTypeTable targetData = target as SummonTypeTable;
 
         string path = targetData.SheetName;
 
@@ -28,7 +28,7 @@ public class GachaTypeTableEditor : BaseExcelEditor<GachaTypeTable>
         ExcelQuery query = new ExcelQuery(path, sheet);
         if (query != null && query.IsValid())
         {
-            targetData.dataArray = query.Deserialize<GachaTypeTableData>().ToArray();
+            targetData.dataArray = query.Deserialize<SummonTypeTableData>().ToArray();
             EditorUtility.SetDirty(targetData);
             AssetDatabase.SaveAssets();
             return true;

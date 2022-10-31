@@ -44,7 +44,7 @@ public class TableDataManager : MonoBehaviour
 	public AnalysisTable analysisTable;
 
 	public GuideQuestTable guideQuestTable;
-	public GachaTypeTable gachaTypeTable;
+	public SummonTypeTable summonTypeTable;
 	public ShopProductTable shopProductTable;
 	public LevelPassTable levelPassTable;
 	public ConsumeItemTable consumeItemTable;
@@ -394,12 +394,12 @@ public class TableDataManager : MonoBehaviour
 		return null;
 	}
 
-	public GachaTypeTableData FindeGachaTypeTableData(string gachaId)
+	public SummonTypeTableData FindeSummonTypeTableData(string summonId)
 	{
-		for (int i = 0; i < gachaTypeTable.dataArray.Length; ++i)
+		for (int i = 0; i < summonTypeTable.dataArray.Length; ++i)
 		{
-			if (gachaTypeTable.dataArray[i].gachaId == gachaId)
-				return gachaTypeTable.dataArray[i];
+			if (summonTypeTable.dataArray[i].gachaId == summonId)
+				return summonTypeTable.dataArray[i];
 		}
 		return null;
 	}

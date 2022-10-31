@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 80e14a72067f1ad408ec8d661bc560ce, type: 3}
-  m_Name: GachaTypeTableImporter
+  m_Name: SummonTypeTableImporter
   m_EditorClassIdentifier: 
   templatePath: AssetStore/QuickSheet/ExcelPlugin/Templates
   scriptFilePath: Source/TableClass/Runtime
   editorScriptFilePath: Source/TableClass/Editor
-  sheetName: Gacha.xlsx
-  workSheetName: GachaTypeTable
+  sheetName: Summon.xlsx
+  workSheetName: SummonTypeTable
   columnHeaderList:
   - type: 1
     name: gachaId
@@ -42,7 +42,9 @@ MonoBehaviour:
     name: effectLen_4
     isEnable: 0
     isArray: 0
-  excelFilePath: ../Excel/Gacha.xlsx
+  excelFilePath: ../Excel/Summon.xlsx
   SheetNames:
-  - GachaTypeTable
+  - SummonTypeTable
+  - EventPointTypeTable
+  - EventPointRewardTable
   currentSelectedSheet: 0

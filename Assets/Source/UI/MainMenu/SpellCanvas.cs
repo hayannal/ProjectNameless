@@ -90,6 +90,7 @@ public class SpellCanvas : ResearchShowCanvasBase
 		SpellTotalTableData spellTotalTableData = TableDataManager.instance.FindSpellTotalTableData(SpellManager.instance.spellTotalLevel);
 		skillTotalLevelValueText.text = spellTotalTableData.accumulatedAtk.ToString("N0");
 
+		AlarmObject.Hide(alarmRootTransform);
 		if (SpellManager.instance.spellTotalLevel >= TableDataManager.instance.GetGlobalConstantInt("MaxTotalSkillLevel"))
 		{
 			// level
@@ -117,6 +118,9 @@ public class SpellCanvas : ResearchShowCanvasBase
 				maxReachedTextObject.SetActive(false);
 				_price = nextSpellTotalTableData.requiredGold;
 				_needAccumulatedCount = nextSpellTotalTableData.requiredAccumulatedCount;
+
+				if (CurrencyData.instance.gold >= _price && current >= nextSpellTotalTableData.requiredCount)
+					AlarmObject.Show(alarmRootTransform);
 			}
 		}
 	}
