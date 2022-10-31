@@ -207,7 +207,7 @@ public class SkillProcessor : MonoBehaviour
 		hitParameter.statusBase = new StatusBase();
 		actor.actorStatus.CopyStatusBase(ref hitParameter.statusBase);
 		CopyEtcStatus(ref hitParameter.statusStructForHitObject, actor);
-		hitParameter.statusStructForHitObject.skillLevel = info.skillLevel;
+		hitParameter.statusStructForHitObject.skillLevel = 1;
 
 		// 애니만 없을뿐 active스킬처럼 쓰는거라서 managed는 false로 호출한다.
 		for (int i = 0; i < info.tableAffectorValueIdList.Length; ++i)
