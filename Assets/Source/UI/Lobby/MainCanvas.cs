@@ -271,7 +271,18 @@ public class MainCanvas : MonoBehaviour
 
 	public void OnClickSpellButton()
 	{
-		UIInstanceManager.instance.ShowCanvasAsync("SpellCanvas", null);
+		if (SpellSpriteContainer.instance == null)
+		{
+			DelayedLoadingCanvas.Show(true);
+			AddressableAssetLoadManager.GetAddressableGameObject("SpellSpriteContainer", "", (prefab) =>
+			{
+				BattleInstanceManager.instance.GetCachedObject(prefab, null);
+				DelayedLoadingCanvas.Show(false);
+				UIInstanceManager.instance.ShowCanvasAsync("SpellCanvas", null);
+			});
+		}
+		else
+			UIInstanceManager.instance.ShowCanvasAsync("SpellCanvas", null);
 	}
 
 	public void OnEnterCharacterMenu(bool enter)

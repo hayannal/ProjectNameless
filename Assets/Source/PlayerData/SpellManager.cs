@@ -67,6 +67,19 @@ public class SpellManager : MonoBehaviour
 			_listSpellData.Add(newSpellData);
 		}
 
+		// 검증
+		if (spellTotalLevel > 1)
+		{
+			SpellTotalTableData spellTotalTableData = TableDataManager.instance.FindSpellTotalTableData(spellTotalLevel);
+			if (spellTotalTableData == null)
+				spellTotalLevel = 1;
+			else
+			{
+				if (GetSumSpellCount() < spellTotalTableData.requiredAccumulatedCount)
+					spellTotalLevel = 1;
+			}
+		}
+
 		// status
 		RefreshCachedStatus();
 	}

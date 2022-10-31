@@ -371,6 +371,9 @@ public class PlayerData : MonoBehaviour
 			playerActor.actorStatus.InitializeActorStatus();
 
 		TeamManager.instance.InitializeActorStatus();
+
+		if (StageFloorInfoCanvas.instance != null)
+			StageFloorInfoCanvas.instance.RefreshCombatPower();
 	}
 
 	public void OnRecvCharacterList(List<CharacterResult> characterList, Dictionary<string, GetCharacterStatisticsResult> dicCharacterStatistics)

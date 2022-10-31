@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using CodeStage.AntiCheat.ObscuredTypes;
 
 public class SpellCanvas : ResearchShowCanvasBase
 {
@@ -9,12 +10,15 @@ public class SpellCanvas : ResearchShowCanvasBase
 
 	public GameObject spellGroundObjectPrefab;
 
+	public CurrencySmallInfo currencySmallInfo;
 	public Transform skillTotalLevelButtonTransform;
 	public Slider proceedingCountSlider;
 	public Text proceedingCountText;
 	public Text skillTotalLevelText;
 	public Text skillTotalLevelValueText;
 	public Text skillTotalLevelUpCostText;
+	public GameObject maxReachedTextObject;
+	public GameObject blinkObject;
 	public RectTransform alarmRootTransform;
 
 	public Transform separateLineTransform;
@@ -79,6 +83,8 @@ public class SpellCanvas : ResearchShowCanvasBase
 		MainCanvas.instance.OnEnterCharacterMenu(false);
 	}
 
+	ObscuredInt _price;
+	ObscuredInt _needAccumulatedCount;
 	void RefreshSpellLevel()
 	{
 		SpellTotalTableData spellTotalTableData = TableDataManager.instance.FindSpellTotalTableData(SpellManager.instance.spellTotalLevel);
@@ -88,6 +94,11 @@ public class SpellCanvas : ResearchShowCanvasBase
 		{
 			// level
 			skillTotalLevelText.text = string.Format("Lv. {0:N0}", "Max");
+
+			int overCount = SpellManager.instance.GetSumSpellCount() - spellTotalTableData.requiredAccumulatedCount;
+			proceedingCountText.text = string.Format("Over:  +{0:N0}", overCount);
+			skillTotalLevelUpCostText.gameObject.SetActive(false);
+			maxReachedTextObject.SetActive(true);
 		}
 		else
 		{
@@ -98,10 +109,14 @@ public class SpellCanvas : ResearchShowCanvasBase
 			if (nextSpellTotalTableData != null)
 			{
 				// gauge
-				int current = SpellManager.instance.GetSumSpellCount() - spellTotalTableData.requiredAccumulatedCount;				
+				int current = SpellManager.instance.GetSumSpellCount() - spellTotalTableData.requiredAccumulatedCount;
 				proceedingCountText.text = string.Format("{0:N0} / {1:N0}", current, nextSpellTotalTableData.requiredCount);
-				proceedingCountSlider.value = (float)current / nextSpellTotalTableData.requiredAccumulatedCount;
+				proceedingCountSlider.value = (float)current / nextSpellTotalTableData.requiredCount;
 				skillTotalLevelUpCostText.text = nextSpellTotalTableData.requiredGold.ToString("N0");
+				skillTotalLevelUpCostText.gameObject.SetActive(true);
+				maxReachedTextObject.SetActive(false);
+				_price = nextSpellTotalTableData.requiredGold;
+				_needAccumulatedCount = nextSpellTotalTableData.requiredAccumulatedCount;
 			}
 		}
 	}
@@ -169,4 +184,93 @@ public class SpellCanvas : ResearchShowCanvasBase
 	{
 		
 	}
+
+	#region Press LevelUp
+	// 홀드로 레벨업 할땐 클릭으로 할때와 다르게 클라에서 선처리 해야한다. CharacterLevelCanvas에서 하던거 가져와서 prev로 필요한 것들만 추려서 쓴다.
+	float _prevCombatValue;
+	int _prevTotalSpellLevel;
+	int _prevGold;
+	int _levelUpCount;
+	bool _pressed = false;
+	public void OnPressInitialize()
+	{
+		// 패킷에 전송할만한 초기화 내용을 기억해둔다.
+		_prevCombatValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
+		_prevTotalSpellLevel = SpellManager.instance.spellTotalLevel;
+		_prevGold = CurrencyData.instance.gold;
+		_levelUpCount = 0;
+		_pressed = true;
+	}
+
+	public void OnPressLevelUp()
+	{
+		if (_pressed == false)
+			return;
+
+		if (CurrencyData.instance.gold < _price)
+		{
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughGold"), 2.0f);
+			if (_pressed)
+			{
+				OnPressUpSync();
+				_pressed = false;
+			}
+			return;
+		}
+
+		if (SpellManager.instance.GetSumSpellCount() < _needAccumulatedCount)
+		{
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughSpellCount"), 2.0f);
+			if (_pressed)
+			{
+				OnPressUpSync();
+				_pressed = false;
+			}
+			return;
+		}
+
+		// 맥스 넘어가는거도 막아놔야한다.
+		if (SpellManager.instance.spellTotalLevel >= BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxTotalSkillLevel"))
+		{
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_MaxReachToast"), 2.0f);
+			if (_pressed)
+			{
+				OnPressUpSync();
+				_pressed = false;
+			}
+			return;
+		}
+
+		_levelUpCount += 1;
+		CurrencyData.instance.gold -= _price;
+		SpellManager.instance.OnLevelUpTotalSpell(SpellManager.instance.spellTotalLevel + 1);
+		blinkObject.SetActive(false);
+		blinkObject.SetActive(true);
+		RefreshSpellLevel();
+		currencySmallInfo.RefreshInfo();
+	}
+
+	public void OnPressUpSync()
+	{
+		if (_pressed == false)
+			return;
+		_pressed = false;
+
+		if (_levelUpCount == 0)
+			return;
+		if (_prevTotalSpellLevel > SpellManager.instance.spellTotalLevel)
+			return;
+		if (_prevGold < CurrencyData.instance.gold)
+			return;
+
+		PlayFabApiManager.instance.RequestTotalSpellPressLevelUp(_prevTotalSpellLevel, _prevGold, SpellManager.instance.spellTotalLevel, CurrencyData.instance.gold, _levelUpCount, () =>
+		{
+			float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
+			UIInstanceManager.instance.ShowCanvasAsync("ChangePowerCanvas", () =>
+			{
+				ChangePowerCanvas.instance.ShowInfo(_prevCombatValue, nextValue);
+			});
+		});
+	}
+	#endregion
 }

@@ -2284,6 +2284,60 @@ public class PlayFabApiManager : MonoBehaviour
 			HandleCommonError(error);
 		});
 	}
+
+	public void RequestSpellPressLevelUp(SpellData spellData, int prevSpellLevel, int prevGold, int spellLevel, int gold, int levelUpCount, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}_{2}_{3}_{4}_{5}_{6}_{7}_{8}", (string)spellData.spellId, spellData.cachedSkillTableData.grade, spellData.cachedSkillTableData.star, prevSpellLevel, prevGold, spellLevel, gold, levelUpCount, "zlireplx");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "SpellPressLevelUp",
+			FunctionParameter = new { Id = (string)spellData.uniqueId, grade = spellData.cachedSkillTableData.grade, star = spellData.cachedSkillTableData.star, PvLv = prevSpellLevel, PvGo = prevGold, Lv = spellLevel, Go = gold, LvCnt = levelUpCount, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+				
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
+	public void RequestTotalSpellPressLevelUp(int prevTotalSpellLevel, int prevGold, int totalSpellLevel, int gold, int levelUpCount, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}_{2}_{3}_{4}_{5}", prevTotalSpellLevel, prevGold, totalSpellLevel, gold, levelUpCount, "xliseplz");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "TotalSpellPressLevelUp",
+			FunctionParameter = new { PvLv = prevTotalSpellLevel, PvGo = prevGold, Lv = totalSpellLevel, Go = gold, LvCnt = levelUpCount, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
 	#endregion
 
 

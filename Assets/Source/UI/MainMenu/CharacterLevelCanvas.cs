@@ -153,9 +153,6 @@ public class CharacterLevelCanvas : MonoBehaviour
 			_subLevelComplete = subLevelComplete;
 		}
 
-		if (StageFloorInfoCanvas.instance != null)
-			StageFloorInfoCanvas.instance.RefreshCombatPower();
-
 		/*
 		changeWingText.SetLocalizedText(UIString.instance.GetString(hasWing ? "GameUI_ChangeWings" : "GameUI_CreateWings"));
 		int requiredDia = 0;

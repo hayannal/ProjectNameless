@@ -15,6 +15,8 @@ public class SkillIcon : MonoBehaviour
 	public void SetInfo(SkillTableData skillTableData, bool gray)
 	{
 		// icon
+		spellImage.sprite = SpellSpriteContainer.instance.FindSprite(skillTableData.iconPrefab);
+
 		for (int i = 0; i < shinyEffectList.Length; ++i)
 			shinyEffectList[i].enabled = !gray;
 		spellImage.color = normalFrameImage.color = goldenFrameImage.color = gray ? Color.gray : Color.white;
