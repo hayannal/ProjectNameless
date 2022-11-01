@@ -647,7 +647,6 @@ public class GachaInfoCanvas : MonoBehaviour
 	ObscuredInt _resultBrokenEnergy;
 	ObscuredInt _resultEvent;
 	ObscuredInt _reserveRoomType;
-	public eGachaResult prepareResult;
 	void PrepareGacha()
 	{
 		bool fixedResult = false;
@@ -659,8 +658,6 @@ public class GachaInfoCanvas : MonoBehaviour
 		{
 			_gachaResult = GetRandomGachaResult();
 		}
-
-		_gachaResult = prepareResult;
 
 		Debug.LogFormat("Betting Prepare : {0}", _gachaResult);
 
