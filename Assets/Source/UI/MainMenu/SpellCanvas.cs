@@ -94,7 +94,7 @@ public class SpellCanvas : ResearchShowCanvasBase
 		if (SpellManager.instance.spellTotalLevel >= TableDataManager.instance.GetGlobalConstantInt("MaxTotalSkillLevel"))
 		{
 			// level
-			skillTotalLevelText.text = string.Format("Lv. {0:N0}", "Max");
+			skillTotalLevelText.text = UIString.instance.GetString("GameUI_Lv", "Max");
 
 			int overCount = SpellManager.instance.GetSumSpellCount() - spellTotalTableData.requiredAccumulatedCount;
 			proceedingCountText.text = string.Format("Over:  +{0:N0}", overCount);
@@ -104,7 +104,7 @@ public class SpellCanvas : ResearchShowCanvasBase
 		else
 		{
 			// level
-			skillTotalLevelText.text = string.Format("Lv. {0:N0}", SpellManager.instance.spellTotalLevel);
+			skillTotalLevelText.text = UIString.instance.GetString("GameUI_Lv", SpellManager.instance.spellTotalLevel);
 
 			SpellTotalTableData nextSpellTotalTableData = TableDataManager.instance.FindSpellTotalTableData(SpellManager.instance.spellTotalLevel + 1);
 			if (nextSpellTotalTableData != null)
