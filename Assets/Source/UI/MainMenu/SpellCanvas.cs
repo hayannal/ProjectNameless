@@ -179,6 +179,30 @@ public class SpellCanvas : ResearchShowCanvasBase
 		}
 	}
 
+	public static bool CheckLevelUp()
+	{
+		if (CheckTotalLevelUp())
+			return true;
+
+		return false;
+	}
+
+	public static bool CheckTotalLevelUp()
+	{
+		int totalSpellLevel = SpellManager.instance.spellTotalLevel;
+		if (SpellManager.instance.spellTotalLevel >= BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxTotalSkillLevel"))
+			return false;
+
+		SpellTotalTableData nextSpellTotalTableData = TableDataManager.instance.FindSpellTotalTableData(SpellManager.instance.spellTotalLevel + 1);
+		if (nextSpellTotalTableData == null)
+			return false;
+
+		if (CurrencyData.instance.gold >= nextSpellTotalTableData.requiredGold && SpellManager.instance.GetSumSpellCount() >= nextSpellTotalTableData.requiredAccumulatedCount)
+			return true;
+
+		return false;
+	}
+
 	public void OnClickTitleDetailButton()
 	{
 		TooltipCanvas.Show(true, TooltipCanvas.eDirection.Bottom, UIString.instance.GetString("SpellUI_TotalSkillLevelMore"), 300, skillTotalLevelButtonTransform, new Vector2(0.0f, -35.0f));
@@ -269,6 +293,8 @@ public class SpellCanvas : ResearchShowCanvasBase
 
 		PlayFabApiManager.instance.RequestTotalSpellPressLevelUp(_prevTotalSpellLevel, _prevGold, SpellManager.instance.spellTotalLevel, CurrencyData.instance.gold, _levelUpCount, () =>
 		{
+			MainCanvas.instance.RefreshSpellAlarmObject();
+
 			float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
 			UIInstanceManager.instance.ShowCanvasAsync("ChangePowerCanvas", () =>
 			{

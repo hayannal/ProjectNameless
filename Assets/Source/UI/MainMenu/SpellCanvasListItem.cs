@@ -239,6 +239,8 @@ public class SpellCanvasListItem : MonoBehaviour
 
 		PlayFabApiManager.instance.RequestSpellPressLevelUp(_spellData, _prevSpellLevel, _prevGold, _spellData.level, CurrencyData.instance.gold, _levelUpCount, () =>
 		{
+			MainCanvas.instance.RefreshSpellAlarmObject();
+
 			float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
 			UIInstanceManager.instance.ShowCanvasAsync("ChangePowerCanvas", () =>
 			{

@@ -32,10 +32,14 @@ public class MainCanvas : MonoBehaviour
 	public Transform cashEventButtonRootTransform;
 	public CashEventButton[] cashEventButtonList;
 
+
+	public RectTransform playerAlarmRootTransform;
+	public RectTransform spellAlarmRootTransform;
 	public RectTransform mailAlarmRootTransform;
 	public RectTransform analysisAlarmRootTransform;
 	public RectTransform gachaAlarmRootTransform;
 	public RectTransform cashShopAlarmRootTransform;
+
 	public RectTransform levelPassAlarmRootTransform;
 	public RectTransform sevenDaysAlarmRootTransform;
 	public RectTransform energyPaybackAlarmRootTransform;   // ev6
@@ -337,7 +341,8 @@ public class MainCanvas : MonoBehaviour
 	void RefreshAlarmObjectList()
 	{
 		//RefreshCashShopAlarmObject();
-		//RefreshCharacterAlarmObject();
+		RefreshPlayerAlarmObject();
+		RefreshSpellAlarmObject();
 		RefreshMailAlarmObject();
 		RefreshAnalysisAlarmObject();
 		RefreshGachaAlarmObject();
@@ -471,6 +476,26 @@ public class MainCanvas : MonoBehaviour
 			_reserveCharacterPlusAlarm = false;
 		}
 		*/
+	}
+
+	public static bool IsAlarmPlayer()
+	{
+		return CharacterLevelCanvas.CheckLevelUp();
+	}
+
+	public void RefreshPlayerAlarmObject()
+	{
+		RefreshAlarmObject(IsAlarmPlayer(), playerAlarmRootTransform);
+	}
+
+	public static bool IsAlarmSpell()
+	{
+		return SpellCanvas.CheckLevelUp();
+	}
+
+	public void RefreshSpellAlarmObject()
+	{
+		RefreshAlarmObject(IsAlarmSpell(), spellAlarmRootTransform);
 	}
 
 	public static bool IsAlarmMail()

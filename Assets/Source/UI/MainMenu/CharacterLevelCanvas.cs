@@ -189,6 +189,38 @@ public class CharacterLevelCanvas : MonoBehaviour
 	}
 	#endregion
 
+	public static bool CheckLevelUp()
+	{
+		int level = PlayerData.instance.playerLevel;
+		if (level >= BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxPlayerLevel"))
+			return false;
+
+		PlayerLevelTableData playerLevelTableData = TableDataManager.instance.FindPlayerLevelTableData(level);
+		if (playerLevelTableData == null)
+			return false;
+
+		bool salePrice = CashShopData.instance.IsShowEvent("ev8");
+		int requiredGold = 0;
+
+		int subLevel = PlayerData.instance.subLevel;
+		bool subLevelComplete = (subLevel == playerLevelTableData.subLevelCount);
+		if (subLevelComplete)
+		{
+			PlayerLevelTableData nextPlayerLevelTableData = TableDataManager.instance.FindPlayerLevelTableData(level + 1);
+			requiredGold = salePrice ? nextPlayerLevelTableData.saleRequiredGold : nextPlayerLevelTableData.requiredGold;
+		}
+		else
+		{
+			List<int> listSubGoldPrice = new List<int>();
+			if (salePrice)
+				StringUtil.SplitIntList(playerLevelTableData.subGoldSale, ref listSubGoldPrice);
+			else
+				StringUtil.SplitIntList(playerLevelTableData.subGold, ref listSubGoldPrice);
+			requiredGold = listSubGoldPrice[subLevel];
+		}
+		return (CurrencyData.instance.gold >= requiredGold);
+	}
+
 	public void OnClickClassEnhanceButton()
 	{
 
@@ -415,6 +447,8 @@ public class CharacterLevelCanvas : MonoBehaviour
 				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.LevelUpCharacter, _levelUpCount);
 			if (_subLevelUpCount > 0)
 				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.EnhanceCharacter, _subLevelUpCount);
+
+			MainCanvas.instance.RefreshPlayerAlarmObject();
 
 			float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
 			UIInstanceManager.instance.ShowCanvasAsync("ChangePowerCanvas", () =>
