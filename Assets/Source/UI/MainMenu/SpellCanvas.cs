@@ -91,7 +91,7 @@ public class SpellCanvas : ResearchShowCanvasBase
 		skillTotalLevelValueText.text = spellTotalTableData.accumulatedAtk.ToString("N0");
 
 		AlarmObject.Hide(alarmRootTransform);
-		if (SpellManager.instance.spellTotalLevel >= TableDataManager.instance.GetGlobalConstantInt("MaxTotalSkillLevel"))
+		if (SpellManager.instance.spellTotalLevel >= TableDataManager.instance.GetGlobalConstantInt("MaxTotalSpellLevel"))
 		{
 			// level
 			skillTotalLevelText.text = UIString.instance.GetString("GameUI_Lv", "Max");
@@ -190,7 +190,7 @@ public class SpellCanvas : ResearchShowCanvasBase
 	public static bool CheckTotalLevelUp()
 	{
 		int totalSpellLevel = SpellManager.instance.spellTotalLevel;
-		if (SpellManager.instance.spellTotalLevel >= BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxTotalSkillLevel"))
+		if (SpellManager.instance.spellTotalLevel >= BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxTotalSpellLevel"))
 			return false;
 
 		SpellTotalTableData nextSpellTotalTableData = TableDataManager.instance.FindSpellTotalTableData(SpellManager.instance.spellTotalLevel + 1);
@@ -258,7 +258,7 @@ public class SpellCanvas : ResearchShowCanvasBase
 		}
 
 		// 맥스 넘어가는거도 막아놔야한다.
-		if (SpellManager.instance.spellTotalLevel >= BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxTotalSkillLevel"))
+		if (SpellManager.instance.spellTotalLevel >= BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxTotalSpellLevel"))
 		{
 			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_MaxReachToast"), 2.0f);
 			if (_pressed)

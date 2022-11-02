@@ -60,7 +60,7 @@ public class GachaSpellInfoCanvas : MonoBehaviour
 		if (nextIndex < _listTotalSpellGachaStep.Count)
 			nextValue = _listTotalSpellGachaStep[nextIndex];
 		else
-			nextValue = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxTotalSkillLevel");
+			nextValue = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxTotalSpellLevel");
 
 		string leftString = UIString.instance.GetString("GameUI_Lv", _listTotalSpellGachaStep[_currentProbIndex]);
 		string rightString = UIString.instance.GetString("GameUI_Lv", nextValue);
