@@ -138,14 +138,6 @@ public class MainCanvas : MonoBehaviour
 
 	public void OnClickOptionButton()
 	{
-		List<string> listSpellId = new List<string>();
-		listSpellId.Add("Spell_0001");
-		//listSpellId.Add("Spell_0002");
-		PlayFabApiManager.instance.RequestSpellBox(listSpellId, (failure, itemResult) =>
-		{
-
-		});
-
 		UIInstanceManager.instance.ShowCanvasAsync("SettingCanvas", null);
 	}
 

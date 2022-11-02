@@ -36,6 +36,7 @@ public class TableDataManager : MonoBehaviour
 	public CostumeTable costumeTable;
 	public SpellGradeLevelTable spellGradeLevelTable;
 	public SpellTotalTable spellTotalTable;
+	public ShopSpellTable shopSpellTable;
 
 	public EventPointTypeTable eventPointTypeTable;
 	public EventPointRewardTable eventPointRewardTable;
@@ -333,6 +334,14 @@ public class TableDataManager : MonoBehaviour
 			if (spellTotalTable.dataArray[i].level == level)
 				return spellTotalTable.dataArray[i];
 		}
+		return null;
+	}
+
+	public ShopSpellTableData FindShopSpellTableDataByIndex(int index)
+	{
+		if (index < shopSpellTable.dataArray.Length)
+			return shopSpellTable.dataArray[index];
+
 		return null;
 	}
 

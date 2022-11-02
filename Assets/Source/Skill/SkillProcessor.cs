@@ -67,34 +67,7 @@ public class SkillProcessor : MonoBehaviour
 					continue;
 			}
 
-			SkillInfo info = new SkillInfo();
-			info.skillId = skillTableData.id;
-			info.skillLevel = skillLevel;
-			info.skillType = (eSkillType)skillTableData.skillType;
-			info.iconPrefab = skillTableData.iconPrefab;
-			info.cooltime = skillTableData.cooltime;
-			info.actionNameHash = 0;
-			info.tableAffectorValueIdList = skillTableData.tableAffectorValueId;
-			info.nameId = skillTableData.nameId;
-			info.descriptionId = skillTableData.descriptionId;
-
-			if (skillTableData.useCooltimeOverriding || skillTableData.useMecanimNameOverriding || skillTableData.useTableAffectorValueIdOverriding || skillTableData.useNameIdOverriding || skillTableData.useDescriptionIdOverriding)
-			{
-				SkillLevelTableData skillLevelTableData = TableDataManager.instance.FindSkillLevelTableData(info.skillId, skillLevel);
-				if (skillLevelTableData != null)
-				{
-					if (skillTableData.useCooltimeOverriding)
-						info.cooltime = skillLevelTableData.cooltime;
-					if (skillTableData.useMecanimNameOverriding)
-						info.actionNameHash = BattleInstanceManager.instance.GetActionNameHash(skillLevelTableData.mecanimName);
-					if (skillTableData.useTableAffectorValueIdOverriding)
-						info.tableAffectorValueIdList = skillLevelTableData.tableAffectorValueId;
-					if (skillTableData.useNameIdOverriding)
-						info.nameId = skillLevelTableData.nameId;
-					if (skillTableData.useDescriptionIdOverriding)
-						info.descriptionId = skillLevelTableData.descriptionId;
-				}
-			}
+			SkillInfo info = CreateSkillInfo(skillTableData, skillLevel);
 
 			#region Passive Skill
 			if (info.skillType == eSkillType.Passive)
@@ -123,6 +96,39 @@ public class SkillProcessor : MonoBehaviour
 		}
 	}
 
+	SkillInfo CreateSkillInfo(SkillTableData skillTableData, int skillLevel)
+	{
+		SkillInfo info = new SkillInfo();
+		info.skillId = skillTableData.id;
+		info.skillLevel = skillLevel;
+		info.skillType = (eSkillType)skillTableData.skillType;
+		info.iconPrefab = skillTableData.iconPrefab;
+		info.cooltime = skillTableData.cooltime;
+		info.actionNameHash = 0;
+		info.tableAffectorValueIdList = skillTableData.tableAffectorValueId;
+		info.nameId = skillTableData.nameId;
+		info.descriptionId = skillTableData.descriptionId;
+
+		if (skillTableData.useCooltimeOverriding || skillTableData.useMecanimNameOverriding || skillTableData.useTableAffectorValueIdOverriding || skillTableData.useNameIdOverriding || skillTableData.useDescriptionIdOverriding)
+		{
+			SkillLevelTableData skillLevelTableData = TableDataManager.instance.FindSkillLevelTableData(info.skillId, skillLevel);
+			if (skillLevelTableData != null)
+			{
+				if (skillTableData.useCooltimeOverriding)
+					info.cooltime = skillLevelTableData.cooltime;
+				if (skillTableData.useMecanimNameOverriding)
+					info.actionNameHash = BattleInstanceManager.instance.GetActionNameHash(skillLevelTableData.mecanimName);
+				if (skillTableData.useTableAffectorValueIdOverriding)
+					info.tableAffectorValueIdList = skillLevelTableData.tableAffectorValueId;
+				if (skillTableData.useNameIdOverriding)
+					info.nameId = skillLevelTableData.nameId;
+				if (skillTableData.useDescriptionIdOverriding)
+					info.descriptionId = skillLevelTableData.descriptionId;
+			}
+		}
+		return info;
+	}
+
 	public SkillInfo GetSkillInfo(string skillId)
 	{
 		for (int i = 0; i < _listSkillInfo.Count; ++i)
@@ -141,6 +147,35 @@ public class SkillProcessor : MonoBehaviour
 				return _listSpellInfo[i];
 		}
 		return null;
+	}
+
+	// 플레이 중에 배울때 중간에 추가해야해서 만든 함수다.
+	public void AddSpell(SpellData spellData)
+	{
+		SkillTableData skillTableData = spellData.cachedSkillTableData;
+		if (skillTableData == null)
+			return;
+
+		SkillInfo info = CreateSkillInfo(skillTableData, spellData.level);
+
+		#region Passive Skill
+		if (info.skillType == eSkillType.Passive)
+			InitializePassiveSkill(info);
+		#endregion
+
+		#region Auto Skill
+		if (info.skillType == eSkillType.NonAni)
+		{
+			for (int j = 0; j < skillTableData.effectAddress.Length; ++j)
+			{
+				AddressableAssetLoadManager.GetAddressableGameObject(skillTableData.effectAddress[j], "CommonEffect", (prefab) =>
+				{
+					BattleInstanceManager.instance.AddCommonPoolPreloadObjectList(prefab);
+				});
+			}
+		}
+		_listSpellInfo.Add(info);
+		#endregion
 	}
 
 	#region Passive Skill

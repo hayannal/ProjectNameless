@@ -2194,16 +2194,18 @@ public class PlayFabApiManager : MonoBehaviour
 
 
 	#region Spell
-	public void RequestSpellBox(List<string> listSpellId, Action<bool, string> successCallback)
+	public void RequestOpenSpellBox(List<ObscuredString> listSpellId, int baseCount, int price, bool more, Action<string> successCallback)
 	{
 		WaitingNetworkCanvas.Show(true);
 
-		string checkSum = "";
-		List<ItemGrantRequest> listItemGrantRequest = SpellManager.instance.GenerateGrantInfo(listSpellId, ref checkSum);
+		string input = string.Format("{0}_{1}_{2}_{3}", baseCount, price, more ? 1 : 0, "ewomvjsa");
+		string checkSum = CheckSum(input);
+		string checkSum2 = "";
+		List<ItemGrantRequest> listItemGrantRequest = SpellManager.instance.GenerateGrantRequestInfo(listSpellId, ref checkSum2);
 		ExecuteCloudScriptRequest request = new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "OpenSpellBox",
-			FunctionParameter = new { Lst = listItemGrantRequest, LstCs = checkSum },
+			FunctionParameter = new { BasCnt = baseCount, Pr = price, More = more ? 1 : 0, Cs = checkSum, Lst = listItemGrantRequest, LstCs = checkSum2 },
 			GeneratePlayStreamEvent = true,
 		};
 
@@ -2215,10 +2217,12 @@ public class PlayFabApiManager : MonoBehaviour
 			if (!failure)
 			{
 				WaitingNetworkCanvas.Show(false);
+
+				CurrencyData.instance.gold -= price;
 				
 				jsonResult.TryGetValue("itmRet", out object itmRet);
 
-				if (successCallback != null) successCallback.Invoke(failure, (string)itmRet);
+				if (successCallback != null) successCallback.Invoke((string)itmRet);
 			}
 		}, (error) =>
 		{

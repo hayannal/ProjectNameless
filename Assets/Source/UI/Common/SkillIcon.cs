@@ -23,10 +23,15 @@ public class SkillIcon : MonoBehaviour
 		for (int i = 0; i < starImageList.Length; ++i)
 			starImageList[i].color = gray ? Color.gray : Color.white;
 
-		normalFrameImage.gameObject.SetActive(skillTableData.grade == 0);
-		goldenFrameImage.gameObject.SetActive(skillTableData.grade == 1);
+		SetGradeStar(skillTableData.grade, skillTableData.star);
+	}
 
-		int starCount = skillTableData.star;
+	public void SetGradeStar(int grade, int star)
+	{
+		normalFrameImage.gameObject.SetActive(grade == 0);
+		goldenFrameImage.gameObject.SetActive(grade == 1);
+
+		int starCount = star;
 		switch (starCount)
 		{
 			case 1: gridLayoutGroup.spacing = new Vector2(-2.0f, 0.0f); break;
