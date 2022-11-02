@@ -261,10 +261,8 @@ public class SpellManager : MonoBehaviour
 	{
 		_listRandomObscuredId.Clear();
 
-		//for (int i = 0; i < count; ++i)
-		//	_listRandomObscuredId.Add(GetRandomGachaResult());
-		_listRandomObscuredId.Add("Spell_0001");
-		_listRandomObscuredId.Add("Spell_0002");
+		for (int i = 0; i < count; ++i)
+			_listRandomObscuredId.Add(GetRandomGachaResult());
 
 		return _listRandomObscuredId;
 	}
