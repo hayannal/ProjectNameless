@@ -228,7 +228,7 @@ public class SpellManager : MonoBehaviour
 		{
 			if (TableDataManager.instance.skillTable.dataArray[i].spell == false)
 				continue;
-			if (TableDataManager.instance.skillTable.dataArray[i].grade == _listGachaSpellInfo[index].grade || TableDataManager.instance.skillTable.dataArray[i].star == _listGachaSpellInfo[index].star)
+			if (TableDataManager.instance.skillTable.dataArray[i].grade != _listGachaSpellInfo[index].grade || TableDataManager.instance.skillTable.dataArray[i].star != _listGachaSpellInfo[index].star)
 				continue;
 
 			sumWeight += 1.0f;
