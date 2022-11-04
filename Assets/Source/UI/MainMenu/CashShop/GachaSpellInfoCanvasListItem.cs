@@ -12,5 +12,7 @@ public class GachaSpellInfoCanvasListItem : MonoBehaviour
 	{
 		skillIcon.SetGradeStar(gachaSpellTableData.grade, gachaSpellTableData.star);
 		rateText.text = string.Format("{0:0.0}%", (gachaSpellTableData.probs[probIndex] * 100.0f));
+
+		skillIcon.spellImage.sprite = (gachaSpellTableData.grade == 0) ? SpellSpriteContainer.instance.normalQuestionSprite : SpellSpriteContainer.instance.goldenQuestionSprite;
 	}
 }

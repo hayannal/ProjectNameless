@@ -13,6 +13,9 @@ public class SpellSpriteContainer : MonoBehaviour
 
 	public Sprite[] spriteList;
 
+	public Sprite normalQuestionSprite;
+	public Sprite goldenQuestionSprite;
+
 	public Sprite FindSprite(string name)
 	{
 		for (int i = 0; i < spriteList.Length; ++i)

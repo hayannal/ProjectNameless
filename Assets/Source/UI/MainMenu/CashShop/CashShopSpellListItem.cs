@@ -75,7 +75,18 @@ public class CashShopSpellListItem : MonoBehaviour
 
 	public void OnClickInfoButton()
 	{
-		UIInstanceManager.instance.ShowCanvasAsync("GachaSpellInfoCanvas", null);
+		if (SpellSpriteContainer.instance == null)
+		{
+			DelayedLoadingCanvas.Show(true);
+			AddressableAssetLoadManager.GetAddressableGameObject("SpellSpriteContainer", "", (prefab) =>
+			{
+				BattleInstanceManager.instance.GetCachedObject(prefab, null);
+				DelayedLoadingCanvas.Show(false);
+				UIInstanceManager.instance.ShowCanvasAsync("GachaSpellInfoCanvas", null);
+			});
+		}
+		else
+			UIInstanceManager.instance.ShowCanvasAsync("GachaSpellInfoCanvas", null);
 	}
 
 	public void OnClickButton()
