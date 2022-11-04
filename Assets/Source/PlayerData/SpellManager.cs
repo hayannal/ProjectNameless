@@ -323,7 +323,7 @@ public class SpellManager : MonoBehaviour
 	}
 
 	// 대부분의 아이템 획득은 이걸 써서 처리하게 될거다.
-	public void OnRecvItemGrantResult(string jsonItemGrantResults, int expectCount = 0)
+	public List<ItemInstance> OnRecvItemGrantResult(string jsonItemGrantResults, int expectCount = 0)
 	{
 		List<ItemInstance> listItemInstance = DeserializeItemGrantResult(jsonItemGrantResults);
 
@@ -338,7 +338,7 @@ public class SpellManager : MonoBehaviour
 				totalCount += (int)listItemInstance[i].UsesIncrementedBy;
 		}
 		if (expectCount != 0 && totalCount != expectCount)
-			return;
+			return null;
 
 		for (int i = 0; i < listItemInstance.Count; ++i)
 		{
@@ -378,6 +378,7 @@ public class SpellManager : MonoBehaviour
 					BattleInstanceManager.instance.playerActor.skillProcessor.AddSpell(newSpellData);
 			}
 		}
+		return listItemInstance;
 	}
 	#endregion
 }

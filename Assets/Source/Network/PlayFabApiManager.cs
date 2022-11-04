@@ -2196,7 +2196,8 @@ public class PlayFabApiManager : MonoBehaviour
 	#region Spell
 	public void RequestOpenSpellBox(List<ObscuredString> listSpellId, int baseCount, int price, bool more, Action<string> successCallback)
 	{
-		WaitingNetworkCanvas.Show(true);
+		// RandomBoxScreenCanvas에서 컨트롤할거니 여기서는 하지 않는다.
+		//WaitingNetworkCanvas.Show(true);
 
 		string input = string.Format("{0}_{1}_{2}_{3}", baseCount, price, more ? 1 : 0, "ewomvjsa");
 		string checkSum = CheckSum(input);
@@ -2216,7 +2217,7 @@ public class PlayFabApiManager : MonoBehaviour
 			bool failure = ((retErr.ToString()) == "1");
 			if (!failure)
 			{
-				WaitingNetworkCanvas.Show(false);
+				//WaitingNetworkCanvas.Show(false);
 
 				CurrencyData.instance.gold -= price;
 				

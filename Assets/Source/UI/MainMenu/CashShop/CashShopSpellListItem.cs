@@ -89,6 +89,7 @@ public class CashShopSpellListItem : MonoBehaviour
 			UIInstanceManager.instance.ShowCanvasAsync("GachaSpellInfoCanvas", null);
 	}
 
+	int _count;
 	public void OnClickButton()
 	{
 		if (CurrencyData.instance.gold < _shopSpellTableData.price)
@@ -97,13 +98,37 @@ public class CashShopSpellListItem : MonoBehaviour
 			return;
 		}
 
-		List<ObscuredString> listSpellId = SpellManager.instance.GetRandomIdList(_resultCount);
-		PlayFabApiManager.instance.RequestOpenSpellBox(listSpellId, _shopSpellTableData.count, _shopSpellTableData.price, moreTextObject.activeSelf, (itemGrantString) =>
+		// 혹시나 로드 되어있지 않다면 로드 걸어둔다. 연출 다 되기 전엔 로딩 될거다.
+		if (SpellSpriteContainer.instance == null)
 		{
-			if (itemGrantString != "")
+			AddressableAssetLoadManager.GetAddressableGameObject("SpellSpriteContainer", "", (prefab) =>
 			{
-				SpellManager.instance.OnRecvItemGrantResult(itemGrantString, listSpellId.Count);
-			}
+				BattleInstanceManager.instance.GetCachedObject(prefab, null);
+			});
+		}
+
+		// 연출 및 보상 처리. 100개씩 뽑으면 느릴 수 있으니 패킷 대기 없이 바로 시작한다.
+		UIInstanceManager.instance.ShowCanvasAsync("RandomBoxScreenCanvas", () =>
+		{
+			// 연출창 시작과 동시에 패킷을 보내고
+			List<ObscuredString> listSpellId = SpellManager.instance.GetRandomIdList(_resultCount);
+			_count = listSpellId.Count;
+			PlayFabApiManager.instance.RequestOpenSpellBox(listSpellId, _shopSpellTableData.count, _shopSpellTableData.price, moreTextObject.activeSelf, OnRecvResult);
 		});
+	}
+
+	void OnRecvResult(string itemGrantString)
+	{
+		if (itemGrantString == "")
+			return;
+
+		List<ItemInstance> listItemInstance = SpellManager.instance.OnRecvItemGrantResult(itemGrantString, _count);
+		if (listItemInstance == null)
+			return;
+
+		// 분명히 창은 띄워져있을거다. 없으면 말이 안된다.
+		// 
+		if (RandomBoxScreenCanvas.instance != null)
+			RandomBoxScreenCanvas.instance.OnRecvResult(RandomBoxScreenCanvas.eBoxType.Spell, listItemInstance);
 	}
 }
