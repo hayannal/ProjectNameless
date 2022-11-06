@@ -76,6 +76,54 @@ public class CommonRewardCanvas : MonoBehaviour
 		Timing.RunCoroutine(RewardProcess());
 	}
 
+	// 재화는 합산하고 나머지 아이템은 리스트로 보여주는 SummonEventPoint도 있다.
+	public void RefreshReward(int gold, int energy, List<string> listItemValue, List<int> listItemCount, System.Action okAction = null)
+	{
+		_okAction = okAction;
+
+		_listCommonRewardData.Clear();
+
+		CommonRewardData commonRewardData = null;
+
+		if (gold > 0)
+		{
+			commonRewardData = new CommonRewardData();
+			commonRewardData.type = "cu";
+			commonRewardData.value = "GO";
+			commonRewardData.count = gold;
+			_listCommonRewardData.Add(commonRewardData);
+		}
+
+		if (energy > 0)
+		{
+			commonRewardData = new CommonRewardData();
+			commonRewardData.type = "cu";
+			commonRewardData.value = "EN";
+			commonRewardData.count = energy;
+			_listCommonRewardData.Add(commonRewardData);
+		}
+
+		if (listItemValue.Count == listItemCount.Count)
+		{
+			for (int i = 0; i < listItemValue.Count; ++i)
+			{
+				commonRewardData = new CommonRewardData();
+				commonRewardData.type = "it";
+				commonRewardData.value = listItemValue[i];
+				commonRewardData.count = listItemCount[i];
+				_listCommonRewardData.Add(commonRewardData);
+			}
+		}
+
+		if (_listCommonRewardData.Count == 0)
+		{
+			gameObject.SetActive(false);
+			return;
+		}
+
+		Timing.RunCoroutine(RewardProcess());
+	}
+
 	// 이런식으로 하나짜리 받을 수도 있을거고
 	public void RefreshReward(string type, string value, int count, System.Action okAction = null)
 	{

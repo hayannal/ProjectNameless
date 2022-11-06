@@ -564,7 +564,7 @@ public class GachaInfoCanvas : MonoBehaviour
 		PrepareGoldBoxTarget();
 		int currentEnergy = CurrencyData.instance.energy;
 		_prevBrokenEnergy = CurrencyData.instance.brokenEnergy;
-		PlayFabApiManager.instance.RequestGacha(useEnergy, _resultGold, _resultEnergy, _resultBrokenEnergy, _resultEvent, _reserveRoomType, _refreshTurn, _refreshNewTurn, _refreshNewGold, (refreshTurnComplete) =>
+		PlayFabApiManager.instance.RequestGacha(useEnergy, _resultGold, _resultEnergy, _resultBrokenEnergy, _resultEvent, _listResultEventItemIdForPacket, _reserveRoomType, _refreshTurn, _refreshNewTurn, _refreshNewGold, (refreshTurnComplete) =>
 		{
 			// 턴 바꿔야하는걸 기억시켜두고 연출을 진행하면 된다.
 			if (refreshTurnComplete)
@@ -647,6 +647,9 @@ public class GachaInfoCanvas : MonoBehaviour
 	ObscuredInt _resultBrokenEnergy;
 	ObscuredInt _resultEvent;
 	ObscuredInt _reserveRoomType;
+	List<string> _listResultItemValue;
+	List<int> _listResultItemCount;
+	List<ObscuredString> _listResultEventItemIdForPacket;
 	void PrepareGacha()
 	{
 		bool fixedResult = false;
@@ -665,6 +668,15 @@ public class GachaInfoCanvas : MonoBehaviour
 		// 결과에 따라 미리미리 랜덤 굴릴것들은 굴려놔야 패킷으로 보낼 수 있다.
 		_resultGold = _resultEnergy = _resultBrokenEnergy = _resultEvent = 0;
 		_reserveRoomType = 0;
+		if (_listResultEventItemIdForPacket == null)
+			_listResultEventItemIdForPacket = new List<ObscuredString>();
+		_listResultEventItemIdForPacket.Clear();
+		if (_listResultItemValue == null)
+			_listResultItemValue = new List<string>();
+		_listResultItemValue.Clear();
+		if (_listResultItemCount == null)
+			_listResultItemCount = new List<int>();
+		_listResultItemCount.Clear();
 		int betRate = _listBetValue[_currentBetRateIndex];
 
 		// 현재 맥스 층에 따른 베팅 테이블
@@ -764,6 +776,14 @@ public class GachaInfoCanvas : MonoBehaviour
 								case "EN": _resultEnergy += rewardTableData.rewardCount1; break;
 							}
 							break;
+						case "it":
+							// 하나는 패킷용이고
+							for (int j = 0; j < rewardTableData.rewardCount1; ++j)
+								_listResultEventItemIdForPacket.Add(rewardTableData.rewardValue1);
+							// 하나는 결과 보여주는 용도다.
+							_listResultItemValue.Add(rewardTableData.rewardValue1);
+							_listResultItemCount.Add(rewardTableData.rewardCount1);
+							break;
 					}
 
 					// 두번째 리워드를 받을 수 있는 상황이라면
@@ -779,6 +799,12 @@ public class GachaInfoCanvas : MonoBehaviour
 									case "GO": _resultGold += rewardTableData.rewardCount2; break;
 									case "EN": _resultEnergy += rewardTableData.rewardCount2; break;
 								}
+								break;
+							case "it":
+								for (int j = 0; j < rewardTableData.rewardCount2; ++j)
+									_listResultEventItemIdForPacket.Add(rewardTableData.rewardValue2);
+								_listResultItemValue.Add(rewardTableData.rewardValue2);
+								_listResultItemCount.Add(rewardTableData.rewardCount2);
 								break;
 						}
 					}
@@ -1124,11 +1150,22 @@ public class GachaInfoCanvas : MonoBehaviour
 
 			GachaCanvas.instance.currencySmallInfo.RefreshInfo();
 			RefreshEnergy();
-			CommonRewardCanvas.instance.RefreshReward(_resultGold, _resultEnergy, () =>
+			CommonRewardCanvas.instance.RefreshReward(_resultGold, _resultEnergy, _listResultItemValue, _listResultItemCount, () =>
 			{
-				OnPostProcess();
+				// 평소라면 재화만 있을테니 바로 OnPostProcess로 넘어가고
+				if (_listResultItemValue.Count == 0 && _listResultItemValue.Count == _listResultItemCount.Count)
+					OnPostProcess();
+				else
+					CheckEventConsumeItem();
 			});
 		});
+	}
+
+	bool CheckEventConsumeItem()
+	{
+		// 여러개의 컨슘 항목을 가지고 있을때는 하나씩 나눠서 패킷 보내면서 서버에서 처리해야할거다.
+
+		return false;
 	}
 
 	IEnumerator<float> RoomMoveProcess()

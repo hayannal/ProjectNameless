@@ -13,6 +13,9 @@ public class RewardIcon : MonoBehaviour
 	public GameObject goldObject;
 	public GameObject energyObject;
 	public GameObject sevenDaysObject;
+	public GameObject spellGachaObject;
+	public GameObject characterGachaObject;
+	public GameObject equipGachaObject;
 
 	public Image blurImage;
 	public Coffee.UIExtensions.UIGradient gradient;
@@ -38,7 +41,10 @@ public class RewardIcon : MonoBehaviour
 	{
 		goldObject.SetActive(false);
 		energyObject.SetActive(false);
-		sevenDaysObject.SetActive(false);
+		if (sevenDaysObject != null) sevenDaysObject.SetActive(false);
+		if (spellGachaObject != null) spellGachaObject.SetActive(false);
+		if (characterGachaObject != null) characterGachaObject.SetActive(false);
+		if (equipGachaObject != null) equipGachaObject.SetActive(false);
 		countText.text = rewardCount.ToString("N0");
 		switch (rewardType)
 		{
@@ -63,7 +69,19 @@ public class RewardIcon : MonoBehaviour
 				switch (rewardValue)
 				{
 					case "Cash_sSevenTotal":
-						sevenDaysObject.SetActive(true);
+						if (sevenDaysObject != null) sevenDaysObject.SetActive(true);
+						countText.color = Color.white;
+						break;
+					case "Cash_sSpellGacha":
+						if (spellGachaObject != null) spellGachaObject.SetActive(true);
+						countText.color = Color.white;
+						break;
+					case "Cash_sCharacterGacha":
+						if (characterGachaObject != null) characterGachaObject.SetActive(true);
+						countText.color = Color.white;
+						break;
+					case "Cash_sEquipGacha":
+						if (equipGachaObject != null) equipGachaObject.SetActive(true);
 						countText.color = Color.white;
 						break;
 				}

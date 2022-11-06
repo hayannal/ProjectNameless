@@ -1021,7 +1021,7 @@ public class PlayFabApiManager : MonoBehaviour
 	#endregion
 
 	#region Gacha
-	public void RequestGacha(int useEnergy, int resultGold, int resultEnergy, int resultBrokenEnergy, int resultEventPoint, int reserveRoomType, bool refreshTurn, int newTurn, int newGold, Action<bool> successCallback)
+	public void RequestGacha(int useEnergy, int resultGold, int resultEnergy, int resultBrokenEnergy, int resultEventPoint, List<ObscuredString> listEventItemId, int reserveRoomType, bool refreshTurn, int newTurn, int newGold, Action<bool> successCallback)
 	{
 		WaitingNetworkCanvas.Show(true);
 
@@ -1031,10 +1031,12 @@ public class PlayFabApiManager : MonoBehaviour
 		int intRefreshTurn = refreshTurn ? 1 : 0;
 		string input = string.Format("{0}_{1}_{2}_{3}_{4}_{5}_{6}_{7}_{8}_{9}", CurrencyData.instance.bettingCount + 1, useEnergy, resultGold, resultEnergy, resultBrokenEnergy, resultEventPoint, reserveRoomType, intRefreshTurn, newTurn, "azirjwlm");
 		string checkSum = CheckSum(input);
+		string checkSum2 = "";
+		List<ItemGrantRequest> listItemGrantRequest = SpellManager.instance.GenerateGrantRequestInfo(listEventItemId, ref checkSum2);
 		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "Gacha",
-			FunctionParameter = new { Cnt = CurrencyData.instance.bettingCount + 1, Bet = useEnergy, AddGo = resultGold, AddEn = resultEnergy, AddBrEn = resultBrokenEnergy, AddEv = resultEventPoint, ResRoomTp = reserveRoomType, RefreshTurn = intRefreshTurn, NewTurn = newTurn, NewGold = newGold, Cp = checkPayback ? 1 : 0, Cs = checkSum },
+			FunctionParameter = new { Cnt = CurrencyData.instance.bettingCount + 1, Bet = useEnergy, AddGo = resultGold, AddEn = resultEnergy, AddBrEn = resultBrokenEnergy, AddEv = resultEventPoint, Lst = listItemGrantRequest, LstCs = checkSum2, ResRoomTp = reserveRoomType, RefreshTurn = intRefreshTurn, NewTurn = newTurn, NewGold = newGold, Cp = checkPayback ? 1 : 0, Cs = checkSum },
 			GeneratePlayStreamEvent = true,
 		}, (success) =>
 		{
@@ -1063,6 +1065,15 @@ public class PlayFabApiManager : MonoBehaviour
 					CurrencyData.instance.UseEnergy(useEnergy - resultEnergy);
 				else if (useEnergy < resultEnergy)
 					CurrencyData.instance.OnRecvRefillEnergy(resultEnergy - useEnergy, true);
+
+				if (listEventItemId.Count > 0 && listItemGrantRequest.Count > 0)
+				{
+					// instanceId 파싱이 필요한 스펠이나 장비 캐릭같았다면 이렇게 파싱하겠지만
+					//jsonResult.TryGetValue("itmRet", out object itmRet);
+					// 컨슘 아이템으로 한정되어있기 때문에 이렇게 Consume 전용으로 호출해본다.
+					for (int i = 0; i < listEventItemId.Count; ++i)
+						CashShopData.instance.OnRecvConsumeItem(listEventItemId[i], 1);
+				}
 
 				_serverEnterKeyForRoom = (reserveRoomType != 0) ? roomFlg.ToString() : "";
 
@@ -1858,6 +1869,35 @@ public class PlayFabApiManager : MonoBehaviour
 				CashShopData.instance.ConsumeFlag(CashShopData.eCashConsumeFlagType.SevenSlot0 + buttonIndex);
 				MissionData.instance.OnRecvPurchasedCashSlot(buttonIndex);
 				
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
+	public void RequestConsumeSevenTotal(Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "ConsumeSevenTotal",
+			FunctionParameter = new { Idx = 0 },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				int count = CashShopData.instance.GetConsumeCount(CashShopData.eCashConsumeCountType.SevenTotal);
+				CashShopData.instance.ConsumeCount(CashShopData.eCashConsumeCountType.SevenTotal, count);
+				MissionData.instance.sevenDaysSumPoint += count;
+
 				if (successCallback != null) successCallback.Invoke();
 			}
 		}, (error) =>

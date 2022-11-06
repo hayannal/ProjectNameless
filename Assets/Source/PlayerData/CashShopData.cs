@@ -49,16 +49,27 @@ public class CashShopData : MonoBehaviour
 		BrokenEnergy = 0,
 		Ev4ContiNext = 1,
 		Ev5OnePlTwoCash = 2,
-		SevenTotal = 3,
-		SevenSlot0 = 4,
-		SevenSlot1 = 5,
-		SevenSlot2 = 6,
-		SevenSlot3 = 7,
+		SevenSlot0 = 3,
+		SevenSlot1 = 4,
+		SevenSlot2 = 5,
+		SevenSlot3 = 6,
 
 		Amount,
 	}
 	List<ObscuredBool> _listCashConsumeFlag = new List<ObscuredBool>();
-	List<string> _listCashConsumeFlagKey = new List<string> { "Cash_sBrokenEnergy", "Cash_sEv4ContiNext", "Cash_sEv5OnePlTwoCash", "Cash_sSevenTotal", "Cash_sSevenSlot0", "Cash_sSevenSlot1", "Cash_sSevenSlot2", "Cash_sSevenSlot3" };
+	List<string> _listCashConsumeFlagKey = new List<string> { "Cash_sBrokenEnergy", "Cash_sEv4ContiNext", "Cash_sEv5OnePlTwoCash", "Cash_sSevenSlot0", "Cash_sSevenSlot1", "Cash_sSevenSlot2", "Cash_sSevenSlot3" };
+
+	public enum eCashConsumeCountType
+	{
+		SevenTotal = 0,
+		SpellGacha = 1,
+		CharacterGacha = 2,
+		EquipGacha = 3,
+
+		Amount,
+	}
+	List<ObscuredInt> _listCashConsumeCount = new List<ObscuredInt>();
+	List<string> _listCashConsumeCountKey = new List<string> { "Cash_sSevenTotal", "Cash_sSpellGacha", "Cash_sCharacterGacha", "Cash_sEquipGacha" };
 
 	public enum eCashCountType
 	{
@@ -178,6 +189,9 @@ public class CashShopData : MonoBehaviour
 		_listCashConsumeFlag.Clear();
 		for (int i = 0; i < (int)eCashConsumeFlagType.Amount; ++i)
 			_listCashConsumeFlag.Add(false);
+		_listCashConsumeCount.Clear();
+		for (int i = 0; i < (int)eCashConsumeCountType.Amount; ++i)
+			_listCashConsumeCount.Add(0);
 		_listCashCount.Clear();
 		for (int i = 0; i < (int)eCashCountType.Amount; ++i)
 			_listCashCount.Add(0);
@@ -201,6 +215,15 @@ public class CashShopData : MonoBehaviour
 				if (_listCashConsumeFlagKey[j] == userInventory[i].ItemId)
 				{
 					_listCashConsumeFlag[j] = true;
+					break;
+				}
+			}
+
+			for (int j = 0; j < _listCashConsumeCountKey.Count; ++j)
+			{
+				if (_listCashConsumeCountKey[j] == userInventory[i].ItemId)
+				{
+					_listCashConsumeCount[j] = (userInventory[i].RemainingUses != null) ? (int)userInventory[i].RemainingUses : 0;
 					break;
 				}
 			}
@@ -289,6 +312,7 @@ public class CashShopData : MonoBehaviour
 			_listCashFlag[(int)cashFlagType] = true;
 	}
 
+	#region CashConsumeFlag
 	public bool IsPurchasedFlag(eCashConsumeFlagType cashConsumeFlagType)
 	{
 		if ((int)cashConsumeFlagType < _listCashConsumeFlag.Count)
@@ -315,6 +339,48 @@ public class CashShopData : MonoBehaviour
 		if ((int)cashConsumeFlagType < _listCashConsumeFlagKey.Count)
 			return _listCashConsumeFlagKey[(int)cashConsumeFlagType];
 		return "";
+	}
+	#endregion
+
+	#region CashConsumeCount
+	public int GetConsumeCount(eCashConsumeCountType cashConsumeCountType)
+	{
+		if ((int)cashConsumeCountType < _listCashConsumeCount.Count)
+		{
+			return _listCashConsumeCount[(int)cashConsumeCountType];
+		}
+		return 0;
+	}
+
+	public void PurchaseCount(eCashConsumeCountType cashConsumeCountType, int count)
+	{
+		if ((int)cashConsumeCountType < _listCashConsumeCount.Count)
+			_listCashConsumeCount[(int)cashConsumeCountType] += count;
+	}
+
+	public void ConsumeCount(eCashConsumeCountType cashConsumeCountType, int count)
+	{
+		if ((int)cashConsumeCountType < _listCashConsumeCount.Count)
+			_listCashConsumeCount[(int)cashConsumeCountType] -= count;
+	}
+	#endregion
+
+	public void OnRecvConsumeItem(string value, int count)
+	{
+		switch (value)
+		{
+			case "Cash_sSevenTotal":
+				break;
+			case "Cash_sSpellGacha":
+				PurchaseCount(eCashConsumeCountType.SpellGacha, count);
+				break;
+			case "Cash_sCharacterGacha":
+				PurchaseCount(eCashConsumeCountType.CharacterGacha, count);
+				break;
+			case "Cash_sEquipGacha":
+				PurchaseCount(eCashConsumeCountType.EquipGacha, count);
+				break;
+		}
 	}
 
 
@@ -652,7 +718,52 @@ public class CashShopData : MonoBehaviour
 			return true;
 		}
 
+		// Count Consume도 확인
+		for (int i = 0; i < (int)eCashConsumeCountType.Amount; ++i)
+		{
+			if (GetConsumeCount((eCashConsumeCountType)i) == 0)
+				continue;
+
+			bool process = false;
+			string itemName = "";
+			switch ((eCashConsumeCountType)i)
+			{
+				case eCashConsumeCountType.SevenTotal:
+					PlayFabApiManager.instance.RequestConsumeSevenTotal(null);
+					break;
+				case eCashConsumeCountType.SpellGacha:
+					ConsumeItemTableData consumeItemTableData = TableDataManager.instance.FindConsumeItemTableData(_listCashConsumeCountKey[i]);
+					if (consumeItemTableData != null)
+						itemName = UIString.instance.GetString(consumeItemTableData.name);
+					process = true;
+					break;
+			}
+
+			if (process == false)
+				continue;
+
+			OkCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("ShopUI_NotDoneBuyingProgress", itemName), () =>
+			{
+				// 컨슘은 전용으로 다루는 창이 아니기 때문에 로직으로 따로 구현해야한다.
+				// 뽑기 로직을 간단하게 수행하는 형태일거다.
+				//BrokenEnergyCanvas.ConsumeProduct();
+				switch ((eCashConsumeCountType)i)
+				{
+					case eCashConsumeCountType.SpellGacha:
+						ConsumeSpellGacha();
+						break;
+				}
+
+			}, -1, true);
+			return true;
+		}
+
 		return false;
+	}
+
+	void ConsumeSpellGacha()
+	{
+
 	}
 	#endregion
 }
