@@ -370,6 +370,9 @@ public class CashShopData : MonoBehaviour
 		switch (value)
 		{
 			case "Cash_sSevenTotal":
+				PurchaseCount(eCashConsumeCountType.SevenTotal, count);
+				// SevenTotal은 구매 즉시 바로 소모시켜서 통계값으로 적용시키면 된다.
+				PlayFabApiManager.instance.RequestConsumeSevenTotal(null);
 				break;
 			case "Cash_sSpellGacha":
 				PurchaseCount(eCashConsumeCountType.SpellGacha, count);

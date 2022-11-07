@@ -1881,10 +1881,13 @@ public class PlayFabApiManager : MonoBehaviour
 	{
 		WaitingNetworkCanvas.Show(true);
 
+		int count = CashShopData.instance.GetConsumeCount(CashShopData.eCashConsumeCountType.SevenTotal);
+		string input = string.Format("{0}_{1}", count, "qirsmnzo");
+		string checkSum = CheckSum(input);
 		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "ConsumeSevenTotal",
-			FunctionParameter = new { Idx = 0 },
+			FunctionParameter = new { Cs = checkSum },
 			GeneratePlayStreamEvent = true,
 		}, (success) =>
 		{
@@ -1894,7 +1897,6 @@ public class PlayFabApiManager : MonoBehaviour
 			{
 				WaitingNetworkCanvas.Show(false);
 
-				int count = CashShopData.instance.GetConsumeCount(CashShopData.eCashConsumeCountType.SevenTotal);
 				CashShopData.instance.ConsumeCount(CashShopData.eCashConsumeCountType.SevenTotal, count);
 				MissionData.instance.sevenDaysSumPoint += count;
 
