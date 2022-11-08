@@ -57,7 +57,7 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 		}
 		else if (GachaCanvas.instance != null && GachaCanvas.instance.gameObject.activeSelf)
 		{
-			StackCanvas.Push(gameObject);
+			//StackCanvas.Push(gameObject);
 		}
 
 		objectRoot.SetActive(false);
@@ -72,7 +72,7 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 		}
 		else if (GachaCanvas.instance != null && GachaCanvas.instance.gameObject.activeSelf == false && StackCanvas.IsInStack(GachaCanvas.instance.gameObject))
 		{
-			StackCanvas.Pop(gameObject);
+			//StackCanvas.Pop(gameObject);
 		}
 
 		openAnimator.enabled = false;
