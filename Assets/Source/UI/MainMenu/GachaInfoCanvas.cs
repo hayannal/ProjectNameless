@@ -1156,16 +1156,17 @@ public class GachaInfoCanvas : MonoBehaviour
 				if (_listResultItemValue.Count == 0 && _listResultItemValue.Count == _listResultItemCount.Count)
 					OnPostProcess();
 				else
-					CheckEventConsumeItem();
+				{
+					// 여러개의 컨슘 항목을 가지고 있을때는 하나씩 나눠서 패킷 보내면서 서버에서 처리해야할거다.
+					// 이 로직은 사실 CashShopData.CheckUncomsumeProduct와 비슷하긴 한데 확인창을 띄우느냐가 다르기 때문에
+					// 그리고 여기선 컨슘 리스트가 사실상 정해져있기 때문에
+					// 별도로 구현하기로 한다.
+					//
+					// 컨슘은 다른 상품 구매 후에도 보상 후에도 공용으로 사용될거 같아서 매니저 만들어서 처리하기로 한다.
+					ConsumeProductProcessor.instance.ConsumeGacha(_listResultItemValue, _listResultItemCount);
+				}
 			});
 		});
-	}
-
-	bool CheckEventConsumeItem()
-	{
-		// 여러개의 컨슘 항목을 가지고 있을때는 하나씩 나눠서 패킷 보내면서 서버에서 처리해야할거다.
-
-		return false;
 	}
 
 	IEnumerator<float> RoomMoveProcess()

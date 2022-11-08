@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -82,6 +83,12 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 		boxImage.color = Color.white;
 		exitObject.SetActive(false);
 		_recvResult = false;
+
+		if (_closeAction != null)
+		{
+			_closeAction();
+			_closeAction = null;
+		}
 	}
 
 	public void OnClickBackground()
@@ -147,5 +154,11 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 		{
 			case eBoxType.Spell: spellBoxResultCanvas.ShowResult(_listItemInstance); spellBoxResultCanvas.gameObject.SetActive(true); break;
 		}
+	}
+
+	System.Action _closeAction;
+	public void SetCloseCallback(Action closeCallback)
+	{
+		_closeAction = closeCallback;
 	}
 }

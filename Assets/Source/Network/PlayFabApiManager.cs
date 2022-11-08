@@ -2273,6 +2273,41 @@ public class PlayFabApiManager : MonoBehaviour
 		});
 	}
 
+	public void RequestConsumeSpellGacha(List<ObscuredString> listSpellId, Action<string> successCallback)
+	{
+		// RandomBoxScreenCanvas에서 컨트롤할거니 여기서는 하지 않는다.
+		//WaitingNetworkCanvas.Show(true);
+
+		string checkSum2 = "";
+		List<ItemGrantRequest> listItemGrantRequest = SpellManager.instance.GenerateGrantRequestInfo(listSpellId, ref checkSum2);
+		ExecuteCloudScriptRequest request = new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "ConsumeSpellGacha",
+			FunctionParameter = new { Lst = listItemGrantRequest, LstCs = checkSum2 },
+			GeneratePlayStreamEvent = true,
+		};
+
+		PlayFabClientAPI.ExecuteCloudScript(request, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				//WaitingNetworkCanvas.Show(false);
+
+				CashShopData.instance.ConsumeCount(CashShopData.eCashConsumeCountType.SpellGacha, listSpellId.Count);
+
+				jsonResult.TryGetValue("itmRet", out object itmRet);
+
+				if (successCallback != null) successCallback.Invoke((string)itmRet);
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
 	public void RequestLevelUpSpell(SpellData spellData, int targetLevel, Action successCallback)
 	{
 		WaitingNetworkCanvas.Show(true);

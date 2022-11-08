@@ -669,6 +669,57 @@ public class CashShopData : MonoBehaviour
 
 	public bool CheckUncomsumeProduct()
 	{
+		// 다른 컨슘보다도 스텝이 길고 중요한 가차박스는 따로 검사한다.
+		if (GetConsumeCount(eCashConsumeCountType.SpellGacha) > 0 || GetConsumeCount(eCashConsumeCountType.CharacterGacha) > 0 || GetConsumeCount(eCashConsumeCountType.EquipGacha) > 0)
+		{
+			string itemName = "";
+			int count = GetConsumeCount(eCashConsumeCountType.SpellGacha);
+			if (count > 0)
+			{
+				ConsumeProductProcessor.instance.AddConsumeGacha(_listCashConsumeCountKey[(int)eCashConsumeCountType.SpellGacha], count);
+
+				ConsumeItemTableData consumeItemTableData = TableDataManager.instance.FindConsumeItemTableData(_listCashConsumeCountKey[(int)eCashConsumeCountType.SpellGacha]);
+				if (consumeItemTableData != null)
+					itemName = UIString.instance.GetString(consumeItemTableData.name);
+			}
+
+			count = GetConsumeCount(eCashConsumeCountType.CharacterGacha);
+			if (count > 0)
+			{
+				ConsumeProductProcessor.instance.AddConsumeGacha(_listCashConsumeCountKey[(int)eCashConsumeCountType.CharacterGacha], count);
+
+				ConsumeItemTableData consumeItemTableData = TableDataManager.instance.FindConsumeItemTableData(_listCashConsumeCountKey[(int)eCashConsumeCountType.CharacterGacha]);
+				if (consumeItemTableData != null)
+				{
+					if (string.IsNullOrEmpty(itemName))
+						itemName = UIString.instance.GetString(consumeItemTableData.name);
+					else
+						itemName = string.Format("{0}, {1}", itemName, UIString.instance.GetString(consumeItemTableData.name));
+				}
+			}
+
+			count = GetConsumeCount(eCashConsumeCountType.EquipGacha);
+			if (count > 0)
+			{
+				ConsumeProductProcessor.instance.AddConsumeGacha(_listCashConsumeCountKey[(int)eCashConsumeCountType.EquipGacha], count);
+
+				ConsumeItemTableData consumeItemTableData = TableDataManager.instance.FindConsumeItemTableData(_listCashConsumeCountKey[(int)eCashConsumeCountType.EquipGacha]);
+				if (consumeItemTableData != null)
+				{
+					if (string.IsNullOrEmpty(itemName))
+						itemName = UIString.instance.GetString(consumeItemTableData.name);
+					else
+						itemName = string.Format("{0}, {1}", itemName, UIString.instance.GetString(consumeItemTableData.name));
+				}
+			}
+
+			OkCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("ShopUI_NotDoneBuyingProgress", itemName), () =>
+			{
+				ConsumeProductProcessor.instance.ProcessConsume();
+			}, -1, true);
+			return true;
+		}
+
 		// 위 펜딩 상품이 없을때는 DB에서 소모시켜야할 아이템이 남아있는지 확인해서 처리해주면 된다.
 		for (int i = 0; i < (int)eCashConsumeFlagType.Amount; ++i)
 		{
@@ -734,12 +785,6 @@ public class CashShopData : MonoBehaviour
 				case eCashConsumeCountType.SevenTotal:
 					PlayFabApiManager.instance.RequestConsumeSevenTotal(null);
 					break;
-				case eCashConsumeCountType.SpellGacha:
-					ConsumeItemTableData consumeItemTableData = TableDataManager.instance.FindConsumeItemTableData(_listCashConsumeCountKey[i]);
-					if (consumeItemTableData != null)
-						itemName = UIString.instance.GetString(consumeItemTableData.name);
-					process = true;
-					break;
 			}
 
 			if (process == false)
@@ -752,9 +797,9 @@ public class CashShopData : MonoBehaviour
 				//BrokenEnergyCanvas.ConsumeProduct();
 				switch ((eCashConsumeCountType)i)
 				{
-					case eCashConsumeCountType.SpellGacha:
-						ConsumeSpellGacha();
-						break;
+					//case eCashConsumeCountType.SpellGacha:
+					//	ConsumeSpellGacha();
+					//	break;
 				}
 
 			}, -1, true);
@@ -762,11 +807,6 @@ public class CashShopData : MonoBehaviour
 		}
 
 		return false;
-	}
-
-	void ConsumeSpellGacha()
-	{
-
 	}
 	#endregion
 }
