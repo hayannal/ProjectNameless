@@ -761,6 +761,73 @@ public class PlayFabApiManager : MonoBehaviour
 	}
 
 
+	#region GrantItem
+	List<ItemGrantRequest> _listGrantRequest = new List<ItemGrantRequest>();
+	public List<ItemGrantRequest> GenerateGrantInfo(List<string> listItemId, ref string checkSum, string initDataType = "")
+	{
+		_listGrantRequest.Clear();
+
+		for (int i = 0; i < listItemId.Count; ++i)
+		{
+			ItemGrantRequest info = new ItemGrantRequest();
+			info.ItemId = listItemId[i];
+
+			if (initDataType == "spell")
+			{
+				// 최초로 만들어질때만 Data 적용되고 이미 만들어진 아이템에는 적용되지 않으므로 기본값을 설정하면 된다.
+				info.Data = new Dictionary<string, string>();
+				info.Data.Add(SpellData.KeyLevel, "1");
+			}
+			else if (initDataType == "character")
+			{
+
+			}
+
+			_listGrantRequest.Add(info);
+		}
+
+		if (_listGrantRequest.Count > 0)
+		{
+			var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
+			string jsonItemGrants = serializer.SerializeObject(_listGrantRequest);
+			checkSum = PlayFabApiManager.CheckSum(jsonItemGrants);
+		}
+
+		// 임시 리스트를 가지고 있을 필요 없으니 클리어
+		_listGrantItemId.Clear();
+
+		return _listGrantRequest;
+	}
+
+	List<string> _listGrantItemId = new List<string>();
+	public List<ItemGrantRequest> GenerateGrantRequestInfo(List<ObscuredString> listItemId, ref string checkSum, string initDataType = "")
+	{
+		_listGrantRequest.Clear();
+		if (listItemId == null || listItemId.Count == 0)
+			return _listGrantRequest;
+
+		_listGrantItemId.Clear();
+		for (int i = 0; i < listItemId.Count; ++i)
+			_listGrantItemId.Add(listItemId[i]);
+		return GenerateGrantInfo(_listGrantItemId, ref checkSum, initDataType);
+	}
+
+	public List<ItemGrantRequest> GenerateGrantRequestInfo(string itemId, ref string checkSum, string initDataType)
+	{
+		_listGrantItemId.Clear();
+		_listGrantItemId.Add(itemId);
+		return GenerateGrantInfo(_listGrantItemId, ref checkSum, initDataType);
+	}
+
+	public List<ItemInstance> DeserializeItemGrantResult(string jsonItemGrantResults)
+	{
+		var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
+		GrantItemsToUsersResult result = serializer.DeserializeObject<GrantItemsToUsersResult>(jsonItemGrantResults);
+		return result.ItemGrantResults;
+	}
+	#endregion
+
+
 	#region Stage Boss
 	ObscuredString _serverEnterKeyForBoss;
 	public void RequestEnterBoss(Action<bool> successCallback, Action failureCallback)
@@ -1032,7 +1099,7 @@ public class PlayFabApiManager : MonoBehaviour
 		string input = string.Format("{0}_{1}_{2}_{3}_{4}_{5}_{6}_{7}_{8}_{9}", CurrencyData.instance.bettingCount + 1, useEnergy, resultGold, resultEnergy, resultBrokenEnergy, resultEventPoint, reserveRoomType, intRefreshTurn, newTurn, "azirjwlm");
 		string checkSum = CheckSum(input);
 		string checkSum2 = "";
-		List<ItemGrantRequest> listItemGrantRequest = SpellManager.instance.GenerateGrantRequestInfo(listEventItemId, ref checkSum2);
+		List<ItemGrantRequest> listItemGrantRequest = GenerateGrantRequestInfo(listEventItemId, ref checkSum2);
 		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "Gacha",
@@ -2244,7 +2311,7 @@ public class PlayFabApiManager : MonoBehaviour
 		string input = string.Format("{0}_{1}_{2}_{3}", baseCount, price, more ? 1 : 0, "ewomvjsa");
 		string checkSum = CheckSum(input);
 		string checkSum2 = "";
-		List<ItemGrantRequest> listItemGrantRequest = SpellManager.instance.GenerateGrantRequestInfo(listSpellId, ref checkSum2);
+		List<ItemGrantRequest> listItemGrantRequest = GenerateGrantRequestInfo(listSpellId, ref checkSum2, "spell");
 		ExecuteCloudScriptRequest request = new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "OpenSpellBox",
@@ -2279,7 +2346,7 @@ public class PlayFabApiManager : MonoBehaviour
 		//WaitingNetworkCanvas.Show(true);
 
 		string checkSum2 = "";
-		List<ItemGrantRequest> listItemGrantRequest = SpellManager.instance.GenerateGrantRequestInfo(listSpellId, ref checkSum2);
+		List<ItemGrantRequest> listItemGrantRequest = GenerateGrantRequestInfo(listSpellId, ref checkSum2, "spell");
 		ExecuteCloudScriptRequest request = new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "ConsumeSpellGacha",

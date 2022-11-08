@@ -267,65 +267,12 @@ public class SpellManager : MonoBehaviour
 		return _listRandomObscuredId;
 	}
 
-	List<ItemGrantRequest> _listGrantRequest = new List<ItemGrantRequest>();
-	public List<ItemGrantRequest> GenerateGrantInfo(List<string> listSpellId, ref string checkSum)
-	{
-		_listGrantRequest.Clear();
-
-		for (int i = 0; i < listSpellId.Count; ++i)
-		{
-			ItemGrantRequest info = new ItemGrantRequest();
-			info.ItemId = listSpellId[i];
-			// 최초로 만들어질때만 Data 적용되고 이미 만들어진 아이템에는 적용되지 않으므로 기본값을 설정하면 된다.
-			info.Data = new Dictionary<string, string>();
-			info.Data.Add(SpellData.KeyLevel, "1");
-			_listGrantRequest.Add(info);
-		}
-
-		if (_listGrantRequest.Count > 0)
-		{
-			var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
-			string jsonItemGrants = serializer.SerializeObject(_listGrantRequest);
-			checkSum = PlayFabApiManager.CheckSum(jsonItemGrants);
-		}
-
-		// 임시 리스트를 가지고 있을 필요 없으니 클리어
-		_listSpellId.Clear();
-
-		return _listGrantRequest;
-	}
-
-	List<string> _listSpellId = new List<string>();
-	public List<ItemGrantRequest> GenerateGrantRequestInfo(List<ObscuredString> listSpellId, ref string checkSum)
-	{
-		_listGrantRequest.Clear();
-		if (listSpellId == null || listSpellId.Count == 0)
-			return _listGrantRequest;
-
-		_listSpellId.Clear();
-		for (int i = 0; i < listSpellId.Count; ++i)
-			_listSpellId.Add(listSpellId[i]);
-		return GenerateGrantInfo(_listSpellId, ref checkSum);
-	}
-
-	public List<ItemGrantRequest> GenerateGrantRequestInfo(string spellId, ref string checkSum)
-	{
-		_listSpellId.Clear();
-		_listSpellId.Add(spellId);
-		return GenerateGrantInfo(_listSpellId, ref checkSum);
-	}
-
-	public List<ItemInstance> DeserializeItemGrantResult(string jsonItemGrantResults)
-	{
-		var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
-		GrantItemsToUsersResult result = serializer.DeserializeObject<GrantItemsToUsersResult>(jsonItemGrantResults);
-		return result.ItemGrantResults;
-	}
+	
 
 	// 대부분의 아이템 획득은 이걸 써서 처리하게 될거다.
 	public List<ItemInstance> OnRecvItemGrantResult(string jsonItemGrantResults, int expectCount = 0)
 	{
-		List<ItemInstance> listItemInstance = DeserializeItemGrantResult(jsonItemGrantResults);
+		List<ItemInstance> listItemInstance = PlayFabApiManager.instance.DeserializeItemGrantResult(jsonItemGrantResults);
 
 		int totalCount = 0;
 		for (int i = 0; i < listItemInstance.Count; ++i)
