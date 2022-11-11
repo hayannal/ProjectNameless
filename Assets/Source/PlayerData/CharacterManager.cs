@@ -26,18 +26,6 @@ public class CharacterManager : MonoBehaviour
 	{
 		ClearInventory();
 
-		ItemInstance newInst = new ItemInstance();
-		newInst.ItemId = "Actor1002";
-		newInst.RemainingUses = 1;
-		newInst.CustomData = new Dictionary<string, string>();
-		userInventory.Add(newInst);
-
-		newInst = new ItemInstance();
-		newInst.ItemId = "Actor2011";
-		newInst.RemainingUses = 1;
-		newInst.CustomData = new Dictionary<string, string>();
-		userInventory.Add(newInst);
-
 		// list
 		for (int i = 0; i < userInventory.Count; ++i)
 		{
@@ -97,8 +85,6 @@ public class CharacterManager : MonoBehaviour
 				//PlayFabApiManager.instance.RequestIncCliSus(ClientSuspect.eClientSuspectCode.InvalidMainCharacter);
 			}
 		}
-
-		leftCharacterId = "Actor1002";
 
 		// status
 		RefreshCachedStatus();
