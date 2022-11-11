@@ -72,7 +72,10 @@ public class CharacterDetailCanvas : DetailShowCanvasBase
 	{
 		_buttonHideState = false;
 		_noInputRemainTime = noInputTime;
-		CharacterCanvas.instance.OnDragRect(baseEventData);
+		if (CharacterCanvas.instance != null && StackCanvas.IsInStack(CharacterCanvas.instance.gameObject))
+			CharacterCanvas.instance.OnDragRect(baseEventData);
+		else if (CharacterListCanvas.instance != null && StackCanvas.IsInStack(CharacterListCanvas.instance.gameObject))
+			CharacterListCanvas.instance.OnDragRect(baseEventData);
 	}
 
 	public void OnPointerDown(BaseEventData baseEventData)

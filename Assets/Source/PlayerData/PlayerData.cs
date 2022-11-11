@@ -143,7 +143,6 @@ public class PlayerData : MonoBehaviour
 		termsConfirmed = false;
 		displayName = "";
 
-		leftCharacterId = rightCharacterId = "";
 
 		// 계정 시작시 패킷 오류가 생기면 복구할 방법이 없기 때문에 여기서 처리하지 않기로 하고 Update돌면서 확인하기로 한다.
 		//AnalysisData.instance.OnNewlyCreatedPlayer();
@@ -252,47 +251,7 @@ public class PlayerData : MonoBehaviour
 			}
 		}
 
-		if (userData.ContainsKey("leftCharacterId"))
-		{
-			string actorId = userData["leftCharacterId"].Value;
-			bool find = false;
-			for (int i = 0; i < characterList.Count; ++i)
-			{
-				if (characterList[i].CharacterName == actorId)
-				{
-					find = true;
-					break;
-				}
-			}
-			if (find)
-				leftCharacterId = actorId;
-			else
-			{
-				leftCharacterId = "";
-				//PlayFabApiManager.instance.RequestIncCliSus(ClientSuspect.eClientSuspectCode.InvalidMainCharacter);
-			}
-		}
-
-		if (userData.ContainsKey("rightCharacterId"))
-		{
-			string actorId = userData["rightCharacterId"].Value;
-			bool find = false;
-			for (int i = 0; i < characterList.Count; ++i)
-			{
-				if (characterList[i].CharacterName == actorId)
-				{
-					find = true;
-					break;
-				}
-			}
-			if (find)
-				rightCharacterId = actorId;
-			else
-			{
-				rightCharacterId = "";
-				//PlayFabApiManager.instance.RequestIncCliSus(ClientSuspect.eClientSuspectCode.InvalidMainCharacter);
-			}
-		}
+		
 
 		/*
 		if (userData.ContainsKey("selectedChapter"))
@@ -375,89 +334,4 @@ public class PlayerData : MonoBehaviour
 		if (StageFloorInfoCanvas.instance != null)
 			StageFloorInfoCanvas.instance.RefreshCombatPower();
 	}
-
-	public void OnRecvCharacterList(List<CharacterResult> characterList, Dictionary<string, GetCharacterStatisticsResult> dicCharacterStatistics)
-	{
-		_listCharacterData.Clear();
-		for (int i = 0; i < characterList.Count; ++i)
-		{
-			string actorId = characterList[i].CharacterName;
-			string serverCharacterId = characterList[i].CharacterId;
-			if (dicCharacterStatistics.ContainsKey(serverCharacterId) == false)
-				continue;
-			if (dicCharacterStatistics[serverCharacterId].CharacterStatistics == null)
-				continue;
-
-			/*
-			// 이건 필수항목이 아니라서 없을수도 있다.
-			PlayFabApiManager.CharacterDataEntity1 dataObject = null;
-			for (int j = 0; j < characterEntityObjectList.Count; ++j)
-			{
-				if (characterEntityObjectList[j].ObjectName == actorId)
-				{
-					dataObject = JsonUtility.FromJson<PlayFabApiManager.CharacterDataEntity1>(characterEntityObjectList[j].DataObject.ToString());
-					break;
-				}
-			}
-			*/
-
-			CharacterData newCharacterData = new CharacterData();
-			newCharacterData.actorId = actorId;
-			newCharacterData.entityKey = new PlayFab.DataModels.EntityKey { Id = serverCharacterId, Type = "character" };
-			newCharacterData.Initialize(dicCharacterStatistics[serverCharacterId].CharacterStatistics);
-			_listCharacterData.Add(newCharacterData);
-		}
-	}
-
-
-	#region Character List
-	List<CharacterData> _listCharacterData = new List<CharacterData>();
-	public List<CharacterData> listCharacterData { get { return _listCharacterData; } }
-
-	public string leftCharacterId { get; set; }
-	public string rightCharacterId { get; set; }
-
-	public CharacterData GetCharacterData(string actorId)
-	{
-		for (int i = 0; i < _listCharacterData.Count; ++i)
-		{
-			if (_listCharacterData[i].actorId == actorId)
-				return _listCharacterData[i];
-		}
-		return null;
-	}
-	
-	public bool ContainsActor(string actorId)
-	{
-		for (int i = 0; i < _listCharacterData.Count; ++i)
-		{
-			if (_listCharacterData[i].actorId == actorId)
-				return true;
-		}
-		return false;
-	}
-
-	public bool ContainsActorByGrade(int grade)
-	{
-		for (int i = 0; i < _listCharacterData.Count; ++i)
-		{
-			ActorTableData actorTableData = TableDataManager.instance.FindActorTableData(_listCharacterData[i].actorId);
-			if (actorTableData.grade == grade)
-				return true;
-		}
-		return false;
-	}
-
-	public void ReinitializeActorStatus()
-	{
-		// 모든 캐릭터의 스탯을 재계산 하도록 알려야한다.
-		for (int i = 0; i < _listCharacterData.Count; ++i)
-		{
-			PlayerActor playerActor = BattleInstanceManager.instance.GetCachedPlayerActor(_listCharacterData[i].actorId);
-			if (playerActor == null)
-				continue;
-			playerActor.actorStatus.InitializeActorStatus();
-		}
-	}
-	#endregion
 }

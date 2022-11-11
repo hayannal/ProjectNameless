@@ -89,7 +89,7 @@ public class ActorStatus : MonoBehaviour
 
 		_statusBase.valueList[(int)eActorStatus.AttackDelay] = actorTableData.attackDelay;
 		_statusBase.valueList[(int)eActorStatus.MoveSpeed] = actorTableData.moveSpeed;
-		_statusBase.valueList[(int)eActorStatus.MaxSp] = actorTableData.sp;
+		_statusBase.valueList[(int)eActorStatus.MaxSp] = 0.0f;
 
 		// actor multi
 		//_statusBase.valueList[(int)eActorStatus.MaxHp] *= actorTableData.multiHp;

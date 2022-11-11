@@ -21,16 +21,8 @@ public class ActorTableData
   public string nameId { get { return _nameId; } set { _nameId = value; } }
   
   [SerializeField]
-  string _storyId;
-  public string storyId { get { return _storyId; } set { _storyId = value; } }
-  
-  [SerializeField]
   string _descId;
   public string descId { get { return _descId; } set { _descId = value; } }
-  
-  [SerializeField]
-  string _ultimateId;
-  public string ultimateId { get { return _ultimateId; } set { _ultimateId = value; } }
   
   [SerializeField]
   int _grade;
@@ -55,10 +47,6 @@ public class ActorTableData
   [SerializeField]
   int _powerSource;
   public int powerSource { get { return _powerSource; } set { _powerSource = value; } }
-  
-  [SerializeField]
-  float _sp;
-  public float sp { get { return _sp; } set { _sp = value; } }
   
   [SerializeField]
   float _attackRange;
@@ -109,48 +97,8 @@ public class ActorTableData
   public float charGachaWeight { get { return _charGachaWeight; } set { _charGachaWeight = value; } }
   
   [SerializeField]
-  float _noHaveTimes;
-  public float noHaveTimes { get { return _noHaveTimes; } set { _noHaveTimes = value; } }
-  
-  [SerializeField]
-  int _baseStr;
-  public int baseStr { get { return _baseStr; } set { _baseStr = value; } }
-  
-  [SerializeField]
-  int _baseDex;
-  public int baseDex { get { return _baseDex; } set { _baseDex = value; } }
-  
-  [SerializeField]
-  int _baseInt;
-  public int baseInt { get { return _baseInt; } set { _baseInt = value; } }
-  
-  [SerializeField]
-  int _baseVit;
-  public int baseVit { get { return _baseVit; } set { _baseVit = value; } }
-  
-  [SerializeField]
-  float _trainingHp;
-  public float trainingHp { get { return _trainingHp; } set { _trainingHp = value; } }
-  
-  [SerializeField]
-  float _trainingAtk;
-  public float trainingAtk { get { return _trainingAtk; } set { _trainingAtk = value; } }
-  
-  [SerializeField]
-  int _trainingMin;
-  public int trainingMin { get { return _trainingMin; } set { _trainingMin = value; } }
-  
-  [SerializeField]
-  int _trainingMax;
-  public int trainingMax { get { return _trainingMax; } set { _trainingMax = value; } }
-  
-  [SerializeField]
   string _battltMusicOverriding;
   public string battltMusicOverriding { get { return _battltMusicOverriding; } set { _battltMusicOverriding = value; } }
-  
-  [SerializeField]
-  int _nodeWarLastCount;
-  public int nodeWarLastCount { get { return _nodeWarLastCount; } set { _nodeWarLastCount = value; } }
   
   [SerializeField]
   float _aniAdjust;

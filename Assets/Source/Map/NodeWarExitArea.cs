@@ -44,7 +44,7 @@ public class NodeWarExitArea : MonoBehaviour
 
 		// 생성되는 타이밍에 플레이 중인 캐릭터의 MonsterBoost 타이밍을 얻어온다.
 		ActorTableData actorTableData = TableDataManager.instance.FindActorTableData(BattleInstanceManager.instance.playerActor.actorId);
-		_currentLastCountBase = actorTableData.nodeWarLastCount;
+		_currentLastCountBase = 0;// actorTableData.nodeWarLastCount;
 		if (_currentLastCountBase >= SacrificeMax)
 			CheatingListener.OnDetectCheatTable();
 	}

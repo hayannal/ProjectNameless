@@ -48,14 +48,14 @@ public class TeamManager : MonoBehaviour
 		}
 
 		// 서버에 저장되어있는거 보유했는지 확인 후
-		string actorId = PlayerData.instance.leftCharacterId;
-		if (string.IsNullOrEmpty(actorId) && PlayerData.instance.ContainsActor(actorId))
+		string actorId = CharacterManager.instance.leftCharacterId;
+		if (string.IsNullOrEmpty(actorId) == false && CharacterManager.instance.ContainsActor(actorId))
 		{
 			SpawnTeamMember(ePosition.Left, actorId);
 		}
 
-		actorId = PlayerData.instance.rightCharacterId;
-		if (string.IsNullOrEmpty(actorId) && PlayerData.instance.ContainsActor(actorId))
+		actorId = CharacterManager.instance.rightCharacterId;
+		if (string.IsNullOrEmpty(actorId) == false && CharacterManager.instance.ContainsActor(actorId))
 		{
 			SpawnTeamMember(ePosition.Right, actorId);
 		}

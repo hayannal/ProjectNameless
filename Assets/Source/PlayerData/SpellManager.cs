@@ -5,18 +5,6 @@ using PlayFab;
 using PlayFab.ClientModels;
 using CodeStage.AntiCheat.ObscuredTypes;
 
-// 아이템 전부에서 사용하는거라 공용으로
-public class ItemGrantRequest
-{
-	public Dictionary<string, string> Data;
-	public string ItemId;
-}
-
-public class GrantItemsToUsersResult
-{
-	public List<ItemInstance> ItemGrantResults;
-}
-
 public class SpellManager : MonoBehaviour
 {
 	public static SpellManager instance

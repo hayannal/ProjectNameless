@@ -255,7 +255,7 @@ public class MainCanvas : MonoBehaviour
 	#region Menu
 	public void RefreshMenuButton()
 	{
-		teamButtonObject.SetActive(true);
+		teamButtonObject.SetActive(CharacterManager.instance.listCharacterData.Count > 0);
 		petButtonObject.SetActive(false);
 		equipButtonObject.SetActive(false);
 	}
@@ -279,6 +279,16 @@ public class MainCanvas : MonoBehaviour
 		}
 		else
 			UIInstanceManager.instance.ShowCanvasAsync("SpellCanvas", null);
+	}
+
+	public void OnClickTeamButton()
+	{
+		UIInstanceManager.instance.ShowCanvasAsync("CharacterListCanvas", null);
+	}
+
+	public void OnClickPetButton()
+	{
+
 	}
 
 	public void OnEnterCharacterMenu(bool enter)

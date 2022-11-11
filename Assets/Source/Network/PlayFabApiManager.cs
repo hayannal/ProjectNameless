@@ -12,6 +12,19 @@ using PlayFab.ClientModels;
 using PlayFab.DataModels;
 using ClientSuspect;
 
+#region GrantItem
+// 아이템 전부에서 사용하는거라 공용으로
+public class ItemGrantRequest
+{
+	public Dictionary<string, string> Data;
+	public string ItemId;
+}
+
+public class GrantItemsToUsersResult
+{
+	public List<ItemInstance> ItemGrantResults;
+}
+#endregion
 
 public class PlayFabApiManager : MonoBehaviour
 {
@@ -258,6 +271,11 @@ public class PlayFabApiManager : MonoBehaviour
 		GuideQuestData.instance.OnRecvGuideQuestData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 		MissionData.instance.OnRecvMissionData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 		RankingData.instance.OnRecvRankingData(loginResult.InfoResultPayload.TitleData);
+
+		// PlayerData 만 다 받고 처리하고 다른 인벤이나 스펠은 여기서 처리한다.
+		SpellManager.instance.OnRecvSpellInventory(loginResult.InfoResultPayload.UserInventory, loginResult.InfoResultPayload.UserData, loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
+		CostumeManager.instance.OnRecvCostumeInventory(loginResult.InfoResultPayload.UserInventory, loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
+		CharacterManager.instance.OnRecvCharacterInventory(loginResult.InfoResultPayload.UserInventory, loginResult.InfoResultPayload.UserData, loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 
 		/*
 		DailyShopData.instance.OnRecvShopData(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData);		
@@ -684,13 +702,10 @@ public class PlayFabApiManager : MonoBehaviour
 		ClearCliSusQueue();
 		enableCliSusQueue = true;
 		PlayerData.instance.OnRecvPlayerStatistics(_loginResult.InfoResultPayload.PlayerStatistics);
-		SpellManager.instance.OnRecvSpellInventory(_loginResult.InfoResultPayload.UserInventory, _loginResult.InfoResultPayload.UserData, _loginResult.InfoResultPayload.UserReadOnlyData, _loginResult.InfoResultPayload.PlayerStatistics);
-		CostumeManager.instance.OnRecvCostumeInventory(_loginResult.InfoResultPayload.UserInventory, _loginResult.InfoResultPayload.UserReadOnlyData, _loginResult.InfoResultPayload.PlayerStatistics);
 		/*
 		TimeSpaceData.instance.OnRecvEquipInventory(_loginResult.InfoResultPayload.UserInventory, _loginResult.InfoResultPayload.UserData, _loginResult.InfoResultPayload.UserReadOnlyData);
 		*/
 		PlayerData.instance.OnRecvPlayerData(_loginResult.InfoResultPayload.UserData, _loginResult.InfoResultPayload.UserReadOnlyData, _loginResult.InfoResultPayload.CharacterList, _loginResult.InfoResultPayload.PlayerProfile);
-		PlayerData.instance.OnRecvCharacterList(_loginResult.InfoResultPayload.CharacterList, _dicCharacterStatisticsResult);
 		/*
 		MercenaryData.instance.OnRecvMercenaryData(_loginResult.InfoResultPayload.TitleData, false);
 		*/
