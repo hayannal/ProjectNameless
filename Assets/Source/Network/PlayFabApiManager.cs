@@ -795,7 +795,9 @@ public class PlayFabApiManager : MonoBehaviour
 			}
 			else if (initDataType == "character")
 			{
-
+				info.Data = new Dictionary<string, string>();
+				info.Data.Add(CharacterData.KeyLevel, "1");
+				info.Data.Add(CharacterData.KeyTranscend, "0");
 			}
 
 			_listGrantRequest.Add(info);
