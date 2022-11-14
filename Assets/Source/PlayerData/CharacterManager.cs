@@ -168,4 +168,79 @@ public class CharacterManager : MonoBehaviour
 	}
 	*/
 	#endregion
+
+
+
+	#region Grant
+	List<ObscuredString> _listRandomObscuredId = new List<ObscuredString>();
+	public List<ObscuredString> GetRandomIdList(int count)
+	{
+		_listRandomObscuredId.Clear();
+
+		//for (int i = 0; i < count; ++i)
+		//	_listRandomObscuredId.Add(GetRandomGachaResult());
+		_listRandomObscuredId.Add("Actor0201");
+		_listRandomObscuredId.Add("Actor1005");
+
+		return _listRandomObscuredId;
+	}
+
+
+
+	public List<ItemInstance> OnRecvItemGrantResult(string jsonItemGrantResults, int expectCount = 0)
+	{
+		List<ItemInstance> listItemInstance = PlayFabApiManager.instance.DeserializeItemGrantResult(jsonItemGrantResults);
+
+		int totalCount = 0;
+		for (int i = 0; i < listItemInstance.Count; ++i)
+		{
+			ActorTableData actorTableData = TableDataManager.instance.FindActorTableData(listItemInstance[i].ItemId);
+			if (actorTableData == null)
+				continue;
+
+			if (listItemInstance[i].UsesIncrementedBy != null)
+				totalCount += (int)listItemInstance[i].UsesIncrementedBy;
+		}
+		if (expectCount != 0 && totalCount != expectCount)
+			return null;
+
+		for (int i = 0; i < listItemInstance.Count; ++i)
+		{
+			ActorTableData actorTableData = TableDataManager.instance.FindActorTableData(listItemInstance[i].ItemId);
+			if (actorTableData == null)
+				continue;
+
+			CharacterData currentCharacterData = null;
+			for (int j = 0; j < _listCharacterData.Count; ++j)
+			{
+				if (_listCharacterData[j].actorId == listItemInstance[i].ItemId)
+				{
+					currentCharacterData = _listCharacterData[j];
+					break;
+				}
+			}
+
+			if (currentCharacterData != null)
+			{
+				if (listItemInstance[i].RemainingUses != null && listItemInstance[i].UsesIncrementedBy != null)
+				{
+					if (listItemInstance[i].RemainingUses - listItemInstance[i].UsesIncrementedBy == currentCharacterData.count)
+						currentCharacterData.Initialize((int)listItemInstance[i].RemainingUses, listItemInstance[i].CustomData);
+				}
+			}
+			else
+			{
+				CharacterData newCharacterData = new CharacterData();
+				newCharacterData.uniqueId = listItemInstance[i].ItemInstanceId;
+				newCharacterData.actorId = listItemInstance[i].ItemId;
+				newCharacterData.Initialize((listItemInstance[i].RemainingUses != null) ? (int)listItemInstance[i].RemainingUses : 0, listItemInstance[i].CustomData);
+				_listCharacterData.Add(newCharacterData);
+
+				// 없는 마법이 추가될땐 스탯부터 다 다시 계산해야한다.
+				OnChangedStatus();
+			}
+		}
+		return listItemInstance;
+	}
+	#endregion
 }
