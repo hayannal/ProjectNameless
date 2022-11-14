@@ -13,10 +13,6 @@ public class ShopSpellTableData
   public string id { get { return _id; } set { _id = value; } }
   
   [SerializeField]
-  string _type;
-  public string type { get { return _type; } set { _type = value; } }
-  
-  [SerializeField]
   int _count;
   public int count { get { return _count; } set { _count = value; } }
   

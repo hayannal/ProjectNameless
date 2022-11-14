@@ -57,6 +57,9 @@ public class TableDataManager : MonoBehaviour
 	public SevenSumTable sevenSumTable;
 
 	public GachaSpellTable gachaSpellTable;
+	public GachaActorTable gachaActorTable;
+
+	public PetTable petTable;
 
 	void Awake()
 	{
@@ -490,6 +493,16 @@ public class TableDataManager : MonoBehaviour
 		{
 			if (sevenSumTable.dataArray[i].groupId == group && sevenSumTable.dataArray[i].count == count)
 				return sevenSumTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public PetTableData FindPetTableData(string petId)
+	{
+		for (int i = 0; i < petTable.dataArray.Length; ++i)
+		{
+			if (petTable.dataArray[i].petId == petId)
+				return petTable.dataArray[i];
 		}
 		return null;
 	}

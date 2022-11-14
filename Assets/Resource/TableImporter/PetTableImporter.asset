@@ -10,29 +10,39 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 80e14a72067f1ad408ec8d661bc560ce, type: 3}
-  m_Name: ShopActorTableImporter
+  m_Name: PetTableImporter
   m_EditorClassIdentifier: 
   templatePath: AssetStore/QuickSheet/ExcelPlugin/Templates
   scriptFilePath: Source/TableClass/Runtime
   editorScriptFilePath: Source/TableClass/Editor
-  sheetName: Gacha.xlsx
-  workSheetName: ShopActorTable
+  sheetName: Pet.xlsx
+  workSheetName: PetTable
   columnHeaderList:
   - type: 1
-    name: id
+    name: petId
     isEnable: 0
     isArray: 0
   - type: 3
-    name: count
+    name: star
     isEnable: 0
     isArray: 0
   - type: 3
-    name: price
+    name: accumulatedAtk
     isEnable: 0
     isArray: 0
-  excelFilePath: ../Excel/Gacha.xlsx
+  - type: 1
+    name: prefabAddress
+    isEnable: 0
+    isArray: 0
+  - type: 3
+    name: orderIndex
+    isEnable: 0
+    isArray: 0
+  - type: 5
+    name: meetWeight
+    isEnable: 0
+    isArray: 0
+  excelFilePath: ../Excel/Pet.xlsx
   SheetNames:
-  - GachaSpellTable
-  - ShopSpellTable
-  - ShopActorTable
-  currentSelectedSheet: 2
+  - PetTable
+  currentSelectedSheet: 0
