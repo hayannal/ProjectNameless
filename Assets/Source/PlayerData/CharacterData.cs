@@ -13,6 +13,7 @@ public class CharacterData
 
 	ObscuredInt _count;
 	ObscuredInt _level;
+	public int count { get { return _count; } }
 	public int pp { get { return _count - 1; } }
 	public int level { get { return _level; } }
 
