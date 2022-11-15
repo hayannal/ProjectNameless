@@ -77,27 +77,7 @@ public class CharacterCanvasListItem : MonoBehaviour
 		nameText.SetLocalizedText(UIString.instance.GetString(actorTableData.nameId));
 		powerSourceText.SetLocalizedText(PowerSource.Index2Name(actorTableData.powerSource));
 
-		switch (actorTableData.grade)
-		{
-			case 0:
-				blurImage.color = new Color(0.5f, 0.5f, 0.5f, 0.0f);
-				gradient.color1 = Color.white;
-				gradient.color2 = Color.black;
-				lineColorImage.color = new Color(0.5f, 0.5f, 0.5f);
-				break;
-			case 1:
-				blurImage.color = new Color(0.28f, 0.78f, 1.0f, 0.0f);
-				gradient.color1 = new Color(0.0f, 0.7f, 1.0f);
-				gradient.color2 = new Color(0.8f, 0.8f, 0.8f);
-				lineColorImage.color = new Color(0.0f, 0.51f, 1.0f);
-				break;
-			case 2:
-				blurImage.color = new Color(1.0f, 0.78f, 0.31f, 0.0f);
-				gradient.color1 = new Color(1.0f, 0.5f, 0.0f);
-				gradient.color2 = new Color(0.8f, 0.8f, 0.8f);
-				lineColorImage.color = new Color(1.0f, 0.5f, 0.0f);
-				break;
-		}
+		InitializeGrade(actorTableData.grade);
 
 		if (CharacterManager.instance.leftCharacterId == actorId || CharacterManager.instance.rightCharacterId == actorId)
 			equippedObject.SetActive(true);
@@ -130,6 +110,45 @@ public class CharacterCanvasListItem : MonoBehaviour
 
 		//selectObject.SetActive(false);
 		_clickAction = clickCallback;
+	}
+
+	public void InitializeGrade(int grade, bool questionCharacter = false)
+	{
+		switch (grade)
+		{
+			case 0:
+				blurImage.color = new Color(0.5f, 0.5f, 0.5f, 0.0f);
+				gradient.color1 = Color.white;
+				gradient.color2 = Color.black;
+				lineColorImage.color = new Color(0.5f, 0.5f, 0.5f);
+				break;
+			case 1:
+				blurImage.color = new Color(0.28f, 0.78f, 1.0f, 0.0f);
+				gradient.color1 = new Color(0.0f, 0.7f, 1.0f);
+				gradient.color2 = new Color(0.8f, 0.8f, 0.8f);
+				lineColorImage.color = new Color(0.0f, 0.51f, 1.0f);
+				break;
+			case 2:
+				blurImage.color = new Color(1.0f, 0.78f, 0.31f, 0.0f);
+				gradient.color1 = new Color(1.0f, 0.5f, 0.0f);
+				gradient.color2 = new Color(0.8f, 0.8f, 0.8f);
+				lineColorImage.color = new Color(1.0f, 0.5f, 0.0f);
+				break;
+		}
+
+		if (questionCharacter == false)
+			return;
+
+		// 특별히 이름 자리에 등급을 표시한다.
+		nameText.SetLocalizedText(string.Format("<size=30>{0}</size>", UIString.instance.GetString(string.Format("GameUI_CharGrade{0}", grade))));
+		levelObject.SetActive(false);
+		recommandedText.gameObject.SetActive(false);
+
+		AddressableAssetLoadManager.GetAddressableSprite("Portrait_Nobody", "Icon", (sprite) =>
+		{
+			characterImage.sprite = null;
+			characterImage.sprite = sprite;
+		});
 	}
 
 	Action<string> _clickAction;
