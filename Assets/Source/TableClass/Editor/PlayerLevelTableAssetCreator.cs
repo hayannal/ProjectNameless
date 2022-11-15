@@ -12,7 +12,7 @@ public partial class ExcelDataAssetUtility
     public static void CreatePlayerLevelTableAssetFile()
     {
         PlayerLevelTable asset = CustomAssetUtility.CreateAsset<PlayerLevelTable>();
-        asset.SheetName = "../Excel/Actor.xlsx";
+        asset.SheetName = "../Excel/Player.xlsx";
         asset.WorksheetName = "PlayerLevelTable";
         EditorUtility.SetDirty(asset);        
     }
