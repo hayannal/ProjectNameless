@@ -2507,6 +2507,46 @@ public class PlayFabApiManager : MonoBehaviour
 	#endregion
 
 
+	#region Character
+	public void RequestOpenCharacterBox(List<ObscuredString> listActorId, int baseCount, int price, Action<string> successCallback)
+	{
+		// RandomBoxScreenCanvas에서 컨트롤할거니 여기서는 하지 않는다.
+		//WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}_{2}", baseCount, price, "vnxjalpr");
+		string checkSum = CheckSum(input);
+		string checkSum2 = "";
+		List<ItemGrantRequest> listItemGrantRequest = GenerateGrantRequestInfo(listActorId, ref checkSum2, "character");
+		ExecuteCloudScriptRequest request = new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "OpenCharacterBox",
+			FunctionParameter = new { BasCnt = baseCount, Pr = price, Cs = checkSum, Lst = listItemGrantRequest, LstCs = checkSum2 },
+			GeneratePlayStreamEvent = true,
+		};
+
+		PlayFabClientAPI.ExecuteCloudScript(request, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				//WaitingNetworkCanvas.Show(false);
+
+				CurrencyData.instance.gold -= price;
+
+				jsonResult.TryGetValue("itmRet", out object itmRet);
+
+				if (successCallback != null) successCallback.Invoke((string)itmRet);
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+	#endregion
+
+
 
 	#region Sample
 	// Sample 1. 콜백도 없고 재전송도 없을땐 이렇게 간단하게 처리
