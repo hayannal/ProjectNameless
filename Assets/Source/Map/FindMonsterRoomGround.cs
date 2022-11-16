@@ -172,6 +172,7 @@ public class FindMonsterRoomGround : MonoBehaviour
 			}
 
 			// 성공에 대한 메세지 처리?
+			ToastNumberCanvas.instance.ShowToast("SUCCESS!", 2.0f);
 			FindMonsterRoomCanvas.instance.ShowSuccess(true);
 			FindMonsterRoomCanvas.instance.SetStoleValue(stageBetTableData.goblinSuccess);
 		}
@@ -182,6 +183,7 @@ public class FindMonsterRoomGround : MonoBehaviour
 			BattleInstanceManager.instance.GetCachedObject(transportEffectPrefab, _listRandomObject[index].transform.position + Vector3.up, Quaternion.identity, cachedTransform);
 
 			// 실패에 대한 메세지 처리?
+			ToastNumberCanvas.instance.ShowToast("MISS!", 2.0f);
 			FindMonsterRoomCanvas.instance.ShowSuccess(false);
 			FindMonsterRoomCanvas.instance.SetStoleValue(stageBetTableData.goblinFailure);
 		}
