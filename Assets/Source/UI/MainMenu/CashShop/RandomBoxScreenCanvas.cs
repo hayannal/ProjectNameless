@@ -20,6 +20,7 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 	}
 
 	public SpellBoxResultCanvas spellBoxResultCanvas;
+	public CharacterBoxResultCanvas characterBoxResultCanvas;
 
 	public GameObject objectRoot;
 	public Animator openReadyAnimator;
@@ -45,6 +46,7 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 		// tween애니 실행중에 복제되면서 스케일 초기값이 스케일 먹여진채로 시작되게 된다.
 		// 이걸 막기 위해서 자식 캔버스들을 켜둔채로 프리팹에 적용해두고 시작과 동시에 tween은 오브젝트가 꺼진채로 실행시켜두기로 한다.
 		spellBoxResultCanvas.gameObject.SetActive(false);
+		characterBoxResultCanvas.gameObject.SetActive(false);
 	}
 
 	void OnEnable()
@@ -153,6 +155,7 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 		switch (_boxType)
 		{
 			case eBoxType.Spell: spellBoxResultCanvas.ShowResult(_listItemInstance); spellBoxResultCanvas.gameObject.SetActive(true); break;
+			case eBoxType.Character: characterBoxResultCanvas.ShowResult(_listItemInstance); characterBoxResultCanvas.gameObject.SetActive(true); break;
 		}
 	}
 

@@ -172,16 +172,212 @@ public class CharacterManager : MonoBehaviour
 
 
 	#region Grant
+	class RandomGachaCharacterGrade
+	{
+		public int grade;
+		public float sumWeight;
+	}
+	List<RandomGachaCharacterGrade> _listGachaCharacterGrade = null;
+	class RandomGachaCharacterId
+	{
+		public string actorId;
+		public float sumWeight;
+	}
+	List<RandomGachaCharacterId> _listGachaCharacterId = null;
+	public string GetRandomNewCharacterGachaResult()
+	{
+		int maxTrascendPoint = BattleInstanceManager.instance.GetCachedGlobalConstantInt("GachaActorMaxTrp");
+
+		// 신캐를 뽑을 수 있는지부터 확인해야한다.
+		// 그러려면 현재 뽑혀있는 캐릭터 수를 확인해야한다.
+		bool allMaxTranscendPoint = true;
+		int totalCharacterWithTranscendCount = 0;
+		for (int i = 0; i < TableDataManager.instance.actorTable.dataArray.Length; ++i)
+		{
+			if (TableDataManager.instance.actorTable.dataArray[i].actorId == CharacterData.s_PlayerActorId)
+				continue;
+			CharacterData characterData = GetCharacterData(TableDataManager.instance.actorTable.dataArray[i].actorId);
+			if (characterData != null)
+			{
+				totalCharacterWithTranscendCount += 1;
+				totalCharacterWithTranscendCount += characterData.transcendPoint;
+				if (characterData.transcendPoint < maxTrascendPoint)
+					allMaxTranscendPoint = false;
+			}
+			else
+				allMaxTranscendPoint = false;
+		}
+		if (allMaxTranscendPoint)
+		{
+			// 모든 캐릭 모든 trp를 다 충족시켰다.
+			// 이러면 뽑을게 없어진다.
+			return "";
+		}
+
+		// 이후엔 등급별 확률을 구해야한다.
+		if (_listGachaCharacterGrade == null)
+			_listGachaCharacterGrade = new List<RandomGachaCharacterGrade>();
+		_listGachaCharacterGrade.Clear();
+
+		float sumWeight = 0.0f;
+		for (int i = 0; i < TableDataManager.instance.gachaActorTable.dataArray.Length; ++i)
+		{
+			float weight = 0.0f;
+			if (totalCharacterWithTranscendCount < TableDataManager.instance.gachaActorTable.dataArray[i].adjustProbs.Length)
+			{
+				// Adjust된 Prob로 돌리면 된다.
+				weight = TableDataManager.instance.gachaActorTable.dataArray[i].adjustProbs[totalCharacterWithTranscendCount];
+				if (weight <= 0.0f)
+					continue;
+			}
+			else
+			{
+				// 기본 prob로 돌리면 된다.
+				weight = TableDataManager.instance.gachaActorTable.dataArray[i].prob;
+				if (weight <= 0.0f)
+					continue;
+			}
+
+			sumWeight += weight;
+			RandomGachaCharacterGrade newInfo = new RandomGachaCharacterGrade();
+			newInfo.grade = TableDataManager.instance.gachaActorTable.dataArray[i].grade;
+			newInfo.sumWeight = sumWeight;
+			_listGachaCharacterGrade.Add(newInfo);
+		}
+		if (_listGachaCharacterGrade.Count == 0)
+			return "";
+
+		// 여기 sumWeight는 드랍확률이 적용되어있는거라 sumWeight 최대값으로 범위를 돌리는게 아니라 Random.value로 결정해서 돌린다. 
+		// 해당되지 않으면 캐릭이 나오지 않은거다.
+		int index = -1;
+		//float random = UnityEngine.Random.Range(0.0f, _listGachaCharacterGrade[_listGachaCharacterGrade.Count - 1].sumWeight);
+		float random = Random.value;
+		for (int i = 0; i < _listGachaCharacterGrade.Count; ++i)
+		{
+			if (random <= _listGachaCharacterGrade[i].sumWeight)
+			{
+				index = i;
+				break;
+			}
+		}
+		if (index == -1)
+			return "";
+		int selectedGrade = _listGachaCharacterGrade[index].grade;
+
+		// 등급이 결정되었으면 등급안에서 다시 굴려야한다.
+		if (_listGachaCharacterId == null)
+			_listGachaCharacterId = new List<RandomGachaCharacterId>();
+		_listGachaCharacterId.Clear();
+
+		sumWeight = 0.0f;
+		for (int i = 0; i < TableDataManager.instance.actorTable.dataArray.Length; ++i)
+		{
+			if (TableDataManager.instance.actorTable.dataArray[i].actorId == CharacterData.s_PlayerActorId)
+				continue;
+			if (TableDataManager.instance.actorTable.dataArray[i].grade != selectedGrade)
+				continue;
+			CharacterData characterData = GetCharacterData(TableDataManager.instance.actorTable.dataArray[i].actorId);
+			if (characterData != null && characterData.transcendPoint >= maxTrascendPoint)
+				continue;
+
+			// 한가지 예외상황이 있는데 캐릭터 5명을 채울때까진 겹쳐지지 않게 해주기로 해본다.
+			if (totalCharacterWithTranscendCount < 5)
+			{
+				if (characterData != null || _listTempNewCharacterId.Contains(TableDataManager.instance.actorTable.dataArray[i].actorId))
+					continue;
+			}
+
+			// 각각의 확률은 동일한 1.0
+			sumWeight += 1.0f;
+			RandomGachaCharacterId newInfo = new RandomGachaCharacterId();
+			newInfo.actorId = TableDataManager.instance.actorTable.dataArray[i].actorId;
+			newInfo.sumWeight = sumWeight;
+			_listGachaCharacterId.Add(newInfo);
+		}
+		if (_listGachaCharacterId.Count == 0)
+			return "";
+
+		index = -1;
+		random = UnityEngine.Random.Range(0.0f, _listGachaCharacterId[_listGachaCharacterId.Count - 1].sumWeight);
+		for (int i = 0; i < _listGachaCharacterId.Count; ++i)
+		{
+			if (random <= _listGachaCharacterId[i].sumWeight)
+			{
+				index = i;
+				break;
+			}
+		}
+		if (index == -1)
+			return "";
+		return _listGachaCharacterId[index].actorId;
+	}
+
+	public string GetRandomCharacterPpGachaResult()
+	{
+		// 가지고 있는 캐릭터들에 한해서 pp뽑을 캐릭터를 고르면 된다.
+		if (_listGachaCharacterId == null)
+			_listGachaCharacterId = new List<RandomGachaCharacterId>();
+		_listGachaCharacterId.Clear();
+
+		float sumWeight = 0.0f;
+		for (int i = 0; i < TableDataManager.instance.actorTable.dataArray.Length; ++i)
+		{
+			if (TableDataManager.instance.actorTable.dataArray[i].actorId == CharacterData.s_PlayerActorId)
+				continue;
+			CharacterData characterData = GetCharacterData(TableDataManager.instance.actorTable.dataArray[i].actorId);
+			if (characterData == null && _listTempNewCharacterId.Contains(TableDataManager.instance.actorTable.dataArray[i].actorId) == false)
+				continue;
+
+			// 각각의 확률은 동일한 1.0
+			sumWeight += 1.0f;
+			RandomGachaCharacterId newInfo = new RandomGachaCharacterId();
+			newInfo.actorId = TableDataManager.instance.actorTable.dataArray[i].actorId;
+			newInfo.sumWeight = sumWeight;
+			_listGachaCharacterId.Add(newInfo);
+		}
+		if (_listGachaCharacterId.Count == 0)
+			return "";
+
+		int index = -1;
+		float random = UnityEngine.Random.Range(0.0f, _listGachaCharacterId[_listGachaCharacterId.Count - 1].sumWeight);
+		for (int i = 0; i < _listGachaCharacterId.Count; ++i)
+		{
+			if (random <= _listGachaCharacterId[i].sumWeight)
+			{
+				index = i;
+				break;
+			}
+		}
+		if (index == -1)
+			return "";
+		return _listGachaCharacterId[index].actorId;
+	}
+
+	List<ObscuredString> _listTempNewCharacterId = new List<ObscuredString>();
 	List<ObscuredString> _listRandomObscuredId = new List<ObscuredString>();
 	public List<ObscuredString> GetRandomIdList(int count)
 	{
+		_listTempNewCharacterId.Clear();
 		_listRandomObscuredId.Clear();
+		for (int i = 0; i < count; ++i)
+		{
+			// trp 포함 캐릭터 아이디를 1회 뽑아본다.
+			string newActorId = GetRandomNewCharacterGachaResult();
+			if (string.IsNullOrEmpty(newActorId) == false)
+			{
+				_listTempNewCharacterId.Add(newActorId);
+				_listRandomObscuredId.Add(newActorId);
+			}
 
-		//for (int i = 0; i < count; ++i)
-		//	_listRandomObscuredId.Add(GetRandomGachaResult());
-		_listRandomObscuredId.Add("Actor0201");
-		_listRandomObscuredId.Add("Actor1005");
-
+			// pp는 현재 가지고 있는 캐릭터들 안에서만 돌리면 끝이다.
+			for (int j = 0; j < TableDataManager.instance.GetGlobalConstantInt("GachaActorCount"); ++j)
+			{
+				string ppActorId = GetRandomCharacterPpGachaResult();
+				int ppCount = Random.Range(TableDataManager.instance.GetGlobalConstantInt("GachaActorPowerPointMin"), TableDataManager.instance.GetGlobalConstantInt("GachaActorPowerPointMax") + 1);
+				for (int k = 0; k < ppCount; ++k)
+					_listRandomObscuredId.Add(ppActorId);
+			}
+		}
 		return _listRandomObscuredId;
 	}
 
