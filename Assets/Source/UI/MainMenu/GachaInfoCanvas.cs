@@ -1133,6 +1133,7 @@ public class GachaInfoCanvas : MonoBehaviour
 					// 가차 절차가 끝나자마자 Update에서 갱신 패킷을 보내게 될 것이다.
 					if (lastReward)
 					{
+						_currentEventPointRewardTableData = TableDataManager.instance.eventPointRewardTable.dataArray[i];
 						EndEventPointProcess();
 						yield break;
 					}
