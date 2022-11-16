@@ -60,5 +60,7 @@ public class CashShopCharacterListItem : MonoBehaviour
 		// 
 		if (RandomBoxScreenCanvas.instance != null)
 			RandomBoxScreenCanvas.instance.OnRecvResult(RandomBoxScreenCanvas.eBoxType.Character, listItemInstance);
+
+		MainCanvas.instance.RefreshMenuButton();
 	}
 }
