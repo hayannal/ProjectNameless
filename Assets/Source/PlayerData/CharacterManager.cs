@@ -44,9 +44,9 @@ public class CharacterManager : MonoBehaviour
 		}
 
 		leftCharacterId = rightCharacterId = "";
-		if (userData.ContainsKey("leftCharacterId"))
+		if (userReadOnlyData.ContainsKey("leftCharacterId"))
 		{
-			string actorId = userData["leftCharacterId"].Value;
+			string actorId = userReadOnlyData["leftCharacterId"].Value;
 			bool find = false;
 			for (int i = 0; i < _listCharacterData.Count; ++i)
 			{
@@ -65,9 +65,9 @@ public class CharacterManager : MonoBehaviour
 			}
 		}
 
-		if (userData.ContainsKey("rightCharacterId"))
+		if (userReadOnlyData.ContainsKey("rightCharacterId"))
 		{
-			string actorId = userData["rightCharacterId"].Value;
+			string actorId = userReadOnlyData["rightCharacterId"].Value;
 			bool find = false;
 			for (int i = 0; i < _listCharacterData.Count; ++i)
 			{
