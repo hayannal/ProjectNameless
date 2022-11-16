@@ -1220,7 +1220,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5382582767981260342}
+      - m_Target: {fileID: 0}
         m_MethodName: OnClickLevelMaxButton
         m_Mode: 1
         m_Arguments:
@@ -2960,7 +2960,7 @@ MonoBehaviour:
   onPressInitialize:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5382582767981260342}
+      - m_Target: {fileID: 0}
         m_MethodName: OnPressInitialize
         m_Mode: 1
         m_Arguments:
@@ -2974,7 +2974,7 @@ MonoBehaviour:
   onPress:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5382582767981260342}
+      - m_Target: {fileID: 0}
         m_MethodName: OnPressLevelUp
         m_Mode: 1
         m_Arguments:
@@ -2988,7 +2988,7 @@ MonoBehaviour:
   onComplete:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5382582767981260342}
+      - m_Target: {fileID: 0}
         m_MethodName: OnPressUpSync
         m_Mode: 1
         m_Arguments:
@@ -3326,7 +3326,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5382582767981260342}
+      - m_Target: {fileID: 0}
         m_MethodName: OnClickAtkTextButton
         m_Mode: 1
         m_Arguments:
@@ -3511,7 +3511,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5382582767981260342}
+      - m_Target: {fileID: 7246390718891661753}
         m_MethodName: OnClickStoryButton
         m_Mode: 1
         m_Arguments:
@@ -3955,7 +3955,7 @@ GameObject:
   - component: {fileID: 2534716496956965722}
   - component: {fileID: 7655423918061559466}
   - component: {fileID: 7280220481805699373}
-  - component: {fileID: 5382582767981260342}
+  - component: {fileID: 7246390718891661753}
   m_Layer: 5
   m_Name: CharacterInfoGrowthCanvas
   m_TagString: Untagged
@@ -4044,7 +4044,7 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &5382582767981260342
+--- !u!114 &7246390718891661753
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4053,38 +4053,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 2539568579477522288}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35437c95bc4e7e4468952af6fa56d28c, type: 3}
+  m_Script: {fileID: 11500000, guid: 4ed3186412c92044094f7fbffcdaa84e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  subLevelUpEffectPrefab: {fileID: 6372678696781528829, guid: 3df1ca9dda767f344a5797e13eaa66d0,
-    type: 3}
-  levelUpEffectPrefab: {fileID: 6372678696781528829, guid: 721b0b4a88eef0f42a8812e204948174,
-    type: 3}
   gradeBackImage: {fileID: 2445425081247341464}
   gradeText: {fileID: 2445425081368083509}
   nameText: {fileID: 2445425082236439106}
-  subLevelImageList:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  subLevelUpImagEffectList:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  playerLevelText: {fileID: 2445425081351554638}
+  powerSourceText: {fileID: 6135143750807484652}
+  levelText: {fileID: 2445425081351554638}
   atkText: {fileID: 2445425082190674363}
+  sliderRectObject: {fileID: 2118668684807018063}
+  ppSlider: {fileID: 1742090691056418655}
+  sliderFillImage: {fileID: 7642864247353140889}
+  ppText: {fileID: 8350188578422921821}
   priceButtonObject: {fileID: 2445425081885862229}
   priceButtonImage: {fileID: 2445425081627308394}
   priceText: {fileID: 2445425081267772215}
@@ -8338,7 +8319,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 5382582767981260342}
+      objectReference: {fileID: 0}
     - target: {fileID: 4158925572650601857, guid: ca2695684b42a5a40afa93370765502c,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
@@ -8807,11 +8788,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 5382582767981260342}
+      objectReference: {fileID: 7246390718891661753}
     - target: {fileID: 4158925572650601857, guid: ca2695684b42a5a40afa93370765502c,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnClickCostumeButton
+      value: OnClickOrganizeButton
       objectReference: {fileID: 0}
     - target: {fileID: 4269088072637104001, guid: ca2695684b42a5a40afa93370765502c,
         type: 3}

@@ -185,8 +185,10 @@ public class CharacterListCanvas : CharacterShowCanvasBase
 		}
 	}
 
+	public string selectedActorId { get; private set; }
 	public void OnClickListItem(string actorId)
 	{
+		selectedActorId = actorId;
 		ShowCanvasPlayerActor(actorId, () =>
 		{
 			UIInstanceManager.instance.ShowCanvasAsync("CharacterInfoCanvas", null);
