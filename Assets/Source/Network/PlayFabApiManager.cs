@@ -2401,7 +2401,7 @@ public class PlayFabApiManager : MonoBehaviour
 		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "LevelUpSpell",
-			FunctionParameter = new { ItmId = (string)spellData.uniqueId, T = targetLevel, Cs = checkSum },
+			FunctionParameter = new { Id = (string)spellData.uniqueId, T = targetLevel, Cs = checkSum },
 			GeneratePlayStreamEvent = true,
 		}, (success) =>
 		{
