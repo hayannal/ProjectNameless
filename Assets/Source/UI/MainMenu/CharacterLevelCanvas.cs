@@ -231,7 +231,7 @@ public class CharacterLevelCanvas : MonoBehaviour
 
 	public void OnClickStoryButton()
 	{
-		TooltipCanvas.Show(true, TooltipCanvas.eDirection.StoryInfo, UIString.instance.GetString("GameUI_PlayerNameMore"), 400, nameText.transform, new Vector2(0.0f, -35.0f));
+		TooltipCanvas.Show(true, TooltipCanvas.eDirection.Bottom, UIString.instance.GetString("GameUI_PlayerNameMore"), 200, nameText.transform, new Vector2(0.0f, -35.0f));
 	}
 
 	public void OnClickAtkTextButton()
