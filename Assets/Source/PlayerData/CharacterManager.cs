@@ -281,7 +281,7 @@ public class CharacterManager : MonoBehaviour
 				continue;
 
 			// 한가지 예외상황이 있는데 캐릭터 5명을 채울때까진 겹쳐지지 않게 해주기로 해본다.
-			if (totalCharacterWithTranscendCount < 5)
+			if ((totalCharacterWithTranscendCount + _listTempNewCharacterId.Count) < 5)
 			{
 				if (characterData != null || _listTempNewCharacterId.Contains(TableDataManager.instance.actorTable.dataArray[i].actorId))
 					continue;
