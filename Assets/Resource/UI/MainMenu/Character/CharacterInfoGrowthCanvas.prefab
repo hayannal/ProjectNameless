@@ -1024,7 +1024,7 @@ RectTransform:
   - {fileID: 6025567360137441848}
   - {fileID: 3818926222247912131}
   m_Father: {fileID: 2445425080913583614}
-  m_RootOrder: 8
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1456,6 +1456,7 @@ RectTransform:
   - {fileID: 6195755158345600601}
   - {fileID: 2445425082293602274}
   - {fileID: 2166650503929155614}
+  - {fileID: 1531355633057735918}
   - {fileID: 2445425081162263161}
   - {fileID: 7223049424928729181}
   - {fileID: 2071513116245366224}
@@ -1833,7 +1834,7 @@ RectTransform:
   - {fileID: 2445425081683925858}
   - {fileID: 2445425081351554633}
   m_Father: {fileID: 2445425080913583614}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -4062,6 +4063,30 @@ MonoBehaviour:
   powerSourceText: {fileID: 6135143750807484652}
   levelText: {fileID: 2445425081351554638}
   atkText: {fileID: 2445425082190674363}
+  fillImageObjectList:
+  - {fileID: 373138168215406579}
+  - {fileID: 4338552812738644261}
+  - {fileID: 3346479518213204282}
+  - {fileID: 2482173309499571673}
+  - {fileID: 8728166843158033434}
+  tweenAnimationObjectList:
+  - {fileID: 6391305706957816412}
+  - {fileID: 6056940238274486254}
+  - {fileID: 1832885352734746054}
+  - {fileID: 313718793156290225}
+  - {fileID: 6109738017292802765}
+  subTweenAnimationObjectList:
+  - {fileID: 6663341221466853004}
+  - {fileID: 3811476489414439366}
+  - {fileID: 7837240637682704654}
+  - {fileID: 6599134976286307890}
+  - {fileID: 7087116107036561274}
+  maxInfoObject: {fileID: 5730985206414495648}
+  materialInfoObject: {fileID: 8856846013904258814}
+  needOriginTextTransform: {fileID: 2997645385253531347}
+  needOriginCountText: {fileID: 175870517563106014}
+  transcendButtonObject: {fileID: 4744181623251833045}
+  transcendEmptyObject: {fileID: 3511427893300868829}
   sliderRectObject: {fileID: 2118668684807018063}
   ppSlider: {fileID: 1742090691056418655}
   sliderFillImage: {fileID: 7642864247353140889}
@@ -4358,6 +4383,41 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &3511427893300868829
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1531355633057735918}
+  m_Layer: 5
+  m_Name: TranscendEmptyRect
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1531355633057735918
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3511427893300868829}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2445425080913583614}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 10}
+  m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &6906466803393185284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7467,7 +7527,7 @@ RectTransform:
   - {fileID: 2445425081885862228}
   - {fileID: 2445425080540281843}
   m_Father: {fileID: 2445425080913583614}
-  m_RootOrder: 9
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -8745,15 +8805,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7a8841907f32f2a49854f4f39c4fc8a9, type: 3}
---- !u!1 &3665670517675183309 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1280085236418359063, guid: 7a8841907f32f2a49854f4f39c4fc8a9,
-    type: 3}
-  m_PrefabInstance: {fileID: 2530131662651974618}
-  m_PrefabAsset: {fileID: 0}
 --- !u!224 &6561489859110705503 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8652484797891476101, guid: 7a8841907f32f2a49854f4f39c4fc8a9,
+    type: 3}
+  m_PrefabInstance: {fileID: 2530131662651974618}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3665670517675183309 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1280085236418359063, guid: 7a8841907f32f2a49854f4f39c4fc8a9,
     type: 3}
   m_PrefabInstance: {fileID: 2530131662651974618}
   m_PrefabAsset: {fileID: 0}
