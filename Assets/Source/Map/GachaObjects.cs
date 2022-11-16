@@ -117,7 +117,7 @@ public class GachaObjects : MonoBehaviour
 			{
 				case GachaInfoCanvas.eGachaResult.EventPoint1: eventPointNumberXObject.cachedTransform.localScale = Vector3.one; eventPointNumberXObject.SetNumber(1); break;
 				case GachaInfoCanvas.eGachaResult.EventPoint2: eventPointNumberXObject.cachedTransform.localScale = Vector3.one; eventPointNumberXObject.SetNumber(2); break;
-				case GachaInfoCanvas.eGachaResult.EventPoint9: eventPointNumberXObject.cachedTransform.localScale = Vector3.one; eventPointNumberXObject.SetNumber(9); break;
+				case GachaInfoCanvas.eGachaResult.EventPoint9: eventPointNumberXObject.cachedTransform.localScale = Vector3.one; eventPointNumberXObject.SetNumber(5); break;
 				case GachaInfoCanvas.eGachaResult.BrokenEnergy1: brokenEnergyNumberXObject.SetNumber(1); break;
 				case GachaInfoCanvas.eGachaResult.BrokenEnergy2: brokenEnergyNumberXObject.SetNumber(2); break;
 				case GachaInfoCanvas.eGachaResult.BrokenEnergy3: brokenEnergyNumberXObject.SetNumber(3); break;
