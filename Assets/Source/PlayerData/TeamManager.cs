@@ -45,6 +45,7 @@ public class TeamManager : MonoBehaviour
 			if (_listPlayerActor[i] == null)
 				continue;
 			_listPlayerActor[i].gameObject.SetActive(false);
+			_listPlayerActor[i] = null;
 		}
 
 		// 서버에 저장되어있는거 보유했는지 확인 후
