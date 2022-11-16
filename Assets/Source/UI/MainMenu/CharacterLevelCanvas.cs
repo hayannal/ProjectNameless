@@ -31,6 +31,8 @@ public class CharacterLevelCanvas : MonoBehaviour
 	public Image maxButtonImage;
 	public Text maxButtonText;
 
+	public GameObject saleObject;
+
 	public RectTransform alarmRootTransform;
 
 	void Awake()
@@ -47,6 +49,7 @@ public class CharacterLevelCanvas : MonoBehaviour
 	{
 		// hardcode ev8
 		_salePrice = CashShopData.instance.IsShowEvent("ev8");
+		saleObject.SetActive(_salePrice);
 
 		RefreshInfo();
 	}
