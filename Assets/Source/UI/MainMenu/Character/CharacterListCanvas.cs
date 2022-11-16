@@ -179,7 +179,7 @@ public class CharacterListCanvas : CharacterShowCanvasBase
 
 		for (int i = 0; i < _listTempTableData.Count; ++i)
 		{
-			CharacterCanvasListItem characterCanvasListItem = _container.GetCachedItem(contentItemPrefab, noGainContentRootRectTransform);
+			CharacterCanvasListItem characterCanvasListItem = _noGainContainer.GetCachedItem(contentItemPrefab, noGainContentRootRectTransform);
 			characterCanvasListItem.Initialize(_listTempTableData[i].actorId, 0, 0, 0, null, null, OnClickListItem);
 			_listCharacterCanvasListItem.Add(characterCanvasListItem);
 		}
