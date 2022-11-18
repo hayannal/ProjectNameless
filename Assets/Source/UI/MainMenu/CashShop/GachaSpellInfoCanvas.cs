@@ -63,7 +63,7 @@ public class GachaSpellInfoCanvas : MonoBehaviour
 			nextValue = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxTotalSpellLevel");
 
 		string leftString = UIString.instance.GetString("GameUI_Lv", _listTotalSpellGachaStep[_currentProbIndex]);
-		string rightString = UIString.instance.GetString("GameUI_Lv", nextValue);
+		string rightString = UIString.instance.GetString("GameUI_Lv", nextValue - 1);
 		skillTotalLevelText.text = string.Format("{0}  -  {1}", leftString, rightString);
 	}
 
