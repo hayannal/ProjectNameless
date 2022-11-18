@@ -141,9 +141,9 @@ public class ConsumeProductProcessor : MonoBehaviour
 			}
 
 			// 연출창 시작과 동시에 패킷을 보내고
-			//List<ObscuredString> listSpellId = SpellManager.instance.GetRandomIdList(itemCount);
-			//_count = listSpellId.Count;
-			//PlayFabApiManager.instance.RequestConsumeSpellGacha(listSpellId, _shopSpellTableData.count, _shopSpellTableData.price, moreTextObject.activeSelf, OnRecvResultCharacter);
+			List<ObscuredString> listActorId = CharacterManager.instance.GetRandomIdList(itemCount);
+			_count = listActorId.Count;
+			PlayFabApiManager.instance.RequestConsumeCharacterGacha(listActorId, OnRecvResultCharacter);
 		});
 	}
 
@@ -152,12 +152,15 @@ public class ConsumeProductProcessor : MonoBehaviour
 		if (itemGrantString == "")
 			return;
 
-		List<ItemInstance> listItemInstance = SpellManager.instance.OnRecvItemGrantResult(itemGrantString, _count);
+		List<ItemInstance> listItemInstance = CharacterManager.instance.OnRecvItemGrantResult(itemGrantString, _count);
 		if (listItemInstance == null)
 			return;
 
 		if (RandomBoxScreenCanvas.instance != null)
 			RandomBoxScreenCanvas.instance.OnRecvResult(RandomBoxScreenCanvas.eBoxType.Character, listItemInstance);
+
+		if (MainCanvas.instance != null)
+			MainCanvas.instance.RefreshMenuButton();
 	}
 	#endregion
 }

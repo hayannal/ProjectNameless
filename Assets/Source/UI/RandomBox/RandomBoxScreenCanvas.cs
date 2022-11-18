@@ -22,6 +22,7 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 	public SpellBoxResultCanvas spellBoxResultCanvas;
 	public CharacterBoxResultCanvas characterBoxResultCanvas;
 
+	public CanvasGroup rootCanvasGroup;
 	public GameObject objectRoot;
 	public Animator openReadyAnimator;
 	public Animator openAnimator;
@@ -49,6 +50,7 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 		characterBoxResultCanvas.gameObject.SetActive(false);
 	}
 
+	bool _consumeProcess = false;
 	void OnEnable()
 	{
 		//MainCanvas.instance.OnEnterCharacterMenu(true);
@@ -59,7 +61,13 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 		}
 		else if (GachaCanvas.instance != null && GachaCanvas.instance.gameObject.activeSelf)
 		{
-			//StackCanvas.Push(gameObject);
+			StackCanvas.Push(gameObject);
+		}
+		else if (MainCanvas.instance.IsHideState() == false)
+		{
+			_consumeProcess = true;
+			// 앱 시작시 컨슘 복구 과정이라면 이렇게 들어오게 된다.
+			MainCanvas.instance.OnEnterCharacterMenu(true);
 		}
 
 		objectRoot.SetActive(false);
@@ -74,7 +82,12 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 		}
 		else if (GachaCanvas.instance != null && GachaCanvas.instance.gameObject.activeSelf == false && StackCanvas.IsInStack(GachaCanvas.instance.gameObject))
 		{
-			//StackCanvas.Pop(gameObject);
+			StackCanvas.Pop(gameObject);
+		}
+		else if (_consumeProcess)
+		{
+			_consumeProcess = false;
+			MainCanvas.instance.OnEnterCharacterMenu(false);
 		}
 
 		openAnimator.enabled = false;
@@ -150,12 +163,60 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 		}
 	}
 
+	#region CharacterBoxShow
+	List<string> _listNewCharacterId = new List<string>();
+	List<string> _listTrpCharacterId = new List<string>();
+	#endregion
 	void ShowResult()
 	{
 		switch (_boxType)
 		{
-			case eBoxType.Spell: spellBoxResultCanvas.ShowResult(_listItemInstance); spellBoxResultCanvas.gameObject.SetActive(true); break;
-			case eBoxType.Character: characterBoxResultCanvas.ShowResult(_listItemInstance); characterBoxResultCanvas.gameObject.SetActive(true); break;
+			case eBoxType.Spell:
+				spellBoxResultCanvas.ShowResult(_listItemInstance);
+				spellBoxResultCanvas.gameObject.SetActive(true);
+				break;
+			case eBoxType.Character:
+
+				_listNewCharacterId.Clear();
+				_listTrpCharacterId.Clear();
+				// 캐릭터와 펫 장비는 풀스크린 연출창이 들어가야한다. 대신 창을 띄울 수 없는지 확인하고 띄워야한다.
+				for (int i = 0; i < _listItemInstance.Count; ++i)
+				{
+					if (_listItemInstance[i].ItemId.Contains("pp"))
+						continue;
+
+					bool newCharacter = false;
+					if (_listItemInstance[i].UsesIncrementedBy == _listItemInstance[i].RemainingUses)
+					{
+						_listNewCharacterId.Add(_listItemInstance[i].ItemId);
+						newCharacter = true;
+					}
+					for (int j = 0; j < _listItemInstance[i].UsesIncrementedBy; ++j)
+					{
+						if (newCharacter && j == 0)
+							continue;
+						_listTrpCharacterId.Add(_listItemInstance[i].ItemId);
+					}
+				}
+				if (_listNewCharacterId.Count > 0 || _listTrpCharacterId.Count > 0)
+				{
+					UIInstanceManager.instance.ShowCanvasAsync("CharacterBoxShowCanvas", () =>
+					{
+						rootCanvasGroup.alpha = 0.0f;
+						CharacterBoxShowCanvas.instance.ShowCanvas(_listNewCharacterId, _listTrpCharacterId, () =>
+						{
+							rootCanvasGroup.alpha = 1.0f;
+							characterBoxResultCanvas.ShowResult(_listItemInstance, _listNewCharacterId, _listTrpCharacterId);
+							characterBoxResultCanvas.gameObject.SetActive(true);
+						});
+					});
+				}
+				else
+				{
+					characterBoxResultCanvas.ShowResult(_listItemInstance, _listNewCharacterId, _listTrpCharacterId);
+					characterBoxResultCanvas.gameObject.SetActive(true);
+				}
+				break;
 		}
 	}
 

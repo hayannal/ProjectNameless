@@ -36,10 +36,12 @@ public class CharacterManager : MonoBehaviour
 			if (actorTableData == null)
 				continue;
 
+			int ppCount = FindPp(userInventory, actorTableData.actorId);
+
 			CharacterData newCharacterData = new CharacterData();
 			newCharacterData.uniqueId = userInventory[i].ItemInstanceId;
 			newCharacterData.actorId = userInventory[i].ItemId;
-			newCharacterData.Initialize((userInventory[i].RemainingUses != null) ? (int)userInventory[i].RemainingUses : 0, userInventory[i].CustomData);
+			newCharacterData.Initialize((userInventory[i].RemainingUses != null) ? (int)userInventory[i].RemainingUses : 0, ppCount, userInventory[i].CustomData);
 			_listCharacterData.Add(newCharacterData);
 		}
 
@@ -88,6 +90,17 @@ public class CharacterManager : MonoBehaviour
 
 		// status
 		RefreshCachedStatus();
+	}
+
+	int FindPp(List<ItemInstance> userInventory, string actorId)
+	{
+		string ppId = string.Format("{0}pp", actorId);
+		for (int i = 0; i < userInventory.Count; ++i)
+		{
+			if (userInventory[i].ItemId == ppId)
+				return (userInventory[i].RemainingUses != null) ? (int)userInventory[i].RemainingUses : 0;
+		}
+		return 0;
 	}
 
 	public void ClearInventory()
@@ -375,7 +388,7 @@ public class CharacterManager : MonoBehaviour
 				string ppActorId = GetRandomCharacterPpGachaResult();
 				int ppCount = Random.Range(TableDataManager.instance.GetGlobalConstantInt("GachaActorPowerPointMin"), TableDataManager.instance.GetGlobalConstantInt("GachaActorPowerPointMax") + 1);
 				for (int k = 0; k < ppCount; ++k)
-					_listRandomObscuredId.Add(ppActorId);
+					_listRandomObscuredId.Add(string.Format("{0}pp", ppActorId));
 			}
 		}
 		return _listRandomObscuredId;
@@ -390,7 +403,23 @@ public class CharacterManager : MonoBehaviour
 		int totalCount = 0;
 		for (int i = 0; i < listItemInstance.Count; ++i)
 		{
+			if (listItemInstance[i].ItemId.Substring(listItemInstance[i].ItemId.Length - 2) == "pp")
+				continue;
+
 			ActorTableData actorTableData = TableDataManager.instance.FindActorTableData(listItemInstance[i].ItemId);
+			if (actorTableData == null)
+				continue;
+
+			if (listItemInstance[i].UsesIncrementedBy != null)
+				totalCount += (int)listItemInstance[i].UsesIncrementedBy;
+		}
+		for (int i = 0; i < listItemInstance.Count; ++i)
+		{
+			if (listItemInstance[i].ItemId.Substring(listItemInstance[i].ItemId.Length - 2) != "pp")
+				continue;
+
+			string itemId = listItemInstance[i].ItemId.Substring(0, listItemInstance[i].ItemId.Length - 2);
+			ActorTableData actorTableData = TableDataManager.instance.FindActorTableData(itemId);
 			if (actorTableData == null)
 				continue;
 
@@ -402,6 +431,9 @@ public class CharacterManager : MonoBehaviour
 
 		for (int i = 0; i < listItemInstance.Count; ++i)
 		{
+			if (listItemInstance[i].ItemId.Substring(listItemInstance[i].ItemId.Length - 2) == "pp")
+				continue;
+
 			ActorTableData actorTableData = TableDataManager.instance.FindActorTableData(listItemInstance[i].ItemId);
 			if (actorTableData == null)
 				continue;
@@ -418,10 +450,11 @@ public class CharacterManager : MonoBehaviour
 
 			if (currentCharacterData != null)
 			{
+				// 초월 획득
 				if (listItemInstance[i].RemainingUses != null && listItemInstance[i].UsesIncrementedBy != null)
 				{
 					if (listItemInstance[i].RemainingUses - listItemInstance[i].UsesIncrementedBy == currentCharacterData.count)
-						currentCharacterData.Initialize((int)listItemInstance[i].RemainingUses, listItemInstance[i].CustomData);
+						currentCharacterData.SetCharacterCount((int)listItemInstance[i].RemainingUses);
 				}
 			}
 			else
@@ -429,11 +462,46 @@ public class CharacterManager : MonoBehaviour
 				CharacterData newCharacterData = new CharacterData();
 				newCharacterData.uniqueId = listItemInstance[i].ItemInstanceId;
 				newCharacterData.actorId = listItemInstance[i].ItemId;
-				newCharacterData.Initialize((listItemInstance[i].RemainingUses != null) ? (int)listItemInstance[i].RemainingUses : 0, listItemInstance[i].CustomData);
+				newCharacterData.Initialize((listItemInstance[i].RemainingUses != null) ? (int)listItemInstance[i].RemainingUses : 0, 0, listItemInstance[i].CustomData);
 				_listCharacterData.Add(newCharacterData);
 
-				// 없는 마법이 추가될땐 스탯부터 다 다시 계산해야한다.
+				// 없는 캐릭이 추가될땐 스탯부터 다 다시 계산해야한다.
 				OnChangedStatus();
+			}
+		}
+
+		// 두번째 루프 돌땐 pp들을 처리한다.
+		for (int i = 0; i < listItemInstance.Count; ++i)
+		{
+			if (listItemInstance[i].ItemId.Substring(listItemInstance[i].ItemId.Length - 2) != "pp")
+				continue;
+
+			string itemId = listItemInstance[i].ItemId.Substring(0, listItemInstance[i].ItemId.Length - 2);
+			ActorTableData actorTableData = TableDataManager.instance.FindActorTableData(itemId);
+			if (actorTableData == null)
+				continue;
+
+			CharacterData currentCharacterData = null;
+			for (int j = 0; j < _listCharacterData.Count; ++j)
+			{
+				if (_listCharacterData[j].actorId == itemId)
+				{
+					currentCharacterData = _listCharacterData[j];
+					break;
+				}
+			}
+
+			if (currentCharacterData != null)
+			{
+				if (listItemInstance[i].RemainingUses != null && listItemInstance[i].UsesIncrementedBy != null)
+				{
+					if (listItemInstance[i].RemainingUses - listItemInstance[i].UsesIncrementedBy == currentCharacterData.pp)
+						currentCharacterData.SetPpCount((int)listItemInstance[i].RemainingUses);
+				}
+			}
+			else
+			{
+				// 존재하지 않는 캐릭의 pp는 들어오지 않을거다. 처리할 수 없다.
 			}
 		}
 		return listItemInstance;

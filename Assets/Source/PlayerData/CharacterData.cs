@@ -14,20 +14,20 @@ public class CharacterData
 	ObscuredInt _count;
 	ObscuredInt _level;
 	public int count { get { return _count; } }
-	public int pp { get { return _count - 1; } }
 	public int level { get { return _level; } }
 
-	ObscuredInt _transcendPoint;
 	ObscuredInt _transcend;
-	public int transcendPoint { get { return _transcendPoint; } }
+	public int transcendPoint { get { return _count - 1; } }
 	public int transcend { get { return _transcend; } }
+
+	ObscuredInt _pp;
+	public int pp { get { return _pp; } }
 
 	// 메인 공격력 스탯 및 랜덤옵 합산
 	ObscuredInt _mainStatusValue = 0;
 	public int mainStatusValue { get { return _mainStatusValue; } }
 
 	public static string KeyLevel = "lv";
-	public static string KeyTranscendPoint = "trp";
 	public static string KeyTranscend = "tr";
 
 	public static string GetAddressByActorId(string actorId)
@@ -46,9 +46,11 @@ public class CharacterData
 		return UIString.instance.GetString(actorTableData.nameId);
 	}
 
-	public void Initialize(int count, Dictionary<string, string> customData)
+	public void Initialize(int characterCount, int ppCount, Dictionary<string, string> customData)
 	{
-		_count = count;
+		_count = characterCount;
+		_pp = ppCount;
+
 		_level = 1;
 		if (customData.ContainsKey(KeyLevel))
 		{
@@ -57,20 +59,29 @@ public class CharacterData
 				_level = intValue;
 		}
 
-		_transcendPoint = 0;
-		if (customData.ContainsKey(KeyTranscendPoint))
-		{
-			int intValue = 0;
-			if (int.TryParse(customData[KeyTranscendPoint], out intValue))
-				_transcendPoint = intValue;
-		}
-
 		_transcend = 0;
 		if (customData.ContainsKey(KeyTranscend))
 		{
 			int intValue = 0;
 			if (int.TryParse(customData[KeyTranscend], out intValue))
 				_transcend = intValue;
+		}
+
+		// 검증
+		bool invalid = false;
+		if (level > BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxPowerLevel"))
+		{
+			PlayFabApiManager.instance.RequestIncCliSus(ClientSuspect.eClientSuspectCode.InvalidPowerLevel, false, level);
+			invalid = true;
+		}
+
+		if (invalid == false)
+		{
+			if (transcend > transcendPoint)
+			{
+				PlayFabApiManager.instance.RequestIncCliSus(ClientSuspect.eClientSuspectCode.InvalidTranscendLevel, false, transcend);
+				invalid = true;
+			}
 		}
 
 		// 이후 Status 계산
@@ -245,6 +256,18 @@ public class CharacterData
 		}
 
 		*/
+	}
+
+	public void SetPpCount(int ppCount)
+	{
+		if (pp < ppCount)
+			_pp = ppCount;
+	}
+
+	public void SetCharacterCount(int characterCount)
+	{
+		if (count < characterCount)
+			_count = characterCount;
 	}
 
 	void RefreshCachedStatus()

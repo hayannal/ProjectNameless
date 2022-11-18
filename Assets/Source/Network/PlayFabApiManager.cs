@@ -793,7 +793,7 @@ public class PlayFabApiManager : MonoBehaviour
 				info.Data = new Dictionary<string, string>();
 				info.Data.Add(SpellData.KeyLevel, "1");
 			}
-			else if (initDataType == "character")
+			else if (initDataType == "character" && listItemId[i].Contains("pp") == false)
 			{
 				info.Data = new Dictionary<string, string>();
 				info.Data.Add(CharacterData.KeyLevel, "1");
@@ -2534,6 +2534,41 @@ public class PlayFabApiManager : MonoBehaviour
 				//WaitingNetworkCanvas.Show(false);
 
 				CurrencyData.instance.gold -= price;
+
+				jsonResult.TryGetValue("itmRet", out object itmRet);
+
+				if (successCallback != null) successCallback.Invoke((string)itmRet);
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
+	public void RequestConsumeCharacterGacha(List<ObscuredString> listActorId, Action<string> successCallback)
+	{
+		// RandomBoxScreenCanvas에서 컨트롤할거니 여기서는 하지 않는다.
+		//WaitingNetworkCanvas.Show(true);
+
+		string checkSum2 = "";
+		List<ItemGrantRequest> listItemGrantRequest = GenerateGrantRequestInfo(listActorId, ref checkSum2, "character");
+		ExecuteCloudScriptRequest request = new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "ConsumeCharacterGacha",
+			FunctionParameter = new { Lst = listItemGrantRequest, LstCs = checkSum2 },
+			GeneratePlayStreamEvent = true,
+		};
+
+		PlayFabClientAPI.ExecuteCloudScript(request, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				//WaitingNetworkCanvas.Show(false);
+
+				CashShopData.instance.ConsumeCount(CashShopData.eCashConsumeCountType.CharacterGacha, CashShopData.instance.GetConsumeCount(CashShopData.eCashConsumeCountType.CharacterGacha));
 
 				jsonResult.TryGetValue("itmRet", out object itmRet);
 
