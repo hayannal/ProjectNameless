@@ -428,7 +428,7 @@ public class CharacterManager : MonoBehaviour
 		}
 		if (expectCount != 0 && totalCount != expectCount)
 		{
-			Debug.LogWarning("Expect Count Unmatched!!")
+			Debug.LogWarning("Expect Count Unmatched!!");
 			return null;
 		}
 
