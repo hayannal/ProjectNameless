@@ -427,7 +427,10 @@ public class CharacterManager : MonoBehaviour
 				totalCount += (int)listItemInstance[i].UsesIncrementedBy;
 		}
 		if (expectCount != 0 && totalCount != expectCount)
+		{
+			Debug.LogWarning("Expect Count Unmatched!!")
 			return null;
+		}
 
 		for (int i = 0; i < listItemInstance.Count; ++i)
 		{
