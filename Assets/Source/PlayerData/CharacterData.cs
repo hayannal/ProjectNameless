@@ -69,7 +69,7 @@ public class CharacterData
 
 		// 검증
 		bool invalid = false;
-		if (level > BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxPowerLevel"))
+		if (level > BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxActorLevel"))
 		{
 			PlayFabApiManager.instance.RequestIncCliSus(ClientSuspect.eClientSuspectCode.InvalidPowerLevel, false, level);
 			invalid = true;
