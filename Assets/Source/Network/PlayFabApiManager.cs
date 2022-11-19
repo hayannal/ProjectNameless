@@ -276,6 +276,7 @@ public class PlayFabApiManager : MonoBehaviour
 		SpellManager.instance.OnRecvSpellInventory(loginResult.InfoResultPayload.UserInventory, loginResult.InfoResultPayload.UserData, loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 		CostumeManager.instance.OnRecvCostumeInventory(loginResult.InfoResultPayload.UserInventory, loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 		CharacterManager.instance.OnRecvCharacterInventory(loginResult.InfoResultPayload.UserInventory, loginResult.InfoResultPayload.UserData, loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
+		PetManager.instance.OnRecvPetInventory(loginResult.InfoResultPayload.UserInventory, loginResult.InfoResultPayload.UserData, loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 
 		/*
 		DailyShopData.instance.OnRecvShopData(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData);		

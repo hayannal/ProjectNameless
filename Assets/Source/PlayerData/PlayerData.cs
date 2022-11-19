@@ -81,7 +81,7 @@ public class PlayerData : MonoBehaviour
 
 		// 날짜 변경이 되었음을 알린다.
 		MissionData.instance.OnRefreshDay();
-		//CashShopData.instance.OnRefreshDay();
+		PetManager.instance.OnRefreshDay();
 	}
 
 	List<string> _listTitleKey;

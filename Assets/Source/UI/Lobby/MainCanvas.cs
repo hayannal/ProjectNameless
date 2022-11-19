@@ -256,7 +256,7 @@ public class MainCanvas : MonoBehaviour
 	public void RefreshMenuButton()
 	{
 		teamButtonObject.SetActive(CharacterManager.instance.listCharacterData.Count > 0);
-		petButtonObject.SetActive(false);
+		petButtonObject.SetActive(PetManager.instance.listPetData.Count > 0);
 		equipButtonObject.SetActive(false);
 	}
 
@@ -288,7 +288,7 @@ public class MainCanvas : MonoBehaviour
 
 	public void OnClickPetButton()
 	{
-
+		UIInstanceManager.instance.ShowCanvasAsync("PetListCanvas", null);
 	}
 
 	public void OnEnterCharacterMenu(bool enter)

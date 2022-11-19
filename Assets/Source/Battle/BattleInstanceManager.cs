@@ -796,6 +796,24 @@ public class BattleInstanceManager : MonoBehaviour
 	}
 	#endregion
 
+	#region Canvas Pet Actor
+	Dictionary<string, PetActor> _dicCachedCanvasPetActor = new Dictionary<string, PetActor>();
+	public PetActor GetCachedCanvasPetActor(string petId)
+	{
+		if (_dicCachedCanvasPetActor.ContainsKey(petId))
+			return _dicCachedCanvasPetActor[petId];
+		return null;
+	}
+
+	public void AddCanvasPetActor(PetActor petActor, string petId)
+	{
+		if (_dicCachedCanvasPetActor.ContainsKey(petId))
+			return;
+
+		_dicCachedCanvasPetActor.Add(petId, petActor);
+	}
+	#endregion
+
 	#region Drop
 	List<DropProcessor> _listCachedDropProcessor = new List<DropProcessor>();
 	public DropProcessor GetCachedDropProcessor(Vector3 position)
