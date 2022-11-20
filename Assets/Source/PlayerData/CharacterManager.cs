@@ -236,10 +236,10 @@ public class CharacterManager : MonoBehaviour
 		for (int i = 0; i < TableDataManager.instance.gachaActorTable.dataArray.Length; ++i)
 		{
 			float weight = 0.0f;
-			if (totalCharacterWithTranscendCount < TableDataManager.instance.gachaActorTable.dataArray[i].adjustProbs.Length)
+			if ((totalCharacterWithTranscendCount + _listTempNewCharacterId.Count) < TableDataManager.instance.gachaActorTable.dataArray[i].adjustProbs.Length)
 			{
 				// Adjust된 Prob로 돌리면 된다.
-				weight = TableDataManager.instance.gachaActorTable.dataArray[i].adjustProbs[totalCharacterWithTranscendCount];
+				weight = TableDataManager.instance.gachaActorTable.dataArray[i].adjustProbs[(totalCharacterWithTranscendCount + _listTempNewCharacterId.Count)];
 				if (weight <= 0.0f)
 					continue;
 			}
