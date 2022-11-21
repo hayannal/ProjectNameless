@@ -308,6 +308,13 @@ public class CharacterData
 		CharacterManager.instance.OnChangedStatus();
 	}
 
+	public void OnTranscendLevelUp(int targetLevel)
+	{
+		_transcend = targetLevel;
+		RefreshCachedStatus();
+		CharacterManager.instance.OnChangedStatus();
+	}
+
 
 
 

@@ -2622,6 +2622,64 @@ public class PlayFabApiManager : MonoBehaviour
 			HandleCommonError(error);
 		});
 	}
+
+	public void RequestCharacterPressLevelUp(CharacterData characterData, int prevCharacterLevel, int prevGold, int characterLevel, int gold, int levelUpCount, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}_{2}_{3}_{4}_{5}_{6}_{7}", (string)characterData.actorId, characterData.cachedActorTableData.grade, prevCharacterLevel, prevGold, characterLevel, gold, levelUpCount, "zlireplx");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "CharacterPressLevelUp",
+			FunctionParameter = new { Id = (string)characterData.uniqueId, grade = characterData.cachedActorTableData.grade, PvLv = prevCharacterLevel, PvGo = prevGold, Lv = characterLevel, Go = gold, LvCnt = levelUpCount, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
+	public void RequestCharacterTranscend(CharacterData characterData, int targetLevel, int price, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}_{2}_{3}_{4}_{5}", (string)characterData.actorId, characterData.count, characterData.cachedActorTableData.grade, targetLevel, price, "rxcjklap");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "CharacterTranscend",
+			FunctionParameter = new { Id = (string)characterData.uniqueId, grade = characterData.cachedActorTableData.grade, T = targetLevel, Pr = price, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				CurrencyData.instance.gold -= price;
+
+				characterData.OnTranscendLevelUp(targetLevel);
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
 	#endregion
 
 

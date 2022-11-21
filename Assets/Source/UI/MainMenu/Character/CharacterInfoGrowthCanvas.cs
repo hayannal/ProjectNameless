@@ -8,6 +8,8 @@ public class CharacterInfoGrowthCanvas : MonoBehaviour
 {
 	public static CharacterInfoGrowthCanvas instance;
 
+	public GameObject levelUpEffectPrefab;
+
 	public Image gradeBackImage;
 	public Text gradeText;
 	public Text nameText;
@@ -162,6 +164,8 @@ public class CharacterInfoGrowthCanvas : MonoBehaviour
 		RefreshRequired();
 	}
 
+	CharacterData _characterData;
+	int _level;
 	void RefreshStatus()
 	{
 		// 구조 바꾸면서 플레이 중에 못찾는건 없어졌는데 Canvas켜둔채 종료하니 자꾸 뜬다.
@@ -190,6 +194,9 @@ public class CharacterInfoGrowthCanvas : MonoBehaviour
 
 		levelText.text = UIString.instance.GetString("GameUI_CharPower", level);
 		atkText.text = atk.ToString("N0");
+
+		_level = level;
+		_characterData = characterData;
 	}
 
 	int _trpPrice;
@@ -357,7 +364,7 @@ public class CharacterInfoGrowthCanvas : MonoBehaviour
 
 	public void OnClickWingButton()
 	{
-
+		ToastCanvas.instance.ShowToast(UIString.instance.GetString("SystemUI_WaitUpdate"), 2.0f);
 	}
 
 	public void OnClickNeedOriginTextButton()
@@ -366,160 +373,167 @@ public class CharacterInfoGrowthCanvas : MonoBehaviour
 		TooltipCanvas.Show(true, TooltipCanvas.eDirection.Bottom, text, 200, needOriginTextTransform, new Vector2(0.0f, -30.0f));
 	}
 
+	public void OnClickTranscendButton()
+	{
+		UIInstanceManager.instance.ShowCanvasAsync("ConfirmSpendCanvas", () =>
+		{
+			ConfirmSpendCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("GameUI_TranscendenceConfirm"), CurrencyData.eCurrencyType.Gold, _trpPrice, false, () =>
+			{
+				PlayFabApiManager.instance.RequestCharacterTranscend(_characterData, _characterData.transcend + 1, _trpPrice, () =>
+				{
+					ConfirmSpendCanvas.instance.gameObject.SetActive(false);
+					OnRecvTranscend();
+				});
+			});
+		});
+	}
+
+	void OnRecvTranscend()
+	{
+
+	}
+
 
 	public void OnClickGaugeDetailButton()
 	{
-		/*
 		string text = "";
 		if (_overMaxMode)
 		{
 			float percent = 0.0f;
-			if (PlayerData.instance.ContainsActor(_actorId))
+			if (CharacterManager.instance.ContainsActor(_actorId))
 			{
 				PlayerActor playerActor = BattleInstanceManager.instance.GetCachedPlayerActor(_actorId);
 				if (playerActor != null)
 				{
-					CharacterData characterData = PlayerData.instance.GetCharacterData(_actorId);
+					CharacterData characterData = CharacterManager.instance.GetCharacterData(_actorId);
 					if (characterData != null)
-						percent = playerActor.actorStatus.GetAttackAddRateByOverPP(characterData) * 100.0f;
+						//percent = playerActor.actorStatus.GetAttackAddRateByOverPP(characterData) * 100.0f;
+						percent = 0.2f;
 				}
 			}
 			text = UIString.instance.GetString("GameUI_OverMaxDesc", percent);
 		}
-		else if (_limitBreakMode)
-		{
-			int pp = 0;
-			int maxPpOfCurrentLimitBreak = 0;
-			CharacterData characterData = PlayerData.instance.GetCharacterData(_actorId);
-			if (characterData != null)
-			{
-				pp = characterData.pp;
-				maxPpOfCurrentLimitBreak = characterData.maxPpOfCurrentLimitBreak;
-			}
-			text = UIString.instance.GetString("GameUI_CharLimitBreakStandby");
-		}
 		else
 			text = UIString.instance.GetString("GameUI_CharGaugeDesc");
-		TooltipCanvas.Show(true, TooltipCanvas.eDirection.CharacterInfo, text, 250, ppSlider.transform, new Vector2(10.0f, -35.0f));
-		*/
+		TooltipCanvas.Show(true, TooltipCanvas.eDirection.Bottom, text, 200, ppSlider.transform, new Vector2(0.0f, -30.0f));
+	}
+	
+
+	#region Press LevelUp
+	// 홀드로 레벨업 할땐 클릭으로 할때와 다르게 클라에서 선처리 해야한다. CharacterLevelCanvas에서 하던거 가져와서 prev로 필요한 것들만 추려서 쓴다.
+	float _prevCombatValue;
+	int _prevCharacterLevel;
+	int _prevGold;
+	int _levelUpCount;
+	bool _pressed = false;
+	public void OnPressInitialize()
+	{
+		// 패킷에 전송할만한 초기화 내용을 기억해둔다.
+		_prevCombatValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
+		_prevCharacterLevel = _level;
+		_prevGold = CurrencyData.instance.gold;
+		_levelUpCount = 0;
+		_pressed = true;
 	}
 
-	/*
-	public void OnClickLevelUpButton()
+	public void OnPressLevelUp()
 	{
-		CharacterData characterData = PlayerData.instance.GetCharacterData(_actorId);
-		if (characterData == null)
+		if (_pressed == false)
+			return;
+
+		if (_contains == false)
 		{
 			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_MainCharacterDontHave"), 2.0f);
+			if (_pressed)
+			{
+				OnPressUpSync();
+				_pressed = false;
+			}
 			return;
 		}
 
-		if (characterData.powerLevel >= BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxPowerLevel"))
+		if (CurrencyData.instance.gold < _price)
 		{
-			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_MaxReachToast"), 2.0f);
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughGold"), 2.0f);
+			if (_pressed)
+			{
+				OnPressUpSync();
+				_pressed = false;
+			}
 			return;
 		}
 
 		if (_needPp)
 		{
 			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughPp"), 2.0f);
+			if (_pressed)
+			{
+				OnPressUpSync();
+				_pressed = false;
+			}
 			return;
 		}
 
-		if (_currencyType == CurrencyData.eCurrencyType.Gold)
+		// 맥스 넘어가는거도 막아놔야한다.
+		if (_characterData.level >= BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxActorLevel"))
 		{
-			if (CurrencyData.instance.gold < _price)
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_MaxReachToast"), 2.0f);
+			if (_pressed)
 			{
-				ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughGold"), 2.0f);
-				return;
+				OnPressUpSync();
+				_pressed = false;
 			}
-		}
-		else
-		{
-			if (CurrencyData.instance.dia < _price)
-			{
-				ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughDiamond"), 2.0f);
-				return;
-			}
+			return;
 		}
 
-		if (characterData.needLimitBreak)
-		{
-			UIInstanceManager.instance.ShowCanvasAsync("CharacterLimitBreakCanvas", () =>
-			{
-				CharacterLimitBreakCanvas.instance.ShowCanvas(true, characterData, _price);
-			});
-		}
-		else
-		{
-			UIInstanceManager.instance.ShowCanvasAsync("CharacterPowerLevelUpCanvas", () =>
-			{
-				CharacterPowerLevelUpCanvas.instance.ShowCanvas(true, characterData, _price);
-			});
-		}
+		_levelUpCount += 1;
+		CurrencyData.instance.gold -= _price;
+		_characterData.OnLevelUp(_characterData.level + 1);
+		PlayLevelUpEffect();
+		RefreshInfo();
+		CharacterInfoCanvas.instance.currencySmallInfo.RefreshInfo();
 	}
 
-	string _ignoreResearchPossibleActorId;
-	public void OnPowerLevelUp()
+	float _lastLevelUpEffectTime;
+	void PlayLevelUpEffect()
 	{
-		if (ContentsManager.IsOpen(ContentsManager.eOpenContentsByChapter.Research) == false)
+		if (Time.time < _lastLevelUpEffectTime + 0.8f)
+			return;
+		BattleInstanceManager.instance.GetCachedObject(levelUpEffectPrefab, CharacterListCanvas.instance.rootOffsetPosition, Quaternion.identity, null);
+		_lastLevelUpEffectTime = Time.time;
+	}
+
+	public void OnPressUpSync()
+	{
+		if (_pressed == false)
+			return;
+		_pressed = false;
+
+		if (_contains == false)
+			return;
+		if (_levelUpCount == 0)
+			return;
+		if (_prevCharacterLevel > _characterData.level)
+			return;
+		if (_prevGold < CurrencyData.instance.gold)
 			return;
 
-		if (ResearchInfoGrowthCanvas.CheckResearch(PlayerData.instance.researchLevel + 1, true) == false)
-			return;
-
-		if (_ignoreResearchPossibleActorId == _actorId)
-			return;
-
-		YesNoCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("GameUI_ResearchPossible"), () =>
+		PlayFabApiManager.instance.RequestCharacterPressLevelUp(_characterData, _prevCharacterLevel, _prevGold, _characterData.level, CurrencyData.instance.gold, _levelUpCount, () =>
 		{
-			Timing.RunCoroutine(ChangeCanvasProcess(true));
-		}, () =>
-		{
-			_ignoreResearchPossibleActorId = _actorId;
+			CharacterListCanvas.instance.RefreshGrid();
+			//MainCanvas.instance.RefreshSpellAlarmObject();
+
+			float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
+			UIInstanceManager.instance.ShowCanvasAsync("ChangePowerCanvas", () =>
+			{
+				ChangePowerCanvas.instance.ShowInfo(_prevCombatValue, nextValue);
+			});
 		});
 	}
+	#endregion
 
-	IEnumerator<float> ChangeCanvasProcess(bool researchCanvas)
+	public void OnClickMaxReachedButton()
 	{
-		DelayedLoadingCanvas.Show(true);
-
-		FadeCanvas.instance.FadeOut(0.4f, 1, true);
-		yield return Timing.WaitForSeconds(0.4f);
-
-		CharacterInfoCanvas.instance.OnClickBackButton();
-
-		while (CharacterInfoCanvas.instance.gameObject.activeSelf)
-			yield return Timing.WaitForOneFrame;
-		yield return Timing.WaitForOneFrame;
-
-		CharacterListCanvas.instance.OnClickBackButton();
-		while (CharacterListCanvas.instance.gameObject.activeSelf)
-			yield return Timing.WaitForOneFrame;
-		yield return Timing.WaitForOneFrame;
-
-		if (researchCanvas)
-		{
-			UIInstanceManager.instance.ShowCanvasAsync("ResearchCanvas", null);
-
-			while ((ResearchCanvas.instance != null && ResearchCanvas.instance.gameObject.activeSelf) == false)
-				yield return Timing.WaitForOneFrame;
-
-			ResearchCanvas.instance.OnClickMenuButton2();
-		}
-		else
-		{
-			UIInstanceManager.instance.ShowCanvasAsync("BalanceCanvas", () =>
-			{
-				BalanceCanvas.instance.RefreshInfo(_actorId);
-			});
-
-			while ((BalanceCanvas.instance != null && BalanceCanvas.instance.gameObject.activeSelf) == false)
-				yield return Timing.WaitForOneFrame;
-		}
-
-		DelayedLoadingCanvas.Show(false);
-		FadeCanvas.instance.FadeIn(0.2f);
+		ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_MaxReachToast"), 2.0f);
 	}
-	*/
 }
