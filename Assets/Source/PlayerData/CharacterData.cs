@@ -46,6 +46,18 @@ public class CharacterData
 		return UIString.instance.GetString(actorTableData.nameId);
 	}
 
+	public int maxPp
+	{
+		get
+		{
+			int maxActorLevel = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxActorLevel");
+			ActorLevelTableData actorLevelTableData = TableDataManager.instance.FindActorLevelTableData(cachedActorTableData.grade, maxActorLevel);
+			if (actorLevelTableData == null)
+				return 0;
+			return actorLevelTableData.requiredAccumulatedCount;
+		}
+	}
+
 	public void Initialize(int characterCount, int ppCount, Dictionary<string, string> customData)
 	{
 		_count = characterCount;
@@ -273,9 +285,19 @@ public class CharacterData
 	void RefreshCachedStatus()
 	{
 		_mainStatusValue = 0;
+
 		if (_level > 0)
 		{
-			
+			ActorLevelTableData actorLevelTableData = TableDataManager.instance.FindActorLevelTableData(cachedActorTableData.grade, _level);
+			if (actorLevelTableData != null)
+				_mainStatusValue = actorLevelTableData.accumulatedAtk;
+		}
+
+		if (_transcend > 0)
+		{
+			ActorTranscendTableData actorTranscendTableData = TableDataManager.instance.FindActorTranscendTableData(cachedActorTableData.grade, _transcend);
+			if (actorTranscendTableData != null)
+				_mainStatusValue += actorTranscendTableData.accumulatedAtk;
 		}
 	}
 

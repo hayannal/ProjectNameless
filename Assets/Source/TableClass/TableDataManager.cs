@@ -34,6 +34,8 @@ public class TableDataManager : MonoBehaviour
 	public ActorInfoTable actorInfoTable;
 	public PlayerLevelTable playerLevelTable;
 	public CostumeTable costumeTable;
+	public ActorLevelTable actorLevelTable;
+	public ActorTranscendTable actorTranscendTable;
 	public SpellGradeLevelTable spellGradeLevelTable;
 	public SpellTotalTable spellTotalTable;
 	public ShopSpellTable shopSpellTable;
@@ -317,6 +319,26 @@ public class TableDataManager : MonoBehaviour
 		{
 			if (costumeTable.dataArray[i].costumeId == id)
 				return costumeTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public ActorLevelTableData FindActorLevelTableData(int grade, int level)
+	{
+		for (int i = 0; i < actorLevelTable.dataArray.Length; ++i)
+		{
+			if (actorLevelTable.dataArray[i].grade == grade && actorLevelTable.dataArray[i].level == level)
+				return actorLevelTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public ActorTranscendTableData FindActorTranscendTableData(int grade, int transcend)
+	{
+		for (int i = 0; i < actorTranscendTable.dataArray.Length; ++i)
+		{
+			if (actorTranscendTable.dataArray[i].grade == grade && actorTranscendTable.dataArray[i].transcend == transcend)
+				return actorTranscendTable.dataArray[i];
 		}
 		return null;
 	}
