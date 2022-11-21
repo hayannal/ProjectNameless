@@ -23,6 +23,8 @@ public class PetInfoCanvas : MonoBehaviour
 		bool restore = StackCanvas.Push(gameObject, false, null, OnPopStack);
 		if (restore)
 			return;
+
+		RefreshInfo();
 	}
 
 	void OnDisable()
@@ -40,6 +42,26 @@ public class PetInfoCanvas : MonoBehaviour
 		if (MainSceneBuilder.instance == null)
 			return;
 
+	}
+
+	bool _contains = false;
+	void RefreshInfo()
+	{
+		PetData petData = PetManager.instance.GetPetData(PetListCanvas.instance.selectedPetId);
+		_contains = (petData != null);
+
+		if (_contains)
+		{
+			atkText.text = petData.mainStatusValue.ToString("N0");
+		}
+		else
+		{
+			PetTableData petTableData = TableDataManager.instance.FindPetTableData(PetListCanvas.instance.selectedPetId);
+			if (petTableData != null)
+			{
+				atkText.text = petTableData.accumulatedAtk.ToString("N0");
+			}
+		}
 	}
 
 	public void OnClickAttackValueTextButton()

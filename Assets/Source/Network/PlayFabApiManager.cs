@@ -2625,6 +2625,39 @@ public class PlayFabApiManager : MonoBehaviour
 	#endregion
 
 
+	#region Pet
+	public void RequestSelectActivePet(string petId, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}", petId, "sjoperwl");
+		string checkSum = CheckSum(input);
+		ExecuteCloudScriptRequest request = new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "SelectActivePet",
+			FunctionParameter = new { ItmId = petId, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		};
+
+		PlayFabClientAPI.ExecuteCloudScript(request, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				PetManager.instance.activePetId = petId;
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+	#endregion
+
+
 
 	#region Sample
 	// Sample 1. 콜백도 없고 재전송도 없을땐 이렇게 간단하게 처리

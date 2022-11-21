@@ -178,8 +178,10 @@ public class PetListCanvas : PetShowCanvasBase
 		TooltipCanvas.Show(true, TooltipCanvas.eDirection.Bottom, UIString.instance.GetString("PetUI_PetMaxLevelMore"), 300, maxLevelButtonTransform, new Vector2(0.0f, -35.0f));
 	}
 
+	public string selectedPetId { get; private set; }
 	public void OnClickListItem(string petId)
 	{
+		selectedPetId = petId;
 		ShowCanvasPetActor(petId, () =>
 		{
 			UIInstanceManager.instance.ShowCanvasAsync("PetInfoCanvas", null);

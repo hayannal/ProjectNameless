@@ -85,9 +85,9 @@ public class PetManager : MonoBehaviour
 		}
 
 		activePetId = "";
-		if (userData.ContainsKey("activePetId"))
+		if (userReadOnlyData.ContainsKey("activePetId"))
 		{
-			string petId = userData["activePetId"].Value;
+			string petId = userReadOnlyData["activePetId"].Value;
 			bool find = false;
 			for (int i = 0; i < _listPetData.Count; ++i)
 			{
