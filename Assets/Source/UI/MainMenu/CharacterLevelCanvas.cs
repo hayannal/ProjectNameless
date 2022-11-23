@@ -236,7 +236,16 @@ public class CharacterLevelCanvas : MonoBehaviour
 
 	public void OnClickAtkTextButton()
 	{
-
+		UIInstanceManager.instance.ShowCanvasAsync("StatusDetailCanvas", () =>
+		{
+			StatusDetailCanvas.instance.Initialize(6);
+			StatusDetailCanvas.instance.AddStatus("GameUI_Growth", BattleInstanceManager.instance.playerActor.actorStatus.GetPlayerBaseAttack());
+			StatusDetailCanvas.instance.AddStatus("GameUI_Costume", CostumeManager.instance.cachedValue);
+			StatusDetailCanvas.instance.AddStatus("GameUI_Skill", SpellManager.instance.cachedValue);
+			StatusDetailCanvas.instance.AddStatus("GameUI_Companion", CharacterManager.instance.cachedValue);
+			StatusDetailCanvas.instance.AddStatus("GameUI_Pet", PetManager.instance.cachedValue);
+			StatusDetailCanvas.instance.AddStatus("GameUI_Equipment", 0);
+		});
 	}
 
 	public void OnClickCostumeButton()

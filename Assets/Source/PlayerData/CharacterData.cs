@@ -323,17 +323,29 @@ public class CharacterData
 
 		if (_level > 0)
 		{
-			ActorLevelTableData actorLevelTableData = TableDataManager.instance.FindActorLevelTableData(cachedActorTableData.grade, _level);
-			if (actorLevelTableData != null)
-				_mainStatusValue = actorLevelTableData.accumulatedAtk;
+			_mainStatusValue = GetLevelStatus();
 		}
 
 		if (_transcend > 0)
 		{
-			ActorTranscendTableData actorTranscendTableData = TableDataManager.instance.FindActorTranscendTableData(cachedActorTableData.grade, _transcend);
-			if (actorTranscendTableData != null)
-				_mainStatusValue += actorTranscendTableData.accumulatedAtk;
+			_mainStatusValue += GetTranscendStatus();
 		}
+	}
+
+	public int GetLevelStatus()
+	{
+		ActorLevelTableData actorLevelTableData = TableDataManager.instance.FindActorLevelTableData(cachedActorTableData.grade, _level);
+		if (actorLevelTableData != null)
+			return actorLevelTableData.accumulatedAtk;
+		return 0;
+	}
+
+	public int GetTranscendStatus()
+	{
+		ActorTranscendTableData actorTranscendTableData = TableDataManager.instance.FindActorTranscendTableData(cachedActorTableData.grade, _transcend);
+		if (actorTranscendTableData != null)
+			return actorTranscendTableData.accumulatedAtk;
+		return 0;
 	}
 
 	public void OnLevelUp(int targetLevel)

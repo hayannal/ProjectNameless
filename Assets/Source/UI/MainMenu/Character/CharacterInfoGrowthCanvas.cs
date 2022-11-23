@@ -352,7 +352,29 @@ public class CharacterInfoGrowthCanvas : MonoBehaviour
 
 	public void OnClickAttackValueTextButton()
 	{
+		UIInstanceManager.instance.ShowCanvasAsync("StatusDetailCanvas", () =>
+		{
+			StatusDetailCanvas.instance.Initialize(2);
+			if (_contains && _characterData != null)
+			{
+				StatusDetailCanvas.instance.AddStatus("GameUI_Level", _characterData.GetLevelStatus());
+				StatusDetailCanvas.instance.AddStatus("GameUI_TranscendOrigin", _characterData.GetTranscendStatus());
+			}
+			else
+			{
+				int baseAtk = 0;
+				ActorTableData actorTableData = TableDataManager.instance.FindActorTableData(_actorId);
+				if (actorTableData != null)
+				{
+					ActorLevelTableData actorLevelTableData = TableDataManager.instance.FindActorLevelTableData(actorTableData.grade, 1);
+					if (actorLevelTableData != null)
+						baseAtk = actorLevelTableData.accumulatedAtk;
+				}
 
+				StatusDetailCanvas.instance.AddStatus("GameUI_Level", baseAtk);
+				StatusDetailCanvas.instance.AddStatus("GameUI_TranscendOrigin", 0);
+			}
+		});
 	}
 
 	public void OnClickOrganizeButton()

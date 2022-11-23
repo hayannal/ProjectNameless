@@ -55,22 +55,8 @@ public class ActorStatus : MonoBehaviour
 
 		ActorTableData actorTableData = TableDataManager.instance.FindActorTableData(actor.actorId);
 
-		PlayerLevelTableData playerLevelTableData = TableDataManager.instance.FindPlayerLevelTableData(actorLevel);
 		_statusBase.valueList[(int)eActorStatus.MaxHp] = 9999.0f;
-		_statusBase.valueList[(int)eActorStatus.Attack] = playerLevelTableData.accumulatedAtk;
-		int subLevel = PlayerData.instance.subLevel;
-		for (int i = 1; i <= subLevel; ++i)
-		{
-			int addValue = 0;
-			int value = (i - 1) / 9;
-			switch (value)
-			{
-				case 0: addValue = BattleInstanceManager.instance.GetCachedGlobalConstantInt("SubLevelFightValueLine1"); break;
-				case 1: addValue = BattleInstanceManager.instance.GetCachedGlobalConstantInt("SubLevelFightValueLine2"); break;
-				default: addValue = BattleInstanceManager.instance.GetCachedGlobalConstantInt("SubLevelFightValueLine3"); break;
-			}
-			_statusBase.valueList[(int)eActorStatus.Attack] += addValue;
-		}
+		_statusBase.valueList[(int)eActorStatus.Attack] = GetPlayerBaseAttack();
 
 		// costume
 		_statusBase.valueList[(int)eActorStatus.Attack] += CostumeManager.instance.cachedValue;
@@ -102,6 +88,29 @@ public class ActorStatus : MonoBehaviour
 		_statusBase._sp = 0.0f;
 
 		OnChangedStatus();
+	}
+
+	public int GetPlayerBaseAttack()
+	{
+		int result = 0;
+
+		PlayerLevelTableData playerLevelTableData = TableDataManager.instance.FindPlayerLevelTableData(actorLevel);
+		result = playerLevelTableData.accumulatedAtk;
+
+		int subLevel = PlayerData.instance.subLevel;
+		for (int i = 1; i <= subLevel; ++i)
+		{
+			int addValue = 0;
+			int value = (i - 1) / 9;
+			switch (value)
+			{
+				case 0: addValue = BattleInstanceManager.instance.GetCachedGlobalConstantInt("SubLevelFightValueLine1"); break;
+				case 1: addValue = BattleInstanceManager.instance.GetCachedGlobalConstantInt("SubLevelFightValueLine2"); break;
+				default: addValue = BattleInstanceManager.instance.GetCachedGlobalConstantInt("SubLevelFightValueLine3"); break;
+			}
+			result += addValue;
+		}
+		return result;
 	}
 
 	public void InitializeMonsterStatus(bool eliteMonster, bool bossMonster)
