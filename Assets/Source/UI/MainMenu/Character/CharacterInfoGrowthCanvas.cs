@@ -9,6 +9,7 @@ public class CharacterInfoGrowthCanvas : MonoBehaviour
 	public static CharacterInfoGrowthCanvas instance;
 
 	public GameObject levelUpEffectPrefab;
+	public GameObject transcendEffectPrefab;
 
 	public Image gradeBackImage;
 	public Text gradeText;
@@ -125,7 +126,12 @@ public class CharacterInfoGrowthCanvas : MonoBehaviour
 				}
 				else
 				{
-					if (characterData.transcendPoint >= characterData.transcend && appliedTranscendPoint == false)
+					int nextNeedTranscendPoint = 0;
+					ActorTranscendTableData nextActorTranscendTableData = TableDataManager.instance.FindActorTranscendTableData(characterData.cachedActorTableData.grade, i + 1);
+					if (nextActorTranscendTableData != null)
+						nextNeedTranscendPoint = nextActorTranscendTableData.requiredAccumulatedCount;
+
+					if (characterData.transcendPoint >= nextNeedTranscendPoint && appliedTranscendPoint == false)
 					{
 						fillImageObjectList[i].gameObject.SetActive(false);
 						tweenAnimationObjectList[i].gameObject.SetActive(true);
@@ -147,18 +153,16 @@ public class CharacterInfoGrowthCanvas : MonoBehaviour
 				materialInfoObject.SetActive(false);
 				transcendButtonObject.SetActive(false);
 				transcendEmptyObject.SetActive(false);
-
-				priceButtonObject.SetActive(false);
-				maxButtonObject.SetActive(true);
-				return;
 			}
+			else
+			{
+				maxInfoObject.SetActive(false);
+				materialInfoObject.SetActive(true);
+				transcendButtonObject.SetActive(true);
+				transcendEmptyObject.SetActive(false);
 
-			maxInfoObject.SetActive(false);
-			materialInfoObject.SetActive(true);
-			transcendButtonObject.SetActive(true);
-			transcendEmptyObject.SetActive(false);
-
-			RefreshTranscendRequired();
+				RefreshTranscendRequired();
+			}
 		}
 		RefreshStatus();
 		RefreshRequired();
@@ -203,7 +207,7 @@ public class CharacterInfoGrowthCanvas : MonoBehaviour
 	bool _needTranscendPoint;
 	void RefreshTranscendRequired()
 	{
-		AlarmObject.Hide(alarmRootTransform);
+		AlarmObject.Hide(trpAlarmRootTransform);
 
 		int grade = 0;
 		int transcend = 0;
@@ -252,8 +256,8 @@ public class CharacterInfoGrowthCanvas : MonoBehaviour
 			trPriceGrayscaleEffect.enabled = disablePrice;
 			_trpPrice = price;
 
-			if (max != 0 && current >= max)
-				AlarmObject.Show(trpAlarmRootTransform, false, false, true);
+			if (max != 0 && current >= max && notEnoughPrice == false)
+				AlarmObject.Show(trpAlarmRootTransform);
 		}
 	}
 
@@ -327,8 +331,8 @@ public class CharacterInfoGrowthCanvas : MonoBehaviour
 			maxButtonObject.SetActive(false);
 			_price = price;
 
-			if (max != 0 && current >= max)
-				AlarmObject.Show(alarmRootTransform, false, false, true);
+			if (max != 0 && current >= max && notEnoughPrice == false)
+				AlarmObject.Show(alarmRootTransform);
 		}
 	}
 	#endregion
@@ -375,10 +379,39 @@ public class CharacterInfoGrowthCanvas : MonoBehaviour
 
 	public void OnClickTranscendButton()
 	{
+		if (_contains == false)
+		{
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_MainCharacterDontHave"), 2.0f);
+			if (_pressed)
+			{
+				OnPressUpSync();
+				_pressed = false;
+			}
+			return;
+		}
+
+		if (CurrencyData.instance.gold < _trpPrice)
+		{
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughGold"), 2.0f);
+			if (_pressed)
+			{
+				OnPressUpSync();
+				_pressed = false;
+			}
+			return;
+		}
+
+		if (_needTranscendPoint)
+		{
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_TranscendenceRequireOrigin"), 2.0f);
+			return;
+		}
+
 		UIInstanceManager.instance.ShowCanvasAsync("ConfirmSpendCanvas", () =>
 		{
 			ConfirmSpendCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("GameUI_TranscendenceConfirm"), CurrencyData.eCurrencyType.Gold, _trpPrice, false, () =>
 			{
+				_prevCombatValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
 				PlayFabApiManager.instance.RequestCharacterTranscend(_characterData, _characterData.transcend + 1, _trpPrice, () =>
 				{
 					ConfirmSpendCanvas.instance.gameObject.SetActive(false);
@@ -390,7 +423,44 @@ public class CharacterInfoGrowthCanvas : MonoBehaviour
 
 	void OnRecvTranscend()
 	{
+		Timing.RunCoroutine(TranscendProcess());
+	}
 
+	bool _processed = false;
+	IEnumerator<float> TranscendProcess()
+	{
+		_processed = true;
+
+		CharacterInfoCanvas.instance.inputLockObject.SetActive(true);
+		CharacterInfoCanvas.instance.backKeyButton.interactable = false;
+
+		// 인풋 막은 상태에서 이펙트
+		BattleInstanceManager.instance.GetCachedObject(transcendEffectPrefab, CharacterListCanvas.instance.rootOffsetPosition, Quaternion.identity, null);
+		yield return Timing.WaitForSeconds(1.0f);
+
+		// 사전 이펙트 끝나갈때쯤 화이트 페이드
+		FadeCanvas.instance.FadeOut(0.3f, 0.85f);
+		yield return Timing.WaitForSeconds(0.3f);
+
+		RefreshInfo();
+		CharacterInfoCanvas.instance.currencySmallInfo.RefreshInfo();
+		CharacterListCanvas.instance.RefreshGrid();
+		//CharacterInfoCanvas.instance.RefreshAlarmObjectList();
+		CharacterListCanvas.instance.RefreshAlarmList();
+
+		CharacterInfoCanvas.instance.inputLockObject.SetActive(false);
+		CharacterInfoCanvas.instance.backKeyButton.interactable = true;
+
+		FadeCanvas.instance.FadeIn(1.5f);
+		yield return Timing.WaitForSeconds(1.0f);
+
+		float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
+		UIInstanceManager.instance.ShowCanvasAsync("ChangePowerCanvas", () =>
+		{
+			ChangePowerCanvas.instance.ShowInfo(_prevCombatValue, nextValue);
+		});
+
+		_processed = false;
 	}
 
 
@@ -408,10 +478,10 @@ public class CharacterInfoGrowthCanvas : MonoBehaviour
 					CharacterData characterData = CharacterManager.instance.GetCharacterData(_actorId);
 					if (characterData != null)
 						//percent = playerActor.actorStatus.GetAttackAddRateByOverPP(characterData) * 100.0f;
-						percent = 0.2f;
+						percent = 0.0f;
 				}
 			}
-			text = UIString.instance.GetString("GameUI_OverMaxDesc", percent);
+			text = UIString.instance.GetString("GameUI_OverMaxDesc");
 		}
 		else
 			text = UIString.instance.GetString("GameUI_CharGaugeDesc");

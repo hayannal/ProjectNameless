@@ -178,6 +178,66 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99f27832db332944d94c102c4d4d0868, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &2510915646925533221
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3950829741184829213}
+  - component: {fileID: 4676233755862069941}
+  - component: {fileID: 3657225812272330647}
+  m_Layer: 5
+  m_Name: InputLockObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &3950829741184829213
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2510915646925533221}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2023095914644823776}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &4676233755862069941
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2510915646925533221}
+  m_CullTransparentMesh: 0
+--- !u!114 &3657225812272330647
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2510915646925533221}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d73ab32f44305f4bac9b3110ff13641, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
 --- !u!1 &3220670961853176218
 GameObject:
   m_ObjectHideFlags: 0
@@ -643,6 +703,7 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 7900394638430705825}
+  - {fileID: 3950829741184829213}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -726,6 +787,8 @@ MonoBehaviour:
   currencySmallInfo: {fileID: 2269283078309477423}
   innerMenuPrefab: {fileID: 2539568579477522288, guid: da7f3b397cf41be42a2f51ea56cf58a0,
     type: 3}
+  inputLockObject: {fileID: 2510915646925533221}
+  backKeyButton: {fileID: 5703770993162768937}
 --- !u!1001 &3643557729854429618
 PrefabInstance:
   m_ObjectHideFlags: 0

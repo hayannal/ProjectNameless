@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 public class CharacterInfoCanvas : MonoBehaviour
@@ -9,6 +10,10 @@ public class CharacterInfoCanvas : MonoBehaviour
 
 	public CurrencySmallInfo currencySmallInfo;
 	public GameObject innerMenuPrefab;
+
+	// 초월 연출때 인풋 막아야해서 등록해둔다.
+	public GameObject inputLockObject;
+	public Button backKeyButton;
 
 	void Awake()
 	{
