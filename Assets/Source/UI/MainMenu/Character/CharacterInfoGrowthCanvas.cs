@@ -445,8 +445,8 @@ public class CharacterInfoGrowthCanvas : MonoBehaviour
 		RefreshInfo();
 		CharacterInfoCanvas.instance.currencySmallInfo.RefreshInfo();
 		CharacterListCanvas.instance.RefreshGrid();
-		//CharacterInfoCanvas.instance.RefreshAlarmObjectList();
 		CharacterListCanvas.instance.RefreshAlarmList();
+		MainCanvas.instance.RefreshCharacterAlarmObject();
 
 		CharacterInfoCanvas.instance.inputLockObject.SetActive(false);
 		CharacterInfoCanvas.instance.backKeyButton.interactable = true;
@@ -591,7 +591,8 @@ public class CharacterInfoGrowthCanvas : MonoBehaviour
 		PlayFabApiManager.instance.RequestCharacterPressLevelUp(_characterData, _prevCharacterLevel, _prevGold, _characterData.level, CurrencyData.instance.gold, _levelUpCount, () =>
 		{
 			CharacterListCanvas.instance.RefreshGrid();
-			//MainCanvas.instance.RefreshSpellAlarmObject();
+			CharacterListCanvas.instance.RefreshAlarmList();
+			MainCanvas.instance.RefreshCharacterAlarmObject();
 
 			float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
 			UIInstanceManager.instance.ShowCanvasAsync("ChangePowerCanvas", () =>

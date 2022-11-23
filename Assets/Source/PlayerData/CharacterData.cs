@@ -58,6 +58,41 @@ public class CharacterData
 		}
 	}
 
+	#region Alarm
+	public bool IsAlarmState()
+	{
+		if (IsLevelAlarmState() || IsTranscendAlarmState())
+			return true;
+		return false;
+	}
+
+	public bool IsLevelAlarmState()
+	{
+		if (level >= BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxActorLevel"))
+			return false;
+
+		ActorLevelTableData nextActorLevelTableData = TableDataManager.instance.FindActorLevelTableData(cachedActorTableData.grade, level + 1);
+		if (pp < nextActorLevelTableData.requiredAccumulatedCount)
+			return false;
+		if (CurrencyData.instance.gold < nextActorLevelTableData.requiredGold)
+			return false;
+		return true;
+	}
+
+	public bool IsTranscendAlarmState()
+	{
+		if (transcend >= BattleInstanceManager.instance.GetCachedGlobalConstantInt("GachaActorMaxTrp"))
+			return false;
+
+		ActorTranscendTableData nextActorTranscendTableData = TableDataManager.instance.FindActorTranscendTableData(cachedActorTableData.grade, transcend + 1);
+		if (transcendPoint < nextActorTranscendTableData.requiredAccumulatedCount)
+			return false;
+		if (CurrencyData.instance.gold < nextActorTranscendTableData.requiredGold)
+			return false;
+		return true;
+	}
+	#endregion
+
 	public void Initialize(int characterCount, int ppCount, Dictionary<string, string> customData)
 	{
 		_count = characterCount;

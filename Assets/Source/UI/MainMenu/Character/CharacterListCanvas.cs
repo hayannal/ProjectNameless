@@ -181,6 +181,7 @@ public class CharacterListCanvas : CharacterShowCanvasBase
 		{
 			CharacterCanvasListItem characterCanvasListItem = _noGainContainer.GetCachedItem(contentItemPrefab, noGainContentRootRectTransform);
 			characterCanvasListItem.Initialize(_listTempTableData[i].actorId, 0, 0, 0, null, null, OnClickListItem);
+			characterCanvasListItem.ShowAlarm(false);
 			_listCharacterCanvasListItem.Add(characterCanvasListItem);
 		}
 	}
@@ -200,19 +201,12 @@ public class CharacterListCanvas : CharacterShowCanvasBase
 	{
 		for (int i = 0; i < _listCharacterCanvasListItem.Count; ++i)
 		{
-			/*
 			_listCharacterCanvasListItem[i].ShowAlarm(false);
-			if (_listCharacterCanvasListItem[i].characterData == null)
+			if (i >= _listTempCharacterData.Count)
 				continue;
 
-			// 알람 우선순위가 더 높다.
-			if (_listAllCharacterInfo[i].characterData.IsAlarmState() && _listAllCharacterInfo[i].characterData.IsPlusAlarmState())
-				_listSwapCanvasListItem[i].ShowAlarm(true, true, true);
-			else if (_listAllCharacterInfo[i].characterData.IsAlarmState())
-				_listSwapCanvasListItem[i].ShowAlarm(true);
-			else if (_listAllCharacterInfo[i].characterData.IsPlusAlarmState())
-				_listSwapCanvasListItem[i].ShowAlarm(true, true);
-			*/
+			if (_listTempCharacterData[i].IsAlarmState())
+				_listCharacterCanvasListItem[i].ShowAlarm(true);
 		}
 	}
 }
