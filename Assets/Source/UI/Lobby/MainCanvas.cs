@@ -19,7 +19,8 @@ public class MainCanvas : MonoBehaviour
 
 	public RectTransform challengeButtonRootTransform;
 	public GameObject challengeButtonObject;
-	public GameObject cancelChallengeButtonObject;
+	public GameObject bossBattleMenuRootObject;
+	public GameObject fastBossClearObject;
 
 	public GameObject inputRectObject;
 	public CanvasGroup safeAreaCanvasGroup;
@@ -107,6 +108,9 @@ public class MainCanvas : MonoBehaviour
 
 	public void OnPointerDown(BaseEventData baseEventData)
 	{
+		if (StageManager.instance.repeatMode == false)
+			return;
+
 		_buttonHideState = false;
 		_noInputRemainTime = noInputTime;
 	}
@@ -209,7 +213,8 @@ public class MainCanvas : MonoBehaviour
 		}
 
 		challengeButtonObject.SetActive(false);
-		cancelChallengeButtonObject.SetActive(true);
+		bossBattleMenuRootObject.SetActive(true);
+		StageManager.instance.OnOffFastBossClear(false);
 		StageManager.instance.InitializeStageFloor(PlayerData.instance.selectedStage, false);
 		TeamManager.instance.HideForMoveMap(false);
 		FadeCanvas.instance.FadeIn(0.5f);
@@ -217,9 +222,11 @@ public class MainCanvas : MonoBehaviour
 
 	public void OnClickCancelBossChallengeButton()
 	{
-		PlayFabApiManager.instance.RequestCancelBoss();
-		OnPointerDown(null);
-		ChangeStage(PlayerData.instance.selectedStage, true);
+		YesNoCanvas.instance.ShowCanvas(true, UIString.instance.GetString("GameUI_BackToLobby"), UIString.instance.GetString("GameUI_BackToLobbyDescription"), () => {
+			PlayFabApiManager.instance.RequestCancelBoss();
+			OnPointerDown(null);
+			ChangeStage(PlayerData.instance.selectedStage, true);
+		});
 	}
 
 	public void ChangeStage(int stage, bool repeatMode)
@@ -246,8 +253,8 @@ public class MainCanvas : MonoBehaviour
 		if (this == null)
 			yield break;
 
-		challengeButtonObject.SetActive(true);
-		cancelChallengeButtonObject.SetActive(false);
+		challengeButtonObject.SetActive(repeatMode);
+		bossBattleMenuRootObject.SetActive(!repeatMode);
 		StageManager.instance.InitializeStageFloor(stage, repeatMode);
 		TeamManager.instance.HideForMoveMap(false);
 		FadeCanvas.instance.FadeIn(0.5f);

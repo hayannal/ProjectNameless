@@ -880,12 +880,12 @@ public class PlayFabApiManager : MonoBehaviour
 		}, null, null);
 	}
 
-	public void RequestEndBoss(int selectedStage, Action successCallback)
+	public void RequestEndBoss(int selectedStage, int currentFloor, Action successCallback)
 	{
 		ExecuteCloudScriptRequest request = new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "EndBoss",
-			FunctionParameter = new { Flg = (string)_serverEnterKeyForBoss, SeLv = selectedStage },
+			FunctionParameter = new { Flg = (string)_serverEnterKeyForBoss, SeLv = selectedStage, CuFl = currentFloor },
 			GeneratePlayStreamEvent = true,
 		};
 		Action action = () =>
@@ -895,13 +895,24 @@ public class PlayFabApiManager : MonoBehaviour
 				PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
 				jsonResult.TryGetValue("retErr", out object retErr);
 				bool failure = ((retErr.ToString()) == "1");
-				_serverEnterKeyForBoss = "";
 				if (!failure)
 				{
 					RetrySendManager.instance.OnSuccess();
 
+					jsonResult.TryGetValue("nextFlg", out object nextFlg);
+					_serverEnterKeyForBoss = (string)nextFlg;
+
 					// 성공시 처리
 					int maxStage = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxStage");
+
+					// 점프로 뛰는건지 체크
+					if (selectedStage != currentFloor)
+					{
+						int diff = currentFloor - selectedStage;
+						if (diff <= (BattleInstanceManager.instance.GetCachedGlobalConstantInt("FastClearJumpStep") - 1))
+							selectedStage = currentFloor;
+					}
+
 					if (selectedStage <= maxStage)
 						PlayerData.instance.highestClearStage = selectedStage;
 

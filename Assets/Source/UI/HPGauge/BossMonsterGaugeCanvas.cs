@@ -89,6 +89,8 @@ public class BossMonsterGaugeCanvas : MonoBehaviour
 	{
 		if (MainCanvas.instance.IsHideState())
 			InternalOnEnterMenu(true);
+
+		_bossGaugeAppearTime = Time.time;
 	}
 
 	void OnDisable()
@@ -100,6 +102,7 @@ public class BossMonsterGaugeCanvas : MonoBehaviour
 		_initializedSequentialGauge = false;
 	}
 
+	float _bossGaugeAppearTime;
 	List<MonsterActor> _listMonsterActor = new List<MonsterActor>();
 	public void InternalInitializeGauge(MonsterActor monsterActor)
 	{
@@ -339,7 +342,19 @@ public class BossMonsterGaugeCanvas : MonoBehaviour
 		}
 
 		if (allDie)
+		{
 			gameObject.SetActive(false);
+			if (StageManager.instance.fastBossClear)
+			{
+				if (Time.time - _bossGaugeAppearTime > BattleInstanceManager.instance.GetCachedGlobalConstantFloat("FastBossClearEndBase"))
+					StageManager.instance.OnOffFastBossClear(false);
+			}
+			else
+			{
+				if (Time.time - _bossGaugeAppearTime < BattleInstanceManager.instance.GetCachedGlobalConstantFloat("FastBossClearStartBase"))
+					StageManager.instance.OnOffFastBossClear(true);
+			}
+		}
 	}
 
 	public bool InternalIsLastAliveMonster(MonsterActor monsterActor)

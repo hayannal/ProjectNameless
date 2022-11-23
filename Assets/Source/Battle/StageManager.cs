@@ -67,6 +67,7 @@ public class StageManager : MonoBehaviour
 		UpdateFailure();
 	}
 
+	public int currentFloor { get; set; }
 	public bool repeatMode { get; set; }
 	public void InitializeStageFloor(int floor, bool repeat)
 	{
@@ -74,6 +75,7 @@ public class StageManager : MonoBehaviour
 		if (stageIdTableData == null)
 			return;
 
+		currentFloor = floor;
 		repeatMode = repeat;
 		InitializeStage(repeatMode ? stageIdTableData.repeat : stageIdTableData.challenge, repeatMode);
 	}
@@ -492,7 +494,7 @@ public class StageManager : MonoBehaviour
 			if (CheatingListener.detectedCheatTable)
 				return;
 
-			PlayFabApiManager.instance.RequestEndBoss(PlayerData.instance.selectedStage, () =>
+			PlayFabApiManager.instance.RequestEndBoss(PlayerData.instance.selectedStage, currentFloor, () =>
 			{
 				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.ClearStage);
 
@@ -511,7 +513,11 @@ public class StageManager : MonoBehaviour
 		if (this == null)
 			yield break;
 
-		MainCanvas.instance.ChangeStage(PlayerData.instance.selectedStage, true);
+		int changeStage = PlayerData.instance.selectedStage;
+		if (fastBossClear) changeStage += (BattleInstanceManager.instance.GetCachedGlobalConstantInt("FastClearJumpStep") - 1);
+		if (changeStage > BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxStage"))
+			changeStage = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxStage");
+		MainCanvas.instance.ChangeStage(changeStage, false);
 	}
 
 	void UpdateReuseMonster()
@@ -582,8 +588,9 @@ public class StageManager : MonoBehaviour
 		
 		if (MainCanvas.instance != null)
 		{
+			OnOffFastBossClear(false);
 			MainCanvas.instance.challengeButtonObject.SetActive(true);
-			MainCanvas.instance.cancelChallengeButtonObject.SetActive(false);
+			MainCanvas.instance.bossBattleMenuRootObject.SetActive(false);
 		}
 		InitializeStageFloor(PlayerData.instance.selectedStage, true);
 		TeamManager.instance.HideForMoveMap(false);
@@ -594,6 +601,14 @@ public class StageManager : MonoBehaviour
 
 		yield return new WaitForSecondsRealtime(0.5f);
 		CashShopData.instance.CheckStartEvent(CashShopData.eEventStartCondition.BossStageFailed);
+	}
+
+	public bool fastBossClear { get; private set; }
+	public void OnOffFastBossClear(bool on)
+	{
+		fastBossClear = on;
+		if (MainCanvas.instance != null && MainCanvas.instance.bossBattleMenuRootObject.activeSelf)
+			MainCanvas.instance.fastBossClearObject.SetActive(on);
 	}
 
 	/*
