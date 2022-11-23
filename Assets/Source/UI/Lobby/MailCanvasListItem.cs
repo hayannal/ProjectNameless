@@ -259,11 +259,8 @@ public class MailCanvasListItem : MonoBehaviour
 
 	public void OnClickRewardButton()
 	{
-		if (CurrencyData.instance.gold >= CurrencyData.s_MaxGold)
-		{
-			ToastCanvas.instance.ShowToast(UIString.instance.GetString("SystemUI_GoldLimit"), 2.0f);
+		if (CurrencyData.instance.CheckMaxGold())
 			return;
-		}
 
 		if (_type == "cu")
 		{

@@ -393,4 +393,17 @@ public class CurrencyData : MonoBehaviour
 		return _listEventPointTypeInfo[index].eventPointTypeTableData.eventPointId;
 	}
 	#endregion
+
+
+	#region Max Gold
+	public bool CheckMaxGold()
+	{
+		if (gold >= s_MaxGold)
+		{
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("SystemUI_GoldLimit", s_MaxGold), 2.0f);
+			return true;
+		}
+		return false;
+	}
+	#endregion
 }
