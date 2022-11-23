@@ -553,6 +553,12 @@ public class GachaInfoCanvas : MonoBehaviour
 	int _prevBrokenEnergy;
 	public void OnClickButton()
 	{
+		if (CurrencyData.instance.gold >= CurrencyData.s_MaxGold)
+		{
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("SystemUI_GoldLimit"), 2.0f);
+			return;
+		}
+
 		int useEnergy = _listBetValue[_currentBetRateIndex];
 		if (CurrencyData.instance.energy < useEnergy)
 		{

@@ -29,6 +29,8 @@ public class CurrencyData : MonoBehaviour
 		Spin,
 	}
 
+	public static int s_MaxGold = 999999999;
+
 	public static string GoldCode() { return "GO"; }
 	public static string DiamondCode() { return "DI"; }
 	public static string EnergyCode() { return "EN"; }

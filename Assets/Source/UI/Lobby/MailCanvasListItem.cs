@@ -259,6 +259,12 @@ public class MailCanvasListItem : MonoBehaviour
 
 	public void OnClickRewardButton()
 	{
+		if (CurrencyData.instance.gold >= CurrencyData.s_MaxGold)
+		{
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("SystemUI_GoldLimit"), 2.0f);
+			return;
+		}
+
 		if (_type == "cu")
 		{
 			PlayFabApiManager.instance.RequestReceiveMailPresent(id, receiveDay, _type, _addDia, _addGold, _addEnergy, (serverFailure) =>

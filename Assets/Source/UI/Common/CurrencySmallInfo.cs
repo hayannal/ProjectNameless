@@ -32,6 +32,9 @@ public class CurrencySmallInfo : MonoBehaviour
 	{
 		diamondText.text = CurrencyData.instance.dia.ToString("N0");
 		goldText.text = CurrencyData.instance.gold.ToString("N0");
+
+		bool max = (CurrencyData.instance.gold >= CurrencyData.s_MaxGold);
+		goldText.color = max ? new Color(1.0f, 0.1f, 0.0f) : Color.white;
 	}
 
 	public void OnClickDiamondButton()
