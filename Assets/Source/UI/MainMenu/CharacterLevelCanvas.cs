@@ -226,7 +226,7 @@ public class CharacterLevelCanvas : MonoBehaviour
 
 	public void OnClickClassEnhanceButton()
 	{
-
+		ToastCanvas.instance.ShowToast(UIString.instance.GetString("SystemUI_WaitUpdate"), 2.0f);
 	}
 
 	public void OnClickStoryButton()
