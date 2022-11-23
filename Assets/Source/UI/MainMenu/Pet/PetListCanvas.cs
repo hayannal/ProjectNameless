@@ -167,7 +167,7 @@ public class PetListCanvas : PetShowCanvasBase
 
 		for (int i = 0; i < _listTempTableData.Count; ++i)
 		{
-			PetCanvasListItem petCanvasListItem = _container.GetCachedItem(contentItemPrefab, noGainContentRootRectTransform);
+			PetCanvasListItem petCanvasListItem = _noGainContainer.GetCachedItem(contentItemPrefab, noGainContentRootRectTransform);
 			petCanvasListItem.Initialize(_listTempTableData[i], 0, _listTempTableData[i].accumulatedAtk, OnClickListItem);
 			_listPetCanvasListItem.Add(petCanvasListItem);
 		}
