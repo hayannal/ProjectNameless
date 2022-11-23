@@ -575,7 +575,7 @@ public class StageManager : MonoBehaviour
 		PlayFabApiManager.instance.RequestCancelBoss();
 		Time.timeScale = 0.01f;
 
-		ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_Failure"), 1.5f);
+		ToastNumberCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_Failure"), 1.5f);
 		yield return new WaitForSecondsRealtime(1.2f);
 
 		FadeCanvas.instance.FadeOut(0.2f, 1.0f, true, true);
