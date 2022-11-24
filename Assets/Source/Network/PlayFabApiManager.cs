@@ -910,10 +910,14 @@ public class PlayFabApiManager : MonoBehaviour
 					{
 						int diff = currentFloor - selectedStage;
 						if (diff <= (BattleInstanceManager.instance.GetCachedGlobalConstantInt("FastClearJumpStep") - 1))
+						{
 							selectedStage = currentFloor;
+							PlayerData.instance.selectedStage = selectedStage;
+						}
 					}
 
-					if (selectedStage <= maxStage)
+					// 클리어는 MaxStage - 1 까지 할 수 있다.
+					if (selectedStage <= (maxStage - 1))
 						PlayerData.instance.highestClearStage = selectedStage;
 
 					int nextStage = selectedStage + 1;

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using DG.Tweening;
 using MEC;
@@ -21,6 +22,7 @@ public class MainCanvas : MonoBehaviour
 	public GameObject challengeButtonObject;
 	public GameObject bossBattleMenuRootObject;
 	public GameObject fastBossClearObject;
+	public Text fastBossClearCurrentStageValueText;
 
 	public GameObject inputRectObject;
 	public CanvasGroup safeAreaCanvasGroup;
@@ -151,6 +153,12 @@ public class MainCanvas : MonoBehaviour
 	#region Boss Challenge
 	public void OnClickBossChallengeButton()
 	{
+		if (PlayerData.instance.selectedStage >= TableDataManager.instance.GetGlobalConstantInt("MaxStage"))
+		{
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_MaxStageWaitUpdate"), 2.0f);
+			return;
+		}
+
 		// 언제 어느때든 누를 수 있다.
 		OnPointerDown(null);
 		Timing.RunCoroutine(ChallengeProcess());
@@ -258,6 +266,16 @@ public class MainCanvas : MonoBehaviour
 		StageManager.instance.InitializeStageFloor(stage, repeatMode);
 		TeamManager.instance.HideForMoveMap(false);
 		FadeCanvas.instance.FadeIn(0.5f);
+
+		if (repeatMode)
+		{
+			OnPointerDown(null);
+			if (stage == BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxStage"))
+			{
+				// 최대 스테이지에 도달했음을 알린다.
+				OkCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("GameUI_MaxStageWaitUpdate"), null, -1, true);
+			}
+		}
 	}
 	#endregion
 

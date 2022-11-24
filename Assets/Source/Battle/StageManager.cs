@@ -508,16 +508,45 @@ public class StageManager : MonoBehaviour
 	{
 		UIInstanceManager.instance.ShowCanvasAsync("VictoryResultCanvas", null);
 		//ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_Clear"), 1.5f);
-		yield return Timing.WaitForSeconds(2.0f);
+
+		yield return Timing.WaitForSeconds(1.0f);
 
 		if (this == null)
 			yield break;
 
 		int changeStage = PlayerData.instance.selectedStage;
-		if (fastBossClear) changeStage += (BattleInstanceManager.instance.GetCachedGlobalConstantInt("FastClearJumpStep") - 1);
-		if (changeStage > BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxStage"))
-			changeStage = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxStage");
-		MainCanvas.instance.ChangeStage(changeStage, false);
+
+		// 맥스 스테이지 바로 아래 스테이지를 클리어하고 selected로 맥스스테이지에 도달하면 반복모드만 남게되는 형태다.
+		// 이땐 로비로 돌아가면서 메세지박스를 띄운다.
+		bool returnToLobby = (changeStage == BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxStage"));
+
+		if (returnToLobby)
+		{
+			// 로비로 돌아갈때는 아무것도 하지 않아도 될듯.
+		}
+		else
+		{
+			// fastBossClear라면 건너뛰기 적용. 이미 하나 올려져있는 상태니 1빼고 적용하면 된다.
+			if (fastBossClear)
+				changeStage += (BattleInstanceManager.instance.GetCachedGlobalConstantInt("FastClearJumpStep") - 1);
+
+			// 클리어는 MaxStage - 1까지 가능하다.
+			if (changeStage > (BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxStage") - 1))
+				changeStage = (BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxStage") - 1);
+		}
+
+		BossStageNumberCanvas.instance.SetNextStage(changeStage);
+
+		yield return Timing.WaitForSeconds(1.0f);
+
+		if (this == null)
+			yield break;
+
+		// fastClear 활성화 중이라면 패킷 처리하고나서 selectedStage 표시를 이 타이밍에 갱신하는게 제일 적당해보인다.
+		if (MainCanvas.instance != null && MainCanvas.instance.fastBossClearObject.activeSelf)
+			MainCanvas.instance.fastBossClearCurrentStageValueText.text = PlayerData.instance.selectedStage.ToString("N0");
+
+		MainCanvas.instance.ChangeStage(changeStage, returnToLobby);
 	}
 
 	void UpdateReuseMonster()
@@ -596,6 +625,9 @@ public class StageManager : MonoBehaviour
 		TeamManager.instance.HideForMoveMap(false);
 		FadeCanvas.instance.FadeIn(0.5f, true);
 
+		if (MainCanvas.instance != null)
+			MainCanvas.instance.OnPointerDown(null);
+
 		Time.timeScale = 1.0f;
 		_failureProcessed = false;
 
@@ -608,7 +640,11 @@ public class StageManager : MonoBehaviour
 	{
 		fastBossClear = on;
 		if (MainCanvas.instance != null && MainCanvas.instance.bossBattleMenuRootObject.activeSelf)
+		{
 			MainCanvas.instance.fastBossClearObject.SetActive(on);
+			if (on)
+				MainCanvas.instance.fastBossClearCurrentStageValueText.text = PlayerData.instance.selectedStage.ToString("N0");
+		}
 	}
 
 	/*
