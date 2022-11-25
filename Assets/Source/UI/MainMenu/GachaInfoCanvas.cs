@@ -34,6 +34,7 @@ public class GachaInfoCanvas : MonoBehaviour
 	public Transform eventPointIconEffectRootTransform;
 	public Text eventPointAddText;
 	public RectTransform eventPointAddTextRectTransform;
+	public Text eventPointResetRemainText;
 
 	public GameObject switchGroupObject;
 	public SwitchAnim alarmSwitch;
@@ -176,6 +177,7 @@ public class GachaInfoCanvas : MonoBehaviour
 
 		#region Event Point
 		UpdateStartEventPoint();
+		UpdateEventPointResetRemainTime();
 		UpdateEventPointCountText();
 		#endregion
 	}
@@ -494,6 +496,39 @@ public class GachaInfoCanvas : MonoBehaviour
 			_waitPacket = false;
 			RefreshEventPoint();
 		});
+	}
+
+	int _lastRemainTimeSecondForEventPoint = -1;
+	void UpdateEventPointResetRemainTime()
+	{
+		if (_waitPacket)
+			return;
+		if (GachaCanvas.instance.inputLockObject.activeSelf)
+			return;
+		if (WaitingNetworkCanvas.IsShow())
+			return;
+		if (CommonRewardCanvas.instance != null && CommonRewardCanvas.instance.gameObject.activeSelf)
+			return;
+
+		if (CurrencyData.instance.eventPointId == "")
+			return;
+		
+		if (ServerTime.UtcNow < CurrencyData.instance.eventPointExpireTime)
+		{
+			System.TimeSpan remainTime = CurrencyData.instance.eventPointExpireTime - ServerTime.UtcNow;
+			if (_lastRemainTimeSecondForEventPoint != (int)remainTime.TotalSeconds)
+			{
+				if (remainTime.Days > 0)
+					eventPointResetRemainText.text = string.Format("RESET {0}d {1:00}:{2:00}:{3:00}", remainTime.Days, remainTime.Hours, remainTime.Minutes, remainTime.Seconds);
+				else
+					eventPointResetRemainText.text = string.Format("RESET {0:00}:{1:00}:{2:00}", remainTime.Hours, remainTime.Minutes, remainTime.Seconds);
+				_lastRemainTimeSecondForEventPoint = (int)remainTime.TotalSeconds;
+			}
+		}
+		else
+		{
+			eventPointResetRemainText.text = "";
+		}
 	}
 
 	bool _updateEventPointCountText = false;
