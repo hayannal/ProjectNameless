@@ -10,8 +10,16 @@ public class PetInfoCanvas : MonoBehaviour
 
 	public CurrencySmallInfo currencySmallInfo;
 	public GameObject todayHeartObject;
-	public Text atkText;
+	public RectTransform alarmRootTransform;
+
+	public Text nameText;
+	public GameObject starGridRootObject;
+	public GameObject[] starObjectList;
+	public GameObject fiveStarObject;
+
 	public Text countText;
+	public Text heartText;
+	public Text atkText;
 
 	void Awake()
 	{
@@ -48,6 +56,7 @@ public class PetInfoCanvas : MonoBehaviour
 	void RefreshInfo()
 	{
 		PetData petData = PetManager.instance.GetPetData(PetListCanvas.instance.selectedPetId);
+		PetTableData petTableData = TableDataManager.instance.FindPetTableData(PetListCanvas.instance.selectedPetId);
 		_contains = (petData != null);
 
 		if (_contains)
@@ -56,12 +65,28 @@ public class PetInfoCanvas : MonoBehaviour
 		}
 		else
 		{
-			PetTableData petTableData = TableDataManager.instance.FindPetTableData(PetListCanvas.instance.selectedPetId);
 			if (petTableData != null)
 			{
 				atkText.text = petTableData.accumulatedAtk.ToString("N0");
 			}
 		}
+		countText.gameObject.SetActive(_contains);
+		heartText.gameObject.SetActive(_contains);
+
+		nameText.SetLocalizedText(UIString.instance.GetString(petTableData.nameId));
+
+		starGridRootObject.SetActive(petTableData.star <= 4);
+		fiveStarObject.SetActive(petTableData.star == 5);
+		for (int i = 0; i < starObjectList.Length; ++i)
+			starObjectList[i].SetActive(i < petTableData.star);
+
+		int count = 0;
+		if (petData != null) count = petData.count;
+		int maxCount = 20;
+		if (count > maxCount)
+			countText.text = string.Format("+{0} / <color=FF5500>{1}</color>", count, maxCount);
+		else
+			countText.text = string.Format("+{0} / {1}", count, maxCount);
 	}
 
 	public void OnClickAttackValueTextButton()
@@ -79,6 +104,7 @@ public class PetInfoCanvas : MonoBehaviour
 	public void OnHeartDragRect(BaseEventData baseEventData)
 	{
 		Debug.Log("Heart Darg On");
+		//PetListCanvas.instance.
 	}
 
 	public void OnClickButton()

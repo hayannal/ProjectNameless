@@ -380,6 +380,7 @@ public class MainCanvas : MonoBehaviour
 		RefreshPlayerAlarmObject();
 		RefreshSpellAlarmObject();
 		RefreshCharacterAlarmObject();
+		RefreshPetAlarmObject();
 		RefreshMailAlarmObject();
 		RefreshAnalysisAlarmObject();
 		RefreshGachaAlarmObject();
@@ -431,6 +432,16 @@ public class MainCanvas : MonoBehaviour
 	public void RefreshCharacterAlarmObject()
 	{
 		RefreshAlarmObject(IsAlarmCharacter(), characterAlarmRootTransform);
+	}
+
+	public static bool IsAlarmPet()
+	{
+		return PetListCanvas.CheckTodayHeart();
+	}
+
+	public void RefreshPetAlarmObject()
+	{
+		RefreshAlarmObject(IsAlarmPet(), petAlarmRootTransform);
 	}
 
 	public static bool IsAlarmPlayer()

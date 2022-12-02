@@ -13,6 +13,10 @@ public class PetTableData
   public string petId { get { return _petId; } set { _petId = value; } }
   
   [SerializeField]
+  string _nameId;
+  public string nameId { get { return _nameId; } set { _nameId = value; } }
+  
+  [SerializeField]
   int _star;
   public int star { get { return _star; } set { _star = value; } }
   
@@ -23,6 +27,10 @@ public class PetTableData
   [SerializeField]
   string _prefabAddress;
   public string prefabAddress { get { return _prefabAddress; } set { _prefabAddress = value; } }
+  
+  [SerializeField]
+  string _spriteName;
+  public string spriteName { get { return _spriteName; } set { _spriteName = value; } }
   
   [SerializeField]
   int _orderIndex;

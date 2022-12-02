@@ -25,6 +25,7 @@ public class PetManager : MonoBehaviour
 	public ObscuredInt cachedValue { get; set; }
 
 	public ObscuredInt dailySearchCount { get; set; }
+	public ObscuredInt dailyHeartCount { get; set; }
 
 	public string activePetId { get; set; }
 

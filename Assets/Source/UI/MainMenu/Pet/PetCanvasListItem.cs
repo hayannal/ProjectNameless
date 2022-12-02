@@ -8,6 +8,10 @@ public class PetCanvasListItem : MonoBehaviour
 {
 	public Image petImage;
 	public Text nameText;
+	public GameObject starGridRootObject;
+	public GameObject[] starObjectList;
+	public GameObject fiveStarObject;
+
 	public GameObject equippedObject;
 	public GameObject blackObject;
 
@@ -20,11 +24,16 @@ public class PetCanvasListItem : MonoBehaviour
 	public string petId { get; set; }
 	public void Initialize(PetTableData petTableData, int count, int mainStatusValue, Action<string> clickCallback)
 	{
-		//petImage.sprite = SpellSpriteContainer.instance.FindSprite(petTableData.iconName);
-		//nameText.SetLocalizedText(UIString.instance.GetString(nameId));
+		petImage.sprite = PetListCanvas.instance.GetSprite(petTableData.spriteName);
+		nameText.SetLocalizedText(UIString.instance.GetString(petTableData.nameId));
+
+		starGridRootObject.SetActive(petTableData.star <= 4);
+		fiveStarObject.SetActive(petTableData.star == 5);
+		for (int i = 0; i < starObjectList.Length; ++i)
+			starObjectList[i].SetActive(i < petTableData.star);
 
 		bool contains = (count > 0);
-		if (contains && PetManager.instance.activePetId == petId)
+		if (contains && PetManager.instance.activePetId == petTableData.petId)
 			equippedObject.SetActive(true);
 		else
 			equippedObject.SetActive(false);
@@ -36,7 +45,11 @@ public class PetCanvasListItem : MonoBehaviour
 			noGainGrayImageList[i].color = contains ? Color.white : Color.gray;
 
 		plusCountText.gameObject.SetActive(contains);
-		plusCountText.text = string.Format("+{0} / {1}", count, PetManager.instance.maxCountLevel);
+		int maxCount = 20;
+		if (count > maxCount)
+			plusCountText.text = string.Format("+{0} / <color=FF5500>{1}</color>", count, maxCount);
+		else
+			plusCountText.text = string.Format("+{0} / {1}", count, maxCount);
 		atkText.text = mainStatusValue.ToString("N0");
 
 		petId = petTableData.petId;

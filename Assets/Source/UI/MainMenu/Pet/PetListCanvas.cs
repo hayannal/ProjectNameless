@@ -12,12 +12,13 @@ public class PetListCanvas : PetShowCanvasBase
 {
 	public static PetListCanvas instance;
 
+	public Sprite[] spriteList;
 	public CurrencySmallInfo currencySmallInfo;
-	public Transform maxLevelButtonTransform;
-	public Text maxLevelText;
-	public Text maxLevelUpCostText;
-	public GameObject maxReachedTextObject;
-	public GameObject blinkObject;
+
+	public GameObject todayHeartRootObject;
+	public Text todayHeartRemainText;
+	public Text todayHeartRemainCountText;
+	public RectTransform alarmRootTransform;
 
 	public Transform separateLineTransform;
 
@@ -68,6 +69,7 @@ public class PetListCanvas : PetShowCanvasBase
 
 		MainCanvas.instance.OnEnterCharacterMenu(true);
 
+		RefreshInfo();
 		// grid
 		RefreshGrid();
 	}
@@ -102,6 +104,42 @@ public class PetListCanvas : PetShowCanvasBase
 			_petActor.gameObject.SetActive(false);
 			_petActor = null;
 		}
+	}
+
+
+	public Sprite GetSprite(string spriteName)
+	{
+		for (int i = 0; i < spriteList.Length; ++i)
+		{
+			if (spriteList[i].name == spriteName)
+				return spriteList[i];
+		}
+		return null;
+	}
+
+	public static int GetTodayRemainHeart()
+	{
+		int maxCount = BattleInstanceManager.instance.GetCachedGlobalConstantInt("PetHeartCount");
+		int remainCount = maxCount - PetManager.instance.dailyHeartCount;
+		return remainCount;
+	}
+
+	public static bool CheckTodayHeart()
+	{
+		if (GetTodayRemainHeart() > 0)
+			return true;
+		return false;
+	}
+
+	void RefreshInfo()
+	{
+		int remainCount = GetTodayRemainHeart();
+		todayHeartRemainCountText.text = remainCount.ToString();
+
+		if (remainCount > 0)
+			AlarmObject.Show(alarmRootTransform);
+		else
+			AlarmObject.Hide(alarmRootTransform);
 	}
 
 	List<PetData> _listTempPetData = new List<PetData>();
@@ -171,11 +209,6 @@ public class PetListCanvas : PetShowCanvasBase
 			petCanvasListItem.Initialize(_listTempTableData[i], 0, _listTempTableData[i].accumulatedAtk, OnClickListItem);
 			_listPetCanvasListItem.Add(petCanvasListItem);
 		}
-	}
-
-	public void OnClickMaxLevelTextButton()
-	{
-		TooltipCanvas.Show(true, TooltipCanvas.eDirection.Bottom, UIString.instance.GetString("PetUI_PetMaxLevelMore"), 300, maxLevelButtonTransform, new Vector2(0.0f, -35.0f));
 	}
 
 	public string selectedPetId { get; private set; }
