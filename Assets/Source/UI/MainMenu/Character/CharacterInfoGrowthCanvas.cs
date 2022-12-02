@@ -589,7 +589,7 @@ public class CharacterInfoGrowthCanvas : MonoBehaviour
 	float _lastLevelUpEffectTime;
 	void PlayLevelUpEffect()
 	{
-		if (Time.time < _lastLevelUpEffectTime + 0.8f)
+		if (Time.time < _lastLevelUpEffectTime + 0.15f)
 			return;
 		BattleInstanceManager.instance.GetCachedObject(levelUpEffectPrefab, CharacterListCanvas.instance.rootOffsetPosition, Quaternion.identity, null);
 		_lastLevelUpEffectTime = Time.time;
