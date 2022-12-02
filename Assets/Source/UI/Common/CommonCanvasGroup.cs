@@ -9,6 +9,7 @@ public class CommonCanvasGroup : MonoBehaviour
 	public GameObject fadeCanvasPrefab;
 	public GameObject toastCanvasPrefab;
 	public GameObject toastNumberCanvasPrefab;
+	public GameObject toastZigzagCanvasPrefab;
 	public GameObject fullscreenYesNoCanvasPrefab;
 	public GameObject yesNoCanvasPrefab;
 	public GameObject okCanvasPrefab;

@@ -2699,6 +2699,77 @@ public class PlayFabApiManager : MonoBehaviour
 
 
 	#region Pet
+	public void RequestGetFirstPet(string petId, Action<string> successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}", petId, "frklzpqi");
+		string checkSum = CheckSum(input);
+		ExecuteCloudScriptRequest request = new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "GetFirstPet",
+			FunctionParameter = new { ItmId = petId, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		};
+
+		PlayFabClientAPI.ExecuteCloudScript(request, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				PetManager.instance.activePetId = petId;
+				jsonResult.TryGetValue("itmRet", out object itmRet);
+
+				if (successCallback != null) successCallback.Invoke((string)itmRet);
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
+	public void RequestSearchPetList(List<ObscuredString> listSearchPetId, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		List<string> listId = new List<string>();
+		for (int i = 0; i < listSearchPetId.Count; ++i)
+			listId.Add(listSearchPetId[i]);
+
+		var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
+		string jsonSearchLst = serializer.SerializeObject(listId);
+
+		string input = string.Format("{0}_{1}", jsonSearchLst, "rqpjfers");
+		string checkSum = CheckSum(input);
+		ExecuteCloudScriptRequest request = new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "SearchPet",
+			FunctionParameter = new { SrchLst = listId, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		};
+
+		PlayFabClientAPI.ExecuteCloudScript(request, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				PetManager.instance.SetSearchInfo(listSearchPetId);
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
 	public void RequestSelectActivePet(string petId, Action successCallback)
 	{
 		WaitingNetworkCanvas.Show(true);
@@ -2722,6 +2793,42 @@ public class PlayFabApiManager : MonoBehaviour
 
 				PetManager.instance.activePetId = petId;
 				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
+	public void RequestEndPet(int captureToolIndex, List<ObscuredString> listGainPetId, Action<string> successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}", captureToolIndex, "qrioxkjm");
+		string checkSum = CheckSum(input);
+		string checkSum2 = "";
+		List<ItemGrantRequest> listItemGrantRequest = GenerateGrantRequestInfo(listGainPetId, ref checkSum2, "pet");
+		ExecuteCloudScriptRequest request = new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "EndPet",
+			FunctionParameter = new { CapIdx = captureToolIndex, Cs = checkSum, Lst = listItemGrantRequest, LstCs = checkSum2 },
+			GeneratePlayStreamEvent = true,
+		};
+
+		PlayFabClientAPI.ExecuteCloudScript(request, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				PetManager.instance.dailySearchCount += 1;
+				PetManager.instance.GetInProgressSearchIdList().Clear();
+				jsonResult.TryGetValue("itmRet", out object itmRet);
+
+				if (successCallback != null) successCallback.Invoke((string)itmRet);
 			}
 		}, (error) =>
 		{

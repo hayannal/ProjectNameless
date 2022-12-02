@@ -359,7 +359,7 @@ public class MainCanvas : MonoBehaviour
 
 	public void OnClickContentsButton()
 	{
-
+		UIInstanceManager.instance.ShowCanvasAsync("MissionListCanvas", null);
 	}
 	#endregion
 

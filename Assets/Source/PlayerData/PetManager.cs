@@ -25,9 +25,6 @@ public class PetManager : MonoBehaviour
 	public ObscuredInt cachedValue { get; set; }
 
 	public ObscuredInt dailySearchCount { get; set; }
-	public ObscuredInt searchExp { get; set; }
-	public ObscuredInt searchLevel { get; set; }
-	public ObscuredInt maxCountLevel { get; set; }
 
 	public string activePetId { get; set; }
 
@@ -36,20 +33,6 @@ public class PetManager : MonoBehaviour
 	public void OnRecvPetInventory(List<ItemInstance> userInventory, Dictionary<string, UserDataRecord> userData, Dictionary<string, UserDataRecord> userReadOnlyData, List<StatisticValue> playerStatistics)
 	{
 		ClearInventory();
-
-		// 조우레벨 맥스수량레벨
-		searchExp = 0;
-		searchLevel = 1;
-		maxCountLevel = 1;
-		for (int i = 0; i < playerStatistics.Count; ++i)
-		{
-			switch (playerStatistics[i].StatisticName)
-			{
-				case "petSearchExp": searchExp = playerStatistics[i].Value; break;
-				case "petSearchLevel": searchLevel = playerStatistics[i].Value; break;
-				case "petMaxCountLevel": maxCountLevel = playerStatistics[i].Value; break;
-			}
-		}
 
 		// 일일 탐색 카운트
 		dailySearchCount = 0;
@@ -65,6 +48,8 @@ public class PetManager : MonoBehaviour
 			if (string.IsNullOrEmpty(userReadOnlyData["lasPetSchDat"].Value) == false)
 				OnRecvDailySearchInfo(userReadOnlyData["lasPetSchDat"].Value);
 		}
+		else
+			dailySearchCount = 0;
 
 
 		// list
@@ -106,10 +91,22 @@ public class PetManager : MonoBehaviour
 			}
 		}
 
-		// 검증
-		if (searchLevel > 1)
+		#region InProgressGame
+		_listInProgressSearchId.Clear();
+		var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
+		if (userReadOnlyData.ContainsKey("inProgressPet"))
 		{
+			if (string.IsNullOrEmpty(userReadOnlyData["inProgressPet"].Value) == false)
+			{
+				List<string> listId = serializer.DeserializeObject<List<string>>(userReadOnlyData["inProgressPet"].Value);
+				if (listId != null && listId.Count == 2)
+				{
+					for (int i = 0; i < listId.Count; ++i)
+						_listInProgressSearchId.Add(listId[i]);
+				}
+			}
 		}
+		#endregion
 
 		// status
 		RefreshCachedStatus();
@@ -186,4 +183,187 @@ public class PetManager : MonoBehaviour
 		dailySearchCount = 0;
 
 	}
+
+	#region InProgressGame
+	List<ObscuredString> _listInProgressSearchId = new List<ObscuredString>();
+	public List<ObscuredString> GetInProgressSearchIdList() { return _listInProgressSearchId; }
+	public bool IsCachedInProgressGame()
+	{
+		return (_listInProgressSearchId.Count > 0);
+	}
+
+	public void SetSearchInfo(List<ObscuredString> listRandomId)
+	{
+		_listInProgressSearchId.Clear();
+		for (int i = 0; i < listRandomId.Count; ++i)
+			_listInProgressSearchId.Add(listRandomId[i]);
+	}
+	#endregion
+
+	#region Pass
+	public bool IsPetPass()
+	{
+		return false;
+	}
+	#endregion
+
+
+	#region Grant
+	public string GetFirstPetId()
+	{
+		List<string> listPetId = new List<string>();
+		for (int i = 0; i < TableDataManager.instance.petTable.dataArray.Length; ++i)
+		{
+			if (TableDataManager.instance.petTable.dataArray[i].star == 1)
+				listPetId.Add(TableDataManager.instance.petTable.dataArray[i].petId);
+		}
+		return listPetId[UnityEngine.Random.Range(0, listPetId.Count)];
+	}
+
+	class RandomSearchPetIdInfo
+	{
+		public string id;
+		public float sumWeight;
+	}
+	List<RandomSearchPetIdInfo> _listSearchPetIdInfo = null;
+	public string GetRandomResult()
+	{
+		if (_listSearchPetIdInfo == null)
+			_listSearchPetIdInfo = new List<RandomSearchPetIdInfo>();
+		_listSearchPetIdInfo.Clear();
+
+		float sumWeight = 0.0f;
+		for (int i = 0; i < TableDataManager.instance.petTable.dataArray.Length; ++i)
+		{
+			float weight = TableDataManager.instance.petTable.dataArray[i].meetWeight;
+			if (weight <= 0.0f)
+				continue;
+
+			sumWeight += weight;
+			RandomSearchPetIdInfo newInfo = new RandomSearchPetIdInfo();
+			newInfo.id = TableDataManager.instance.petTable.dataArray[i].petId;
+			newInfo.sumWeight = sumWeight;
+			_listSearchPetIdInfo.Add(newInfo);
+		}
+
+		if (_listSearchPetIdInfo.Count == 0)
+			return "";
+
+		int index = -1;
+		float random = UnityEngine.Random.Range(0.0f, _listSearchPetIdInfo[_listSearchPetIdInfo.Count - 1].sumWeight);
+		for (int i = 0; i < _listSearchPetIdInfo.Count; ++i)
+		{
+			if (random <= _listSearchPetIdInfo[i].sumWeight)
+			{
+				index = i;
+				break;
+			}
+		}
+		if (index == -1)
+			return "";
+		return _listSearchPetIdInfo[index].id;
+	}
+
+	List<ObscuredString> _listRandomObscuredId = new List<ObscuredString>();
+	public List<ObscuredString> GetRandomIdList()
+	{
+		_listRandomObscuredId.Clear();
+
+		// search는 항상 2마리를 기본으로 한다.
+		for (int i = 0; i < 2; ++i)
+			_listRandomObscuredId.Add(GetRandomResult());
+
+		//_listRandomObscuredId.Add("Pet_0002");
+		//_listRandomObscuredId.Add("Pet_0003");
+
+		return _listRandomObscuredId;
+	}
+
+	
+
+	List<string> _listTempPetId = new List<string>();
+	public List<ObscuredString> GetExtraGainIdList(bool oneForFailure)
+	{
+		_listRandomObscuredId.Clear();
+
+		if (oneForFailure)
+		{
+			_listTempPetId.Clear();
+			for (int i = 0; i < TableDataManager.instance.petTable.dataArray.Length; ++i)
+			{
+				if (TableDataManager.instance.petTable.dataArray[i].star == 1)
+					_listTempPetId.Add(TableDataManager.instance.petTable.dataArray[i].petId);
+			}
+			_listRandomObscuredId.Add(_listTempPetId[UnityEngine.Random.Range(0, _listTempPetId.Count)]);
+		}
+		else
+		{
+			int count = UnityEngine.Random.Range(BattleInstanceManager.instance.GetCachedGlobalConstantInt("PetExtraGainMin"), BattleInstanceManager.instance.GetCachedGlobalConstantInt("PetExtraGainMax") + 1);
+			for (int i = 0; i < count; ++i)
+				_listRandomObscuredId.Add(GetRandomResult());
+		}
+
+		return _listRandomObscuredId;
+	}
+
+	public List<ItemInstance> OnRecvItemGrantResult(string jsonItemGrantResults, int expectCount = 0)
+	{
+		List<ItemInstance> listItemInstance = PlayFabApiManager.instance.DeserializeItemGrantResult(jsonItemGrantResults);
+
+		int totalCount = 0;
+		for (int i = 0; i < listItemInstance.Count; ++i)
+		{
+			PetTableData petTableData = TableDataManager.instance.FindPetTableData(listItemInstance[i].ItemId);
+			if (petTableData == null)
+				continue;
+
+			if (listItemInstance[i].UsesIncrementedBy != null)
+				totalCount += (int)listItemInstance[i].UsesIncrementedBy;
+		}
+		if (expectCount != 0 && totalCount != expectCount)
+		{
+			Debug.LogWarningFormat("Expect Count Unmatched!! t : {0} / e : {1}", totalCount, expectCount);
+			return null;
+		}
+
+		for (int i = 0; i < listItemInstance.Count; ++i)
+		{
+			PetTableData petTableData = TableDataManager.instance.FindPetTableData(listItemInstance[i].ItemId);
+			if (petTableData == null)
+				continue;
+
+			PetData currentPetData = null;
+			for (int j = 0; j < _listPetData.Count; ++j)
+			{
+				if (_listPetData[j].petId == listItemInstance[i].ItemId)
+				{
+					currentPetData = _listPetData[j];
+					break;
+				}
+			}
+
+			if (currentPetData != null)
+			{
+				// 수량 변경
+				if (listItemInstance[i].RemainingUses != null && listItemInstance[i].UsesIncrementedBy != null)
+				{
+					if (listItemInstance[i].RemainingUses - listItemInstance[i].UsesIncrementedBy == currentPetData.count)
+						currentPetData.SetCount((int)listItemInstance[i].RemainingUses);
+				}
+			}
+			else
+			{
+				PetData newPetData = new PetData();
+				newPetData.uniqueId = listItemInstance[i].ItemInstanceId;
+				newPetData.petId = listItemInstance[i].ItemId;
+				newPetData.SetCount((listItemInstance[i].RemainingUses != null) ? (int)listItemInstance[i].RemainingUses : 0);
+				_listPetData.Add(newPetData);
+
+				// 없는 펫이 추가될땐 스탯부터 다 다시 계산해야한다.
+				OnChangedStatus();
+			}
+		}
+		return listItemInstance;
+	}
+	#endregion
 }

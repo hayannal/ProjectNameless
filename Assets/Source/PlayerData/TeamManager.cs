@@ -60,6 +60,10 @@ public class TeamManager : MonoBehaviour
 		{
 			SpawnTeamMember(ePosition.Right, actorId);
 		}
+
+		#region Pet
+		SpawnActivePet();
+		#endregion
 	}
 
 	Dictionary<string, int> _dicPositionInfo = new Dictionary<string, int>();
@@ -155,6 +159,11 @@ public class TeamManager : MonoBehaviour
 					continue;
 				_listPlayerActor[i].gameObject.SetActive(false);
 			}
+
+			#region Pet
+			if (_petActor != null)
+				_petActor.gameObject.SetActive(false);
+			#endregion
 		}
 		else
 		{
@@ -169,6 +178,14 @@ public class TeamManager : MonoBehaviour
 				OnFinishLoadedPlayerActor((ePosition)i, _listPlayerActor[i]);
 				_listPlayerActor[i].gameObject.SetActive(true);
 			}
+
+			#region Pet
+			if (_petActor != null)
+			{
+				OnFinishLoadedPetActor(_petActor);
+				_petActor.gameObject.SetActive(true);
+			}
+			#endregion
 		}
 		_hideFlag = hide;
 	}
@@ -182,4 +199,69 @@ public class TeamManager : MonoBehaviour
 			_listPlayerActor[i].actorStatus.InitializeActorStatus();
 		}
 	}
+
+	#region Pet
+	PetActor _petActor;
+	public void SpawnActivePet()
+	{
+		if (string.IsNullOrEmpty(PetManager.instance.activePetId))
+			return;
+
+		// 캐릭터 교체는 이 캔버스 담당이다.
+		// 액터가 혹시나 미리 만들어져있다면 등록되어있을거니 가져다쓴다.
+		PetActor petActor = BattleInstanceManager.instance.GetCachedPetActor(PetManager.instance.activePetId);
+		if (petActor != null)
+		{
+			if (petActor != _petActor)
+			{
+				if (_petActor != null)
+					_petActor.gameObject.SetActive(false);
+				_petActor = petActor;
+				_petActor.gameObject.SetActive(true);
+			}
+			OnFinishLoadedPetActor(petActor);
+		}
+		else
+		{
+			AddressableAssetLoadManager.GetAddressableGameObject(PetData.GetAddressByPetId(PetManager.instance.activePetId), "", OnLoadedPetActor);
+		}
+	}
+
+	void OnLoadedPetActor(GameObject prefab)
+	{
+#if UNITY_EDITOR
+		GameObject newObject = Instantiate<GameObject>(prefab);
+		AddressableAssetSettings settings = AddressableAssetSettingsDefaultObject.Settings;
+		if (settings.ActivePlayModeDataBuilderIndex == 2)
+			ObjectUtil.ReloadShader(newObject);
+#else
+		GameObject newObject = Instantiate<GameObject>(prefab);
+#endif
+
+		PetActor petActor = newObject.GetComponent<PetActor>();
+		if (petActor == null)
+			return;
+		BattleInstanceManager.instance.OnInitializePetActor(petActor, petActor.actorId);
+
+		if (petActor != _petActor)
+		{
+			if (_petActor != null)
+				_petActor.gameObject.SetActive(false);
+			_petActor = petActor;
+			_petActor.gameObject.SetActive(true);
+		}
+		OnFinishLoadedPetActor(petActor);
+	}
+
+	void OnFinishLoadedPetActor(PetActor petActor)
+	{
+		// 위치 설정
+		if (BattleInstanceManager.instance.playerActor == null)
+			return;
+		if (petActor == null)
+			return;
+
+		petActor.cachedTransform.position = BattleInstanceManager.instance.playerActor.cachedTransform.position + new Vector3(-0.48f, 0.0f, -0.3f);
+	}
+	#endregion
 }

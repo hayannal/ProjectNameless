@@ -814,6 +814,24 @@ public class BattleInstanceManager : MonoBehaviour
 	}
 	#endregion
 
+	#region PetActor List
+	Dictionary<string, PetActor> _dicCachedPetActor = new Dictionary<string, PetActor>();
+	public void OnInitializePetActor(PetActor petActor, string petId)
+	{
+		if (_dicCachedPetActor.ContainsKey(petId))
+			return;
+
+		_dicCachedPetActor.Add(petId, petActor);
+	}
+
+	public PetActor GetCachedPetActor(string petId)
+	{
+		if (_dicCachedPetActor.ContainsKey(petId))
+			return _dicCachedPetActor[petId];
+		return null;
+	}
+	#endregion
+
 	#region Drop
 	List<DropProcessor> _listCachedDropProcessor = new List<DropProcessor>();
 	public DropProcessor GetCachedDropProcessor(Vector3 position)
