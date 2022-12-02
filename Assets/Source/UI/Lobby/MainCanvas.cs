@@ -320,6 +320,13 @@ public class MainCanvas : MonoBehaviour
 
 	public void OnEnterCharacterMenu(bool enter)
 	{
+		if (inputRectObject == null)
+			return;
+		if (StageManager.instance == null)
+			return;
+		if (MainSceneBuilder.instance == null)
+			return;
+
 		inputRectObject.SetActive(!enter);
 		safeAreaCanvasGroup.alpha = enter ? 0.0f : 1.0f;
 		safeAreaCanvasGroup.blocksRaycasts = !enter;
