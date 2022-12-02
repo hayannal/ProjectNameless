@@ -439,8 +439,8 @@ public class PetSearchGround : MonoBehaviour
 	IEnumerator<float> UseExtraChanceProcess()
 	{
 		_usedExtraChance = true;
-		ToastZigzagCanvas.instance.ShowToast(UIString.instance.GetString("PetUI_UseExtraChanceToast"), 1.5f);
-		yield return Timing.WaitForSeconds(1.0f);
+		ToastZigzagCanvas.instance.ShowToast(UIString.instance.GetString("PetUI_UseExtraChanceToast"), 1.5f, 0.8f, true);
+		yield return Timing.WaitForSeconds(2.0f);
 
 		PetSearchCanvas.instance.StartAttackPhase(false, false, true);
 	}
@@ -455,6 +455,9 @@ public class PetSearchGround : MonoBehaviour
 	List<ObscuredString> _listCaptureId = new List<ObscuredString>();
 	IEnumerator<float> CaptureProcess()
 	{
+		// 잠시 대기
+		yield return Timing.WaitForSeconds(0.5f);
+
 		// 3번 흔들흔들 할거다.
 		for (int i = 0; i < 3; ++i)
 		{
