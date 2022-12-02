@@ -7,30 +7,30 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 8768853832209672101, guid: b391da31c6ec3554a87bc8e06804b06d,
+    - target: {fileID: 2345981805369264523, guid: b391da31c6ec3554a87bc8e06804b06d,
         type: 3}
-      propertyPath: m_Name
-      value: Tonton_E
-      objectReference: {fileID: 0}
-    - target: {fileID: 3636735303790428340, guid: b391da31c6ec3554a87bc8e06804b06d,
-        type: 3}
-      propertyPath: useStateList.Array.data[2]
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3636735303790428340, guid: b391da31c6ec3554a87bc8e06804b06d,
-        type: 3}
-      propertyPath: useStateList.Array.data[3]
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3636735303790428340, guid: b391da31c6ec3554a87bc8e06804b06d,
-        type: 3}
-      propertyPath: attackDelayTimeRange.x
+      propertyPath: _stoppingDistance
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3451509053787634584, guid: b391da31c6ec3554a87bc8e06804b06d,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 4300000, guid: ccf4b06aaba65374e8c1426fd854a83c, type: 3}
+    - target: {fileID: 3451509053787634584, guid: b391da31c6ec3554a87bc8e06804b06d,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: d99892508dcf81145bfcb8e3fc322dc2, type: 2}
+    - target: {fileID: 3451509053791896920, guid: b391da31c6ec3554a87bc8e06804b06d,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 47452182494335441b7295e90d94ae5c, type: 2}
     - target: {fileID: 3636735303790428340, guid: b391da31c6ec3554a87bc8e06804b06d,
         type: 3}
-      propertyPath: attackDelayTimeRange.y
-      value: 2
+      propertyPath: desireDistance
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3636735303790428340, guid: b391da31c6ec3554a87bc8e06804b06d,
         type: 3}
@@ -44,23 +44,48 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3636735303790428340, guid: b391da31c6ec3554a87bc8e06804b06d,
         type: 3}
-      propertyPath: desireDistance
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 3636735303790428340, guid: b391da31c6ec3554a87bc8e06804b06d,
-        type: 3}
       propertyPath: startDelayRange.y
       value: 0.75
       objectReference: {fileID: 0}
-    - target: {fileID: 2345981805369264523, guid: b391da31c6ec3554a87bc8e06804b06d,
+    - target: {fileID: 3636735303790428340, guid: b391da31c6ec3554a87bc8e06804b06d,
         type: 3}
-      propertyPath: _stoppingDistance
+      propertyPath: attackDelayTimeRange.x
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3636735303790428340, guid: b391da31c6ec3554a87bc8e06804b06d,
+        type: 3}
+      propertyPath: attackDelayTimeRange.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3636735303790428340, guid: b391da31c6ec3554a87bc8e06804b06d,
+        type: 3}
+      propertyPath: useStateList.Array.data[2]
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3636735303790428340, guid: b391da31c6ec3554a87bc8e06804b06d,
+        type: 3}
+      propertyPath: useStateList.Array.data[3]
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5138102597212753187, guid: b391da31c6ec3554a87bc8e06804b06d,
+        type: 3}
+      propertyPath: m_AgentTypeID
+      value: -334000983
       objectReference: {fileID: 0}
     - target: {fileID: 5475168070408775149, guid: b391da31c6ec3554a87bc8e06804b06d,
         type: 3}
       propertyPath: actorId
       value: Tonton_E
+      objectReference: {fileID: 0}
+    - target: {fileID: 8768853832209672101, guid: b391da31c6ec3554a87bc8e06804b06d,
+        type: 3}
+      propertyPath: m_Name
+      value: Tonton_E
+      objectReference: {fileID: 0}
+    - target: {fileID: 8768853832209672124, guid: b391da31c6ec3554a87bc8e06804b06d,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8768853832209672124, guid: b391da31c6ec3554a87bc8e06804b06d,
         type: 3}
@@ -79,6 +104,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8768853832209672124, guid: b391da31c6ec3554a87bc8e06804b06d,
         type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8768853832209672124, guid: b391da31c6ec3554a87bc8e06804b06d,
+        type: 3}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
@@ -90,16 +120,6 @@ PrefabInstance:
     - target: {fileID: 8768853832209672124, guid: b391da31c6ec3554a87bc8e06804b06d,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8768853832209672124, guid: b391da31c6ec3554a87bc8e06804b06d,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8768853832209672124, guid: b391da31c6ec3554a87bc8e06804b06d,
-        type: 3}
-      propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8768853832209672124, guid: b391da31c6ec3554a87bc8e06804b06d,
@@ -117,20 +137,5 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3451509053791896920, guid: b391da31c6ec3554a87bc8e06804b06d,
-        type: 3}
-      propertyPath: m_Controller
-      value: 
-      objectReference: {fileID: 9100000, guid: 47452182494335441b7295e90d94ae5c, type: 2}
-    - target: {fileID: 3451509053787634584, guid: b391da31c6ec3554a87bc8e06804b06d,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: d99892508dcf81145bfcb8e3fc322dc2, type: 2}
-    - target: {fileID: 3451509053787634584, guid: b391da31c6ec3554a87bc8e06804b06d,
-        type: 3}
-      propertyPath: m_Mesh
-      value: 
-      objectReference: {fileID: 4300000, guid: ccf4b06aaba65374e8c1426fd854a83c, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b391da31c6ec3554a87bc8e06804b06d, type: 3}
