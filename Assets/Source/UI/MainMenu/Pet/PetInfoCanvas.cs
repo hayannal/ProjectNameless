@@ -52,12 +52,19 @@ public class PetInfoCanvas : MonoBehaviour
 
 	}
 
+	void Update()
+	{
+		PetListCanvas.instance.UpdateAdditionalObject();
+	}
+
 	bool _contains = false;
+	PetData _petData = null;
 	void RefreshInfo()
 	{
 		PetData petData = PetManager.instance.GetPetData(PetListCanvas.instance.selectedPetId);
 		PetTableData petTableData = TableDataManager.instance.FindPetTableData(PetListCanvas.instance.selectedPetId);
 		_contains = (petData != null);
+		_petData = petData;
 
 		if (_contains)
 		{
@@ -84,14 +91,36 @@ public class PetInfoCanvas : MonoBehaviour
 		if (petData != null) count = petData.count;
 		int maxCount = 20;
 		if (count > maxCount)
-			countText.text = string.Format("+{0} / <color=FF5500>{1}</color>", count, maxCount);
+			countText.text = string.Format("{0} / <color=FF5500>{1}</color>", count, maxCount);
 		else
-			countText.text = string.Format("+{0} / {1}", count, maxCount);
+			countText.text = string.Format("{0} / {1}", count, maxCount);
+
+		if (PetListCanvas.CheckTodayHeart())
+			AlarmObject.Show(alarmRootTransform);
+		else
+			AlarmObject.Hide(alarmRootTransform);
 	}
 
 	public void OnClickAttackValueTextButton()
 	{
+		UIInstanceManager.instance.ShowCanvasAsync("StatusDetailCanvas", () =>
+		{
+			StatusDetailCanvas.instance.Initialize(1);
 
+			int baseAtk = 0;
+			PetTableData petTableData = TableDataManager.instance.FindPetTableData(PetListCanvas.instance.selectedPetId);
+			if (petTableData != null)
+			{
+				baseAtk = petTableData.accumulatedAtk;
+			}
+
+			int count = 1;
+			if (_contains && _petData != null)
+				count = _petData.count;
+
+			// limit
+			StatusDetailCanvas.instance.AddStatus("PetUI_Status", string.Format("{0} x {1:N0}", baseAtk, count));
+		});
 	}
 
 

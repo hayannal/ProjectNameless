@@ -48,6 +48,11 @@ public class StatusDetailCanvas : MonoBehaviour
 	List<StatusDetailCanvasListItem> _listStatusDetailCanvasListItem = new List<StatusDetailCanvasListItem>();
 	public void AddStatus(string stringId, int value)
 	{
+		AddStatus(stringId, value.ToString("N0"));
+	}
+
+	public void AddStatus(string stringId, string value)
+	{
 		if (_useSmall)
 		{
 			StatusDetailCanvasListItem statusDetailCanvasListItem = _smallContainer.GetCachedItem(contentItemPrefab, smallContentRootRectTransform);

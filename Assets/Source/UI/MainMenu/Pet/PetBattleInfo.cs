@@ -32,6 +32,7 @@ public class PetBattleInfo : MonoBehaviour
 	float _fillImageTargetValue = 0.0f;
 	public void SetInfo(PetTableData petTableData)
 	{
+		nameText.SetLocalizedText(UIString.instance.GetString(petTableData.nameId));
 		starGridRootObject.SetActive(petTableData.star <= 4);
 		fiveStarObject.SetActive(petTableData.star == 5);
 		for (int i = 0; i < starObjectList.Length; ++i)

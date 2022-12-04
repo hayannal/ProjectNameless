@@ -23,6 +23,14 @@ public class PetData
 		return petTableData.prefabAddress;
 	}
 
+	public static string GetNameByPetId(string petId)
+	{
+		PetTableData petTableData = TableDataManager.instance.FindPetTableData(petId);
+		if (petTableData == null)
+			return "";
+		return UIString.instance.GetString(petTableData.nameId);
+	}
+
 	public void SetCount(int count)
 	{
 		_count = count;

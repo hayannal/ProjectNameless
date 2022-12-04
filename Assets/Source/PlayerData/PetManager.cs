@@ -52,6 +52,22 @@ public class PetManager : MonoBehaviour
 		else
 			dailySearchCount = 0;
 
+		// 일일 하트 카운트
+		dailyHeartCount = 0;
+		if (userReadOnlyData.ContainsKey("petHrtCnt"))
+		{
+			int intValue = 0;
+			if (int.TryParse(userReadOnlyData["petHrtCnt"].Value, out intValue))
+				dailyHeartCount = intValue;
+		}
+
+		if (userReadOnlyData.ContainsKey("lasPetHrtDat"))
+		{
+			if (string.IsNullOrEmpty(userReadOnlyData["lasPetHrtDat"].Value) == false)
+				OnRecvDailyHeartInfo(userReadOnlyData["lasPetHrtDat"].Value);
+		}
+		else
+			dailyHeartCount = 0;
 
 		// list
 		for (int i = 0; i < userInventory.Count; ++i)
@@ -177,12 +193,33 @@ public class PetManager : MonoBehaviour
 			OnRecvDailySearchInfo(universalTime);
 		}
 	}
+
+	void OnRecvDailyHeartInfo(DateTime lastHeartTime)
+	{
+		if (ServerTime.UtcNow.Year == lastHeartTime.Year && ServerTime.UtcNow.Month == lastHeartTime.Month && ServerTime.UtcNow.Day == lastHeartTime.Day)
+		{
+			// 유효하면 읽어놨던 count값을 유지하고
+			//dailySearchCount += 1;
+		}
+		else
+			dailySearchCount = 0;
+	}
+
+	public void OnRecvDailyHeartInfo(string lastHeartTimeString)
+	{
+		DateTime lastHeartTime = new DateTime();
+		if (DateTime.TryParse(lastHeartTimeString, out lastHeartTime))
+		{
+			DateTime universalTime = lastHeartTime.ToUniversalTime();
+			OnRecvDailyHeartInfo(universalTime);
+		}
+	}
 	#endregion
 
 	public void OnRefreshDay()
 	{
 		dailySearchCount = 0;
-
+		dailyHeartCount = 0;
 	}
 
 	#region InProgressGame

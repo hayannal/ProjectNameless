@@ -93,6 +93,9 @@ public class PetShowCanvasBase : MonoBehaviour
 			if (BattleInstanceManager.instance.playerActor.gameObject == null)
 				return;
 
+			if (PetInfoGround.instance != null)
+				PetInfoGround.instance.petBattleInfo.gameObject.SetActive(false);
+
 			_environmentSetting.SetDefaultLightIntensity(_defaultLightIntensity);
 			_groundTransform.gameObject.SetActive(false);
 			_prevEnvironmentSettingObject.SetActive(true);
@@ -117,6 +120,12 @@ public class PetShowCanvasBase : MonoBehaviour
 	// 해당 Canvas보다 늦게 로딩될걸 대비해서 캐릭터 OnLoaded함수를 만들어놓는다.
 	protected void OnLoadedPlayerActor(bool refreshActorInfoTable = false)
 	{
+		if (PetInfoGround.instance != null)
+		{
+			PetInfoGround.instance.petBattleInfo.SetInfo(_petActor.actorId);
+			PetInfoGround.instance.petBattleInfo.gameObject.SetActive(true);
+		}
+
 		if (refreshActorInfoTable)
 		{
 			// 호출순서상 SetInfoCameraMode(true 호출하기 전에 이 콜백이 호출되는 경우가 있어서 예외처리 적용. null일땐 처리하지 않는다.
@@ -152,7 +161,7 @@ public class PetShowCanvasBase : MonoBehaviour
 	bool _wait = false;
 	string _id = "";
 	Action _completeCallback;
-	public void ShowCanvasPetActor(string petId, Action completeCallback)
+	public void ShowCanvasPetActor(string petId, int count, Action completeCallback)
 	{
 		if (_wait)
 			return;
@@ -162,6 +171,10 @@ public class PetShowCanvasBase : MonoBehaviour
 			return;
 
 		_id = petId;
+		if (count > 1)
+			_additionalCount = count - 1;
+		else
+			_additionalCount = 0;
 
 		// 캐릭터 교체는 이 캔버스 담당이다.
 		// 액터가 혹시나 미리 만들어져있다면 등록되어있을거니 가져다쓴다.
@@ -170,12 +183,23 @@ public class PetShowCanvasBase : MonoBehaviour
 		{
 			if (petActor != _petActor)
 			{
+				DisableAdditionalObjectList();
+
 				// 현재 캐릭터 하이드 시키고
 				if (_petActor != null)
 					_petActor.gameObject.SetActive(false);
 				_petActor = petActor;
 				_petActor.gameObject.SetActive(true);
 				OnLoadedPlayerActor(true);
+
+				if (count > 1)
+				{
+					_additionalPrefab = _dicAdditionalPrefab[petId];
+					_additionalCount = count - 1;
+					_spawnAdditionalFlag = true;
+				}
+				else
+					_spawnAdditionalFlag = false;
 			}
 			if (completeCallback != null) completeCallback.Invoke();
 		}
@@ -219,9 +243,21 @@ public class PetShowCanvasBase : MonoBehaviour
 
 		if (petActor != _petActor)
 		{
+			DisableAdditionalObjectList();
+
 			if (_petActor != null)
 				_petActor.gameObject.SetActive(false);
 			_petActor = petActor;
+
+			if (_dicAdditionalPrefab.ContainsKey(_id) == false)
+				_dicAdditionalPrefab.Add(_id, prefab);
+			if (_additionalCount > 0)
+			{
+				_spawnAdditionalFlag = true;
+				_additionalPrefab = prefab;
+			}
+			else
+				_spawnAdditionalFlag = false;
 		}
 		OnLoadedPlayerActor(true);
 
@@ -236,5 +272,52 @@ public class PetShowCanvasBase : MonoBehaviour
 	//	yield return Timing.WaitForOneFrame;
 	//	ShowCharacterInfoCanvas();
 	//}
+	#endregion
+
+
+	#region Pet List Object
+	// 
+	Dictionary<string, GameObject> _dicAdditionalPrefab = new Dictionary<string, GameObject>();
+	GameObject _additionalPrefab;
+	int _additionalCount;
+	bool _spawnAdditionalFlag = false;
+	float _addRemainTime;
+	List<GameObject> _listAdditionalObject = new List<GameObject>();
+	public void UpdateAdditionalObject()
+	{
+		if (_spawnAdditionalFlag == false)
+			return;
+
+		_addRemainTime -= Time.deltaTime;
+		if (_addRemainTime < 0.0f)
+		{
+			Vector3 randomPosition = _rootOffsetPosition + new Vector3(0.0f, 0.0f, 4.0f);
+			Vector2 offset = UnityEngine.Random.insideUnitCircle;
+			randomPosition.x += offset.x * 1.5f;
+			randomPosition.z += offset.y * 1.5f;
+			GameObject newObject = BattleInstanceManager.instance.GetCachedObject(_additionalPrefab, randomPosition, Quaternion.Euler(0.0f, UnityEngine.Random.Range(0.0f, 360.0f), 0.0f));
+			newObject.transform.localScale = new Vector3(0.6f, 0.6f, 0.6f);
+			_listAdditionalObject.Add(newObject);
+
+			_additionalCount -= 1;
+			if (_additionalCount > 0)
+			{
+				_addRemainTime += 0.05f;
+			}
+			else
+				_spawnAdditionalFlag = false;
+		}
+	}
+
+	protected void DisableAdditionalObjectList()
+	{
+		_spawnAdditionalFlag = false;
+		_addRemainTime = 0.0f;
+
+		// 지금까지 만들어진 오브젝트들 꺼놔야한다.
+		for (int i = 0; i < _listAdditionalObject.Count; ++i)
+			_listAdditionalObject[i].SetActive(false);
+		_listAdditionalObject.Clear();
+	}
 	#endregion
 }

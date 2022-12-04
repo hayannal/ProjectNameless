@@ -200,15 +200,6 @@ public class PetSearchCanvas : MonoBehaviour
 
 			Vector3 localScale = countDownText.transform.localScale;
 			countDownText.gameObject.SetActive(true);
-			countDownText.text = "3";
-			yield return Timing.WaitForSeconds(0.4f);
-			countDownTweenAnimation.DORestart();
-			yield return Timing.WaitForSeconds(0.33f);
-			countDownText.color = Color.white;
-			countDownText.transform.localScale = localScale;
-			countDownText.gameObject.SetActive(false);
-
-			countDownText.gameObject.SetActive(true);
 			countDownText.text = "2";
 			yield return Timing.WaitForSeconds(0.4f);
 			countDownTweenAnimation.DORestart();
@@ -376,12 +367,12 @@ public class PetSearchCanvas : MonoBehaviour
 		yield return Timing.WaitForSeconds(1.0f);
 
 		// 흔들흔들
-		CustomFollowCamera.instance.cachedTransform.DOShakePosition(0.5f, 0.04f, 30, 90, false, false);
-		yield return Timing.WaitForSeconds(0.3f);
+		CustomFollowCamera.instance.cachedTransform.DOShakePosition(0.5f, 0.08f, 30, 90, false, false);
+		yield return Timing.WaitForSeconds(0.8f);
 
 		// 데미지 처리
 		PetSearchGround.instance.OnAttack(_attackPercent);
-		yield return Timing.WaitForSeconds(0.7f);
+		yield return Timing.WaitForSeconds(0.8f);
 
 		// 턴 결과
 		PetSearchGround.instance.TurnEnd();
@@ -389,6 +380,14 @@ public class PetSearchCanvas : MonoBehaviour
 
 	public void ShowSelectCapture()
 	{
+		Timing.RunCoroutine(ShowSelectCaptureProcess());
+	}
+
+	IEnumerator<float> ShowSelectCaptureProcess()
+	{
+		ToastZigzagCanvas.instance.ShowToast(UIString.instance.GetString("PetUI_LetsCapture"), 1.5f, 0.8f, true);
+		yield return Timing.WaitForSeconds(1.5f);
+
 		UIInstanceManager.instance.ShowCanvasAsync("SelectCaptureCanvas", () =>
 		{
 			SelectCaptureCanvas.instance.RefreshInfo(true);

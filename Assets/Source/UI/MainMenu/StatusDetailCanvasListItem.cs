@@ -11,8 +11,13 @@ public class StatusDetailCanvasListItem : MonoBehaviour
 	
 	public void Initialize(bool showBackground, string stringId, int value)
 	{
+		Initialize(showBackground, stringId, value.ToString("N0"));
+	}
+
+	public void Initialize(bool showBackground, string stringId, string value)
+	{
 		backgroundObject.SetActive(showBackground);
 		nameText.SetLocalizedText(UIString.instance.GetString(stringId));
-		valueText.text = value.ToString("N0");
+		valueText.text = value;
 	}
 }

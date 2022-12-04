@@ -213,7 +213,8 @@ public class PetSearchGround : MonoBehaviour
 		});
 
 		yield return Timing.WaitForSeconds(1.0f);
-		OkCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("PetUI_GetFirstPet"), () =>
+		string message = string.Format("<color=#00FFFF>{0}</color>\n\n{1}", PetData.GetNameByPetId(PetManager.instance.activePetId), UIString.instance.GetString("PetUI_GetFirstPet"));
+		OkCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), message, () =>
 		{
 			Timing.RunCoroutine(ResetMenuProcess());
 		}, -1, true);
@@ -260,7 +261,7 @@ public class PetSearchGround : MonoBehaviour
 			yield return Timing.WaitForSeconds(0.3f);
 
 			// 흔들흔들
-			CustomFollowCamera.instance.cachedTransform.DOShakePosition(0.5f, 0.02f, 30, 90, false, false);
+			CustomFollowCamera.instance.cachedTransform.DOShakePosition(0.5f, 0.04f, 30, 90, false, false);
 			yield return Timing.WaitForSeconds(1.0f);
 		}
 

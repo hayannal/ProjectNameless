@@ -48,6 +48,8 @@ public class PetListCanvas : PetShowCanvasBase
 
 	void OnEnable()
 	{
+		RefreshHeart();
+
 		bool restore = StackCanvas.Push(gameObject, false, null, OnPopStack);
 
 		if (DragThresholdController.instance != null)
@@ -62,14 +64,18 @@ public class PetListCanvas : PetShowCanvasBase
 		if (string.IsNullOrEmpty(basePetId) && PetManager.instance.listPetData.Count > 0)
 			basePetId = PetManager.instance.listPetData[0].petId;
 
+		int count = 0;
+		PetData petData = PetManager.instance.GetPetData(basePetId);
+		if (petData != null)
+			count = petData.count;
+
 		SetInfoCameraMode(true, basePetId);
 		if (string.IsNullOrEmpty(basePetId) == false)
-			ShowCanvasPetActor(basePetId, null);
+			ShowCanvasPetActor(basePetId, count, null);
 		_petActor = BattleInstanceManager.instance.GetCachedCanvasPetActor(basePetId);
 
 		MainCanvas.instance.OnEnterCharacterMenu(true);
 
-		RefreshInfo();
 		// grid
 		RefreshGrid();
 	}
@@ -104,6 +110,12 @@ public class PetListCanvas : PetShowCanvasBase
 			_petActor.gameObject.SetActive(false);
 			_petActor = null;
 		}
+		DisableAdditionalObjectList();
+	}
+
+	void Update()
+	{
+		UpdateAdditionalObject();
 	}
 
 
@@ -131,7 +143,7 @@ public class PetListCanvas : PetShowCanvasBase
 		return false;
 	}
 
-	void RefreshInfo()
+	void RefreshHeart()
 	{
 		int remainCount = GetTodayRemainHeart();
 		todayHeartRemainCountText.text = remainCount.ToString();
@@ -212,10 +224,10 @@ public class PetListCanvas : PetShowCanvasBase
 	}
 
 	public string selectedPetId { get; private set; }
-	public void OnClickListItem(string petId)
+	public void OnClickListItem(string petId, int count)
 	{
 		selectedPetId = petId;
-		ShowCanvasPetActor(petId, () =>
+		ShowCanvasPetActor(petId, count, () =>
 		{
 			UIInstanceManager.instance.ShowCanvasAsync("PetInfoCanvas", null);
 		});

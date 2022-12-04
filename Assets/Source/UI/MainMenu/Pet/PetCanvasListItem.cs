@@ -22,7 +22,8 @@ public class PetCanvasListItem : MonoBehaviour
 	public Image[] noGainGrayImageList;
 
 	public string petId { get; set; }
-	public void Initialize(PetTableData petTableData, int count, int mainStatusValue, Action<string> clickCallback)
+	public int count { get; set; }
+	public void Initialize(PetTableData petTableData, int count, int mainStatusValue, Action<string, int> clickCallback)
 	{
 		petImage.sprite = PetListCanvas.instance.GetSprite(petTableData.spriteName);
 		nameText.SetLocalizedText(UIString.instance.GetString(petTableData.nameId));
@@ -47,20 +48,21 @@ public class PetCanvasListItem : MonoBehaviour
 		plusCountText.gameObject.SetActive(contains);
 		int maxCount = 20;
 		if (count > maxCount)
-			plusCountText.text = string.Format("+{0} / <color=FF5500>{1}</color>", count, maxCount);
+			plusCountText.text = string.Format("{0} / <color=FF5500>{1}</color>", count, maxCount);
 		else
-			plusCountText.text = string.Format("+{0} / {1}", count, maxCount);
+			plusCountText.text = string.Format("{0} / {1}", count, maxCount);
 		atkText.text = mainStatusValue.ToString("N0");
 
 		petId = petTableData.petId;
+		this.count = count;
 		_clickAction = clickCallback;
 	}
 
-	Action<string> _clickAction;
+	Action<string, int> _clickAction;
 	public void OnClickButton()
 	{
 		if (_clickAction != null)
-			_clickAction.Invoke(petId);
+			_clickAction.Invoke(petId, count);
 		//SoundManager.instance.PlaySFX("GridOn");
 	}
 
