@@ -1265,7 +1265,7 @@ public class GachaInfoCanvas : MonoBehaviour
 		CheckNeedRefreshTurn();
 
 		// 그리고 하는건 에너지 팝업 체크
-		if (CurrencyData.instance.energy == 0)
+		if (CurrencyData.instance.energy <= _listBetValue[_currentBetRateIndex])
 			CashShopData.instance.CheckStartEvent(CashShopData.eEventStartCondition.SpinZero);
 	}
 	#endregion
