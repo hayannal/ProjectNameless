@@ -11,6 +11,7 @@ public class FindMonsterRoomGround : MonoBehaviour
 	public GameObject monsterPrefab;
 	public GameObject transportEffectPrefab;
 	public GameObject attackEffectPrefab;
+	public GameObject goldEffectPrefab;
 
 	public Canvas worldCanvas;
 	public Transform[] worldButtonTransformList;
@@ -157,6 +158,13 @@ public class FindMonsterRoomGround : MonoBehaviour
 			return;
 		}
 
+		Timing.RunCoroutine(ReactionProcess(index, stageBetTableData));
+	}
+
+	IEnumerator<float> ReactionProcess(int index, StageBetTableData stageBetTableData)
+	{
+		yield return Timing.WaitForSeconds(0.15f);
+
 		// 성공이면 다이모션으로 넘어가면 되려나
 		bool success = (Random.value > 0.5f);
 		if (success)
@@ -165,7 +173,10 @@ public class FindMonsterRoomGround : MonoBehaviour
 			for (int i = 0; i < _listRandomObject.Count; ++i)
 			{
 				if (i == index)
+				{
+					BattleInstanceManager.instance.GetCachedObject(goldEffectPrefab, _listRandomObject[i].transform.position + Vector3.up, goldEffectPrefab.transform.rotation, cachedTransform);
 					continue;
+				}
 
 				_listRandomObject[i].SetActive(false);
 				BattleInstanceManager.instance.GetCachedObject(transportEffectPrefab, _listRandomObject[i].transform.position + Vector3.up, Quaternion.identity, cachedTransform);
