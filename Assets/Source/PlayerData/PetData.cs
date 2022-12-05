@@ -9,11 +9,17 @@ public class PetData
 	public ObscuredString petId;
 
 	ObscuredInt _count;
+	ObscuredInt _step;
+	ObscuredInt _heart;
 	public int count { get { return _count; } }
+	public int step { get { return _step; } }
+	public int heart { get { return _heart; } }
 
 	// 메인 공격력 스탯 및 랜덤옵 합산
 	ObscuredInt _mainStatusValue = 0;
 	public int mainStatusValue { get { return _mainStatusValue; } }
+
+	public static string KeyStep = "stp";
 
 	public static string GetAddressByPetId(string petId)
 	{
@@ -31,12 +37,35 @@ public class PetData
 		return UIString.instance.GetString(petTableData.nameId);
 	}
 
+	public void Initialize(int count, int heart, Dictionary<string, string> customData)
+	{
+		int step = 0;
+		if (customData.ContainsKey(KeyStep))
+		{
+			int intValue = 0;
+			if (int.TryParse(customData[KeyStep], out intValue))
+				step = intValue;
+		}
+		
+		_count = count;
+		_step = step;
+		_heart = heart;
+
+		// 이후 Status 계산
+		RefreshCachedStatus();
+	}
+
 	public void SetCount(int count)
 	{
 		_count = count;
 
 		// 이후 Status 계산
 		RefreshCachedStatus();
+	}
+
+	public void SetHeart(int heart)
+	{
+		_heart = heart;
 	}
 
 	void RefreshCachedStatus()
@@ -46,10 +75,24 @@ public class PetData
 		// base
 		_mainStatusValue = cachedPetTableData.accumulatedAtk;
 
+		int applyCount = _count;
+		PetCountTableData petCountTableData = TableDataManager.instance.FindPetCountTableData(cachedPetTableData.star, step);
+		if (petCountTableData != null)
+		{
+			if (applyCount > petCountTableData.max)
+				applyCount = petCountTableData.max;
+		}
+
 		// multiple
-		_mainStatusValue *= _count;
+		_mainStatusValue *= applyCount;
 	}
 
+	public void OnMaxLevelUp(int targetStep)
+	{
+		_step = targetStep;
+		RefreshCachedStatus();
+		PetManager.instance.OnChangedStatus();
+	}
 
 
 

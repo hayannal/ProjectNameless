@@ -82,7 +82,8 @@ public class PetManager : MonoBehaviour
 			PetData newPetData = new PetData();
 			newPetData.uniqueId = userInventory[i].ItemInstanceId;
 			newPetData.petId = userInventory[i].ItemId;
-			newPetData.SetCount((userInventory[i].RemainingUses != null) ? (int)userInventory[i].RemainingUses : 0);
+			int heart = FindHeartValue(playerStatistics, newPetData.petId);
+			newPetData.Initialize((userInventory[i].RemainingUses != null) ? (int)userInventory[i].RemainingUses : 0, heart, userInventory[i].CustomData);
 			_listPetData.Add(newPetData);
 		}
 
@@ -127,6 +128,17 @@ public class PetManager : MonoBehaviour
 
 		// status
 		RefreshCachedStatus();
+	}
+
+	int FindHeartValue(List<StatisticValue> playerStatistics, string petId)
+	{
+		string id = string.Format("zzHeart_{0}", petId);
+		for (int i = 0; i < playerStatistics.Count; ++i)
+		{
+			if (playerStatistics[i].StatisticName == id)
+				return playerStatistics[i].Value;
+		}
+		return 0;
 	}
 
 	public void ClearInventory()
@@ -202,7 +214,7 @@ public class PetManager : MonoBehaviour
 			//dailySearchCount += 1;
 		}
 		else
-			dailySearchCount = 0;
+			dailyHeartCount = 0;
 	}
 
 	public void OnRecvDailyHeartInfo(string lastHeartTimeString)
@@ -387,6 +399,9 @@ public class PetManager : MonoBehaviour
 				{
 					if (listItemInstance[i].RemainingUses - listItemInstance[i].UsesIncrementedBy == currentPetData.count)
 						currentPetData.SetCount((int)listItemInstance[i].RemainingUses);
+
+					// 펫은 수량이 바뀌어도 스탯에 적용해야한다.
+					OnChangedStatus();
 				}
 			}
 			else
@@ -394,7 +409,7 @@ public class PetManager : MonoBehaviour
 				PetData newPetData = new PetData();
 				newPetData.uniqueId = listItemInstance[i].ItemInstanceId;
 				newPetData.petId = listItemInstance[i].ItemId;
-				newPetData.SetCount((listItemInstance[i].RemainingUses != null) ? (int)listItemInstance[i].RemainingUses : 0);
+				newPetData.Initialize((listItemInstance[i].RemainingUses != null) ? (int)listItemInstance[i].RemainingUses : 0, 0, listItemInstance[i].CustomData);
 				_listPetData.Add(newPetData);
 
 				// 없는 펫이 추가될땐 스탯부터 다 다시 계산해야한다.

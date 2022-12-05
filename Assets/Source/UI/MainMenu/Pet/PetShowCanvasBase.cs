@@ -14,6 +14,7 @@ public class PetShowCanvasBase : MonoBehaviour
 	public float infoCameraFov = 43.0f;
 	public float charactorY = 180.0f;
 
+	public PetActor currentCanvasPetActor { get { return _petActor; } }
 	protected PetActor _petActor;
 
 	#region Info Camera
@@ -297,6 +298,7 @@ public class PetShowCanvasBase : MonoBehaviour
 			randomPosition.z += offset.y * 1.5f;
 			GameObject newObject = BattleInstanceManager.instance.GetCachedObject(_additionalPrefab, randomPosition, Quaternion.Euler(0.0f, UnityEngine.Random.Range(0.0f, 360.0f), 0.0f));
 			newObject.transform.localScale = new Vector3(0.6f, 0.6f, 0.6f);
+			newObject.GetComponent<PetActor>().animator.Play("Idle", 0, UnityEngine.Random.Range(0.0f, 0.8f));
 			_listAdditionalObject.Add(newObject);
 
 			_additionalCount -= 1;

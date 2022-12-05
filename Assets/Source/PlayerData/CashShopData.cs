@@ -71,14 +71,16 @@ public class CashShopData : MonoBehaviour
 	List<ObscuredInt> _listCashConsumeCount = new List<ObscuredInt>();
 	List<string> _listCashConsumeCountKey = new List<string> { "Cash_sSevenTotal", "Cash_sSpellGacha", "Cash_sCharacterGacha", "Cash_sEquipGacha" };
 
-	public enum eCashCountType
+	public enum eCashItemCountType
 	{
 		DailyGold = 0,
+		CaptureBetter = 1,
+		CaptureBest = 2,
 
 		Amount,
 	}
-	List<ObscuredInt> _listCashCount = new List<ObscuredInt>();
-	List<string> _listCashCountKey = new List<string> { "Cash_cDailyGold" };
+	List<ObscuredInt> _listCashItemCount = new List<ObscuredInt>();
+	List<string> _listCashItemCountKey = new List<string> { "Item_cDailyGold", "Item_cCaptureBetter", "Item_cCaptureBest" };
 
 	// 레벨패스에서 받았음을 기억해두는 변수인데 어차피 받을때마다 서버검증 하기때문에 Obscured 안쓰고 그냥 사용하기로 한다.
 	List<int> _listLevelPassReward;
@@ -192,9 +194,9 @@ public class CashShopData : MonoBehaviour
 		_listCashConsumeCount.Clear();
 		for (int i = 0; i < (int)eCashConsumeCountType.Amount; ++i)
 			_listCashConsumeCount.Add(0);
-		_listCashCount.Clear();
-		for (int i = 0; i < (int)eCashCountType.Amount; ++i)
-			_listCashCount.Add(0);
+		_listCashItemCount.Clear();
+		for (int i = 0; i < (int)eCashItemCountType.Amount; ++i)
+			_listCashItemCount.Add(0);
 
 		for (int i = 0; i < userInventory.Count; ++i)
 		{
@@ -228,11 +230,26 @@ public class CashShopData : MonoBehaviour
 				}
 			}
 
-			for (int j = 0; j < _listCashCountKey.Count; ++j)
+			for (int j = 0; j < _listCashItemCountKey.Count; ++j)
 			{
-				if (_listCashCountKey[j] == userInventory[i].ItemId)
+				if (_listCashItemCountKey[j] == userInventory[i].ItemId)
 				{
-					_listCashCount[j] = (userInventory[i].RemainingUses != null) ? (int)userInventory[i].RemainingUses : 0;
+					_listCashItemCount[j] = (userInventory[i].RemainingUses != null) ? (int)userInventory[i].RemainingUses : 0;
+					break;
+				}
+			}
+		}
+
+		for (int i = 0; i < userInventory.Count; ++i)
+		{
+			if (userInventory[i].ItemId.StartsWith("Item_") == false)
+				continue;
+
+			for (int j = 0; j < _listCashItemCountKey.Count; ++j)
+			{
+				if (_listCashItemCountKey[j] == userInventory[i].ItemId)
+				{
+					_listCashItemCount[j] = (userInventory[i].RemainingUses != null) ? (int)userInventory[i].RemainingUses : 0;
 					break;
 				}
 			}
@@ -362,6 +379,29 @@ public class CashShopData : MonoBehaviour
 	{
 		if ((int)cashConsumeCountType < _listCashConsumeCount.Count)
 			_listCashConsumeCount[(int)cashConsumeCountType] -= count;
+	}
+	#endregion
+
+	#region Cash Item
+	public int GetCashItemCount(eCashItemCountType cashItemCountType)
+	{
+		if ((int)cashItemCountType < _listCashItemCount.Count)
+		{
+			return _listCashItemCount[(int)cashItemCountType];
+		}
+		return 0;
+	}
+
+	public void PurchaseCount(eCashItemCountType cashItemCountType, int count)
+	{
+		if ((int)cashItemCountType < _listCashItemCount.Count)
+			_listCashItemCount[(int)cashItemCountType] += count;
+	}
+
+	public void ConsumeCount(eCashItemCountType cashItemCountType, int count)
+	{
+		if ((int)cashItemCountType < _listCashItemCount.Count)
+			_listCashItemCount[(int)cashItemCountType] -= count;
 	}
 	#endregion
 

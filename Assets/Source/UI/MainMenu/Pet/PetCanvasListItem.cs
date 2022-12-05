@@ -23,7 +23,7 @@ public class PetCanvasListItem : MonoBehaviour
 
 	public string petId { get; set; }
 	public int count { get; set; }
-	public void Initialize(PetTableData petTableData, int count, int mainStatusValue, Action<string, int> clickCallback)
+	public void Initialize(PetTableData petTableData, int count, int step, int mainStatusValue, Action<string, int> clickCallback)
 	{
 		petImage.sprite = PetListCanvas.instance.GetSprite(petTableData.spriteName);
 		nameText.SetLocalizedText(UIString.instance.GetString(petTableData.nameId));
@@ -46,9 +46,10 @@ public class PetCanvasListItem : MonoBehaviour
 			noGainGrayImageList[i].color = contains ? Color.white : Color.gray;
 
 		plusCountText.gameObject.SetActive(contains);
-		int maxCount = 20;
+
+		int maxCount = GetMaxCount(petTableData.star, step);
 		if (count > maxCount)
-			plusCountText.text = string.Format("{0} / <color=FF5500>{1}</color>", count, maxCount);
+			plusCountText.text = string.Format("{0} / <color=#FF0000>{1}</color>", count, maxCount);
 		else
 			plusCountText.text = string.Format("{0} / {1}", count, maxCount);
 		atkText.text = mainStatusValue.ToString("N0");
@@ -56,6 +57,14 @@ public class PetCanvasListItem : MonoBehaviour
 		petId = petTableData.petId;
 		this.count = count;
 		_clickAction = clickCallback;
+	}
+
+	public static int GetMaxCount(int star, int step)
+	{
+		PetCountTableData petCountTableData = TableDataManager.instance.FindPetCountTableData(star, step);
+		if (petCountTableData != null)
+			return petCountTableData.max;
+		return TableDataManager.instance.petCountTable.dataArray[0].max;
 	}
 
 	Action<string, int> _clickAction;

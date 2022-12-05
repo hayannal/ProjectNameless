@@ -12,4 +12,12 @@ public class PetInfoGround : MonoBehaviour
 	}
 
 	public PetBattleInfo petBattleInfo;
+
+	public GameObject maxCountUpEffectPrefab;
+	public Transform maxCountUpEffectRootTransform;
+
+	public void ShowMaxCountUpEffect()
+	{
+		BattleInstanceManager.instance.GetCachedObject(maxCountUpEffectPrefab, maxCountUpEffectRootTransform);
+	}
 }

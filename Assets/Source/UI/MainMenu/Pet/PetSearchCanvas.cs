@@ -17,6 +17,7 @@ public class PetSearchCanvas : MonoBehaviour
 
 	#region UI
 	public Button backButton;
+	public GameObject captureButtonObject;
 	public GameObject searchButtonObject;
 	public GameObject inProgressBattleStartButtonObject;
 
@@ -147,6 +148,7 @@ public class PetSearchCanvas : MonoBehaviour
 		if (string.IsNullOrEmpty(PetManager.instance.activePetId))
 			return;
 
+		captureButtonObject.SetActive(true);
 		if (PetManager.instance.IsCachedInProgressGame())
 		{
 			searchButtonObject.SetActive(false);
@@ -163,6 +165,14 @@ public class PetSearchCanvas : MonoBehaviour
 		});
 	}
 
+	public void OnClickCaptureButton()
+	{
+		UIInstanceManager.instance.ShowCanvasAsync("SelectCaptureCanvas", () =>
+		{
+			SelectCaptureCanvas.instance.RefreshInfo(false);
+		});
+	}
+
 	public void OnClickSearchButton()
 	{
 		List<ObscuredString> listPetId = PetManager.instance.GetRandomIdList();
@@ -171,6 +181,7 @@ public class PetSearchCanvas : MonoBehaviour
 
 	void OnRecvStartSearch()
 	{
+		captureButtonObject.SetActive(false);
 		searchButtonObject.SetActive(false);
 		PetSearchGround.instance.StartSearch();
 	}
@@ -179,6 +190,7 @@ public class PetSearchCanvas : MonoBehaviour
 	{
 		// 이미 저장되어있는 정보로 search된 펫을 보여주는 상태일거다. 전투 시작 누르면 전투 페이즈로 넘기면 된다.
 		backButton.interactable = false;
+		captureButtonObject.SetActive(false);
 		inProgressBattleStartButtonObject.SetActive(false);
 		StartAttackPhase();
 	}

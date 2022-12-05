@@ -2,14 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Purchasing;
 
-public class SelectCaptureCanvasListItem : MonoBehaviour
+public class BuyCaptureCanvasListItem : SimpleCashCanvas
 {
 	public int index;
 	public Text unlimitedText;
 	public Text countText;
 	public Text nameText;
 	public Text shopCountText;
+	public Text freeText;
 
 	void OnEnable()
 	{
@@ -22,8 +24,13 @@ public class SelectCaptureCanvasListItem : MonoBehaviour
 
 		nameText.SetLocalizedText(UIString.instance.GetString(petCaptureTableData.nameId));
 
+		freeText.gameObject.SetActive(index == 0);
+		shopCountText.gameObject.SetActive(index != 0);
 		if (index != 0)
-			shopCountText.text = petCaptureTableData.count.ToString("N0");
+		{
+			shopCountText.text = string.Format("X {0:N0}", petCaptureTableData.count);
+			RefreshPrice(petCaptureTableData.shopProductId, 0, 0.0f);
+		}
 
 		int count = 0;
 		switch (index)
@@ -32,19 +39,10 @@ public class SelectCaptureCanvasListItem : MonoBehaviour
 			case 2: count = CashShopData.instance.GetCashItemCount(CashShopData.eCashItemCountType.CaptureBest); break;
 		}
 		countText.text = count.ToString("N0");
-		_empty = (count == 0);
-		if (index == 0) _empty = false;
 	}
 
-	bool _empty = false;
-	public void OnClickButton()
+	public void OnClickUnlimitedButton()
 	{
-		if (_empty)
-		{
-			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughCapture"), 2.0f);
-			return;
-		}
-
-		SelectCaptureCanvas.instance.OnClickSelectItem(index);
+		ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_CannotBuyCaptureBasic"), 2.0f);
 	}
 }

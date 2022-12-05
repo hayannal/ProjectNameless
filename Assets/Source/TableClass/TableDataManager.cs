@@ -62,6 +62,8 @@ public class TableDataManager : MonoBehaviour
 	public GachaActorTable gachaActorTable;
 
 	public PetTable petTable;
+	public PetCountTable petCountTable;
+	public PetCaptureTable petCaptureTable;
 
 	void Awake()
 	{
@@ -526,6 +528,24 @@ public class TableDataManager : MonoBehaviour
 			if (petTable.dataArray[i].petId == petId)
 				return petTable.dataArray[i];
 		}
+		return null;
+	}
+
+	public PetCountTableData FindPetCountTableData(int star, int step)
+	{
+		for (int i = 0; i < petCountTable.dataArray.Length; ++i)
+		{
+			if (petCountTable.dataArray[i].star == star && petCountTable.dataArray[i].step == step)
+				return petCountTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public PetCaptureTableData FindPetCaptureTableDataByIndex(int index)
+	{
+		if (index < petCaptureTable.dataArray.Length)
+			return petCaptureTable.dataArray[index];
+
 		return null;
 	}
 }
