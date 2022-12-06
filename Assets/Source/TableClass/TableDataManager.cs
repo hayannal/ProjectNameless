@@ -548,4 +548,14 @@ public class TableDataManager : MonoBehaviour
 
 		return null;
 	}
+
+	public PetCaptureTableData FindCaptureTableDataByShopProductId(string shopProductId)
+	{
+		for (int i = 0; i < petCaptureTable.dataArray.Length; ++i)
+		{
+			if (petCaptureTable.dataArray[i].shopProductId == shopProductId)
+				return petCaptureTable.dataArray[i];
+		}
+		return null;
+	}
 }

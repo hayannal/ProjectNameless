@@ -479,32 +479,32 @@ public class PetSearchGround : MonoBehaviour
 		}
 
 		_listCaptureId.Clear();
-		
+
+		int highestStar = 1;
 		if (enemy1PetBattleInfo.IsDie())
 		{
 			// 현재 펫의 등급과 포획도구 확률표에 따라 확률을 구하고
-			float captureRate = 0.5f;
+			float captureRate = GetCaptureRate(enemy1PetBattleInfo.star, _captureIndex);
 			if (Random.value <= captureRate)
 			{
 				_listCaptureId.Add(_enemy1PetActor.actorId);
+				if (highestStar < enemy1PetBattleInfo.star)
+					highestStar = enemy1PetBattleInfo.star;
 			}
 			else
-			{
 				_enemy1Failure = true;
-			}
-
 		}
 		if (enemy2PetBattleInfo.IsDie())
 		{
-			float captureRate = 0.5f;
+			float captureRate = GetCaptureRate(enemy2PetBattleInfo.star, _captureIndex);
 			if (Random.value <= captureRate)
 			{
 				_listCaptureId.Add(_enemy2PetActor.actorId);
+				if (highestStar < enemy2PetBattleInfo.star)
+					highestStar = enemy2PetBattleInfo.star;
 			}
 			else
-			{
 				_enemy2Failure = true;
-			}
 		}
 
 		_success = false;
@@ -525,8 +525,9 @@ public class PetSearchGround : MonoBehaviour
 			_success = true;
 			if (CheckExtraGain())
 			{
+				// 얻은거에서 제일 높은 등급을 구해 이거 이하의 동료들이 따라오게 해야한다.
 				_existExtraGain = true;
-				List<ObscuredString> listExtraGainId = PetManager.instance.GetExtraGainIdList(false);
+				List<ObscuredString> listExtraGainId = PetManager.instance.GetExtraGainIdList(false, highestStar);
 				PrepareExtraGain(false, listExtraGainId);
 				for (int i = 0; i < listExtraGainId.Count; ++i)
 					_listCaptureId.Add(listExtraGainId[i]);
@@ -539,6 +540,26 @@ public class PetSearchGround : MonoBehaviour
 				PlayFabApiManager.instance.RequestEndPet(_captureIndex, _listCaptureId, OnRecvCapture);
 			}
 		}
+	}
+
+	float GetCaptureRate(int star, int captureIndex)
+	{
+		PetCaptureTableData petCaptureTableData = TableDataManager.instance.FindPetCaptureTableDataByIndex(captureIndex);
+		if (petCaptureTableData == null)
+			return 0.0f;
+
+		switch (star)
+		{
+			case 1:
+			case 2:
+			case 3:
+				return petCaptureTableData.starProb_3;
+			case 4:
+				return petCaptureTableData.starProb_4;
+			case 5:
+				return petCaptureTableData.starProb_5;
+		}
+		return 0.0f;	
 	}
 
 	bool CheckExtraGain()

@@ -702,7 +702,10 @@ public class CashShopData : MonoBehaviour
 		{
 			CostumeCanvasListItem.ExternalRetryPurchase(pendingProduct);
 		}
-
+		else if (pendingProduct.definition.id.Contains("petcapture_"))
+		{
+			BuyCaptureCanvasListItem.ExternalRetryPurchase(pendingProduct);
+		}
 
 		return true;
 	}

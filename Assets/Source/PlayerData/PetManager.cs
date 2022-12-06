@@ -329,10 +329,48 @@ public class PetManager : MonoBehaviour
 		return _listRandomObscuredId;
 	}
 
-	
+	public string GetRandomResultByStar(int belowStar)
+	{
+		if (_listSearchPetIdInfo == null)
+			_listSearchPetIdInfo = new List<RandomSearchPetIdInfo>();
+		_listSearchPetIdInfo.Clear();
+
+		float sumWeight = 0.0f;
+		for (int i = 0; i < TableDataManager.instance.petTable.dataArray.Length; ++i)
+		{
+			if (TableDataManager.instance.petTable.dataArray[i].star > belowStar)
+				continue;
+			
+			// meetWeight대신에 균등하게 굴린다. 인자로 들어오는 등급 이하라면 다 동등한 확률이다.
+			sumWeight += 1.0f;
+			RandomSearchPetIdInfo newInfo = new RandomSearchPetIdInfo();
+			newInfo.id = TableDataManager.instance.petTable.dataArray[i].petId;
+			newInfo.sumWeight = sumWeight;
+			_listSearchPetIdInfo.Add(newInfo);
+		}
+
+		if (_listSearchPetIdInfo.Count == 0)
+			return "";
+
+		int index = -1;
+		float random = UnityEngine.Random.Range(0.0f, _listSearchPetIdInfo[_listSearchPetIdInfo.Count - 1].sumWeight);
+		for (int i = 0; i < _listSearchPetIdInfo.Count; ++i)
+		{
+			if (random <= _listSearchPetIdInfo[i].sumWeight)
+			{
+				index = i;
+				break;
+			}
+		}
+		if (index == -1)
+			return "";
+		return _listSearchPetIdInfo[index].id;
+	}
+
+
 
 	List<string> _listTempPetId = new List<string>();
-	public List<ObscuredString> GetExtraGainIdList(bool oneForFailure)
+	public List<ObscuredString> GetExtraGainIdList(bool oneForFailure, int belowStar = 0)
 	{
 		_listRandomObscuredId.Clear();
 
@@ -349,8 +387,18 @@ public class PetManager : MonoBehaviour
 		else
 		{
 			int count = UnityEngine.Random.Range(BattleInstanceManager.instance.GetCachedGlobalConstantInt("PetExtraGainMin"), BattleInstanceManager.instance.GetCachedGlobalConstantInt("PetExtraGainMax") + 1);
-			for (int i = 0; i < count; ++i)
-				_listRandomObscuredId.Add(GetRandomResult());
+			if (belowStar == 0)
+			{
+				// belowStar가 0이라는건 belowStar 를 안쓰겠다는거와 같으니 기본 랜덤으로 해주고
+				for (int i = 0; i < count; ++i)
+					_listRandomObscuredId.Add(GetRandomResult());
+			}
+			else
+			{
+				// 특정 이하의 star만 원할때는 
+				for (int i = 0; i < count; ++i)
+					_listRandomObscuredId.Add(GetRandomResultByStar(belowStar));
+			}
 		}
 
 		return _listRandomObscuredId;
