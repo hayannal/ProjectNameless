@@ -173,7 +173,7 @@ public class PetShowCanvasBase : MonoBehaviour
 
 		_id = petId;
 		if (count > 1)
-			_additionalCount = count - 1;
+			_additionalCount = Mathf.Min(30, count - 1);
 		else
 			_additionalCount = 0;
 
@@ -196,7 +196,7 @@ public class PetShowCanvasBase : MonoBehaviour
 				if (count > 1)
 				{
 					_additionalPrefab = _dicAdditionalPrefab[petId];
-					_additionalCount = count - 1;
+					_additionalCount = Mathf.Min(30, count - 1);
 					_spawnAdditionalFlag = true;
 				}
 				else
