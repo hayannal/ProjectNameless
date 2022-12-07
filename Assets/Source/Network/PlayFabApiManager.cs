@@ -2897,6 +2897,71 @@ public class PlayFabApiManager : MonoBehaviour
 			HandleCommonError(error);
 		});
 	}
+
+	public void RequestStartPetSale(string startPetSaleId, int givenTime, int coolTime, Action successCallback)
+	{
+		string input = string.Format("{0}_{1}_{2}_{3}", startPetSaleId, givenTime, coolTime, "rdlipasc");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "StartPetSale",
+			FunctionParameter = new { PtsId = startPetSaleId, GiTim = givenTime, CoTim = coolTime, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				jsonResult.TryGetValue("date", out object date);
+				PetManager.instance.OnRecvStartPetSale(startPetSaleId, (string)date);
+
+				jsonResult.TryGetValue("cdate", out object cdate);
+				PetManager.instance.OnRecvCoolTimePetSale((string)cdate);
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
+	public void RequestConsumePetSale(List<ObscuredString> listGainPetId, Action<string> successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string checkSum2 = "";
+		List<ItemGrantRequest> listItemGrantRequest = GenerateGrantRequestInfo(listGainPetId, ref checkSum2, "pet");
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "ConsumePetSale",
+			FunctionParameter = new { Lst = listItemGrantRequest, LstCs = checkSum2 },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				CashShopData.instance.ConsumeFlag(CashShopData.eCashConsumeFlagType.PetSale);
+
+				// Now로 바꿔서 더이상 되돌아올 수 없게 한다. 재접하면 DB갱신되어있을테니 알아서 과거로 처리될거다.
+				PetManager.instance.petSaleExpireTime = ServerTime.UtcNow;
+
+				jsonResult.TryGetValue("itmRet", out object itmRet);
+
+				if (successCallback != null) successCallback.Invoke((string)itmRet);
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
 	#endregion
 
 

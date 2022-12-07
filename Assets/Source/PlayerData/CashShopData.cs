@@ -53,11 +53,12 @@ public class CashShopData : MonoBehaviour
 		SevenSlot1 = 4,
 		SevenSlot2 = 5,
 		SevenSlot3 = 6,
+		PetSale = 7,
 
 		Amount,
 	}
 	List<ObscuredBool> _listCashConsumeFlag = new List<ObscuredBool>();
-	List<string> _listCashConsumeFlagKey = new List<string> { "Cash_sBrokenEnergy", "Cash_sEv4ContiNext", "Cash_sEv5OnePlTwoCash", "Cash_sSevenSlot0", "Cash_sSevenSlot1", "Cash_sSevenSlot2", "Cash_sSevenSlot3" };
+	List<string> _listCashConsumeFlagKey = new List<string> { "Cash_sBrokenEnergy", "Cash_sEv4ContiNext", "Cash_sEv5OnePlTwoCash", "Cash_sSevenSlot0", "Cash_sSevenSlot1", "Cash_sSevenSlot2", "Cash_sSevenSlot3", "Cash_sPetSale" };
 
 	public enum eCashConsumeCountType
 	{
@@ -706,6 +707,10 @@ public class CashShopData : MonoBehaviour
 		{
 			BuyCaptureCanvasListItem.ExternalRetryPurchase(pendingProduct);
 		}
+		else if (pendingProduct.definition.id.Contains("petsale_"))
+		{
+			PetSaleCanvas.ExternalRetryPurchase(pendingProduct);
+		}
 
 		return true;
 	}
@@ -774,6 +779,7 @@ public class CashShopData : MonoBehaviour
 			switch ((eCashConsumeFlagType)i)
 			{
 				case eCashConsumeFlagType.BrokenEnergy:
+				case eCashConsumeFlagType.PetSale:
 					ConsumeItemTableData consumeItemTableData = TableDataManager.instance.FindConsumeItemTableData(_listCashConsumeFlagKey[i]);
 					if (consumeItemTableData != null)
 						itemName = UIString.instance.GetString(consumeItemTableData.name);
@@ -810,7 +816,16 @@ public class CashShopData : MonoBehaviour
 
 			OkCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("ShopUI_NotDoneBuyingProgress", itemName), () =>
 			{
-				BrokenEnergyCanvas.ConsumeProduct();
+				switch ((eCashConsumeFlagType)i)
+				{
+					case eCashConsumeFlagType.BrokenEnergy:
+						BrokenEnergyCanvas.ConsumeProduct();
+						break;
+					case eCashConsumeFlagType.PetSale:
+						PetSaleCanvas.ConsumeProduct();
+						break;
+				}
+				
 			}, -1, true);
 			return true;
 		}

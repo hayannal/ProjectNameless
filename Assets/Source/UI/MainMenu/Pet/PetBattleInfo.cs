@@ -21,6 +21,7 @@ public class PetBattleInfo : MonoBehaviour
 	}
 
 	public int star { get; private set; }
+	public string petId { get; private set; }
 	public void SetInfo(string petId)
 	{
 		PetTableData petTableData = TableDataManager.instance.FindPetTableData(petId);
@@ -33,6 +34,7 @@ public class PetBattleInfo : MonoBehaviour
 	float _fillImageTargetValue = 0.0f;
 	public void SetInfo(PetTableData petTableData)
 	{
+		petId = petTableData.petId;
 		nameText.SetLocalizedText(UIString.instance.GetString(petTableData.nameId));
 		star = petTableData.star;
 		starGridRootObject.SetActive(petTableData.star <= 4);

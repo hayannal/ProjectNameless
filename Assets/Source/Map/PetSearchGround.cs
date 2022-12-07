@@ -487,7 +487,7 @@ public class PetSearchGround : MonoBehaviour
 			float captureRate = GetCaptureRate(enemy1PetBattleInfo.star, _captureIndex);
 			if (Random.value <= captureRate)
 			{
-				_listCaptureId.Add(_enemy1PetActor.actorId);
+				_listCaptureId.Add(enemy1PetBattleInfo.petId);
 				if (highestStar < enemy1PetBattleInfo.star)
 					highestStar = enemy1PetBattleInfo.star;
 			}
@@ -499,7 +499,7 @@ public class PetSearchGround : MonoBehaviour
 			float captureRate = GetCaptureRate(enemy2PetBattleInfo.star, _captureIndex);
 			if (Random.value <= captureRate)
 			{
-				_listCaptureId.Add(_enemy2PetActor.actorId);
+				_listCaptureId.Add(enemy2PetBattleInfo.petId);
 				if (highestStar < enemy2PetBattleInfo.star)
 					highestStar = enemy2PetBattleInfo.star;
 			}

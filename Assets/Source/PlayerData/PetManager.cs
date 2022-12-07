@@ -29,6 +29,12 @@ public class PetManager : MonoBehaviour
 
 	public string activePetId { get; set; }
 
+	#region Pet Sale
+	public ObscuredString petSaleId { get; set; }
+	public DateTime petSaleExpireTime { get; set; }
+	public DateTime petSaleCoolTimeExpireTime { get; set; }
+	#endregion
+
 	public List<PetData> listPetData { get { return _listPetData; } }
 	List<PetData> _listPetData = new List<PetData>();
 	public void OnRecvPetInventory(List<ItemInstance> userInventory, Dictionary<string, UserDataRecord> userData, Dictionary<string, UserDataRecord> userReadOnlyData, List<StatisticValue> playerStatistics)
@@ -122,6 +128,35 @@ public class PetManager : MonoBehaviour
 					for (int i = 0; i < listId.Count; ++i)
 						_listInProgressSearchId.Add(listId[i]);
 				}
+			}
+		}
+		#endregion
+
+		#region Pet Sale
+		petSaleId = "";
+		if (userReadOnlyData.ContainsKey("petSaleId"))
+		{
+			if (string.IsNullOrEmpty(userReadOnlyData["petSaleId"].Value) == false)
+				petSaleId = userReadOnlyData["petSaleId"].Value;
+		}
+
+		if (userReadOnlyData.ContainsKey("petSaleExpDat"))
+		{
+			if (string.IsNullOrEmpty(userReadOnlyData["petSaleExpDat"].Value) == false)
+			{
+				DateTime expireDateTime = new DateTime();
+				if (DateTime.TryParse(userReadOnlyData["petSaleExpDat"].Value, out expireDateTime))
+					petSaleExpireTime = expireDateTime.ToUniversalTime();
+			}
+		}
+
+		if (userReadOnlyData.ContainsKey("petSaleCoolExpDat"))
+		{
+			if (string.IsNullOrEmpty(userReadOnlyData["petSaleCoolExpDat"].Value) == false)
+			{
+				DateTime expireDateTime = new DateTime();
+				if (DateTime.TryParse(userReadOnlyData["petSaleCoolExpDat"].Value, out expireDateTime))
+					petSaleCoolTimeExpireTime = expireDateTime.ToUniversalTime();
 			}
 		}
 		#endregion
@@ -247,6 +282,38 @@ public class PetManager : MonoBehaviour
 		_listInProgressSearchId.Clear();
 		for (int i = 0; i < listRandomId.Count; ++i)
 			_listInProgressSearchId.Add(listRandomId[i]);
+	}
+	#endregion
+
+	#region Pet Sale
+	public void OnRecvStartPetSale(string petSaleId, string petSaleExpireTimeString)
+	{
+		this.petSaleId = petSaleId;
+
+		DateTime petSaleExpireTime = new DateTime();
+		if (DateTime.TryParse(petSaleExpireTimeString, out petSaleExpireTime))
+			this.petSaleExpireTime = petSaleExpireTime.ToUniversalTime();
+	}
+
+	public void OnRecvCoolTimePetSale(string petSaleCoolTimeExpireTimeString)
+	{
+		DateTime petSaleCoolTimeExpireTime = new DateTime();
+		if (DateTime.TryParse(petSaleCoolTimeExpireTimeString, out petSaleCoolTimeExpireTime))
+			this.petSaleCoolTimeExpireTime = petSaleCoolTimeExpireTime.ToUniversalTime();
+	}
+
+	public bool IsPetSale()
+	{
+		if (string.IsNullOrEmpty(petSaleId) == false && ServerTime.UtcNow < petSaleExpireTime)
+			return true;
+		return false;
+	}
+
+	public bool IsCoolTimePetSale()
+	{
+		if (ServerTime.UtcNow < petSaleCoolTimeExpireTime)
+			return true;
+		return false;
 	}
 	#endregion
 

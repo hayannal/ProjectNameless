@@ -64,6 +64,7 @@ public class TableDataManager : MonoBehaviour
 	public PetTable petTable;
 	public PetCountTable petCountTable;
 	public PetCaptureTable petCaptureTable;
+	public PetSaleTable petSaleTable;
 
 	void Awake()
 	{
@@ -555,6 +556,16 @@ public class TableDataManager : MonoBehaviour
 		{
 			if (petCaptureTable.dataArray[i].shopProductId == shopProductId)
 				return petCaptureTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public PetSaleTableData FindPetSaleTableData(int star)
+	{
+		for (int i = 0; i < petSaleTable.dataArray.Length; ++i)
+		{
+			if (petSaleTable.dataArray[i].star == star)
+				return petSaleTable.dataArray[i];
 		}
 		return null;
 	}
