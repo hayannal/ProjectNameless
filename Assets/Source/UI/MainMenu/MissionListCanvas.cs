@@ -9,6 +9,7 @@ public class MissionListCanvas : MonoBehaviour
 	public static MissionListCanvas instance;
 
 	public Text petMenuRemainCount;
+	public Text todayResetRemainTimeText;
 
 	void Awake()
 	{
@@ -49,6 +50,11 @@ public class MissionListCanvas : MonoBehaviour
 			return;
 
 		MainCanvas.instance.OnEnterCharacterMenu(false);
+	}
+
+	void Update()
+	{
+		UpdateResetRemainTime();
 	}
 
 	void RefreshInfo()
@@ -115,5 +121,32 @@ public class MissionListCanvas : MonoBehaviour
 			DelayedLoadingCanvas.Show(false);
 			FadeCanvas.instance.FadeIn(0.5f);
 		});
+	}
+
+
+
+	int _lastRemainTimeSecond = -1;
+	void UpdateResetRemainTime()
+	{
+		if (PetManager.instance.dailyHeartCount == 0)
+		{
+			todayResetRemainTimeText.text = "";
+			_lastRemainTimeSecond = -1;
+			return;
+		}
+
+		if (ServerTime.UtcNow < PlayerData.instance.dayRefreshTime)
+		{
+			System.TimeSpan remainTime = PlayerData.instance.dayRefreshTime - ServerTime.UtcNow;
+			if (_lastRemainTimeSecond != (int)remainTime.TotalSeconds)
+			{
+				todayResetRemainTimeText.text = string.Format("{0:00}:{1:00}:{2:00}", remainTime.Hours, remainTime.Minutes, remainTime.Seconds);
+				_lastRemainTimeSecond = (int)remainTime.TotalSeconds;
+			}
+		}
+		else
+		{
+			todayResetRemainTimeText.text = "";
+		}
 	}
 }
