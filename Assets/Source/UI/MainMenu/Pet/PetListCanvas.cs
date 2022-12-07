@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,6 +20,7 @@ public class PetListCanvas : PetShowCanvasBase
 	public Text todayHeartRemainText;
 	public Text todayHeartRemainCountText;
 	public RectTransform alarmRootTransform;
+	public Text todayHeartResetRemainTimeText;
 
 	public Transform separateLineTransform;
 
@@ -116,6 +118,7 @@ public class PetListCanvas : PetShowCanvasBase
 	void Update()
 	{
 		UpdateAdditionalObject();
+		UpdateHeartResetRemainTime();
 	}
 
 
@@ -231,5 +234,31 @@ public class PetListCanvas : PetShowCanvasBase
 		{
 			UIInstanceManager.instance.ShowCanvasAsync("PetInfoCanvas", null);
 		});
+	}
+
+
+	int _lastRemainTimeSecond = -1;
+	void UpdateHeartResetRemainTime()
+	{
+		if (PetManager.instance.dailyHeartCount == 0)
+		{
+			todayHeartResetRemainTimeText.text = "";
+			_lastRemainTimeSecond = -1;
+			return;
+		}
+
+		if (ServerTime.UtcNow < PlayerData.instance.dayRefreshTime)
+		{
+			System.TimeSpan remainTime = PlayerData.instance.dayRefreshTime - ServerTime.UtcNow;
+			if (_lastRemainTimeSecond != (int)remainTime.TotalSeconds)
+			{
+				todayHeartResetRemainTimeText.text = string.Format("{0:00}:{1:00}:{2:00}", remainTime.Hours, remainTime.Minutes, remainTime.Seconds);
+				_lastRemainTimeSecond = (int)remainTime.TotalSeconds;
+			}
+		}
+		else
+		{
+			todayHeartResetRemainTimeText.text = "";
+		}
 	}
 }
