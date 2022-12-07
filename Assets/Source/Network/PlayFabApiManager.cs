@@ -2826,6 +2826,13 @@ public class PlayFabApiManager : MonoBehaviour
 
 				PetManager.instance.dailySearchCount += 1;
 				PetManager.instance.GetInProgressSearchIdList().Clear();
+
+				switch (captureToolIndex)
+				{
+					case 1: CashShopData.instance.ConsumeCount(CashShopData.eCashItemCountType.CaptureBetter, 1); break;
+					case 2: CashShopData.instance.ConsumeCount(CashShopData.eCashItemCountType.CaptureBest, 1); break;
+				}
+
 				jsonResult.TryGetValue("itmRet", out object itmRet);
 
 				if (successCallback != null) successCallback.Invoke((string)itmRet);
