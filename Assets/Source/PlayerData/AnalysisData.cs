@@ -28,12 +28,14 @@ public class AnalysisData : MonoBehaviour
 	public ObscuredInt analysisExp { get; private set; }
 	public ObscuredInt analysisLevel { get; private set; }
 
+	// stat
+	public ObscuredInt cachedValue { get; set; }
+
 	// 최초로 한번 분석을 시작하기 전까진 false로 되어있다.
 	public ObscuredBool analysisStarted { get; set; }
 	public DateTime analysisStartedTime { get; private set; }
 	public DateTime analysisCompleteTime { get; private set; }
 
-	
 
 	void Update()
 	{
@@ -162,8 +164,21 @@ public class AnalysisData : MonoBehaviour
 				break;
 			}
 		}
+
+		// status
+		RefreshCachedStatus();
 	}
-	
+
+	void RefreshCachedStatus()
+	{
+		cachedValue = 0;
+
+		AnalysisTableData analysisTableData = TableDataManager.instance.FindAnalysisTableData(analysisLevel);
+		if (analysisTableData == null)
+			return;
+		cachedValue = analysisTableData.accumulatedAtk;
+	}
+
 	#region Notification
 	const int AnalysisNotificationId = 10002;
 	public void ReserveAnalysisNotification()
