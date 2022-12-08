@@ -58,6 +58,9 @@ public class ActorStatus : MonoBehaviour
 		_statusBase.valueList[(int)eActorStatus.MaxHp] = 9999.0f;
 		_statusBase.valueList[(int)eActorStatus.Attack] = GetPlayerBaseAttack();
 
+		// analysis
+		_statusBase.valueList[(int)eActorStatus.Attack] += AnalysisData.instance.cachedValue;
+
 		// costume
 		_statusBase.valueList[(int)eActorStatus.Attack] += CostumeManager.instance.cachedValue;
 
