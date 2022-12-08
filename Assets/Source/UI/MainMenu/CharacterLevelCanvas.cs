@@ -240,6 +240,7 @@ public class CharacterLevelCanvas : MonoBehaviour
 		{
 			StatusDetailCanvas.instance.Initialize(6);
 			StatusDetailCanvas.instance.AddStatus("GameUI_Growth", BattleInstanceManager.instance.playerActor.actorStatus.GetPlayerBaseAttack());
+			StatusDetailCanvas.instance.AddStatus("GameUI_Analysis", AnalysisData.instance.cachedValue);
 			StatusDetailCanvas.instance.AddStatus("GameUI_Costume", CostumeManager.instance.cachedValue);
 			StatusDetailCanvas.instance.AddStatus("GameUI_Skill", SpellManager.instance.cachedValue);
 			StatusDetailCanvas.instance.AddStatus("GameUI_Companion", CharacterManager.instance.cachedValue);

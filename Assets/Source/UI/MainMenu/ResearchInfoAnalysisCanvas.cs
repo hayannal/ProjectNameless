@@ -27,6 +27,8 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 	public DOTweenAnimation expGaugeColorTween;
 	public Image expGaugeEndPointImage;
 
+	public Text atkText;
+
 	public GameObject switchGroupObject;
 	public SwitchAnim alarmSwitch;
 	public Text alarmOnOffText;
@@ -161,6 +163,8 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 		expGaugeSlider.value = _currentExpPercent;
 		expGaugeImage.color = maxReached ? new Color(1.0f, 1.0f, 0.25f, 1.0f) : _defaultExpGaugeColor;
 		expGaugeEndPointImage.gameObject.SetActive(false);
+
+		atkText.text = analysisTableData.accumulatedAtk.ToString("N0");
 
 		int maxTimeMinute = analysisTableData.maxTime / 60;
 		if (maxTimeMinute < 60)
