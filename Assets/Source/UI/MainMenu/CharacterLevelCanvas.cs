@@ -240,12 +240,15 @@ public class CharacterLevelCanvas : MonoBehaviour
 		{
 			StatusDetailCanvas.instance.Initialize(6);
 			StatusDetailCanvas.instance.AddStatus("GameUI_Growth", BattleInstanceManager.instance.playerActor.actorStatus.GetPlayerBaseAttack());
-			StatusDetailCanvas.instance.AddStatus("GameUI_Analysis", AnalysisData.instance.cachedValue);
 			StatusDetailCanvas.instance.AddStatus("GameUI_Costume", CostumeManager.instance.cachedValue);
 			StatusDetailCanvas.instance.AddStatus("GameUI_Skill", SpellManager.instance.cachedValue);
-			StatusDetailCanvas.instance.AddStatus("GameUI_Companion", CharacterManager.instance.cachedValue);
-			StatusDetailCanvas.instance.AddStatus("GameUI_Pet", PetManager.instance.cachedValue);
-			StatusDetailCanvas.instance.AddStatus("GameUI_Equipment", 0);
+			if (CharacterManager.instance.listCharacterData.Count > 0)
+				StatusDetailCanvas.instance.AddStatus("GameUI_Companion", CharacterManager.instance.cachedValue);
+			if (PetManager.instance.listPetData.Count > 0)
+				StatusDetailCanvas.instance.AddStatus("GameUI_Pet", PetManager.instance.cachedValue);
+			if (false)
+				StatusDetailCanvas.instance.AddStatus("GameUI_Equipment", 0);
+			StatusDetailCanvas.instance.AddStatus("GameUI_Analysis", AnalysisData.instance.cachedValue);
 		});
 	}
 
