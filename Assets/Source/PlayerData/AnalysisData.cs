@@ -135,6 +135,7 @@ public class AnalysisData : MonoBehaviour
 		// 일반적인 분석 후 경험치 쌓이는 곳에서 호출된다.
 		analysisExp += addExp;
 		RefreshAnalysisLevel();
+		PlayerData.instance.OnChangedStatus();
 	}
 
 	public void OnLevelUp(int targetLevel)

@@ -16,6 +16,9 @@ public class AnalysisResultCanvas : MonoBehaviour
 
 	public Text levelValueText;
 	public DOTweenAnimation levelValueTweenAnimation;
+	public RectTransform atkGroupRectTransform;
+	public Text atkValueText;
+	public DOTweenAnimation atkValueTweenAnimation;
 	public RectTransform timeGroupRectTransform;
 	public Text timeValueText;
 	public DOTweenAnimation timeValueTweenAnimation;
@@ -70,6 +73,15 @@ public class AnalysisResultCanvas : MonoBehaviour
 		Timing.RunCoroutine(RewardProcess());
 	}
 
+	public static string GetMaxTimeText(int tableMaxTime)
+	{
+		int maxTimeMinute = tableMaxTime / 60;
+		if (maxTimeMinute < 60)
+			return string.Format("{0}m", maxTimeMinute);
+		else
+			return string.Format("{0}h", maxTimeMinute / 60);
+	}
+
 	int _addLevel;
 	bool _goldBigSuccess;
 	int _addGold;
@@ -88,12 +100,14 @@ public class AnalysisResultCanvas : MonoBehaviour
 			if (prevAnalysisTableData != null)
 			{
 				levelValueText.text = _prevAnalysisLevel.ToString();
-				timeValueText.text = AnalysisLevelUpCanvas.GetMaxTimeText(prevAnalysisTableData.maxTime);
+				atkValueText.text = prevAnalysisTableData.accumulatedAtk.ToString("N0");
+				timeValueText.text = GetMaxTimeText(prevAnalysisTableData.maxTime);
 				prevMaxTime = prevAnalysisTableData.maxTime;
 			}
 			levelUpEffectTextObject.SetActive(false);
 			levelUpRootRectTransform.gameObject.SetActive(true);
 			AnalysisTableData analysisTableData = TableDataManager.instance.FindAnalysisTableData(AnalysisData.instance.analysisLevel);
+			atkGroupRectTransform.gameObject.SetActive(true);
 			timeGroupRectTransform.gameObject.SetActive(analysisTableData != null && prevMaxTime != analysisTableData.maxTime);
 			yield return Timing.WaitForSeconds(0.4f);
 
@@ -106,14 +120,17 @@ public class AnalysisResultCanvas : MonoBehaviour
 			yield return Timing.WaitForSeconds(levelChangeTime);
 
 			// 레벨 마지막으로 변하는 타이밍 맞춰서 시간도 변경
+			if (atkGroupRectTransform.gameObject.activeSelf)
+				atkValueText.text = analysisTableData.accumulatedAtk.ToString("N0");
 			if (timeGroupRectTransform.gameObject.activeSelf)
-				timeValueText.text = AnalysisLevelUpCanvas.GetMaxTimeText(analysisTableData.maxTime);
+				timeValueText.text = GetMaxTimeText(analysisTableData.maxTime);
 
 			// 여긴 변경 후 잠시 대기
 			yield return Timing.WaitForSeconds((_addLevel > 1) ? 0.3f : 0.05f);
 
 			// 숫자 스케일 점프 애니
 			levelValueTweenAnimation.DORestart();
+			atkValueTweenAnimation.DORestart();
 			timeValueTweenAnimation.DORestart();
 			yield return Timing.WaitForSeconds(0.6f);
 
