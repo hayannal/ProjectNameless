@@ -40,6 +40,7 @@ public class TableDataManager : MonoBehaviour
 	public SpellTotalTable spellTotalTable;
 	public ShopSpellTable shopSpellTable;
 	public ShopActorTable shopActorTable;
+	public ShopEquipTable shopEquipTable;
 
 	public EventPointTypeTable eventPointTypeTable;
 	public EventPointRewardTable eventPointRewardTable;
@@ -60,6 +61,7 @@ public class TableDataManager : MonoBehaviour
 
 	public GachaSpellTable gachaSpellTable;
 	public GachaActorTable gachaActorTable;
+	public GachaEquipTable gachaEquipTable;
 
 	public PetTable petTable;
 	public PetCountTable petCountTable;
@@ -380,6 +382,14 @@ public class TableDataManager : MonoBehaviour
 	{
 		if (index < shopActorTable.dataArray.Length)
 			return shopActorTable.dataArray[index];
+
+		return null;
+	}
+
+	public ShopEquipTableData FindShopEquipTableDataByIndex(int index)
+	{
+		if (index < shopEquipTable.dataArray.Length)
+			return shopEquipTable.dataArray[index];
 
 		return null;
 	}
