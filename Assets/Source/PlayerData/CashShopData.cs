@@ -761,7 +761,7 @@ public class CashShopData : MonoBehaviour
 				}
 			}
 
-			OkCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("ShopUI_NotDoneBuyingProgress", itemName), () =>
+			OkCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("ShopUI_NotDoneConsumeProgress", itemName), () =>
 			{
 				ConsumeProductProcessor.instance.ProcessConsume();
 			}, -1, true);
@@ -814,7 +814,7 @@ public class CashShopData : MonoBehaviour
 			if (process == false)
 				continue;
 
-			OkCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("ShopUI_NotDoneBuyingProgress", itemName), () =>
+			OkCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("ShopUI_NotDoneConsumeProgress", itemName), () =>
 			{
 				switch ((eCashConsumeFlagType)i)
 				{
@@ -848,7 +848,7 @@ public class CashShopData : MonoBehaviour
 			if (process == false)
 				continue;
 
-			OkCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("ShopUI_NotDoneBuyingProgress", itemName), () =>
+			OkCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("ShopUI_NotDoneConsumeProgress", itemName), () =>
 			{
 				// 컨슘은 전용으로 다루는 창이 아니기 때문에 로직으로 따로 구현해야한다.
 				// 뽑기 로직을 간단하게 수행하는 형태일거다.
