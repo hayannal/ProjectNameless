@@ -260,6 +260,28 @@ public class EquipManager : MonoBehaviour
 		}
 	}
 
+	#region Packet
+	public void OnEquip(EquipData equipData)
+	{
+		int equipType = equipData.cachedEquipTableData.equipType;
+		if (_dicEquippedData.ContainsKey(equipType))
+			_dicEquippedData[equipType] = equipData;
+		else
+			_dicEquippedData.Add(equipType, equipData);
+
+		OnChangedStatus();
+	}
+
+	public void OnUnequip(EquipData equipData)
+	{
+		int equipType = equipData.cachedEquipTableData.equipType;
+		if (_dicEquippedData.ContainsKey(equipType))
+			_dicEquippedData.Remove(equipType);
+
+		OnChangedStatus();
+	}
+	#endregion
+
 
 
 
