@@ -128,7 +128,7 @@ public class MissionListCanvas : MonoBehaviour
 	int _lastRemainTimeSecond = -1;
 	void UpdateResetRemainTime()
 	{
-		if (PetManager.instance.dailyHeartCount == 0)
+		if (PetManager.instance.dailySearchCount == 0)
 		{
 			todayResetRemainTimeText.text = "";
 			_lastRemainTimeSecond = -1;
