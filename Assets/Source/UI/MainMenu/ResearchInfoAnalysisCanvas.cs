@@ -151,12 +151,7 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 			return;
 
 		_analysisTableData = analysisTableData;
-
-		bool hideLevelUpButton = false;
 		bool maxReached = (_currentLevel == BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxAnalysisLevel"));
-		//if (maxReached) hideLevelUpButton = true;
-		if (AnalysisData.instance.analysisStarted == false) hideLevelUpButton = true;
-		levelUpButtonObject.SetActive(!hideLevelUpButton);
 
 		// exp는 누적된 시간을 구해와서 현재 Required 에 맞게 변환해서 표시하면 된다.
 		CalcExpPercent();
