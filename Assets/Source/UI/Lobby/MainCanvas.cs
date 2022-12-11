@@ -284,7 +284,7 @@ public class MainCanvas : MonoBehaviour
 	{
 		teamButtonObject.SetActive(CharacterManager.instance.listCharacterData.Count > 0);
 		petButtonObject.SetActive(PetManager.instance.listPetData.Count > 0);
-		equipButtonObject.SetActive(false);
+		equipButtonObject.SetActive(EquipManager.instance.inventoryItemCount > 0);
 	}
 
 	public void OnClickCharacterButton()
@@ -316,6 +316,11 @@ public class MainCanvas : MonoBehaviour
 	public void OnClickPetButton()
 	{
 		UIInstanceManager.instance.ShowCanvasAsync("PetListCanvas", null);
+	}
+
+	public void OnClickEquipButton()
+	{
+		MissionListCanvas.ShowCanvasAsyncWithPrepareGround("EquipGroundCanvas", null);
 	}
 
 	public void OnEnterCharacterMenu(bool enter)

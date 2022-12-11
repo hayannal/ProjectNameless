@@ -371,14 +371,12 @@ public class QuickOutline : MonoBehaviour
 	
 	bool LoadCachedSmoothNormals()
 	{
-		/*
 		EquipPrefabInfo equipPrefabInfo = GetComponent<EquipPrefabInfo>();
 		if (equipPrefabInfo == null)
 			return false;
 
 		if (equipPrefabInfo.quickOutlineNormalData == null)
 			return false;
-		*/
 
 		// 미리 한번 foreach 돌려서 MeshFilter의 인덱스를 구성해둔다.
 		// 메시 내용물이 변하지 않는 이상 같은 인덱스 리스트를 리턴하게 될거다.
@@ -402,7 +400,6 @@ public class QuickOutline : MonoBehaviour
 				continue;
 			}
 
-			/*
 			// Retrieve or generate smooth normals
 			var index = bakeKeys.IndexOf(meshFilter.sharedMesh);
 			if (index >= 0 && index < equipPrefabInfo.quickOutlineNormalData.bakeValues.Count)
@@ -414,7 +411,6 @@ public class QuickOutline : MonoBehaviour
 			{
 				Debug.LogErrorFormat("Invalid Cached Normal Data! name = {0} / index = {1}", gameObject.name, index);
 			}
-			*/
 		}
 
 		return true;

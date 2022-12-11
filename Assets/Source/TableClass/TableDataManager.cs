@@ -66,6 +66,8 @@ public class TableDataManager : MonoBehaviour
 	public PetCaptureTable petCaptureTable;
 	public PetSaleTable petSaleTable;
 
+	public EquipTable equipTable;
+
 	void Awake()
 	{
 		instance = this;
@@ -566,6 +568,16 @@ public class TableDataManager : MonoBehaviour
 		{
 			if (petSaleTable.dataArray[i].star == star)
 				return petSaleTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public EquipTableData FindEquipTableData(string equipId)
+	{
+		for (int i = 0; i < equipTable.dataArray.Length; ++i)
+		{
+			if (equipTable.dataArray[i].equipId == equipId)
+				return equipTable.dataArray[i];
 		}
 		return null;
 	}

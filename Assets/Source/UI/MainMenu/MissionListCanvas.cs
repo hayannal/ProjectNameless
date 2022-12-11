@@ -80,7 +80,7 @@ public class MissionListCanvas : MonoBehaviour
 		}
 	}
 
-	void ShowCanvasAsyncWithPrepareGround(string canvasAddress, System.Action callback)
+	public static void ShowCanvasAsyncWithPrepareGround(string canvasAddress, System.Action callback)
 	{
 		if (ContentsPrefabGroup.instance == null)
 		{
