@@ -2973,6 +2973,90 @@ public class PlayFabApiManager : MonoBehaviour
 	#endregion
 
 
+	#region Equip
+	public void RequestEquip(EquipData equipData, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}_{2}", (string)equipData.equipId, equipData.cachedEquipTableData.equipType, "kszqproi");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "EquipPos",
+			FunctionParameter = new { Id = (string)equipData.uniqueId, Pos = equipData.cachedEquipTableData.equipType, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				EquipManager.instance.OnEquip(equipData);
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
+	public void RequestUnequip(EquipData equipData, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}_{2}", (string)equipData.equipId, equipData.cachedEquipTableData.equipType, "kszqprox");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "UnequipPos",
+			FunctionParameter = new { Id = (string)equipData.uniqueId, Pos = equipData.cachedEquipTableData.equipType, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				EquipManager.instance.OnUnequip(equipData);
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
+	public void RequestLockEquip(EquipData equipData, bool lockState, Action successCallback)
+	{
+		ExecuteCloudScriptRequest request = new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "LockEquip",
+			FunctionParameter = new { Id = (string)equipData.uniqueId, Lck = lockState ? 1 : 0 },
+			GeneratePlayStreamEvent = true,
+		};
+		Action action = () =>
+		{
+			PlayFabClientAPI.ExecuteCloudScript(request, (success) =>
+			{
+				RetrySendManager.instance.OnSuccess();
+				equipData.SetLock(lockState);
+				if (successCallback != null) successCallback.Invoke();
+			}, (error) =>
+			{
+				RetrySendManager.instance.OnFailure();
+			});
+		};
+		RetrySendManager.instance.RequestAction(action, true);
+	}
+	#endregion
+
+
 
 	#region Sample
 	// Sample 1. 콜백도 없고 재전송도 없을땐 이렇게 간단하게 처리

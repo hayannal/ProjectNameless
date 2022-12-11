@@ -57,6 +57,9 @@ public class EquipData
 		}
 		bool invalidEquipOption = false;
 
+		_isLock = lockState;
+		_enhanceLevel = enhan;
+
 		// 이후 Status 계산
 		RefreshCachedStatus();
 	}

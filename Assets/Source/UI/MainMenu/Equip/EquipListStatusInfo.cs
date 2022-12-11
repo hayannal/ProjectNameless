@@ -126,6 +126,17 @@ public class EquipListStatusInfo : MonoBehaviour
 			return;
 		if (_equipData == null)
 			return;
+
+		PlayFabApiManager.instance.RequestEquip(_equipData, () =>
+		{
+			/*
+			if (GuideQuestData.instance.CheckEquipType((TimeSpaceData.eEquipSlotType)_equipData.cachedEquipTableData.equipType))
+				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.EquipType);
+			*/
+
+			// 대부분 다 EquipList가 해야하는 것들이라 ListCanvas에게 알린다.
+			EquipListCanvas.instance.OnEquip(_equipData);
+		});
 	}
 
 	public void OnClickUnequipButton()
@@ -134,6 +145,11 @@ public class EquipListStatusInfo : MonoBehaviour
 			return;
 		if (_equipData == null)
 			return;
+
+		PlayFabApiManager.instance.RequestUnequip(_equipData, () =>
+		{
+			EquipListCanvas.instance.OnUnequip(_equipData);
+		});
 	}
 
 	public void OnClickEnhanceButton()
@@ -146,12 +162,38 @@ public class EquipListStatusInfo : MonoBehaviour
 
 	public void OnClickUnlockButton()
 	{
+		if (_equipData == null)
+			return;
+
+		// 장비가 생성되면 기본이 언락상태고 언락 버튼이 보이게 된다.
+		// 이 회색 언락버튼을 눌러야 lock 상태로 바뀌게 된다.
+		PlayFabApiManager.instance.RequestLockEquip(_equipData, true, () =>
+		{
+			// 장착된 아이템이라면 정보창만 갱신하면 되지만
+			// 장착되지 않은 아이템이라면 하단 그리드도 갱신해야하니 ListCanvas에 알려야한다.
+			equipListItem.Initialize(_equipData, null);
+			RefreshLockInfo();
+			if (!_equipped)
+				EquipListCanvas.instance.RefreshSelectedItem();
+
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("EquipUI_Locked"), 2.0f);
+		});
 	}
 
 	public void OnClickLockButton()
 	{
 		if (_equipData == null)
 			return;
+
+		PlayFabApiManager.instance.RequestLockEquip(_equipData, false, () =>
+		{
+			equipListItem.Initialize(_equipData, null);
+			RefreshLockInfo();
+			if (!_equipped)
+				EquipListCanvas.instance.RefreshSelectedItem();
+
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("EquipUI_Unlocked"), 2.0f);
+		});
 	}
 
 	public void OnClickCloseButton()
