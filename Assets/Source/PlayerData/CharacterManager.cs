@@ -301,7 +301,7 @@ public class CharacterManager : MonoBehaviour
 			}
 
 			// 각각의 확률은 동일한 1.0
-			sumWeight += 1.0f;
+			sumWeight += TableDataManager.instance.actorTable.dataArray[i].charGachaWeight;
 			RandomGachaCharacterId newInfo = new RandomGachaCharacterId();
 			newInfo.actorId = TableDataManager.instance.actorTable.dataArray[i].actorId;
 			newInfo.sumWeight = sumWeight;
