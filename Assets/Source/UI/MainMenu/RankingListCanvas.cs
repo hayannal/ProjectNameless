@@ -43,7 +43,21 @@ public class RankingListCanvas : MonoBehaviour
 		switch (index)
 		{
 			case 0:
-				UIInstanceManager.instance.ShowCanvasAsync("StageRankingCanvas", null);
+				UIInstanceManager.instance.ShowCanvasAsync("StageRankingCanvas", () =>
+				{
+					StageRankingCanvas.instance.RefreshInfo(StageRankingCanvas.eRankType.Stage, RankingData.instance.listDisplayStageRankingInfo);
+				});
+				break;
+			case 1:
+				RankingData.instance.RequestBattlePowerRankingData(() =>
+				{
+					if (StageRankingCanvas.instance != null && StageRankingCanvas.instance.gameObject.activeSelf && StageRankingCanvas.instance.rankType == StageRankingCanvas.eRankType.BattlePower)
+						StageRankingCanvas.instance.RefreshInfo(StageRankingCanvas.eRankType.BattlePower, RankingData.instance.listDisplayPowerRankingInfo);
+				});
+				UIInstanceManager.instance.ShowCanvasAsync("StageRankingCanvas", () =>
+				{
+					StageRankingCanvas.instance.RefreshInfo(StageRankingCanvas.eRankType.BattlePower, RankingData.instance.listDisplayPowerRankingInfo);
+				});
 				break;
 		}
 	}

@@ -333,5 +333,27 @@ public class PlayerData : MonoBehaviour
 
 		if (StageFloorInfoCanvas.instance != null)
 			StageFloorInfoCanvas.instance.RefreshCombatPower();
+
+		RecordHighestBattlePower();
+	}
+
+	bool _waitPacket = false;
+	void RecordHighestBattlePower()
+	{
+		if (_waitPacket)
+			return;
+
+		string stringValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower).ToString("N0");
+		stringValue = stringValue.Replace(",", "");
+		int intValue = 0;
+		int.TryParse(stringValue, out intValue);
+		if (intValue > RankingData.instance.highestBattlePower)
+		{
+			_waitPacket = true;
+			PlayFabApiManager.instance.RequestRecordBattlePower(intValue, () =>
+			{
+				_waitPacket = false;
+			});
+		}
 	}
 }

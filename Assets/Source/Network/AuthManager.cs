@@ -232,6 +232,7 @@ public class AuthManager : MonoBehaviour
 		playerStatisticNames.Add("sevenDaysSumPoint");
 		playerStatisticNames.Add("chtRnkSus");
 		playerStatisticNames.Add("spellLevel");
+		playerStatisticNames.Add("highestBattlePower");
 		for (int i = 0; i < TableDataManager.instance.petTable.dataArray.Length; ++i)
 			playerStatisticNames.Add(string.Format("zzHeart_{0}", TableDataManager.instance.petTable.dataArray[i].petId));
 		/*

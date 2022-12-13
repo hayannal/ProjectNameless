@@ -56,10 +56,7 @@ public class InputNameCanvas : MonoBehaviour
 			ToastCanvas.instance.ShowToast(UIString.instance.GetString("RankUI_NameComplete"), 2.0f);
 			gameObject.SetActive(false);
 			if (StageRankingCanvas.instance != null && StageRankingCanvas.instance.gameObject.activeSelf)
-			{
-				StageRankingCanvas.instance.RefreshGrid();
 				StageRankingCanvas.instance.RefreshInfo();
-			}
 		}, (error) =>
 		{
 			if (error.Error == PlayFab.PlayFabErrorCode.InvalidParams)

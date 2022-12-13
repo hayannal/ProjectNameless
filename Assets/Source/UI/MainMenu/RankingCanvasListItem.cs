@@ -44,7 +44,7 @@ public class RankingCanvasListItem : MonoBehaviour
 
 		nameText.text = displayName;
 
-		valueText.text = string.Format("{0:N0}", value.ToString());
+		valueText.text = string.Format("{0:N0}", value);
 		valueText.color = Color.white;
 	}
 }

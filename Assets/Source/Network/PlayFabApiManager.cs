@@ -270,7 +270,7 @@ public class PlayFabApiManager : MonoBehaviour
 		AnalysisData.instance.OnRecvAnalysisData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 		GuideQuestData.instance.OnRecvGuideQuestData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 		MissionData.instance.OnRecvMissionData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
-		RankingData.instance.OnRecvRankingData(loginResult.InfoResultPayload.TitleData);
+		RankingData.instance.OnRecvRankingData(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 
 		// PlayerData 만 다 받고 처리하고 다른 인벤이나 스펠은 여기서 처리한다.
 		SpellManager.instance.OnRecvSpellInventory(loginResult.InfoResultPayload.UserInventory, loginResult.InfoResultPayload.UserData, loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
@@ -2332,6 +2332,67 @@ public class PlayFabApiManager : MonoBehaviour
 			if (_leaderboardStageSuccessCallback != null)
 				_leaderboardStageSuccessCallback.Invoke(_listResultLeaderboardStage, _listCheatLeaderboardStage);
 		}
+	}
+
+	public void RequestGetRanking(string statisticName, Action<List<PlayerLeaderboardEntry>> successCallback)
+	{
+		PlayerProfileViewConstraints playerProfileViewConstraints = new PlayerProfileViewConstraints();
+		playerProfileViewConstraints.ShowDisplayName = true;
+
+		PlayFabClientAPI.GetLeaderboard(new GetLeaderboardRequest()
+		{
+			MaxResultsCount = 100,
+			ProfileConstraints = playerProfileViewConstraints,
+			StartPosition = 0,
+			StatisticName = statisticName,
+		}, (success) =>
+		{
+			if (successCallback != null) successCallback.Invoke(success.Leaderboard);
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+
+		PlayFabClientAPI.GetLeaderboard(new GetLeaderboardRequest()
+		{
+			MaxResultsCount = 100,
+			ProfileConstraints = playerProfileViewConstraints,
+			StartPosition = 100,
+			StatisticName = statisticName,
+		}, (success) =>
+		{
+			if (successCallback != null) successCallback.Invoke(success.Leaderboard);
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
+	public void RequestRecordBattlePower(int power, Action successCallback)
+	{
+		string input = string.Format("{0}_{1}_{2}", (int)RankingData.instance.recordBattlePowerIndex, power, "efcpujen");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "RecordBattlePower",
+			FunctionParameter = new { Pow = power, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				RankingData.instance.recordBattlePowerIndex += 1;
+				if (RankingData.instance.recordBattlePowerIndex == 100000000) RankingData.instance.recordBattlePowerIndex = 0;
+				RankingData.instance.highestBattlePower = power;
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			//HandleCommonError(error);
+		});
 	}
 	#endregion
 

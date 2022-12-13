@@ -7,6 +7,7 @@ public class StageRankingCanvas : MonoBehaviour
 {
 	public static StageRankingCanvas instance;
 
+	public Text topTitleText;
 	public GameObject emptyRankingObject;
 
 	public Text myNameText;
@@ -25,6 +26,13 @@ public class StageRankingCanvas : MonoBehaviour
 	}
 	CustomItemContainer _container = new CustomItemContainer();
 
+	public enum eRankType
+	{
+		Stage,
+		BattlePower
+	}
+	public eRankType rankType { get; private set; }
+
 	int _defaultFontSize;
 	Color _defaultFontColor;
 	void Awake()
@@ -41,9 +49,6 @@ public class StageRankingCanvas : MonoBehaviour
 
 	void OnEnable()
 	{
-		RefreshGrid();
-		RefreshInfo();
-
 		StackCanvas.Push(gameObject);
 
 		if (DragThresholdController.instance != null)
@@ -58,6 +63,31 @@ public class StageRankingCanvas : MonoBehaviour
 		StackCanvas.Pop(gameObject);
 	}
 
+	
+	public void RefreshInfo(eRankType rankType, List<RankingData.DisplayRankingInfo> listDisplayRankingInfo)
+	{
+		this.rankType = rankType;
+
+		string titleStringId = "";
+		switch (rankType)
+		{
+			case eRankType.Stage: titleStringId = "RankUI_StageRanking"; break;
+			case eRankType.BattlePower: titleStringId = "RankUI_PowerRanking"; break;
+		}
+		topTitleText.SetLocalizedText(UIString.instance.GetString(titleStringId));
+		
+		_listDisplayRankingInfo = listDisplayRankingInfo;
+
+		RefreshInfo();
+	}
+
+	public void RefreshInfo()
+	{
+		RefreshGrid();
+		RefreshMyRank();
+	}
+
+	List<RankingData.DisplayRankingInfo> _listDisplayRankingInfo;
 	List<RankingCanvasListItem> _listRankingCanvasListItem = new List<RankingCanvasListItem>();
 	public void RefreshGrid()
 	{
@@ -65,23 +95,24 @@ public class StageRankingCanvas : MonoBehaviour
 			_listRankingCanvasListItem[i].gameObject.SetActive(false);
 		_listRankingCanvasListItem.Clear();
 
-		if (RankingData.instance.listDisplayStageRankingInfo.Count == 0)
+		if (_listDisplayRankingInfo == null || _listDisplayRankingInfo.Count == 0)
 		{
 			emptyRankingObject.SetActive(true);
 			return;
 		}
 
 		emptyRankingObject.SetActive(false);
-		for (int i = 0; i < RankingData.instance.listDisplayStageRankingInfo.Count; ++i)
+		for (int i = 0; i < _listDisplayRankingInfo.Count; ++i)
 		{
 			RankingCanvasListItem rankingCanvasListItem = _container.GetCachedItem(contentItemPrefab, contentRootRectTransform);
-			rankingCanvasListItem.Initialize(RankingData.instance.listDisplayStageRankingInfo[i].ranking, RankingData.instance.listDisplayStageRankingInfo[i].displayName, RankingData.instance.listDisplayStageRankingInfo[i].value);
+			rankingCanvasListItem.Initialize(_listDisplayRankingInfo[i].ranking, _listDisplayRankingInfo[i].displayName, _listDisplayRankingInfo[i].value);
 			_listRankingCanvasListItem.Add(rankingCanvasListItem);
 		}
 	}
 
-	public void RefreshInfo()
+	public void RefreshMyRank()
 	{
+		#region Name
 		bool noName = string.IsNullOrEmpty(PlayerData.instance.displayName);
 		//noName = true;
 		editButtonObject.SetActive(noName);
@@ -95,12 +126,15 @@ public class StageRankingCanvas : MonoBehaviour
 			myNameText.text = PlayerData.instance.displayName;
 			AlarmObject.Hide(alarmRootTransform);
 		}
+		#endregion
 
-		if (RankingData.instance.listDisplayStageRankingInfo.Count == 0)
+		if (_listDisplayRankingInfo == null || _listDisplayRankingInfo.Count == 0)
 		{
 			myRankText.fontSize = _defaultFontSize;
 			myRankText.color = _defaultFontColor;
 			myRankText.text = "-";
+			myOutOfRankTextObject.SetActive(false);
+			rankSusTextObject.SetActive(false);
 			return;
 		}
 
@@ -113,12 +147,12 @@ public class StageRankingCanvas : MonoBehaviour
 		}
 
 		int myRanking = 0;
-		for (int i = 0; i < RankingData.instance.listDisplayStageRankingInfo.Count; ++i)
+		for (int i = 0; i < _listDisplayRankingInfo.Count; ++i)
 		{
-			if (RankingData.instance.listDisplayStageRankingInfo[i].playFabId != PlayFabApiManager.instance.playFabId)
+			if (_listDisplayRankingInfo[i].playFabId != PlayFabApiManager.instance.playFabId)
 				continue;
 
-			myRanking = RankingData.instance.listDisplayStageRankingInfo[i].ranking;
+			myRanking = _listDisplayRankingInfo[i].ranking;
 			break;
 		}
 		if (myRanking == 0)
