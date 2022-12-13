@@ -21,6 +21,7 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 
 	public SpellBoxResultCanvas spellBoxResultCanvas;
 	public CharacterBoxResultCanvas characterBoxResultCanvas;
+	public EquipBoxResultCanvas equipBoxResultCanvas;
 
 	public CanvasGroup rootCanvasGroup;
 	public GameObject objectRoot;
@@ -48,6 +49,7 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 		// 이걸 막기 위해서 자식 캔버스들을 켜둔채로 프리팹에 적용해두고 시작과 동시에 tween은 오브젝트가 꺼진채로 실행시켜두기로 한다.
 		spellBoxResultCanvas.gameObject.SetActive(false);
 		characterBoxResultCanvas.gameObject.SetActive(false);
+		equipBoxResultCanvas.gameObject.SetActive(false);
 	}
 
 	bool _consumeProcess = false;
@@ -216,6 +218,10 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 					characterBoxResultCanvas.ShowResult(_listItemInstance, _listNewCharacterId, _listTrpCharacterId);
 					characterBoxResultCanvas.gameObject.SetActive(true);
 				}
+				break;
+			case eBoxType.Equip:
+				equipBoxResultCanvas.ShowResult(_listItemInstance);
+				equipBoxResultCanvas.gameObject.SetActive(true);
 				break;
 		}
 	}

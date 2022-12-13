@@ -2974,6 +2974,78 @@ public class PlayFabApiManager : MonoBehaviour
 
 
 	#region Equip
+	public void RequestOpenEquipBox(List<ObscuredString> listEquipId, int baseCount, int price, Action<string> successCallback)
+	{
+		// RandomBoxScreenCanvas에서 컨트롤할거니 여기서는 하지 않는다.
+		//WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}_{2}", baseCount, price, "diowaxpq");
+		string checkSum = CheckSum(input);
+		string checkSum2 = "";
+		List<ItemGrantRequest> listItemGrantRequest = GenerateGrantRequestInfo(listEquipId, ref checkSum2, "equip");
+		ExecuteCloudScriptRequest request = new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "OpenEquipBox",
+			FunctionParameter = new { BasCnt = baseCount, Pr = price, Cs = checkSum, Lst = listItemGrantRequest, LstCs = checkSum2 },
+			GeneratePlayStreamEvent = true,
+		};
+
+		PlayFabClientAPI.ExecuteCloudScript(request, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				//WaitingNetworkCanvas.Show(false);
+
+				CurrencyData.instance.gold -= price;
+
+				jsonResult.TryGetValue("itmRet", out object itmRet);
+
+				if (successCallback != null) successCallback.Invoke((string)itmRet);
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
+	public void RequestConsumeEquipGacha(List<ObscuredString> listEquipId, Action<string> successCallback)
+	{
+		// RandomBoxScreenCanvas에서 컨트롤할거니 여기서는 하지 않는다.
+		//WaitingNetworkCanvas.Show(true);
+
+		string checkSum2 = "";
+		List<ItemGrantRequest> listItemGrantRequest = GenerateGrantRequestInfo(listEquipId, ref checkSum2, "equip");
+		ExecuteCloudScriptRequest request = new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "ConsumeEquipGacha",
+			FunctionParameter = new { Lst = listItemGrantRequest, LstCs = checkSum2 },
+			GeneratePlayStreamEvent = true,
+		};
+
+		PlayFabClientAPI.ExecuteCloudScript(request, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				//WaitingNetworkCanvas.Show(false);
+
+				CashShopData.instance.ConsumeCount(CashShopData.eCashConsumeCountType.EquipGacha, CashShopData.instance.GetConsumeCount(CashShopData.eCashConsumeCountType.EquipGacha));
+
+				jsonResult.TryGetValue("itmRet", out object itmRet);
+
+				if (successCallback != null) successCallback.Invoke((string)itmRet);
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
 	public void RequestEquip(EquipData equipData, Action successCallback)
 	{
 		WaitingNetworkCanvas.Show(true);

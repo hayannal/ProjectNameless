@@ -29,7 +29,20 @@ public class EquipCanvasListItem : MonoBehaviour
 			equipIconImage.sprite = sprite;
 		});
 
-		switch (equipData.cachedEquipTableData.grade)
+		InitializeGrade(equipData.cachedEquipTableData.grade, false);
+		RefreshStatus();
+
+		for (int i = 0; i < optionObjectList.Length; ++i)
+			optionObjectList[i].SetActive(false);
+
+		equippedText.gameObject.SetActive(false);
+		selectObject.SetActive(false);
+		_clickAction = clickCallback;
+	}
+
+	public void InitializeGrade(int grade, bool questionEquip = false)
+	{
+		switch (grade)
 		{
 			case 0:
 				blurImage.color = new Color(0.5f, 0.5f, 0.5f, 0.0f);
@@ -62,14 +75,20 @@ public class EquipCanvasListItem : MonoBehaviour
 				lineColorImage.color = new Color(1.0f, 0.5f, 0.0f);
 				break;
 		}
-		RefreshStatus();
 
-		for (int i = 0; i < optionObjectList.Length; ++i)
-			optionObjectList[i].SetActive(false);
+		if (questionEquip == false)
+			return;
 
-		equippedText.gameObject.SetActive(false);
-		selectObject.SetActive(false);
-		_clickAction = clickCallback;
+		// 특별히 이름 자리에 등급을 표시한다.
+		//nameText.SetLocalizedText(string.Format("<size=30>{0}</size>", UIString.instance.GetString(string.Format("GameUI_CharGrade{0}", grade))));
+		//levelObject.SetActive(false);
+		//recommandedText.gameObject.SetActive(false);
+
+		AddressableAssetLoadManager.GetAddressableSprite("Portrait_Nobody", "Icon", (sprite) =>
+		{
+			equipIconImage.sprite = null;
+			equipIconImage.sprite = sprite;
+		});
 	}
 
 	// 변할 수 있는 정보들만 따로 빼둔다.

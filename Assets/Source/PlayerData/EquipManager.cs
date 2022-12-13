@@ -190,7 +190,7 @@ public class EquipManager : MonoBehaviour
 
 
 
-	EquipData FindEquipData(string uniqueId, eEquipSlotType equipSlotType)
+	public EquipData FindEquipData(string uniqueId, eEquipSlotType equipSlotType)
 	{
 		List<EquipData> listEquipData = GetEquipListByType(equipSlotType);
 		for (int i = 0; i < listEquipData.Count; ++i)
@@ -286,6 +286,139 @@ public class EquipManager : MonoBehaviour
 
 
 	#region Grant
+	class RandomGachaEquipGrade
+	{
+		public int grade;
+		public float sumWeight;
+	}
+	List<RandomGachaEquipGrade> _listGachaEquipGrade = null;
+	class RandomGachaEquipId
+	{
+		public string equipId;
+		public float sumWeight;
+	}
+	List<RandomGachaEquipId> _listGachaEquipId = null;
+	public string GetRandomGachaResult()
+	{
+		// 등급별 확률을 구해야한다.
+		if (_listGachaEquipGrade == null)
+			_listGachaEquipGrade = new List<RandomGachaEquipGrade>();
+		_listGachaEquipGrade.Clear();
+
+		float sumWeight = 0.0f;
+		for (int i = 0; i < TableDataManager.instance.gachaEquipTable.dataArray.Length; ++i)
+		{
+			// 기본 prob로 돌리면 된다.
+			float weight = TableDataManager.instance.gachaEquipTable.dataArray[i].prob;
+			if (weight <= 0.0f)
+				continue;
+
+			sumWeight += weight;
+			RandomGachaEquipGrade newInfo = new RandomGachaEquipGrade();
+			newInfo.grade = TableDataManager.instance.gachaEquipTable.dataArray[i].grade;
+			newInfo.sumWeight = sumWeight;
+			_listGachaEquipGrade.Add(newInfo);
+		}
+		if (_listGachaEquipGrade.Count == 0)
+			return "";
+
+		int index = -1;
+		float random = UnityEngine.Random.Range(0.0f, _listGachaEquipGrade[_listGachaEquipGrade.Count - 1].sumWeight);
+		for (int i = 0; i < _listGachaEquipGrade.Count; ++i)
+		{
+			if (random <= _listGachaEquipGrade[i].sumWeight)
+			{
+				index = i;
+				break;
+			}
+		}
+		if (index == -1)
+			return "";
+		int selectedGrade = _listGachaEquipGrade[index].grade;
+
+		// 등급이 결정되었으면 등급안에서 다시 굴려야한다.
+		if (_listGachaEquipId == null)
+			_listGachaEquipId = new List<RandomGachaEquipId>();
+		_listGachaEquipId.Clear();
+
+		sumWeight = 0.0f;
+		for (int i = 0; i < TableDataManager.instance.equipTable.dataArray.Length; ++i)
+		{
+			if (TableDataManager.instance.equipTable.dataArray[i].grade != selectedGrade)
+				continue;
+
+			sumWeight += TableDataManager.instance.equipTable.dataArray[i].equipGachaWeight;
+			RandomGachaEquipId newInfo = new RandomGachaEquipId();
+			newInfo.equipId = TableDataManager.instance.equipTable.dataArray[i].equipId;
+			newInfo.sumWeight = sumWeight;
+			_listGachaEquipId.Add(newInfo);
+		}
+		if (_listGachaEquipId.Count == 0)
+			return "";
+
+		index = -1;
+		random = UnityEngine.Random.Range(0.0f, _listGachaEquipId[_listGachaEquipId.Count - 1].sumWeight);
+		for (int i = 0; i < _listGachaEquipId.Count; ++i)
+		{
+			if (random <= _listGachaEquipId[i].sumWeight)
+			{
+				index = i;
+				break;
+			}
+		}
+		if (index == -1)
+			return "";
+		return _listGachaEquipId[index].equipId;
+	}
+
+	List<ObscuredString> _listRandomObscuredId = new List<ObscuredString>();
+	public List<ObscuredString> GetRandomIdList(int count)
+	{
+		_listRandomObscuredId.Clear();
+
+		for (int i = 0; i < count; ++i)
+			_listRandomObscuredId.Add(GetRandomGachaResult());
+
+		return _listRandomObscuredId;
+	}
+
+
+
+	public List<ItemInstance> OnRecvItemGrantResult(string jsonItemGrantResults, int expectCount = 0)
+	{
+		List<ItemInstance> listItemInstance = PlayFabApiManager.instance.DeserializeItemGrantResult(jsonItemGrantResults);
+
+		int totalCount = 0;
+		for (int i = 0; i < listItemInstance.Count; ++i)
+		{
+			EquipTableData equipTableData = TableDataManager.instance.FindEquipTableData(listItemInstance[i].ItemId);
+			if (equipTableData == null)
+				continue;
+
+			++totalCount;
+		}
+		if (expectCount != 0 && totalCount != expectCount)
+			return null;
+
+		for (int i = 0; i < listItemInstance.Count; ++i)
+		{
+			EquipTableData equipTableData = TableDataManager.instance.FindEquipTableData(listItemInstance[i].ItemId);
+			if (equipTableData == null)
+				continue;
+
+			EquipData newEquipData = new EquipData();
+			newEquipData.uniqueId = listItemInstance[i].ItemInstanceId;
+			newEquipData.equipId = listItemInstance[i].ItemId;
+			newEquipData.Initialize(listItemInstance[i].CustomData);
+			_listEquipData[newEquipData.cachedEquipTableData.equipType].Add(newEquipData);
+
+			// 보유 공격력이 없으니 호출할 필요가 없다.
+			//OnChangedStatus();
+		}
+		return listItemInstance;
+	}
+
+
 	// 로비 포탈 검사할땐 for loop돌면서 newEquip 있는지 확인하는 거보다 플래그 하나 검사하는게 훨씬 편하다.
 	public bool grantNewEquip { get; set; }
 	#endregion

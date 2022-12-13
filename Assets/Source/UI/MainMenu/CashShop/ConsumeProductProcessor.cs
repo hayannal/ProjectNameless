@@ -74,6 +74,9 @@ public class ConsumeProductProcessor : MonoBehaviour
 			case "Cash_sCharacterGacha":
 				ConsumeCharacterGacha(firstCount);
 				break;
+			case "Cash_sEquipGacha":
+				ConsumeEquipGacha(firstCount);
+				break;
 		}
 	}
 
@@ -158,6 +161,45 @@ public class ConsumeProductProcessor : MonoBehaviour
 
 		if (RandomBoxScreenCanvas.instance != null)
 			RandomBoxScreenCanvas.instance.OnRecvResult(RandomBoxScreenCanvas.eBoxType.Character, listItemInstance);
+
+		if (MainCanvas.instance != null)
+			MainCanvas.instance.RefreshMenuButton();
+	}
+	#endregion
+
+	#region Equip
+	void ConsumeEquipGacha(int itemCount)
+	{
+		// 연출 및 보상 처리. 100개씩 뽑으면 느릴 수 있으니 패킷 대기 없이 바로 시작한다.
+		UIInstanceManager.instance.ShowCanvasAsync("RandomBoxScreenCanvas", () =>
+		{
+			// 남은 Consume이 있다면 다시 Consume 처리할 수 있도록 Callback을 설정해둔다.
+			if (_dicConsumeItem.Count > 0)
+			{
+				RandomBoxScreenCanvas.instance.SetCloseCallback(() =>
+				{
+					_readyForConsume = true;
+				});
+			}
+
+			// 연출창 시작과 동시에 패킷을 보내고
+			List<ObscuredString> listEquipId = EquipManager.instance.GetRandomIdList(itemCount);
+			_count = listEquipId.Count;
+			PlayFabApiManager.instance.RequestConsumeEquipGacha(listEquipId, OnRecvResultEquip);
+		});
+	}
+
+	void OnRecvResultEquip(string itemGrantString)
+	{
+		if (itemGrantString == "")
+			return;
+
+		List<ItemInstance> listItemInstance = EquipManager.instance.OnRecvItemGrantResult(itemGrantString, _count);
+		if (listItemInstance == null)
+			return;
+
+		if (RandomBoxScreenCanvas.instance != null)
+			RandomBoxScreenCanvas.instance.OnRecvResult(RandomBoxScreenCanvas.eBoxType.Equip, listItemInstance);
 
 		if (MainCanvas.instance != null)
 			MainCanvas.instance.RefreshMenuButton();
