@@ -315,7 +315,18 @@ public class MainCanvas : MonoBehaviour
 
 	public void OnClickPetButton()
 	{
-		UIInstanceManager.instance.ShowCanvasAsync("PetListCanvas", null);
+		if (PetSpriteContainer.instance == null)
+		{
+			DelayedLoadingCanvas.Show(true);
+			AddressableAssetLoadManager.GetAddressableGameObject("PetSpriteContainer", "", (prefab) =>
+			{
+				BattleInstanceManager.instance.GetCachedObject(prefab, null);
+				DelayedLoadingCanvas.Show(false);
+				UIInstanceManager.instance.ShowCanvasAsync("PetListCanvas", null);
+			});
+		}
+		else
+			UIInstanceManager.instance.ShowCanvasAsync("PetListCanvas", null);
 	}
 
 	public void OnClickEquipButton()

@@ -59,6 +59,21 @@ public class RankingListCanvas : MonoBehaviour
 					StageRankingCanvas.instance.RefreshInfo(StageRankingCanvas.eRankType.BattlePower, RankingData.instance.listDisplayPowerRankingInfo);
 				});
 				break;
+			case 2:
+				// 펫은 각각 따로 호출해야해서 창에서 탭 바꿀때 얻어오는 형태로 만들어본다.
+				if (PetSpriteContainer.instance == null)
+				{
+					DelayedLoadingCanvas.Show(true);
+					AddressableAssetLoadManager.GetAddressableGameObject("PetSpriteContainer", "", (prefab) =>
+					{
+						BattleInstanceManager.instance.GetCachedObject(prefab, null);
+						DelayedLoadingCanvas.Show(false);
+						UIInstanceManager.instance.ShowCanvasAsync("PetRankingCanvas", null);
+					});
+				}
+				else
+					UIInstanceManager.instance.ShowCanvasAsync("PetRankingCanvas", null);
+				break;
 		}
 	}
 }

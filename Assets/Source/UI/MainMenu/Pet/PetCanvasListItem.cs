@@ -25,7 +25,7 @@ public class PetCanvasListItem : MonoBehaviour
 	public int count { get; set; }
 	public void Initialize(PetTableData petTableData, int count, int step, int mainStatusValue, Action<string, int> clickCallback)
 	{
-		petImage.sprite = PetListCanvas.instance.GetSprite(petTableData.spriteName);
+		petImage.sprite = PetSpriteContainer.instance.FindSprite(petTableData.spriteName);
 		nameText.SetLocalizedText(UIString.instance.GetString(petTableData.nameId));
 
 		starGridRootObject.SetActive(petTableData.star <= 4);

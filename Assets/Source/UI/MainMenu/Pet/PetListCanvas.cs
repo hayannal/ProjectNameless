@@ -13,9 +13,7 @@ public class PetListCanvas : PetShowCanvasBase
 {
 	public static PetListCanvas instance;
 
-	public Sprite[] spriteList;
 	public CurrencySmallInfo currencySmallInfo;
-
 	public GameObject todayHeartRootObject;
 	public Text todayHeartRemainText;
 	public Text todayHeartRemainCountText;
@@ -121,16 +119,6 @@ public class PetListCanvas : PetShowCanvasBase
 		UpdateHeartResetRemainTime();
 	}
 
-
-	public Sprite GetSprite(string spriteName)
-	{
-		for (int i = 0; i < spriteList.Length; ++i)
-		{
-			if (spriteList[i].name == spriteName)
-				return spriteList[i];
-		}
-		return null;
-	}
 
 	public static int GetTodayRemainHeart()
 	{

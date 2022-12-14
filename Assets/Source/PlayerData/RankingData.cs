@@ -180,7 +180,7 @@ public class RankingData : MonoBehaviour
 	// 두번으로 나눠받아야하니 이렇게 처리한다.
 	int _leaderboardPowerIndex = 0;
 	List<PlayerLeaderboardEntry> _listResultLeaderboardPower;
-	public DateTime _lastBattlePowerDateTime;
+	DateTime _lastBattlePowerDateTime;
 	List<DisplayRankingInfo> _listDisplayPowerRankingInfo = new List<DisplayRankingInfo>();
 	public List<DisplayRankingInfo> listDisplayPowerRankingInfo { get { return _listDisplayPowerRankingInfo; } }
 	public void RequestBattlePowerRankingData(Action successCallback)
@@ -229,6 +229,71 @@ public class RankingData : MonoBehaviour
 			RecreateRankingData(_listResultLeaderboardPower, _listDisplayPowerRankingInfo);
 			if (_powerRankSuccessCallback != null) _powerRankSuccessCallback.Invoke();
 		}
+	}
+	#endregion
+
+
+	#region Pet Heart
+	// 각각의 펫에 따라 랭킹을 따로 받아야하니 이렇게 Dictionary에 넣고 관리하기로 한다.
+	public class PetRankingInfo
+	{
+		public int leaderboardPacketIndex = 0;
+		public List<PlayerLeaderboardEntry> listResultLeaderboard;
+		public DateTime lastDateTime;
+		List<DisplayRankingInfo> _listDisplayRankingInfo = new List<DisplayRankingInfo>();
+		public List<DisplayRankingInfo> listDisplayRankingInfo { get { return _listDisplayRankingInfo; } }
+		public Action<List<RankingData.DisplayRankingInfo>> rankSuccessCallback;
+	}
+	Dictionary<string, PetRankingInfo> _dicPetRankingInfo = new Dictionary<string, PetRankingInfo>();
+	public void RequestPetRankingData(string petId, Action<List<RankingData.DisplayRankingInfo>> successCallback)
+	{
+		PetRankingInfo info = null;
+		if (_dicPetRankingInfo.ContainsKey(petId))
+			info = _dicPetRankingInfo[petId];
+		else
+		{
+			info = new PetRankingInfo();
+			_dicPetRankingInfo.Add(petId, info);
+		}
+
+		if (info.listDisplayRankingInfo.Count > 0 && ServerTime.UtcNow < info.lastDateTime + TimeSpan.FromMinutes(5))
+		{
+			if (successCallback != null) successCallback.Invoke(info.listDisplayRankingInfo);
+			return;
+		}
+
+		info.leaderboardPacketIndex = 0;
+		info.rankSuccessCallback = successCallback;
+
+		string statName = string.Format("zzHeart_{0}", petId);
+		PlayFabApiManager.instance.RequestGetRanking(statName, (leaderboard) =>
+		{
+			if (info.leaderboardPacketIndex == 0)
+			{
+				if (info.listResultLeaderboard == null)
+					info.listResultLeaderboard = new List<PlayerLeaderboardEntry>();
+				info.listResultLeaderboard.Clear();
+
+				info.listResultLeaderboard.AddRange(leaderboard);
+				++info.leaderboardPacketIndex;
+			}
+			else if (info.leaderboardPacketIndex == 1)
+			{
+				info.listResultLeaderboard.AddRange(leaderboard);
+				++info.leaderboardPacketIndex;
+
+				if (info.leaderboardPacketIndex == 2)
+				{
+					RecreateRankingData(info.listResultLeaderboard, info.listDisplayRankingInfo);
+					if (info.rankSuccessCallback != null) info.rankSuccessCallback.Invoke(info.listDisplayRankingInfo);
+				}
+			}
+			else if (info.leaderboardPacketIndex == 2)
+			{
+				// something wrong
+			}
+		});
+		info.lastDateTime = ServerTime.UtcNow;
 	}
 	#endregion
 }
