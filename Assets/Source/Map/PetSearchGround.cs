@@ -205,7 +205,7 @@ public class PetSearchGround : MonoBehaviour
 		{
 			_firstPetTransform = newPetActor.cachedTransform;
 			newPetActor.cachedTransform.position = questionPositionTransform.position;
-			newPetActor.cachedTransform.rotation = Quaternion.Euler(0.0f, 180.0f, 0.0f);
+			newPetActor.cachedTransform.rotation = Quaternion.Euler(0.0f, 200.0f, 0.0f);
 			newPetActor.cachedTransform.DOLocalMoveY(0.0f, 0.4f).SetEase(Ease.InCirc);
 
 			firstGetPetBattleInfo.SetInfo(PetManager.instance.activePetId);
