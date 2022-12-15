@@ -88,8 +88,7 @@ public class PetManager : MonoBehaviour
 			PetData newPetData = new PetData();
 			newPetData.uniqueId = userInventory[i].ItemInstanceId;
 			newPetData.petId = userInventory[i].ItemId;
-			int heart = FindHeartValue(playerStatistics, newPetData.petId);
-			newPetData.Initialize((userInventory[i].RemainingUses != null) ? (int)userInventory[i].RemainingUses : 0, heart, userInventory[i].CustomData);
+			newPetData.Initialize((userInventory[i].RemainingUses != null) ? (int)userInventory[i].RemainingUses : 0, 0, userInventory[i].CustomData);
 			_listPetData.Add(newPetData);
 		}
 
@@ -163,6 +162,16 @@ public class PetManager : MonoBehaviour
 
 		// status
 		RefreshCachedStatus();
+	}
+
+	// 통계 개수 제한때문에 이렇게 별도로 호출해서 초기화 하는데
+	// 혹시라도 기본 초기화에서 같이 필요하게 되면 
+	// 추가로 받는 통계 기다렸다가 PlayerData.instance.OnRecvPlayerData 처리하는 부분에서 같이 처리하면 될거다.
+	// 하트 호감도는 스탯에 영향 주는게 아니라서 이렇게 별도로 호출해도 상관없다.
+	public void OnRecvAdditionalStatistics(List<StatisticValue> playerStatistics)
+	{
+		for (int i = 0; i < _listPetData.Count; ++i)
+			_listPetData[i].SetHeart(FindHeartValue(playerStatistics, _listPetData[i].petId));
 	}
 
 	int FindHeartValue(List<StatisticValue> playerStatistics, string petId)
