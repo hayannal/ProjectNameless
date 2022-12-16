@@ -223,7 +223,8 @@ public class PlayFabApiManager : MonoBehaviour
 	// 각종 필요한 모든 Entity Objects들을 요청해두기로 한다.
 	int _requestCountForGetPlayerData = 0;
 	LoginResult _loginResult;
-	List<StatisticValue> _additionalPlayerStatistics;
+	List<StatisticValue> _additional1PlayerStatistics;
+	List<StatisticValue> _additional2PlayerStatistics;
 #if USE_TITLE_PLAYER_ENTITY
 	GetObjectsResponse _titlePlayerEntityObject;
 #endif
@@ -338,12 +339,20 @@ public class PlayFabApiManager : MonoBehaviour
 
 		// 로그인할때 한번에 요청할 수 있는 통계 개수가 최대 25라서 이렇게 별도로 요청해서 담아두기로 한다.
 		List<string> playerStatisticNames = new List<string>();
-		for (int i = 0; i < TableDataManager.instance.petTable.dataArray.Length; ++i)
+		for (int i = 0; i < 25; ++i)
 			playerStatisticNames.Add(string.Format("zzHeart_{0}", TableDataManager.instance.petTable.dataArray[i].petId));
 		PlayFabClientAPI.GetPlayerStatistics(new GetPlayerStatisticsRequest()
 		{
 			StatisticNames = playerStatisticNames,
-		}, OnGetAdditionalPlayerStatistics, OnRecvPlayerDataFailure);
+		}, OnGetAdditional1PlayerStatistics, OnRecvPlayerDataFailure);
+		++_requestCountForGetPlayerData;
+		playerStatisticNames.Clear();
+		for (int i = 25; i < TableDataManager.instance.petTable.dataArray.Length; ++i)
+			playerStatisticNames.Add(string.Format("zzHeart_{0}", TableDataManager.instance.petTable.dataArray[i].petId));
+		PlayFabClientAPI.GetPlayerStatistics(new GetPlayerStatisticsRequest()
+		{
+			StatisticNames = playerStatisticNames,
+		}, OnGetAdditional2PlayerStatistics, OnRecvPlayerDataFailure);
 		++_requestCountForGetPlayerData;
 
 		// 서버의 utcTime도 받아두기로 한다. 그래서 클라가 가지고 있는 utcTime과 차이를 구해놓고 이후 클라의 utcNow를 얻을때 보정에 쓰도록 한다.
@@ -408,9 +417,17 @@ public class PlayFabApiManager : MonoBehaviour
 		CheckCompleteRecvPlayerData();
 	}
 
-	void OnGetAdditionalPlayerStatistics(GetPlayerStatisticsResult result)
+	void OnGetAdditional1PlayerStatistics(GetPlayerStatisticsResult result)
 	{
-		_additionalPlayerStatistics = result.Statistics;
+		_additional1PlayerStatistics = result.Statistics;
+
+		--_requestCountForGetPlayerData;
+		CheckCompleteRecvPlayerData();
+	}
+
+	void OnGetAdditional2PlayerStatistics(GetPlayerStatisticsResult result)
+	{
+		_additional2PlayerStatistics = result.Statistics;
 
 		--_requestCountForGetPlayerData;
 		CheckCompleteRecvPlayerData();
@@ -723,7 +740,7 @@ public class PlayFabApiManager : MonoBehaviour
 		ClearCliSusQueue();
 		enableCliSusQueue = true;
 		PlayerData.instance.OnRecvPlayerStatistics(_loginResult.InfoResultPayload.PlayerStatistics);
-		PetManager.instance.OnRecvAdditionalStatistics(_additionalPlayerStatistics);
+		PetManager.instance.OnRecvAdditionalStatistics(_additional1PlayerStatistics, _additional2PlayerStatistics);
 		/*
 		TimeSpaceData.instance.OnRecvEquipInventory(_loginResult.InfoResultPayload.UserInventory, _loginResult.InfoResultPayload.UserData, _loginResult.InfoResultPayload.UserReadOnlyData);
 		*/

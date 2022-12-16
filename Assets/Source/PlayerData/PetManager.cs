@@ -168,19 +168,24 @@ public class PetManager : MonoBehaviour
 	// 혹시라도 기본 초기화에서 같이 필요하게 되면 
 	// 추가로 받는 통계 기다렸다가 PlayerData.instance.OnRecvPlayerData 처리하는 부분에서 같이 처리하면 될거다.
 	// 하트 호감도는 스탯에 영향 주는게 아니라서 이렇게 별도로 호출해도 상관없다.
-	public void OnRecvAdditionalStatistics(List<StatisticValue> playerStatistics)
+	public void OnRecvAdditionalStatistics(List<StatisticValue> additional1PlayerStatistics, List<StatisticValue> additional2PlayerStatistics)
 	{
 		for (int i = 0; i < _listPetData.Count; ++i)
-			_listPetData[i].SetHeart(FindHeartValue(playerStatistics, _listPetData[i].petId));
+			_listPetData[i].SetHeart(FindHeartValue(additional1PlayerStatistics, additional2PlayerStatistics, _listPetData[i].petId));
 	}
 
-	int FindHeartValue(List<StatisticValue> playerStatistics, string petId)
+	int FindHeartValue(List<StatisticValue> additional1PlayerStatistics, List<StatisticValue> additional2PlayerStatistics, string petId)
 	{
 		string id = string.Format("zzHeart_{0}", petId);
-		for (int i = 0; i < playerStatistics.Count; ++i)
+		for (int i = 0; i < additional1PlayerStatistics.Count; ++i)
 		{
-			if (playerStatistics[i].StatisticName == id)
-				return playerStatistics[i].Value;
+			if (additional1PlayerStatistics[i].StatisticName == id)
+				return additional1PlayerStatistics[i].Value;
+		}
+		for (int i = 0; i < additional2PlayerStatistics.Count; ++i)
+		{
+			if (additional2PlayerStatistics[i].StatisticName == id)
+				return additional2PlayerStatistics[i].Value;
 		}
 		return 0;
 	}
