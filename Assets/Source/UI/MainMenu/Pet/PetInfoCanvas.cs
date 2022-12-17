@@ -14,7 +14,8 @@ public class PetInfoCanvas : MonoBehaviour
 
 	public CurrencySmallInfo currencySmallInfo;
 	public GameObject todayHeartObject;
-	public GameObject dragRectObject;
+	public GameObject todayHeartButtonObject;
+	public GameObject todayHeartPassBonusObject;
 	public RectTransform alarmRootTransform;
 
 	public Text nameText;
@@ -137,7 +138,8 @@ public class PetInfoCanvas : MonoBehaviour
 	{
 		bool showHeart = _contains && PetListCanvas.CheckTodayHeart();
 		todayHeartObject.SetActive(showHeart);
-		dragRectObject.SetActive(showHeart);
+		todayHeartButtonObject.SetActive(showHeart);
+		todayHeartPassBonusObject.SetActive(showHeart && PetManager.instance.IsPetPass());
 		if (showHeart)
 			AlarmObject.Show(alarmRootTransform);
 		else
@@ -300,21 +302,20 @@ public class PetInfoCanvas : MonoBehaviour
 		PetListCanvas.instance.OnDragRect(baseEventData);
 	}
 
-	bool _wait = false;
-	public void OnHeartDragRect(BaseEventData baseEventData)
+	public void OnClickHeartButton()
 	{
-		if (_wait)
-			return;
-
-		//Debug.Log("Heart Darg On");
-		_wait = true;
-		PlayFabApiManager.instance.RequestHeartPet(_petData, _petData.heart + 1, () =>
+		string message = UIString.instance.GetString("PetUI_UseTodayHeartConfirm");
+		if (PetManager.instance.IsPetPass())
+			message = string.Format("{0}\n{1}", message, UIString.instance.GetString("PetUI_UseTodayHeartThree"));
+		YesNoCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), message, () =>
 		{
-			_wait = false;
-			PetListCanvas.instance.currentCanvasPetActor.animator.Play("Heart");
-			heartImageEffectObject.SetActive(true);
-			RefreshHeart();
-			MainCanvas.instance.RefreshPetAlarmObject();
+			PlayFabApiManager.instance.RequestHeartPet(_petData, _petData.heart + 1, () =>
+			{
+				PetListCanvas.instance.currentCanvasPetActor.animator.Play("Heart");
+				heartImageEffectObject.SetActive(true);
+				RefreshHeart();
+				MainCanvas.instance.RefreshPetAlarmObject();
+			});
 		});
 	}
 
