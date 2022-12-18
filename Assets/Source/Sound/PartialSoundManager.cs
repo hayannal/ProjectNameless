@@ -76,23 +76,7 @@ public partial class SoundManager : MonoBehaviour
 	#region Bgm Helper
 	public void PlayLobbyBgm(float fadeTime = 2.0f)
 	{
-		/*
-		ChapterTableData chapterTableData = TableDataManager.instance.FindChapterTableData(PlayerData.instance.selectedChapter);
-		if (chapterTableData == null)
-			return;
-		PlayBgm(chapterTableData.chapterMusic, fadeTime);
-		*/
-	}
-
-	public void PlayBattleBgm(string actorId, float fadeTime = 2.0f)
-	{
-		ActorTableData actorTableData = TableDataManager.instance.FindActorTableData(actorId);
-		if (actorTableData != null && string.IsNullOrEmpty(actorTableData.battltMusicOverriding) == false)
-		{
-			PlayBgm(actorTableData.battltMusicOverriding, fadeTime);
-			return;
-		}
-		PlayBgm("BGM_ChapterBattle", fadeTime);
+		PlayBgm("BGM_Lobby", fadeTime);
 	}
 
 	public void PlayBossBgm(float fadeTime = 2.0f)
@@ -102,7 +86,7 @@ public partial class SoundManager : MonoBehaviour
 
 	public void PlayNodeWarBgm(float fadeTime = 2.0f)
 	{
-		PlayBgm("BGM_NodeWar", fadeTime);
+		//PlayBgm("BGM_NodeWar", fadeTime);
 	}
 	#endregion
 }
