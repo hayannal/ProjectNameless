@@ -56,7 +56,7 @@ public class PetShowCanvasBase : MonoBehaviour
 			_prevEnvironmentSettingObject = StageGround.instance.DisableCurrentEnvironmentSetting();
 			if (_groundTransform == null)
 			{
-				_groundTransform = BattleInstanceManager.instance.GetCachedObject(CommonMenuGroup.instance.petInfoGroundPrefab, _rootOffsetPosition, Quaternion.identity).transform;
+				_groundTransform = BattleInstanceManager.instance.GetCachedObject(ContentsPrefabGroup.instance.petInfoGroundPrefab, _rootOffsetPosition, Quaternion.identity).transform;
 				_environmentSetting = _groundTransform.GetComponentInChildren<EnvironmentSetting>();
 				_defaultLightIntensity = _environmentSetting.defaultDirectionalLightIntensity;
 			}

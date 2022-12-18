@@ -485,6 +485,9 @@ public class CashShopData : MonoBehaviour
 	#region Event Start
 	public void CheckStartEvent(eEventStartCondition eventStartCondition)
 	{
+		if (PlayerData.instance.downloadConfirmed == false)
+			return;
+
 		for (int i = 0; i < TableDataManager.instance.eventTypeTable.dataArray.Length; ++i)
 		{
 			if ((eEventStartCondition)TableDataManager.instance.eventTypeTable.dataArray[i].triggerCondition != eventStartCondition && (eEventStartCondition)TableDataManager.instance.eventTypeTable.dataArray[i].subTriggerCondition != eventStartCondition)

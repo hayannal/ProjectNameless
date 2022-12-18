@@ -81,6 +81,9 @@ public class MissionData : MonoBehaviour
 
 	public void StartSevenDays()
 	{
+		if (PlayerData.instance.downloadConfirmed == false)
+			return;
+
 		int newIdIndex = -1;
 		if (sevenDaysId == 0)
 			newIdIndex = 0;
@@ -210,8 +213,11 @@ public class MissionData : MonoBehaviour
 		// 로그인 할때마다 시작 상태가 아니라면 초기화를 진행해야한다.
 		// 대신 로그인 하자마자 보내면 디비에서 제대로 처리 못할 수 도 있을테니
 		// 1초 뒤에 보내도록 한다.
-		if (sevenDaysId == 0 || (ServerTime.UtcNow > sevenDaysExpireTime && ServerTime.UtcNow > sevenDaysCoolExpireTime))
-			_retryStartRemainTime = 1.0f;
+		if (PlayerData.instance.downloadConfirmed)
+		{
+			if (sevenDaysId == 0 || (ServerTime.UtcNow > sevenDaysExpireTime && ServerTime.UtcNow > sevenDaysCoolExpireTime))
+				_retryStartRemainTime = 1.0f;
+		}
 	}
 
 	public void OnRecvSevenDaysStartInfo(string lastSevenDaysExpireTimeString)

@@ -86,6 +86,9 @@ public class CostumeCanvasListItem : SimpleCashCanvas
 
 	public void OnClickPreviewButton()
 	{
+		if (PlayerData.instance.CheckConfirmDownload() == false)
+			return;
+
 		if (CharacterCanvas.instance.previewId == _costumeTableData.costumeId)
 		{
 			ToastCanvas.instance.ShowToast(UIString.instance.GetString("CostumeUI_AlreadyCostumeToast"), 2.0f);
@@ -103,6 +106,9 @@ public class CostumeCanvasListItem : SimpleCashCanvas
 	// SimpleCashCanvas 과 다르게 구현하는거만 처리
 	public void OnClickCustomButton()
 	{
+		if (PlayerData.instance.CheckConfirmDownload() == false)
+			return;
+
 		if (_contains)
 		{
 			if (equippedObject.activeSelf)

@@ -27,12 +27,18 @@ public class CashShopEquipListItem : MonoBehaviour
 
 	public void OnClickInfoButton()
 	{
+		if (PlayerData.instance.CheckConfirmDownload() == false)
+			return;
+
 		UIInstanceManager.instance.ShowCanvasAsync("GachaEquipInfoCanvas", null);
 	}
 
 	int _count;
 	public void OnClickButton()
 	{
+		if (PlayerData.instance.CheckConfirmDownload() == false)
+			return;
+
 		if (CurrencyData.instance.gold < _shopEquipTableData.price)
 		{
 			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughGold"), 2.0f);

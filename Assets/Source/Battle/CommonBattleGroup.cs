@@ -13,14 +13,7 @@ public class CommonBattleGroup : MonoBehaviour
 	public AnimationCurveAsset monsterDieDissolveCurve;
 	public AnimationCurveAsset bossMonsterDieDissolveCurve;
 	public GameObject rangeIndicatorPrefab;
-
-	// spawn
-	public GameObject playerSpawnEffectPrefab;
-
-	// reserve
-	public GameObject playerLevelUpEffectPrefab;
-	public GameObject levelPackGainEffectPrefab;
-	public GameObject healEffectPrefab;
+	public GameObject battleToastCanvasPrefab;
 
 	// gauge
 	public GameObject monsterHPGaugeRootCanvasPrefab;
@@ -29,15 +22,9 @@ public class CommonBattleGroup : MonoBehaviour
 	public GameObject playerHPGaugePrefab;
 	public GameObject playerIgnoreEvadeCanvasPrefab;
 
-	// skill
-	public GameObject skillSlotCanvasPrefab;
-	public GameObject ultimateCirclePrefab;
-	public GameObject battleToastCanvasPrefab;
-
 	// damage
 	public GameObject damageCanvasPrefab;
 	public GameObject floatingDamageTextRootCanvasPrefab;
-	public GameObject pauseCanvasPrefab;
 
 
 

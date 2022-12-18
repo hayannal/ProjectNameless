@@ -264,8 +264,10 @@ public class LobbyCanvas : MonoBehaviour
 
 	public void OnClickBattlePauseButton()
 	{
+		/*
 		PauseCanvas.instance.gameObject.SetActive(true);
 		PauseCanvas.instance.ShowBattlePauseSimpleMenu(false);
+		*/
 	}
 
 	public void OnClickBackButton()
@@ -449,8 +451,10 @@ public class LobbyCanvas : MonoBehaviour
 
 		if (pauseStatus)
 		{
+			/*
 			PauseCanvas.instance.gameObject.SetActive(true);
 			PauseCanvas.instance.ShowBattlePauseSimpleMenu(true);
+			*/
 		}
 	}
 

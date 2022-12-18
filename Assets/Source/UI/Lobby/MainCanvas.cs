@@ -28,6 +28,8 @@ public class MainCanvas : MonoBehaviour
 	public CanvasGroup safeAreaCanvasGroup;
 	public CanvasGroup questInfoCanvasGroup;
 
+	public GameObject downloadButtonObject;
+
 	public GameObject levelPassButtonObject;
 	public GameObject brokenEnergyButtonObject;
 	public GameObject sevenDaysButtonObject;
@@ -310,11 +312,17 @@ public class MainCanvas : MonoBehaviour
 
 	public void OnClickTeamButton()
 	{
+		if (PlayerData.instance.CheckConfirmDownload() == false)
+			return;
+
 		UIInstanceManager.instance.ShowCanvasAsync("CharacterListCanvas", null);
 	}
 
 	public void OnClickPetButton()
 	{
+		if (PlayerData.instance.CheckConfirmDownload() == false)
+			return;
+
 		if (PetSpriteContainer.instance == null)
 		{
 			DelayedLoadingCanvas.Show(true);
@@ -322,15 +330,18 @@ public class MainCanvas : MonoBehaviour
 			{
 				BattleInstanceManager.instance.GetCachedObject(prefab, null);
 				DelayedLoadingCanvas.Show(false);
-				UIInstanceManager.instance.ShowCanvasAsync("PetListCanvas", null);
+				MissionListCanvas.ShowCanvasAsyncWithPrepareGround("PetListCanvas", null);
 			});
 		}
 		else
-			UIInstanceManager.instance.ShowCanvasAsync("PetListCanvas", null);
+			MissionListCanvas.ShowCanvasAsyncWithPrepareGround("PetListCanvas", null);
 	}
 
 	public void OnClickEquipButton()
 	{
+		if (PlayerData.instance.CheckConfirmDownload() == false)
+			return;
+
 		MissionListCanvas.ShowCanvasAsyncWithPrepareGround("EquipGroundCanvas", null);
 	}
 
@@ -377,11 +388,17 @@ public class MainCanvas : MonoBehaviour
 
 	public void OnClickRankingButton()
 	{
+		if (PlayerData.instance.CheckConfirmDownload() == false)
+			return;
+
 		UIInstanceManager.instance.ShowCanvasAsync("RankingListCanvas", null);
 	}
 
 	public void OnClickContentsButton()
 	{
+		if (PlayerData.instance.CheckConfirmDownload() == false)
+			return;
+
 		UIInstanceManager.instance.ShowCanvasAsync("MissionListCanvas", null);
 	}
 	#endregion
@@ -686,7 +703,10 @@ public class MainCanvas : MonoBehaviour
 	#region Cash Button
 	public void RefreshCashButton()
 	{
-		bool showLevelPass = (PlayerData.instance.playerLevel >= 5);
+		bool showDownload = (PlayerData.instance.downloadConfirmed == false || PlayerData.instance.downloadRewarded == false);
+		downloadButtonObject.SetActive(showDownload);
+
+		bool showLevelPass = ((PlayerData.instance.playerLevel >= 5) && PlayerData.instance.downloadRewarded);
 		levelPassButtonObject.SetActive(showLevelPass);
 
 		bool showBrokenEnergy = (CurrencyData.instance.brokenEnergy > 0);
@@ -697,6 +717,11 @@ public class MainCanvas : MonoBehaviour
 	public void OnClickCashShopButton()
 	{
 		UIInstanceManager.instance.ShowCanvasAsync("CashShopCanvas", null);
+	}
+
+	public void OnClickDownloadButton()
+	{
+		UIInstanceManager.instance.ShowCanvasAsync("DownloadConfirmCanvas", null);
 	}
 
 	public void OnClickLevelPassButton()

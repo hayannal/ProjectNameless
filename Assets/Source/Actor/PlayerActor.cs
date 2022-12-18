@@ -46,7 +46,9 @@ public class PlayerActor : Actor
 
 	void OnDisable()
 	{
+		/*
 		ShowUltimateIndicator(false);
+		*/
 	}
 
 	protected override void InitializeComponent()
@@ -91,7 +93,9 @@ public class PlayerActor : Actor
 	public void InitializeCanvas()
 	{
 		PlayerGaugeCanvas.instance.InitializeGauge(this);
+		/*
 		SkillSlotCanvas.instance.InitializeSkillSlot(this);
+		*/
 	}
 
 	void RegisterBattleInstance()
@@ -207,8 +211,8 @@ public class PlayerActor : Actor
 		{
 			/*
 			BattleInstanceManager.instance.AddBattlePlayer(GetActorIdWithMercenary());
-			*/
 			SoundManager.instance.PlayBattleBgm(actorId);
+			*/
 		}
 
 		BattleInstanceManager.instance.playerActor = this;
@@ -240,11 +244,13 @@ public class PlayerActor : Actor
 		*/
 	}
 
+	/*
 	void Update()
 	{
 		UpdateUltimateIndicator();
 		UpdateSpRegenOnBoss();
 	}
+	*/
 
 	public override void OnChangedHP()
 	{
@@ -257,9 +263,11 @@ public class PlayerActor : Actor
 
 	public override void OnChangedSP()
 	{
+		/*
 		// hpRatio와 마찬가지. 클라이언트 저장을 SkillSlotCanvas에게 위임한다.
 		SkillSlotCanvas.instance.OnChangedSP(this);
 		ShowUltimateIndicator(actorStatus.GetSPRatio() == 1.0f);
+		*/
 	}
 
 	public override void OnDie()
@@ -292,6 +300,7 @@ public class PlayerActor : Actor
 	}
 
 
+	/*
 	#region Ultimate Indicator
 	Transform _cachedUltimateIndicatorTransform;
 	void ShowUltimateIndicator(bool show)
@@ -319,6 +328,7 @@ public class PlayerActor : Actor
 		_cachedUltimateIndicatorTransform.position = cachedTransform.position;
 	}
 	#endregion
+	*/
 
 	#region Wing
 	GameObject _wingObject;
@@ -394,6 +404,7 @@ public class PlayerActor : Actor
 		*/
 	}
 
+	/*
 	const float SpRegen_Interval = 2.2f;
 	float _spRegenRemainTime = 0.0f;
 	bool _showed = false;
@@ -425,5 +436,6 @@ public class PlayerActor : Actor
 			}
 		}
 	}
+	*/
 	#endregion
 }

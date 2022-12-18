@@ -246,7 +246,7 @@ public class PlayFabApiManager : MonoBehaviour
 			return;
 
 		bool needCheckResourceVersion = false;
-		if (CheckVersion(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.PlayerStatistics, out needCheckResourceVersion) == false)
+		if (CheckVersion(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData, out needCheckResourceVersion) == false)
 			return;
 
 		// 리소스 체크를 해야하는 상황에서만 번들 체크를 한다.
@@ -593,28 +593,21 @@ public class PlayFabApiManager : MonoBehaviour
 	}
 
 	int _marketCanvasShowCount = 0;
-	bool CheckVersion(Dictionary<string, string> titleData, List<StatisticValue> playerStatistics, out bool needCheckResourceVersion)
+	bool CheckVersion(Dictionary<string, string> titleData, Dictionary<string, UserDataRecord> userReadOnlyData, out bool needCheckResourceVersion)
 	{
 		needCheckResourceVersion = false;
 
 		// 이 시점에서는 아직 PlayerData를 구축하기 전이니 이렇게 직접 체크한다.
-		// highestPlayChapter로 체크해야 기기를 바꾸든 앱을 재설치 하든 데이터를 삭제하든 모든 상황에 대응할 수 있다.
-		// 현재 계정 상태에 따라 다운로드 진행을 결정하는 것.
-		/*
-		int highestPlayChapter = 0;
-		for (int i = 0; i < playerStatistics.Count; ++i)
+		bool downloadConfirmed = false;
+		if (userReadOnlyData.ContainsKey("downloadConfirm"))
 		{
-			if (playerStatistics[i].StatisticName == "highestPlayChapter")
-			{
-				highestPlayChapter = playerStatistics[i].Value;
-				break;
-			}
+			if (string.IsNullOrEmpty(userReadOnlyData["downloadConfirm"].Value) == false)
+				downloadConfirmed = true;
 		}
 
 		// 튜토리얼을 마치지 않았다면 앱 업뎃이든 번들패치든 할 필요 없다. 바로 리턴.
-		if (highestPlayChapter == 0)
+		if (downloadConfirmed == false)
 			return true;
-		*/
 
 		// 빌드번호를 서버에 적혀있는 빌드번호와 비교해야한다.
 		BuildVersionInfo versionInfo = null;
@@ -1394,6 +1387,59 @@ public class PlayFabApiManager : MonoBehaviour
 			});
 		};
 		RetrySendManager.instance.RequestAction(action, true);
+	}
+	#endregion
+
+	#region Download Confirm
+	public void RequestConfirmDownload(Action successCallback)
+	{
+		ExecuteCloudScriptRequest request = new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "ConfirmDownload",
+			FunctionParameter = new { Down = 1 },
+			GeneratePlayStreamEvent = true,
+		};
+		Action action = () =>
+		{
+			PlayFabClientAPI.ExecuteCloudScript(request, (success) =>
+			{
+				RetrySendManager.instance.OnSuccess();
+				PlayerData.instance.downloadConfirmed = true;
+				if (successCallback != null) successCallback.Invoke();
+			}, (error) =>
+			{
+				RetrySendManager.instance.OnFailure();
+			});
+		};
+		RetrySendManager.instance.RequestAction(action, true);
+	}
+
+	public void RequestConfirmDownloadReward(int addEnergy, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "ConfirmDownloadReward",
+			FunctionParameter = new { Down = 2 },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				CurrencyData.instance.OnRecvRefillEnergy(addEnergy);
+				PlayerData.instance.downloadRewarded = true;
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
 	}
 	#endregion
 

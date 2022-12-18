@@ -25,12 +25,18 @@ public class CashShopCharacterListItem : MonoBehaviour
 
 	public void OnClickInfoButton()
 	{
+		if (PlayerData.instance.CheckConfirmDownload() == false)
+			return;
+
 		UIInstanceManager.instance.ShowCanvasAsync("GachaCharacterInfoCanvas", null);
 	}
 
 	int _count;
 	public void OnClickButton()
 	{
+		if (PlayerData.instance.CheckConfirmDownload() == false)
+			return;
+
 		if (CurrencyData.instance.gold < _shopActorTableData.price)
 		{
 			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughGold"), 2.0f);

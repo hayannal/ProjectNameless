@@ -57,6 +57,10 @@ public class PlayerData : MonoBehaviour
 	// 이용약관 확인용 변수. 값이 있으면 기록된거로 간주하고 true로 해둔다.
 	public ObscuredBool termsConfirmed { get; set; }
 
+	// 대용량 다운로드를 허용했는지. 한번 허용하면 true로 해둔다.
+	public ObscuredBool downloadConfirmed { get; set; }
+	public ObscuredBool downloadRewarded { get; set; }
+
 	// 디스플레이 네임
 	public string displayName { get; set; }
 
@@ -141,6 +145,8 @@ public class PlayerData : MonoBehaviour
 		selectedStage = 1;
 		cheatRankSus = 0;
 		termsConfirmed = false;
+		downloadConfirmed = false;
+		downloadRewarded = false;
 		displayName = "";
 
 
@@ -284,6 +290,18 @@ public class PlayerData : MonoBehaviour
 				termsConfirmed = true;
 		}
 
+		downloadConfirmed = false;
+		downloadRewarded = false;
+		if (userReadOnlyData.ContainsKey("downloadConfirm"))
+		{
+			if (string.IsNullOrEmpty(userReadOnlyData["downloadConfirm"].Value) == false)
+			{
+				downloadConfirmed = true;
+				if (userReadOnlyData["downloadConfirm"].Value == "2")
+					downloadRewarded = true;
+			}	
+		}
+
 		/*
 		ContentsData.instance.OnRecvContentsData(userData, userReadOnlyData);
 		*/
@@ -355,5 +373,13 @@ public class PlayerData : MonoBehaviour
 				_waitPacket = false;
 			});
 		}
+	}
+
+	public bool CheckConfirmDownload()
+	{
+		if (downloadConfirmed)
+			return true;
+		UIInstanceManager.instance.ShowCanvasAsync("DownloadConfirmCanvas", null);
+		return false;
 	}
 }

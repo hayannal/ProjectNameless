@@ -126,8 +126,10 @@ public class SkillSlotIcon : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
 		ActorTableData actorTableData = TableDataManager.instance.FindActorTableData(playerActor.actorId);
 		if (actorTableData != null)
 			playerPowerSourceIndex = actorTableData.powerSource;
+		/*
 		powerSourceIconImage.sprite = null;
 		powerSourceIconImage.sprite = CommonCanvasGroup.instance.powerSourceIconSpriteList[playerPowerSourceIndex];
+		*/
 
 		// 최초로 셋팅할때는 반짝일 필요 없다.
 		IgnoreBlink(true);

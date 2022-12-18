@@ -20,7 +20,6 @@ public class CommonCanvasGroup : MonoBehaviour
 	public GameObject maintenanceCanvasPrefab;
 	public GameObject alarmObjectPrefab;
 	public GameObject tutorialPlusAlarmObjectPrefab;
-	public Sprite[] powerSourceIconSpriteList;
 	public Sprite[] alarmObjectSpriteList;
 
 	void Awake()
