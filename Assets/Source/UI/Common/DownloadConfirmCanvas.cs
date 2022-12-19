@@ -29,6 +29,7 @@ public class DownloadConfirmCanvas : MonoBehaviour
 	{
 		PlayFabApiManager.instance.RequestConfirmDownload(() =>
 		{
+			PlayerData.instance.ResetData();
 			SceneManager.LoadScene(0);
 		});
 	}
