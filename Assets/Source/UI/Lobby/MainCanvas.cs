@@ -367,7 +367,10 @@ public class MainCanvas : MonoBehaviour
 		BossMonsterGaugeCanvas.OnEnterMenu(enter);
 
 		if (enter == false)
+		{
+			RefreshAlarmObjectList();
 			CashShopData.instance.CheckStartEvent(CashShopData.eEventStartCondition.OnApplicationPause);
+		}
 	}
 
 	public bool IsHideState()
