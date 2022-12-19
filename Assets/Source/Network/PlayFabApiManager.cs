@@ -597,18 +597,7 @@ public class PlayFabApiManager : MonoBehaviour
 	{
 		needCheckResourceVersion = false;
 
-		// 이 시점에서는 아직 PlayerData를 구축하기 전이니 이렇게 직접 체크한다.
-		bool downloadConfirmed = false;
-		if (userReadOnlyData.ContainsKey("downloadConfirm"))
-		{
-			if (string.IsNullOrEmpty(userReadOnlyData["downloadConfirm"].Value) == false)
-				downloadConfirmed = true;
-		}
-
-		// 튜토리얼을 마치지 않았다면 앱 업뎃이든 번들패치든 할 필요 없다. 바로 리턴.
-		if (downloadConfirmed == false)
-			return true;
-
+		// 리소스 체크 전에 빌드 버전부터 확인해본다. 이래야 리소스 다운로드 전 버전에서도 새 빌드가 나왔는지 확인할 수 있다.
 		// 빌드번호를 서버에 적혀있는 빌드번호와 비교해야한다.
 		BuildVersionInfo versionInfo = null;
 #if UNITY_ANDROID
@@ -687,6 +676,19 @@ public class PlayFabApiManager : MonoBehaviour
 			}
 #endif
 		}
+
+		// 이후 리소스 패치 체크.
+		// 이 시점에서는 아직 PlayerData를 구축하기 전이니 이렇게 직접 체크한다.
+		bool downloadConfirmed = false;
+		if (userReadOnlyData.ContainsKey("downloadConfirm"))
+		{
+			if (string.IsNullOrEmpty(userReadOnlyData["downloadConfirm"].Value) == false)
+				downloadConfirmed = true;
+		}
+
+		// 다운로드 체크하기 전이라면 패스
+		if (downloadConfirmed == false)
+			return true;
 
 		// 빌드 업데이트 확인이 끝나면 리소스 체크를 해야하는데,
 		// 리소스 버전은 빌드번호와 달리 직접 서버에 적어두고 비교하는 형태가 아니다.
