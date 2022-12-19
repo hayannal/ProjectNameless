@@ -476,6 +476,8 @@ public class StageManager : MonoBehaviour
 
 	public void OnDieMonster()
 	{
+		if (_failureProcessed)
+			return;
 		if (_spawnFinished == false)
 			return;
 		List<MonsterActor> listMonsterActor = BattleInstanceManager.instance.GetLiveMonsterList();
