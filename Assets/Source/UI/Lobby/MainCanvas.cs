@@ -228,6 +228,9 @@ public class MainCanvas : MonoBehaviour
 		StageManager.instance.InitializeStageFloor(PlayerData.instance.selectedStage, false);
 		TeamManager.instance.HideForMoveMap(false);
 		FadeCanvas.instance.FadeIn(0.5f);
+
+		// 보스전에 
+		Screen.sleepTimeout = SleepTimeout.NeverSleep;
 	}
 
 	public void OnClickCancelBossChallengeButton()
@@ -271,6 +274,9 @@ public class MainCanvas : MonoBehaviour
 
 		if (repeatMode)
 		{
+			// 반복모드로 돌아가는거라면 sleep모드 셋팅한 것도 풀어야한다.
+			Screen.sleepTimeout = SleepTimeout.SystemSetting;
+
 			OnPointerDown(null);
 			if (stage == BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxStage"))
 			{

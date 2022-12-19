@@ -625,6 +625,9 @@ public class StageManager : MonoBehaviour
 		TeamManager.instance.HideForMoveMap(false);
 		FadeCanvas.instance.FadeIn(0.5f, true);
 
+		// restore
+		Screen.sleepTimeout = SleepTimeout.SystemSetting;
+
 		if (MainCanvas.instance != null)
 			MainCanvas.instance.OnPointerDown(null);
 
