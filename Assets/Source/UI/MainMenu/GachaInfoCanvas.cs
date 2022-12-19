@@ -588,6 +588,9 @@ public class GachaInfoCanvas : MonoBehaviour
 	int _prevBrokenEnergy;
 	public void OnClickButton()
 	{
+		if (CurrencyData.instance.eventPointId != "fr" && PlayerData.instance.CheckConfirmDownload() == false)
+			return;
+
 		if (CurrencyData.instance.CheckMaxGold())
 			return;
 
