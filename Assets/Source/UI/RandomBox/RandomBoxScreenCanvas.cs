@@ -165,6 +165,9 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 		}
 	}
 
+	#region SpellBoxShow
+	List<string> _listNewSpellId = new List<string>();
+	#endregion
 	#region CharacterBoxShow
 	List<string> _listNewCharacterId = new List<string>();
 	List<string> _listTrpCharacterId = new List<string>();
@@ -174,8 +177,30 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 		switch (_boxType)
 		{
 			case eBoxType.Spell:
-				spellBoxResultCanvas.ShowResult(_listItemInstance);
-				spellBoxResultCanvas.gameObject.SetActive(true);
+
+				_listNewSpellId.Clear();
+				// 스킬도 신규 획득창이 필요하다고 한다.
+				for (int i = 0; i < _listItemInstance.Count; ++i)
+				{
+					if (_listItemInstance[i].UsesIncrementedBy == _listItemInstance[i].RemainingUses)
+						_listNewSpellId.Add(_listItemInstance[i].ItemId);
+				}
+				if (_listNewSpellId.Count > 0)
+				{
+					UIInstanceManager.instance.ShowCanvasAsync("SpellInfoCanvas", () =>
+					{
+						SpellInfoCanvas.instance.SetNewInfo(_listNewSpellId, () =>
+						{
+							spellBoxResultCanvas.ShowResult(_listItemInstance);
+							spellBoxResultCanvas.gameObject.SetActive(true);
+						});
+					});
+				}
+				else
+				{
+					spellBoxResultCanvas.ShowResult(_listItemInstance);
+					spellBoxResultCanvas.gameObject.SetActive(true);
+				}
 				break;
 			case eBoxType.Character:
 
