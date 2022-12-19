@@ -14,6 +14,8 @@ public class DownloadConfirmCanvas : MonoBehaviour
 	public GameObject rewardMessageObject;
 	public GameObject rewardButtonObject;
 
+	public RectTransform alarmRootTransform;
+
 	void OnEnable()
 	{
 		rewardIcon.RefreshReward("cu", "EN", BattleInstanceManager.instance.GetCachedGlobalConstantInt("DownloadEnergyReward"));
@@ -23,6 +25,10 @@ public class DownloadConfirmCanvas : MonoBehaviour
 		restartMessageObject.SetActive(PlayerData.instance.downloadConfirmed == false);
 		rewardMessageObject.SetActive(PlayerData.instance.downloadConfirmed);
 		rewardButtonObject.SetActive(PlayerData.instance.downloadConfirmed);
+
+		AlarmObject.Hide(alarmRootTransform);
+		if (PlayerData.instance.downloadConfirmed)
+			AlarmObject.Show(alarmRootTransform);
 	}
 
 	public void OnClickDownloadButton()

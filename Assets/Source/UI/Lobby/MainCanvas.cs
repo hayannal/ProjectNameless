@@ -47,6 +47,7 @@ public class MainCanvas : MonoBehaviour
 	public RectTransform gachaAlarmRootTransform;
 	public RectTransform cashShopAlarmRootTransform;
 
+	public RectTransform downloadAlarmRootTransform;
 	public RectTransform levelPassAlarmRootTransform;
 	public RectTransform sevenDaysAlarmRootTransform;
 	public RectTransform energyPaybackAlarmRootTransform;   // ev6
@@ -427,6 +428,7 @@ public class MainCanvas : MonoBehaviour
 		RefreshAnalysisAlarmObject();
 		RefreshGachaAlarmObject();
 		RefreshSevenDaysAlarmObject();
+		RefreshDownloadRewardAlarmObject();
 		RefreshLevelPassAlarmObject();
 		RefreshEnergyPaybackAlarmObject();
 		RefreshContinuousProduct1AlarmObject();
@@ -524,6 +526,16 @@ public class MainCanvas : MonoBehaviour
 	public void RefreshAnalysisAlarmObject()
 	{
 		RefreshAlarmObject(IsAlarmAnalysis(), analysisAlarmRootTransform);
+	}
+
+	public static bool IsAlarmDownloadReward()
+	{
+		return (PlayerData.instance.downloadConfirmed && PlayerData.instance.downloadRewarded == false);
+	}
+
+	public void RefreshDownloadRewardAlarmObject()
+	{
+		RefreshAlarmObject(IsAlarmDownloadReward(), downloadAlarmRootTransform);
 	}
 
 	public static bool IsAlarmLevelPass()
