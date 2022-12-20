@@ -18,6 +18,8 @@ public class PetSearchCanvas : MonoBehaviour
 	#region UI
 	public Button backButton;
 	public GameObject captureButtonObject;
+	public Text captureBetterCountText;
+	public Text captureBestCountText;
 	public GameObject searchButtonObject;
 	public GameObject inProgressBattleStartButtonObject;
 
@@ -148,6 +150,10 @@ public class PetSearchCanvas : MonoBehaviour
 		if (string.IsNullOrEmpty(PetManager.instance.activePetId))
 			return;
 
+		int count = CashShopData.instance.GetCashItemCount(CashShopData.eCashItemCountType.CaptureBetter);
+		captureBetterCountText.text = count.ToString("N0");
+		count = CashShopData.instance.GetCashItemCount(CashShopData.eCashItemCountType.CaptureBest);
+		captureBestCountText.text = count.ToString("N0");
 		captureButtonObject.SetActive(true);
 		if (PetManager.instance.IsCachedInProgressGame())
 		{
