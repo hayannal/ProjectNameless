@@ -273,7 +273,7 @@ public class GachaInfoCanvas : MonoBehaviour
 
 	void RefreshBetText()
 	{
-		betText.text = string.Format("BOOST X{0}", _listBetValue[_currentBetRateIndex]);
+		betText.text = string.Format("<size=16>BOOST</size> X{0}", _listBetValue[_currentBetRateIndex]);
 	}
 
 	public void OnClickBetButton()
@@ -281,6 +281,15 @@ public class GachaInfoCanvas : MonoBehaviour
 		++_currentBetRateIndex;
 		if (_currentBetRateIndex >= _listBetValue.Count)
 			_currentBetRateIndex = 0;
+
+		RefreshBetText();
+
+		AlarmObject.Hide(boostOnAlarmRootTransform);
+	}
+
+	public void OnClickBetMaxButton()
+	{
+		_currentBetRateIndex = _listBetValue.Count - 1;
 
 		RefreshBetText();
 
