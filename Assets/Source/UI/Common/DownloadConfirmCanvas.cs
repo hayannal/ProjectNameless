@@ -1,12 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class DownloadConfirmCanvas : MonoBehaviour
 {
 	public RewardIcon rewardIcon;
 
+	public Text confirmMessageText;
 	public GameObject confirmMessageObject;
 	public GameObject confirmButtonObject;
 	public GameObject restartMessageObject;
@@ -18,8 +20,10 @@ public class DownloadConfirmCanvas : MonoBehaviour
 
 	void OnEnable()
 	{
-		rewardIcon.RefreshReward("cu", "EN", BattleInstanceManager.instance.GetCachedGlobalConstantInt("DownloadEnergyReward"));
+		int amount = BattleInstanceManager.instance.GetCachedGlobalConstantInt("DownloadEnergyReward");
+		rewardIcon.RefreshReward("cu", "EN", amount);
 
+		confirmMessageText.SetLocalizedText(UIString.instance.GetString("SystemUI_DownloadConfirm", amount));
 		confirmMessageObject.SetActive(PlayerData.instance.downloadConfirmed == false);
 		confirmButtonObject.SetActive(PlayerData.instance.downloadConfirmed == false);
 		restartMessageObject.SetActive(PlayerData.instance.downloadConfirmed == false);
