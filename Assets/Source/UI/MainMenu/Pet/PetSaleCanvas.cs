@@ -38,14 +38,14 @@ public class PetSaleCanvas : SimpleCashCanvas
 		resultRootObject.SetActive(false);
 	}
 
-	private void Update()
-	{
-		if (Input.GetKeyDown(KeyCode.A))
-		{
-			CashShopData.instance.PurchaseFlag(CashShopData.eCashConsumeFlagType.PetSale);
-			ConsumeProduct();
-		}
-	}
+	//private void Update()
+	//{
+	//	if (Input.GetKeyDown(KeyCode.A))
+	//	{
+	//		CashShopData.instance.PurchaseFlag(CashShopData.eCashConsumeFlagType.PetSale);
+	//		ConsumeProduct();
+	//	}
+	//}
 
 	PetSaleTableData _petSaleTableData;
 	void RefreshInfo()
