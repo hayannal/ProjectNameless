@@ -54,11 +54,12 @@ public class CashShopData : MonoBehaviour
 		SevenSlot2 = 5,
 		SevenSlot3 = 6,
 		PetSale = 7,
+		FortuneWheel = 8,
 
 		Amount,
 	}
 	List<ObscuredBool> _listCashConsumeFlag = new List<ObscuredBool>();
-	List<string> _listCashConsumeFlagKey = new List<string> { "Cash_sBrokenEnergy", "Cash_sEv4ContiNext", "Cash_sEv5OnePlTwoCash", "Cash_sSevenSlot0", "Cash_sSevenSlot1", "Cash_sSevenSlot2", "Cash_sSevenSlot3", "Cash_sPetSale" };
+	List<string> _listCashConsumeFlagKey = new List<string> { "Cash_sBrokenEnergy", "Cash_sEv4ContiNext", "Cash_sEv5OnePlTwoCash", "Cash_sSevenSlot0", "Cash_sSevenSlot1", "Cash_sSevenSlot2", "Cash_sSevenSlot3", "Cash_sPetSale", "Cash_sFortuneWheel" };
 
 	public enum eCashConsumeCountType
 	{
@@ -714,6 +715,10 @@ public class CashShopData : MonoBehaviour
 		{
 			PetSaleCanvas.ExternalRetryPurchase(pendingProduct);
 		}
+		else if (pendingProduct.definition.id.Contains("roulette"))
+		{
+			FortuneWheelCanvas.ExternalRetryPurchase(pendingProduct);
+		}
 
 		return true;
 	}
@@ -826,6 +831,9 @@ public class CashShopData : MonoBehaviour
 						break;
 					case eCashConsumeFlagType.PetSale:
 						PetSaleCanvas.ConsumeProduct();
+						break;
+					case eCashConsumeFlagType.FortuneWheel:
+						FortuneWheelCanvas.ConsumeProduct();
 						break;
 				}
 				

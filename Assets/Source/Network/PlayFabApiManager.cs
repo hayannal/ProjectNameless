@@ -272,6 +272,7 @@ public class PlayFabApiManager : MonoBehaviour
 		AnalysisData.instance.OnRecvAnalysisData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 		GuideQuestData.instance.OnRecvGuideQuestData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 		MissionData.instance.OnRecvMissionData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
+		SubMissionData.instance.OnRecvSubMissionData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 		RankingData.instance.OnRecvRankingData(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 
 		// PlayerData 만 다 받고 처리하고 다른 인벤이나 스펠은 여기서 처리한다.
@@ -3271,6 +3272,43 @@ public class PlayFabApiManager : MonoBehaviour
 			});
 		};
 		RetrySendManager.instance.RequestAction(action, true);
+	}
+	#endregion
+
+
+	#region Sub Mission
+	public void RequestFortuneWheel(int reward, int useEnergy, bool consume, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}_{2}_{3}", (int)SubMissionData.instance.fortuneWheelDailyCount, reward, useEnergy, "rqoiurzs");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "FortuneWheel",
+			FunctionParameter = new { AddGo = reward, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				SubMissionData.instance.fortuneWheelDailyCount += 1;
+				CurrencyData.instance.gold += reward;
+				if (useEnergy > 0)
+					CurrencyData.instance.UseEnergy(useEnergy);
+				if (consume)
+					CashShopData.instance.ConsumeFlag(CashShopData.eCashConsumeFlagType.FortuneWheel);
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
 	}
 	#endregion
 

@@ -40,4 +40,32 @@ public class StageBetTableData
   int _goblinFailure;
   public int goblinFailure { get { return _goblinFailure; } set { _goblinFailure = value; } }
   
+  [SerializeField]
+  int _roulette_1;
+  public int roulette_1 { get { return _roulette_1; } set { _roulette_1 = value; } }
+  
+  [SerializeField]
+  int _roulette_2;
+  public int roulette_2 { get { return _roulette_2; } set { _roulette_2 = value; } }
+  
+  [SerializeField]
+  int _roulette_3;
+  public int roulette_3 { get { return _roulette_3; } set { _roulette_3 = value; } }
+  
+  [SerializeField]
+  int _roulette_4;
+  public int roulette_4 { get { return _roulette_4; } set { _roulette_4 = value; } }
+  
+  [SerializeField]
+  int _roulette_5;
+  public int roulette_5 { get { return _roulette_5; } set { _roulette_5 = value; } }
+  
+  [SerializeField]
+  int _roulette_6;
+  public int roulette_6 { get { return _roulette_6; } set { _roulette_6 = value; } }
+  
+  [SerializeField]
+  int _roulette_7;
+  public int roulette_7 { get { return _roulette_7; } set { _roulette_7 = value; } }
+  
 }

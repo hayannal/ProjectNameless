@@ -9,7 +9,10 @@ public class MissionListCanvas : MonoBehaviour
 	public static MissionListCanvas instance;
 
 	public Text petMenuRemainCount;
-	public Text todayResetRemainTimeText;
+	public Text petTodayResetRemainTimeText;
+
+	public Text wheelRemainCount;
+	public Text wheelTodayResetRemainTimeText;
 
 	void Awake()
 	{
@@ -60,6 +63,9 @@ public class MissionListCanvas : MonoBehaviour
 	void RefreshInfo()
 	{
 		petMenuRemainCount.text = (BattleInstanceManager.instance.GetCachedGlobalConstantInt("PetDailySearchCount") - PetManager.instance.dailySearchCount).ToString();
+		int count = BattleInstanceManager.instance.GetCachedGlobalConstantInt("FortuneWheelDailyCount") - SubMissionData.instance.fortuneWheelDailyCount;
+		if (count < 0) count = 0;
+		wheelRemainCount.text = count.ToString();
 	}
 
 	public void OnClickButton(int index)
@@ -75,7 +81,24 @@ public class MissionListCanvas : MonoBehaviour
 					return;
 				}
 
+				if (CurrencyData.instance.energy < BattleInstanceManager.instance.GetCachedGlobalConstantInt("MissionEnergyPet"))
+				{
+					ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughEnergy"), 2.0f);
+					return;
+				}
+
 				Timing.RunCoroutine(PetSearchMoveProcess());
+				break;
+
+			case 1:
+
+				if (CurrencyData.instance.energy < BattleInstanceManager.instance.GetCachedGlobalConstantInt("MissionEnergyRoulette"))
+				{
+					ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughEnergy"), 2.0f);
+					return;
+				}
+
+				UIInstanceManager.instance.ShowCanvasAsync("FortuneWheelCanvas", null);
 				break;
 		}
 	}
@@ -128,9 +151,24 @@ public class MissionListCanvas : MonoBehaviour
 	int _lastRemainTimeSecond = -1;
 	void UpdateResetRemainTime()
 	{
+		#region Pet
+		bool petProcess = false;
 		if (PetManager.instance.dailySearchCount == 0)
+			petTodayResetRemainTimeText.text = "";
+		else
+			petProcess = true;
+		#endregion
+
+		#region Wheel
+		bool wheelProcess = false;
+		if (SubMissionData.instance.fortuneWheelDailyCount == 0)
+			wheelTodayResetRemainTimeText.text = "";
+		else
+			wheelProcess = true;
+		#endregion
+
+		if (petProcess == false && wheelProcess == false)
 		{
-			todayResetRemainTimeText.text = "";
 			_lastRemainTimeSecond = -1;
 			return;
 		}
@@ -140,13 +178,15 @@ public class MissionListCanvas : MonoBehaviour
 			System.TimeSpan remainTime = PlayerData.instance.dayRefreshTime - ServerTime.UtcNow;
 			if (_lastRemainTimeSecond != (int)remainTime.TotalSeconds)
 			{
-				todayResetRemainTimeText.text = string.Format("{0:00}:{1:00}:{2:00}", remainTime.Hours, remainTime.Minutes, remainTime.Seconds);
+				if (petProcess) petTodayResetRemainTimeText.text = string.Format("{0:00}:{1:00}:{2:00}", remainTime.Hours, remainTime.Minutes, remainTime.Seconds);
+				if (wheelProcess) wheelTodayResetRemainTimeText.text = string.Format("{0:00}:{1:00}:{2:00}", remainTime.Hours, remainTime.Minutes, remainTime.Seconds);
 				_lastRemainTimeSecond = (int)remainTime.TotalSeconds;
 			}
 		}
 		else
 		{
-			todayResetRemainTimeText.text = "";
+			if (petProcess) petTodayResetRemainTimeText.text = "";
+			if (wheelProcess) wheelTodayResetRemainTimeText.text = "";
 		}
 	}
 }
