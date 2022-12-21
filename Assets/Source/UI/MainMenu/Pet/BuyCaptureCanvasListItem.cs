@@ -32,7 +32,7 @@ public class BuyCaptureCanvasListItem : SimpleCashCanvas
 		shopCountText.gameObject.SetActive(index != 0);
 		if (index != 0)
 		{
-			shopCountText.text = string.Format("X {0:N0}", petCaptureTableData.count);
+			shopCountText.text = string.Format("x{0:N0}", petCaptureTableData.count);
 			ShopProductTableData shopProductTableData = TableDataManager.instance.FindShopProductTableData(petCaptureTableData.shopProductId);
 			if (shopProductTableData != null)
 			{
