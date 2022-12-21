@@ -121,6 +121,8 @@ public class PetSearchCanvas : MonoBehaviour
 			return;
 		if (CustomFollowCamera.instance.gameObject == null)
 			return;
+		if (_groundTransform == null)
+			return;
 
 		_environmentSetting.SetDefaultLightIntensity(_defaultLightIntensity);
 		_groundTransform.gameObject.SetActive(false);
