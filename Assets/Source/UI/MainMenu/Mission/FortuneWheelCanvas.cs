@@ -72,7 +72,7 @@ public class FortuneWheelCanvas : SimpleCashCanvas
 
 	}
 
-	void RefreshInfo()
+	public void RefreshInfo()
 	{
 		stageText.text = string.Format("STAGE {0:N0}", PlayerData.instance.currentRewardStage);
 		lightImage.gameObject.SetActive(false);
@@ -135,6 +135,9 @@ public class FortuneWheelCanvas : SimpleCashCanvas
 	int _randomResult;
 	public void OnClickSpinButton()
 	{
+		if (CurrencyData.instance.CheckMaxGold())
+			return;
+
 		if (SubMissionData.instance.fortuneWheelDailyCount == 0)
 		{
 			Spin();

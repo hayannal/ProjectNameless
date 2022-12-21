@@ -74,5 +74,13 @@ public class SubMissionData : MonoBehaviour
 	public void OnRefreshDay()
 	{
 		fortuneWheelDailyCount = 0;
+
+		// 여기는 0회때랑 1회때랑 처리 로직이 다르기때문에 창을 갱신해주는게 맞다.
+		if (FortuneWheelCanvas.instance != null && FortuneWheelCanvas.instance.gameObject.activeSelf)
+		{
+			FortuneWheelCanvas.instance.RefreshInfo();
+			FortuneWheelCanvas.instance.fortuneWheelRootObject.SetActive(false);
+			FortuneWheelCanvas.instance.fortuneWheelRootObject.SetActive(true);
+		}
 	}
 }
