@@ -3281,7 +3281,7 @@ public class PlayFabApiManager : MonoBehaviour
 	{
 		WaitingNetworkCanvas.Show(true);
 
-		string input = string.Format("{0}_{1}_{2}_{3}", (int)SubMissionData.instance.fortuneWheelDailyCount, reward, useEnergy, "rqoiurzs");
+		string input = string.Format("{0}_{1}_{2}_{3}_{4}", (int)SubMissionData.instance.fortuneWheelDailyCount, reward, useEnergy, consume ? 1 : 0, "rqoiurzs");
 		string checkSum = CheckSum(input);
 		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
 		{
