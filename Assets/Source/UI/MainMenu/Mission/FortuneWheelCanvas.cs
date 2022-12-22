@@ -163,7 +163,7 @@ public class FortuneWheelCanvas : SimpleCashCanvas
 		if (_currentIndex >= sectorsCount)
 			_currentIndex -= sectorsCount;
 
-		Debug.LogFormat("reward = {0:N0}", _listReward[_currentIndex]);
+		//Debug.LogFormat("reward = {0:N0}", _listReward[_currentIndex]);
 		AlarmObject.Hide(alarmRootTransform);
 
 		int useEnergy = 0;
@@ -175,6 +175,8 @@ public class FortuneWheelCanvas : SimpleCashCanvas
 
 		PlayFabApiManager.instance.RequestFortuneWheel(_listReward[_currentIndex], useEnergy, consume, () =>
 		{
+			MainCanvas.instance.RefreshMissionAlarmObject();
+
 			Timing.RunCoroutine(SpinProcess());
 		});
 	}
@@ -270,6 +272,7 @@ public class FortuneWheelCanvas : SimpleCashCanvas
 #endif
 		{
 
+			// 정상적인 구매에서는 하던대로 스핀 다 돌려서 처리하면 된다.
 			if (instance != null && instance.gameObject.activeSelf)
 			{
 				CashShopData.instance.PurchaseFlag(CashShopData.eCashConsumeFlagType.FortuneWheel);
@@ -303,6 +306,33 @@ public class FortuneWheelCanvas : SimpleCashCanvas
 
 	public static void ConsumeProduct()
 	{
-		
+		// PetSaleCanvas와 달리 창에서 랜덤을 돌려서 구하는 구조라서
+		// 창이 켜있을때의 구매는 원래 로직대로 돌린다.
+		// 그러나 재구동 후의 컨슘에서는 패킷만 보내서 복구하는 식으로 처리한다.
+		StageBetTableData stageBetTableData = TableDataManager.instance.FindStageBetTableData(PlayerData.instance.currentRewardStage);
+		if (stageBetTableData == null)
+			return;
+
+		int rate = BattleInstanceManager.instance.GetCachedGlobalConstantInt("FortuneWheelGolden");
+
+		List<int> listReward = new List<int>();
+		listReward.Add(stageBetTableData.roulette_1 * rate);
+		listReward.Add(stageBetTableData.roulette_2 * rate);
+		listReward.Add(stageBetTableData.roulette_3 * rate);
+		listReward.Add(stageBetTableData.roulette_4 * rate);
+		listReward.Add(stageBetTableData.roulette_5 * rate);
+		listReward.Add(stageBetTableData.roulette_6 * rate);
+		listReward.Add(stageBetTableData.roulette_7 * rate);
+
+		int randomIndex = Random.Range(0, listReward.Count);
+		PlayFabApiManager.instance.RequestConsumeFortuneWheel(listReward[randomIndex], () =>
+		{
+			MainCanvas.instance.RefreshMissionAlarmObject();
+
+			UIInstanceManager.instance.ShowCanvasAsync("CommonRewardCanvas", () =>
+			{
+				CommonRewardCanvas.instance.RefreshReward(listReward[randomIndex], 0, null);
+			});
+		});
 	}
 }

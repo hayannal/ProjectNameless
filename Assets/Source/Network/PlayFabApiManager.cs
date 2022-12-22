@@ -3310,6 +3310,36 @@ public class PlayFabApiManager : MonoBehaviour
 			HandleCommonError(error);
 		});
 	}
+
+	public void RequestConsumeFortuneWheel(int reward, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "ConsumeFortuneWheel",
+			FunctionParameter = new { AddGo = reward },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				if (SubMissionData.instance.fortuneWheelDailyCount == 1)
+					SubMissionData.instance.fortuneWheelDailyCount += 1;
+				CurrencyData.instance.gold += reward;
+				CashShopData.instance.ConsumeFlag(CashShopData.eCashConsumeFlagType.FortuneWheel);
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
 	#endregion
 
 

@@ -8,19 +8,49 @@ public class MissionListCanvas : MonoBehaviour
 {
 	public static MissionListCanvas instance;
 
+	#region Energy
+	public Text energyText;
+	public Transform energyIconTransform;
+	public Canvas[] backImageCanvasList;
+	#endregion
+
 	public Text petMenuRemainCount;
 	public Text petTodayResetRemainTimeText;
+	public Text petSearchEnergyText;
+	public RectTransform petAlarmRootTransform;
 
 	public Text wheelRemainCount;
 	public Text wheelTodayResetRemainTimeText;
+	public Text wheelEnergyText;
+	public GameObject wheelEnergyObject;
+	public GameObject wheelEnterObject;
+	public RectTransform wheelAlarmRootTransform;
 
 	void Awake()
 	{
 		instance = this;
+
+		#region Energy
+		_canvas = GetComponent<Canvas>();
+		#endregion
 	}
 
+	Canvas _canvas;
 	void OnEnable()
 	{
+		#region Energy
+		RefreshEnergy();
+		#endregion
+		RefreshInfo();
+
+		#region Energy
+		if (_canvas != null)
+		{
+			for (int i = 0; i < backImageCanvasList.Length; ++i)
+				backImageCanvasList[i].sortingOrder = _canvas.sortingOrder - 1;
+		}
+		#endregion
+
 		bool restore = StackCanvas.Push(gameObject, false, null, OnPopStack);
 
 		if (DragThresholdController.instance != null)
@@ -30,8 +60,6 @@ public class MissionListCanvas : MonoBehaviour
 			return;
 
 		MainCanvas.instance.OnEnterCharacterMenu(true);
-
-		RefreshInfo();
 	}
 
 	void OnDisable()
@@ -58,14 +86,54 @@ public class MissionListCanvas : MonoBehaviour
 	void Update()
 	{
 		UpdateResetRemainTime();
+		UpdateEnergy();
+	}
+
+	#region Energy
+	public void RefreshEnergy()
+	{
+		energyText.text = CurrencyData.instance.energy.ToString("N0");
+	}
+
+	public void OnClickEnergyButton()
+	{
+		TooltipCanvas.Show(true, TooltipCanvas.eDirection.LeftBottom, UIString.instance.GetString("GameUI_EnergyDesc"), 200, energyIconTransform, new Vector2(-40.0f, 9.0f));
+	}
+	#endregion
+
+	public static bool IsAlarmPetSearch()
+	{
+		if (PetManager.instance.dailySearchCount < BattleInstanceManager.instance.GetCachedGlobalConstantInt("PetDailySearchCount"))
+			return true;
+		return false;
+	}
+
+	public static bool IsAlarmFortuneWheel()
+	{
+		if (SubMissionData.instance.fortuneWheelDailyCount < BattleInstanceManager.instance.GetCachedGlobalConstantInt("FortuneWheelDailyCount"))
+			return true;
+		return false;
 	}
 
 	void RefreshInfo()
 	{
+		int cost = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MissionEnergyPet");
+		petSearchEnergyText.text = cost.ToString("N0");
 		petMenuRemainCount.text = (BattleInstanceManager.instance.GetCachedGlobalConstantInt("PetDailySearchCount") - PetManager.instance.dailySearchCount).ToString();
+		AlarmObject.Hide(petAlarmRootTransform);
+		if (IsAlarmPetSearch())
+			AlarmObject.Show(petAlarmRootTransform);
+
+		cost = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MissionEnergyRoulette");
+		wheelEnergyText.text = cost.ToString("N0");
 		int count = BattleInstanceManager.instance.GetCachedGlobalConstantInt("FortuneWheelDailyCount") - SubMissionData.instance.fortuneWheelDailyCount;
 		if (count < 0) count = 0;
 		wheelRemainCount.text = count.ToString();
+		wheelEnergyObject.SetActive(SubMissionData.instance.fortuneWheelDailyCount == 0);
+		wheelEnterObject.SetActive(SubMissionData.instance.fortuneWheelDailyCount > 0);
+		AlarmObject.Hide(wheelAlarmRootTransform);
+		if (IsAlarmFortuneWheel())
+			AlarmObject.Show(wheelAlarmRootTransform);
 	}
 
 	public void OnClickButton(int index)
@@ -75,7 +143,7 @@ public class MissionListCanvas : MonoBehaviour
 			case 0:
 
 				// 횟수 검사
-				if (PetManager.instance.dailySearchCount >= BattleInstanceManager.instance.GetCachedGlobalConstantInt("PetDailySearchCount"))
+				if (IsAlarmPetSearch() == false)
 				{
 					ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_TodayCountComplete"), 2.0f);
 					return;
@@ -187,6 +255,20 @@ public class MissionListCanvas : MonoBehaviour
 		{
 			if (petProcess) petTodayResetRemainTimeText.text = "";
 			if (wheelProcess) wheelTodayResetRemainTimeText.text = "";
+		}
+	}
+
+	int _lastEnergySecond = -1;
+	void UpdateEnergy()
+	{
+		if (CurrencyData.instance.energy >= CurrencyData.instance.energyMax)
+			return;
+
+		if (_lastEnergySecond != (int)Time.time)
+		{
+			//Debug.Log(_lastEnergySecond);
+			RefreshEnergy();
+			_lastEnergySecond = (int)Time.time;
 		}
 	}
 }
