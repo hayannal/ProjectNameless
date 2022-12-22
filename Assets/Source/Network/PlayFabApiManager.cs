@@ -2972,6 +2972,7 @@ public class PlayFabApiManager : MonoBehaviour
 			{
 				WaitingNetworkCanvas.Show(false);
 
+				CurrencyData.instance.UseEnergy(BattleInstanceManager.instance.GetCachedGlobalConstantInt("MissionEnergyPet"));
 				PetManager.instance.dailySearchCount += 1;
 				PetManager.instance.GetInProgressSearchIdList().Clear();
 
