@@ -246,8 +246,8 @@ public class CharacterLevelCanvas : MonoBehaviour
 				StatusDetailCanvas.instance.AddStatus("GameUI_Companion", CharacterManager.instance.cachedValue);
 			if (PetManager.instance.listPetData.Count > 0)
 				StatusDetailCanvas.instance.AddStatus("GameUI_Pet", PetManager.instance.cachedValue);
-			if (false)
-				StatusDetailCanvas.instance.AddStatus("GameUI_Equipment", 0);
+			if (EquipManager.instance.inventoryItemCount > 0)
+				StatusDetailCanvas.instance.AddStatus("GameUI_Equipment", EquipManager.instance.cachedValue);
 			StatusDetailCanvas.instance.AddStatus("GameUI_Analysis", AnalysisData.instance.cachedValue);
 		});
 	}
