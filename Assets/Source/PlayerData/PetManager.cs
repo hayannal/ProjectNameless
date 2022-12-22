@@ -281,6 +281,9 @@ public class PetManager : MonoBehaviour
 	{
 		dailySearchCount = 0;
 		dailyHeartCount = 0;
+
+		if (MainCanvas.instance != null)
+			MainCanvas.instance.RefreshPetAlarmObject();
 	}
 
 	#region InProgressGame

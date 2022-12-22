@@ -41,6 +41,8 @@ public class PetInfoCanvas : MonoBehaviour
 
 	void OnEnable()
 	{
+		RefreshHeart();
+
 		bool restore = StackCanvas.Push(gameObject, false, null, OnPopStack);
 		if (restore)
 			return;
@@ -130,11 +132,10 @@ public class PetInfoCanvas : MonoBehaviour
 				countLevelUpButtonObject.SetActive(true);
 		}
 
-		RefreshHeart();
 		RefreshPetSale();
 	}
 
-	void RefreshHeart()
+	public void RefreshHeart()
 	{
 		bool showHeart = _contains && PetListCanvas.CheckTodayHeart();
 		todayHeartObject.SetActive(showHeart);

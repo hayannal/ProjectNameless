@@ -110,6 +110,7 @@ public class PetSaleCanvas : SimpleCashCanvas
 
 		PetInfoCanvas.instance.rootObject.SetActive(true);
 		PetInfoCanvas.instance.RefreshInfo();
+		PetInfoCanvas.instance.RefreshHeart();
 		PetListCanvas.instance.RefreshGrid();
 
 		DelayedLoadingCanvas.Show(false);
