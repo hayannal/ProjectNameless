@@ -45,6 +45,7 @@ public class MainCanvas : MonoBehaviour
 	public RectTransform mailAlarmRootTransform;
 	public RectTransform analysisAlarmRootTransform;
 	public RectTransform gachaAlarmRootTransform;
+	public RectTransform missionAlarmRootTransform;
 	public RectTransform cashShopAlarmRootTransform;
 
 	public RectTransform downloadAlarmRootTransform;
@@ -426,6 +427,7 @@ public class MainCanvas : MonoBehaviour
 		RefreshPetAlarmObject();
 		RefreshMailAlarmObject();
 		RefreshAnalysisAlarmObject();
+		RefreshMissionAlarmObject();
 		RefreshGachaAlarmObject();
 		RefreshSevenDaysAlarmObject();
 		RefreshDownloadRewardAlarmObject();
@@ -526,6 +528,18 @@ public class MainCanvas : MonoBehaviour
 	public void RefreshAnalysisAlarmObject()
 	{
 		RefreshAlarmObject(IsAlarmAnalysis(), analysisAlarmRootTransform);
+	}
+
+	public static bool IsAlarmMission()
+	{
+		if (MissionListCanvas.IsAlarmPetSearch() || MissionListCanvas.IsAlarmFortuneWheel())
+			return true;
+		return false;
+	}
+
+	public void RefreshMissionAlarmObject()
+	{
+		RefreshAlarmObject(IsAlarmMission(), missionAlarmRootTransform);
 	}
 
 	public static bool IsAlarmDownloadReward()
