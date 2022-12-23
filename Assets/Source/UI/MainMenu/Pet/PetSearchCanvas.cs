@@ -147,7 +147,10 @@ public class PetSearchCanvas : MonoBehaviour
 	public void InitializePhase()
 	{
 		if (PetManager.instance.listPetData.Count == 0)
+		{
+			captureButtonObject.SetActive(false);
 			return;
+		}
 
 		if (string.IsNullOrEmpty(PetManager.instance.activePetId))
 			return;

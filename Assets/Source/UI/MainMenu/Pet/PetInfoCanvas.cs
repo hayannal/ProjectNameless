@@ -41,13 +41,12 @@ public class PetInfoCanvas : MonoBehaviour
 
 	void OnEnable()
 	{
-		RefreshHeart();
-
 		bool restore = StackCanvas.Push(gameObject, false, null, OnPopStack);
 		if (restore)
 			return;
 
 		RefreshInfo();
+		RefreshHeart();
 	}
 
 	void OnDisable()

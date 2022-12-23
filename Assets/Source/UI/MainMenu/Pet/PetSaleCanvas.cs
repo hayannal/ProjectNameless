@@ -86,6 +86,7 @@ public class PetSaleCanvas : SimpleCashCanvas
 		yield return Timing.WaitForSeconds(0.4f);
 
 		PetInfoCanvas.instance.rootObject.SetActive(true);
+		PetInfoCanvas.instance.RefreshHeart();
 	}
 
 
