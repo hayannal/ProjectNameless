@@ -118,10 +118,7 @@ public class MissionData : MonoBehaviour
 			sevenDaysId = sevenDaysTypeTableData.groupId;
 
 			if (MainCanvas.instance != null)
-			{
 				MainCanvas.instance.sevenDaysButtonObject.SetActive(true);
-				MainCanvas.instance.sevenTotalButtonObject.SetActive(true);
-			}
 
 			_waitPacket = false;
 		}, () =>
