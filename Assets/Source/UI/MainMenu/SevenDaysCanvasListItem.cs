@@ -77,9 +77,10 @@ public class SevenDaysCanvasListItem : MonoBehaviour
 			UIInstanceManager.instance.ShowCanvasAsync("CommonRewardCanvas", () =>
 			{
 				Initialize(_sevenDaysRewardTableData);
-				SevenDaysCanvas.instance.currencySmallInfo.RefreshInfo();
+				SevenDaysTabCanvas.instance.currencySmallInfo.RefreshInfo();
 				SevenDaysCanvas.instance.RefreshSumReward();
 				SevenDaysCanvas.instance.RefreshDayAlarmObject();
+				SevenDaysTabCanvas.instance.RefreshAlarmObject();
 				MainCanvas.instance.RefreshSevenDaysAlarmObject();
 				CommonRewardCanvas.instance.RefreshReward(_sevenDaysRewardTableData.rewardType, _sevenDaysRewardTableData.rewardValue, _sevenDaysRewardTableData.rewardCount);
 			});

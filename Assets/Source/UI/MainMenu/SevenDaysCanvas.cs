@@ -8,7 +8,6 @@ public class SevenDaysCanvas : MonoBehaviour
 {
 	public static SevenDaysCanvas instance;
 
-	public CurrencySmallInfo currencySmallInfo;
 	public Text remainTimeText;
 
 	public Text currentSumPointText;
@@ -55,21 +54,7 @@ public class SevenDaysCanvas : MonoBehaviour
 
 		if (_started)
 			RefreshGrid(_lastIndex + 1);
-
-		MainCanvas.instance.OnEnterCharacterMenu(true);
-
-		if (DragThresholdController.instance != null)
-			DragThresholdController.instance.ApplyUIDragThreshold();
 	}
-
-	void OnDisable()
-	{
-		if (DragThresholdController.instance != null)
-			DragThresholdController.instance.ResetUIDragThreshold();
-
-		MainCanvas.instance.OnEnterCharacterMenu(false);
-	}
-
 
 	void Update()
 	{
@@ -108,7 +93,7 @@ public class SevenDaysCanvas : MonoBehaviour
 		{
 			// 이벤트 기간이 끝났으면 닫아버리는게 제일 편하다.
 			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_EventExpired"), 2.0f);
-			gameObject.SetActive(false);
+			SevenDaysTabCanvas.instance.gameObject.SetActive(false);
 		}
 	}
 
@@ -238,9 +223,10 @@ public class SevenDaysCanvas : MonoBehaviour
 		{
 			UIInstanceManager.instance.ShowCanvasAsync("CommonRewardCanvas", () =>
 			{
-				currencySmallInfo.RefreshInfo();
+				SevenDaysTabCanvas.instance.currencySmallInfo.RefreshInfo();
 				RefreshSumReward();
 				RefreshDayAlarmObject();
+				SevenDaysTabCanvas.instance.RefreshAlarmObject();
 				MainCanvas.instance.RefreshSevenDaysAlarmObject();
 				CommonRewardCanvas.instance.RefreshReward(sevenSumTableData.rewardType, sevenSumTableData.rewardValue, sevenSumTableData.rewardCount);
 			});

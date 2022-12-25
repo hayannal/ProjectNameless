@@ -56,7 +56,7 @@ public class SevenDaysMenuButton : MonoBehaviour
 	public void OnClickButton()
 	{
 		if (totalMenuButton == false)
-			UIInstanceManager.instance.ShowCanvasAsync("SevenDaysCanvas", null);
+			UIInstanceManager.instance.ShowCanvasAsync("SevenDaysTabCanvas", null);
 		else
 			UIInstanceManager.instance.ShowCanvasAsync("SevenTotalCanvas", null);
 	}

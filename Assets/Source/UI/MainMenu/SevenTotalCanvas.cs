@@ -9,7 +9,6 @@ public class SevenTotalCanvas : SimpleCashCanvas
 {
 	public static SevenTotalCanvas instance;
 
-	public CurrencySmallInfo currencySmallInfo;
 	public Text remainTimeText;
 
 	public Text[] priceTextList;
@@ -59,12 +58,6 @@ public class SevenTotalCanvas : SimpleCashCanvas
 	{
 		RefreshButtonState();
 		SetRemainTimeInfo();
-		MainCanvas.instance.OnEnterCharacterMenu(true);
-	}
-
-	void OnDisable()
-	{
-		MainCanvas.instance.OnEnterCharacterMenu(false);
 	}
 
 	void Update()
@@ -104,7 +97,7 @@ public class SevenTotalCanvas : SimpleCashCanvas
 		{
 			// 이벤트 기간이 끝났으면 닫아버리는게 제일 편하다.
 			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_EventExpired"), 2.0f);
-			gameObject.SetActive(false);
+			SevenDaysTabCanvas.instance.gameObject.SetActive(false);
 		}
 	}
 
