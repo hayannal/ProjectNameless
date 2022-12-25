@@ -96,7 +96,7 @@ public class CashShopData : MonoBehaviour
 		Login = 1,
 		BossStageFailed = 2,
 		SpinZero = 3,
-		OnApplicationPause = 4,
+		OnCloseMainMenu = 4,
 	}
 	#endregion
 

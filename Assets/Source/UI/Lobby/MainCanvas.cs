@@ -372,7 +372,7 @@ public class MainCanvas : MonoBehaviour
 		if (enter == false)
 		{
 			RefreshAlarmObjectList();
-			CashShopData.instance.CheckStartEvent(CashShopData.eEventStartCondition.OnApplicationPause);
+			CashShopData.instance.CheckStartEvent(CashShopData.eEventStartCondition.OnCloseMainMenu);
 		}
 	}
 
@@ -869,7 +869,7 @@ public class MainCanvas : MonoBehaviour
 				{
 					// 성공시엔 예전엔 아무것도 하지 않았는데
 					// 이젠 이벤트를 발생시켜야한다.
-					CashShopData.instance.CheckStartEvent(CashShopData.eEventStartCondition.OnApplicationPause);
+					//CashShopData.instance.CheckStartEvent(CashShopData.eEventStartCondition.OnApplicationPause);
 
 				}, () =>
 				{
@@ -894,7 +894,7 @@ public class MainCanvas : MonoBehaviour
 			}
 			else
 			{
-				CashShopData.instance.CheckStartEvent(CashShopData.eEventStartCondition.OnApplicationPause);
+				//CashShopData.instance.CheckStartEvent(CashShopData.eEventStartCondition.OnApplicationPause);
 			}
 			_paused = false;
 		}
