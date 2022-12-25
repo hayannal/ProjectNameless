@@ -182,6 +182,8 @@ public class FortuneWheelCanvas : SimpleCashCanvas
 	}
 
 	bool _processed = false;
+	const int BaseRotationCount = 2;
+	const float Duration = 2.0f;
 	IEnumerator<float> SpinProcess()
 	{
 		if (_processed)
@@ -195,14 +197,14 @@ public class FortuneWheelCanvas : SimpleCashCanvas
 		circleRectTransform.DOLocalRotate(new Vector3(0.0f, 0.0f, circleRectTransform.eulerAngles.z - 10.0f), 0.5f);
 		yield return Timing.WaitForSeconds(0.5f);
 
-		float targetZ = circleRectTransform.eulerAngles.z + 10.0f + 360.0f * 2.0f;
+		float targetZ = circleRectTransform.eulerAngles.z + 10.0f + 360.0f * BaseRotationCount;
 		float sectorAngleDeg = 360f / sectorsCount;
 		targetZ += sectorAngleDeg * _randomResult;
 		float resultTargetZ = targetZ;
 		targetZ += 10.0f;
-		circleRectTransform.DOLocalRotate(new Vector3(0.0f, 0.0f, targetZ), 2.0f, RotateMode.FastBeyond360).SetEase(Ease.InOutQuad);
-		Timing.RunCoroutine(PointerAnimatorProcess(2.0f));
-		yield return Timing.WaitForSeconds(2.05f);
+		circleRectTransform.DOLocalRotate(new Vector3(0.0f, 0.0f, targetZ), Duration, RotateMode.FastBeyond360).SetEase(Ease.InOutQuad);
+		Timing.RunCoroutine(PointerAnimatorProcess(Duration));
+		yield return Timing.WaitForSeconds(Duration + 0.05f);
 
 		circleRectTransform.DOLocalRotate(new Vector3(0.0f, 0.0f, circleRectTransform.eulerAngles.z - 10.0f), 0.3f);
 		yield return Timing.WaitForSeconds(0.3f);
