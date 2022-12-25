@@ -210,7 +210,13 @@ public class MissionData : MonoBehaviour
 		// 로그인 할때마다 시작 상태가 아니라면 초기화를 진행해야한다.
 		// 대신 로그인 하자마자 보내면 디비에서 제대로 처리 못할 수 도 있을테니
 		// 1초 뒤에 보내도록 한다.
-		if (PlayerData.instance.downloadConfirmed)
+		bool downloadConfirmed = false;
+		if (userReadOnlyData.ContainsKey("downloadConfirm"))
+		{
+			if (string.IsNullOrEmpty(userReadOnlyData["downloadConfirm"].Value) == false)
+				downloadConfirmed = true;
+		}
+		if (downloadConfirmed)
 		{
 			if (sevenDaysId == 0 || (ServerTime.UtcNow > sevenDaysExpireTime && ServerTime.UtcNow > sevenDaysCoolExpireTime))
 				_retryStartRemainTime = 1.0f;
