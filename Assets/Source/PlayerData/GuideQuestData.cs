@@ -119,6 +119,7 @@ public class GuideQuestData : MonoBehaviour
 	{
 		// 호출은 가이드가 받아서 전달하기로 한다.
 		MissionData.instance.OnQuestEvent(questClearType, addValue);
+		FestivalData.instance.OnQuestEvent(questClearType, addValue);
 
 		/*
 		if (ContentsManager.IsTutorialChapter())

@@ -273,6 +273,7 @@ public class PlayFabApiManager : MonoBehaviour
 		GuideQuestData.instance.OnRecvGuideQuestData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 		MissionData.instance.OnRecvMissionData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 		SubMissionData.instance.OnRecvSubMissionData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
+		FestivalData.instance.OnRecvFestivalData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 		RankingData.instance.OnRecvRankingData(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 
 		// PlayerData 만 다 받고 처리하고 다른 인벤이나 스펠은 여기서 처리한다.
@@ -2279,6 +2280,106 @@ public class PlayFabApiManager : MonoBehaviour
 
 				CurrencyData.instance.OnRecvProductReward(sevenSumTableData.rewardType, sevenSumTableData.rewardValue, sevenSumTableData.rewardCount);
 				MissionData.instance.OnRecvGetSevenDaysSumReward(sevenSumTableData.count);
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+	#endregion
+
+
+	#region Festival
+	public void RequestStartFestival(int newGroupId, int collectGivenTime, int exchangeGivenTime, int coolTime, Action successCallback, Action failureCallback)
+	{
+		string input = string.Format("{0}_{1}_{2}_{3}_{4}", newGroupId, collectGivenTime, exchangeGivenTime, coolTime, "vmpqdfax");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "StartFestival",
+			FunctionParameter = new { FsGrpId = newGroupId, GiTim = collectGivenTime, GiTim2 = exchangeGivenTime, CoTim = coolTime, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				jsonResult.TryGetValue("date", out object date);
+
+				// 성공시에는 서버에서 방금 기록한 유효기간 만료 시간이 날아온다.
+				FestivalData.instance.OnRecvFestivalStartInfo((string)date);
+
+				jsonResult.TryGetValue("date2", out object date2);
+				FestivalData.instance.OnRecvFestivalStart2Info((string)date2);
+
+				jsonResult.TryGetValue("cool", out object useCool);
+				if ((useCool.ToString()) == "1")
+				{
+					jsonResult.TryGetValue("cdate", out object cdate);
+					FestivalData.instance.OnRecvFestivalCoolTimeInfo((string)cdate);
+				}
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			//HandleCommonError(error);
+			if (failureCallback != null) failureCallback.Invoke();
+		});
+	}
+
+	public void RequestFestivalProceedingCount(int type, int addCount, int expectCount, Action successCallback)
+	{
+		string input = string.Format("{0}_{1}_{2}_{3}", type, addCount, expectCount, "rfsouimz");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "FestivalProceedingCount",
+			FunctionParameter = new { Tp = type, Add = addCount, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (failure)
+				HandleCommonError();
+			else
+			{
+				FestivalData.instance.SetProceedingCount(type, addCount, expectCount);
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
+	public void RequestGetFestivalCollect(FestivalCollectTableData festivalCollectTableData, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}_{2}_{3}", MissionData.instance.sevenDaysId, festivalCollectTableData.num, festivalCollectTableData.key, "rojlszqu");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "GetFestivalCollect",
+			FunctionParameter = new { FsGrpId = (int)FestivalData.instance.festivalId, Num = festivalCollectTableData.num, InfCs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				FestivalData.instance.festivalSumPoint += festivalCollectTableData.festivalPoint;
+				FestivalData.instance.OnRecvGetFestivalCollect(festivalCollectTableData.num);
 
 				if (successCallback != null) successCallback.Invoke();
 			}

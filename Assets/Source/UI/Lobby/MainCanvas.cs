@@ -431,6 +431,7 @@ public class MainCanvas : MonoBehaviour
 		RefreshMissionAlarmObject();
 		RefreshGachaAlarmObject();
 		RefreshSevenDaysAlarmObject();
+		RefreshFestivalAlarmObject();
 		RefreshDownloadRewardAlarmObject();
 		RefreshLevelPassAlarmObject();
 		RefreshEnergyPaybackAlarmObject();
@@ -647,8 +648,9 @@ public class MainCanvas : MonoBehaviour
 
 	public static bool IsAlarmFestival()
 	{
-		bool getable = false;
-		return getable;
+		if (FestivalTabCanvas.IsAlarmFestivalQuest() || FestivalTabCanvas.IsAlarmFestivalReward())
+			return true;
+		return false;
 	}
 
 	public void RefreshFestivalAlarmObject()

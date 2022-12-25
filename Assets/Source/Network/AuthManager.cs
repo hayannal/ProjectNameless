@@ -230,6 +230,7 @@ public class AuthManager : MonoBehaviour
 		playerStatisticNames.Add("guideQuestIndex");
 		playerStatisticNames.Add("energyUseForPayback");
 		playerStatisticNames.Add("sevenDaysSumPoint");
+		playerStatisticNames.Add("festivalSumPoint");
 		playerStatisticNames.Add("chtRnkSus");
 		playerStatisticNames.Add("spellLevel");
 		playerStatisticNames.Add("highestBattlePower");

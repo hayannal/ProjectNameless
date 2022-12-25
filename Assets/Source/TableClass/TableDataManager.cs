@@ -59,6 +59,9 @@ public class TableDataManager : MonoBehaviour
 	public SevenDaysRewardTable sevenDaysRewardTable;
 	public SevenSumTable sevenSumTable;
 
+	public FestivalTypeTable festivalTypeTable;
+	public FestivalCollectTable festivalCollectTable;
+
 	public GachaSpellTable gachaSpellTable;
 	public GachaActorTable gachaActorTable;
 	public GachaEquipTable gachaEquipTable;
