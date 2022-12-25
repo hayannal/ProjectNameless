@@ -787,8 +787,8 @@ public class MainCanvas : MonoBehaviour
 		bool showSevenDays = (MissionData.instance.sevenDaysId != 0 && ServerTime.UtcNow < MissionData.instance.sevenDaysExpireTime);
 		sevenDaysButtonObject.SetActive(showSevenDays);
 
-		bool showFestival = (FestivalData.instance.festivalId != 0 && ServerTime.UtcNow < FestivalData.instance.festivalExpireTime);
-		festivalButtonObject.SetActive(showFestival);
+		//bool showFestival = (FestivalData.instance.festivalId != 0 && ServerTime.UtcNow < FestivalData.instance.festivalExpireTime);
+		//festivalButtonObject.SetActive(showFestival);
 	}
 
 	#region CashEvent
