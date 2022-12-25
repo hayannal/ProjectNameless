@@ -33,7 +33,7 @@ public class MainCanvas : MonoBehaviour
 	public GameObject levelPassButtonObject;
 	public GameObject brokenEnergyButtonObject;
 	public GameObject sevenDaysButtonObject;
-	public GameObject sevenTotalButtonObject;
+	public GameObject festivalButtonObject;
 	public Transform cashEventButtonRootTransform;
 	public CashEventButton[] cashEventButtonList;
 
@@ -51,6 +51,7 @@ public class MainCanvas : MonoBehaviour
 	public RectTransform downloadAlarmRootTransform;
 	public RectTransform levelPassAlarmRootTransform;
 	public RectTransform sevenDaysAlarmRootTransform;
+	public RectTransform festivalAlarmRootTransform;
 	public RectTransform energyPaybackAlarmRootTransform;   // ev6
 
 	public RectTransform continuousProduct1AlarmRootTransform;  // ev4
@@ -644,6 +645,17 @@ public class MainCanvas : MonoBehaviour
 		RefreshAlarmObject(IsAlarmSevenDays(), sevenDaysAlarmRootTransform);
 	}
 
+	public static bool IsAlarmFestival()
+	{
+		bool getable = false;
+		return getable;
+	}
+
+	public void RefreshFestivalAlarmObject()
+	{
+		RefreshAlarmObject(IsAlarmFestival(), festivalAlarmRootTransform);
+	}
+
 	public static bool IsAlarmGacha()
 	{
 		return (CurrencyData.instance.energy >= CurrencyData.instance.energyMax);
@@ -774,7 +786,9 @@ public class MainCanvas : MonoBehaviour
 	{
 		bool showSevenDays = (MissionData.instance.sevenDaysId != 0 && ServerTime.UtcNow < MissionData.instance.sevenDaysExpireTime);
 		sevenDaysButtonObject.SetActive(showSevenDays);
-		sevenTotalButtonObject.SetActive(showSevenDays);
+
+		bool showFestival = (FestivalData.instance.festivalId != 0 && ServerTime.UtcNow < FestivalData.instance.festivalExpireTime);
+		festivalButtonObject.SetActive(showFestival);
 	}
 
 	#region CashEvent
