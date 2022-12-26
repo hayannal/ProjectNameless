@@ -160,7 +160,7 @@ public class MissionListCanvas : MonoBehaviour
 
 			case 1:
 
-				if (CurrencyData.instance.energy < BattleInstanceManager.instance.GetCachedGlobalConstantInt("MissionEnergyRoulette"))
+				if (SubMissionData.instance.fortuneWheelDailyCount == 0 && CurrencyData.instance.energy < BattleInstanceManager.instance.GetCachedGlobalConstantInt("MissionEnergyRoulette"))
 				{
 					ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughEnergy"), 2.0f);
 					return;
