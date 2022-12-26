@@ -51,6 +51,9 @@ public class SpellCanvas : ResearchShowCanvasBase
 
 		bool restore = StackCanvas.Push(gameObject, false, null, OnPopStack);
 
+		if (DragThresholdController.instance != null)
+			DragThresholdController.instance.ApplyUIDragThreshold();
+
 		if (restore)
 			return;
 
@@ -65,6 +68,9 @@ public class SpellCanvas : ResearchShowCanvasBase
 	void OnDisable()
 	{
 		_spellGroundObject.SetActive(false);
+
+		if (DragThresholdController.instance != null)
+			DragThresholdController.instance.ResetUIDragThreshold();
 
 		if (StackCanvas.Pop(gameObject))
 			return;
