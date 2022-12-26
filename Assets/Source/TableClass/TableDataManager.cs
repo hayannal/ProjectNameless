@@ -537,6 +537,16 @@ public class TableDataManager : MonoBehaviour
 		return null;
 	}
 
+	public FestivalTypeTableData FindFestivalTypeTableData(int group)
+	{
+		for (int i = 0; i < festivalTypeTable.dataArray.Length; ++i)
+		{
+			if (festivalTypeTable.dataArray[i].groupId == group)
+				return festivalTypeTable.dataArray[i];
+		}
+		return null;
+	}
+
 	public PetTableData FindPetTableData(string petId)
 	{
 		for (int i = 0; i < petTable.dataArray.Length; ++i)

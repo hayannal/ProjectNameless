@@ -50,7 +50,22 @@ public class FestivalTabCanvas : MonoBehaviour
 
 	public static bool IsAlarmFestivalQuest()
 	{
-		return false;
+		bool getable = false;
+		for (int i = 0; i < TableDataManager.instance.festivalCollectTable.dataArray.Length; ++i)
+		{
+			if (TableDataManager.instance.festivalCollectTable.dataArray[i].group != FestivalData.instance.festivalId)
+				continue;
+
+			int currentCount = FestivalData.instance.GetProceedingCount(TableDataManager.instance.festivalCollectTable.dataArray[i].typeId);
+			if (currentCount < TableDataManager.instance.festivalCollectTable.dataArray[i].needCount)
+				continue;
+			if (FestivalData.instance.IsGetFestivalCollect(TableDataManager.instance.festivalCollectTable.dataArray[i].num))
+				continue;
+
+			getable = true;
+			break;
+		}
+		return getable;
 	}
 
 	public static bool IsAlarmFestivalReward()

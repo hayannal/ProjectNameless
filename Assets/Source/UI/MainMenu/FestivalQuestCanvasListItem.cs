@@ -21,10 +21,18 @@ public class FestivalQuestCanvasListItem : MonoBehaviour
 	{
 		_festivalCollectTableData = festivalCollectTableData;
 
+		FestivalTypeTableData festivalTypeTableData = TableDataManager.instance.FindFestivalTypeTableData(festivalCollectTableData.group);
+
 		// 리워드
 		sumPointRewardText.text = festivalCollectTableData.festivalPoint.ToString("N0");
-		//rewardIcon.RefreshReward(festivalCollectTableData.rewardType, festivalCollectTableData.rewardValue, festivalCollectTableData.rewardCount);
 		nameText.SetLocalizedText(UIString.instance.GetString(festivalCollectTableData.descriptionId, festivalCollectTableData.needCount));
+
+		AddressableAssetLoadManager.GetAddressableSprite(festivalTypeTableData.iconAddress, "Icon", (sprite) =>
+		{
+			rewardIcon.uncommonImage.sprite = null;
+			rewardIcon.uncommonImage.sprite = sprite;
+			rewardIcon.uncommonImage.gameObject.SetActive(true);
+		});
 
 		// 버튼
 		int currentCount = FestivalData.instance.GetProceedingCount(festivalCollectTableData.typeId);
@@ -66,16 +74,12 @@ public class FestivalQuestCanvasListItem : MonoBehaviour
 
 		PlayFabApiManager.instance.RequestGetFestivalCollect(_festivalCollectTableData, () =>
 		{
-			UIInstanceManager.instance.ShowCanvasAsync("CommonRewardCanvas", () =>
-			{
-				Initialize(_festivalCollectTableData);
-				FestivalTabCanvas.instance.currencySmallInfo.RefreshInfo();
-				//FestivalQuestCanvas.instance.RefreshSumReward();
-				//FestivalQuestCanvas.instance.RefreshDayAlarmObject();
-				FestivalTabCanvas.instance.RefreshAlarmObject();
-				MainCanvas.instance.RefreshFestivalAlarmObject();
-				//CommonRewardCanvas.instance.RefreshReward(_sevenDaysRewardTableData.rewardType, _sevenDaysRewardTableData.rewardValue, _sevenDaysRewardTableData.rewardCount);
-			});
+			FestivalQuestCanvas.instance.RefreshCount();
+			FestivalQuestCanvas.instance.RefreshGrid();
+			FestivalTabCanvas.instance.currencySmallInfo.RefreshInfo();
+			FestivalTabCanvas.instance.RefreshAlarmObject();
+			MainCanvas.instance.RefreshFestivalAlarmObject();
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("FestivalUI_CollectComplete"), 2.0f);
 		});
 	}
 }

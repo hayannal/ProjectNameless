@@ -10,6 +10,7 @@ public class FestivalQuestCanvas : MonoBehaviour
 
 	public Text remainTimeText;
 
+	public Image currentSumPointImage;
 	public Text currentSumPointText;
 
 	public GameObject contentItemPrefab;
@@ -33,7 +34,18 @@ public class FestivalQuestCanvas : MonoBehaviour
 	void OnEnable()
 	{
 		SetRemainTimeInfo();
+		RefreshCount();
 		RefreshGrid();
+
+		FestivalTypeTableData festivalTypeTableData = TableDataManager.instance.FindFestivalTypeTableData(FestivalData.instance.festivalId);
+		if (festivalTypeTableData == null)
+			return;
+
+		AddressableAssetLoadManager.GetAddressableSprite(festivalTypeTableData.iconAddress, "Icon", (sprite) =>
+		{
+			currentSumPointImage.sprite = null;
+			currentSumPointImage.sprite = sprite;
+		});
 	}
 
 	void Update()
@@ -77,8 +89,13 @@ public class FestivalQuestCanvas : MonoBehaviour
 		}
 	}
 
+	public void RefreshCount()
+	{
+		currentSumPointText.text = FestivalData.instance.festivalSumPoint.ToString("N0");
+	}
+
 	List<FestivalQuestCanvasListItem> _listFestivalQuestCanvasListItem = new List<FestivalQuestCanvasListItem>();
-	void RefreshGrid()
+	public void RefreshGrid()
 	{
 		for (int i = 0; i < _listFestivalQuestCanvasListItem.Count; ++i)
 			_listFestivalQuestCanvasListItem[i].gameObject.SetActive(false);

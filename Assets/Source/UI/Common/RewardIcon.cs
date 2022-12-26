@@ -16,6 +16,7 @@ public class RewardIcon : MonoBehaviour
 	public GameObject spellGachaObject;
 	public GameObject characterGachaObject;
 	public GameObject equipGachaObject;
+	public Image uncommonImage;
 
 	public Image blurImage;
 	public Coffee.UIExtensions.UIGradient gradient;

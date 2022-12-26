@@ -2362,7 +2362,7 @@ public class PlayFabApiManager : MonoBehaviour
 	{
 		WaitingNetworkCanvas.Show(true);
 
-		string input = string.Format("{0}_{1}_{2}_{3}", MissionData.instance.sevenDaysId, festivalCollectTableData.num, festivalCollectTableData.key, "rojlszqu");
+		string input = string.Format("{0}_{1}_{2}_{3}", FestivalData.instance.festivalId, festivalCollectTableData.num, festivalCollectTableData.key, "vdrwpljz");
 		string checkSum = CheckSum(input);
 		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
 		{
