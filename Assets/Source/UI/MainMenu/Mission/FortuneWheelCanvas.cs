@@ -175,6 +175,11 @@ public class FortuneWheelCanvas : SimpleCashCanvas
 
 		PlayFabApiManager.instance.RequestFortuneWheel(_listReward[_currentIndex], useEnergy, consume, () =>
 		{
+			if (useEnergy > 0)
+			{
+				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.FreeFortuneWheel);
+				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.UseEnergy, useEnergy);
+			}
 			MainCanvas.instance.RefreshMissionAlarmObject();
 
 			Timing.RunCoroutine(SpinProcess());

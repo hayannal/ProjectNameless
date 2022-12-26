@@ -616,6 +616,8 @@ public class GachaInfoCanvas : MonoBehaviour
 		_prevBrokenEnergy = CurrencyData.instance.brokenEnergy;
 		PlayFabApiManager.instance.RequestGacha(useEnergy, _resultGold, _resultEnergy, _resultBrokenEnergy, _resultEvent, _listResultEventItemIdForPacket, _reserveRoomType, _refreshTurn, _refreshNewTurn, _refreshNewGold, (refreshTurnComplete) =>
 		{
+			GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.UseEnergy, useEnergy);
+
 			// 턴 바꿔야하는걸 기억시켜두고 연출을 진행하면 된다.
 			if (refreshTurnComplete)
 				_needRefreshTurn = true;

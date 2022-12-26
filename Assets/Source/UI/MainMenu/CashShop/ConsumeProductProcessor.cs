@@ -121,6 +121,8 @@ public class ConsumeProductProcessor : MonoBehaviour
 		if (listItemInstance == null)
 			return;
 
+		GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.SpellGacha, _count);
+
 		// 분명히 창은 띄워져있을거다. 없으면 말이 안된다.
 		// 
 		if (RandomBoxScreenCanvas.instance != null)
@@ -129,6 +131,7 @@ public class ConsumeProductProcessor : MonoBehaviour
 	#endregion
 
 	#region Character
+	int _characterRandomIdCount = 0;
 	void ConsumeCharacterGacha(int itemCount)
 	{
 		// 연출 및 보상 처리. 100개씩 뽑으면 느릴 수 있으니 패킷 대기 없이 바로 시작한다.
@@ -144,6 +147,7 @@ public class ConsumeProductProcessor : MonoBehaviour
 			}
 
 			// 연출창 시작과 동시에 패킷을 보내고
+			_characterRandomIdCount = itemCount;
 			List<ObscuredString> listActorId = CharacterManager.instance.GetRandomIdList(itemCount);
 			_count = listActorId.Count;
 			PlayFabApiManager.instance.RequestConsumeCharacterGacha(listActorId, OnRecvResultCharacter);
@@ -158,6 +162,8 @@ public class ConsumeProductProcessor : MonoBehaviour
 		List<ItemInstance> listItemInstance = CharacterManager.instance.OnRecvItemGrantResult(itemGrantString, _count);
 		if (listItemInstance == null)
 			return;
+
+		GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.CharacterGacha, _characterRandomIdCount);
 
 		if (RandomBoxScreenCanvas.instance != null)
 			RandomBoxScreenCanvas.instance.OnRecvResult(RandomBoxScreenCanvas.eBoxType.Character, listItemInstance);
@@ -197,6 +203,8 @@ public class ConsumeProductProcessor : MonoBehaviour
 		List<ItemInstance> listItemInstance = EquipManager.instance.OnRecvItemGrantResult(itemGrantString, _count);
 		if (listItemInstance == null)
 			return;
+
+		GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.EquipGacha, _count);
 
 		if (RandomBoxScreenCanvas.instance != null)
 			RandomBoxScreenCanvas.instance.OnRecvResult(RandomBoxScreenCanvas.eBoxType.Equip, listItemInstance);

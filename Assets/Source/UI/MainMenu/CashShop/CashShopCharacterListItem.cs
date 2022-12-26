@@ -62,6 +62,8 @@ public class CashShopCharacterListItem : MonoBehaviour
 		if (listItemInstance == null)
 			return;
 
+		GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.CharacterGacha, _shopActorTableData.count);
+
 		// 분명히 창은 띄워져있을거다. 없으면 말이 안된다.
 		// 
 		if (RandomBoxScreenCanvas.instance != null)

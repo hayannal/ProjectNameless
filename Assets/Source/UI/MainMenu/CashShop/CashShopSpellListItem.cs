@@ -126,6 +126,8 @@ public class CashShopSpellListItem : MonoBehaviour
 		if (listItemInstance == null)
 			return;
 
+		GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.SpellGacha, _count);
+
 		// 분명히 창은 띄워져있을거다. 없으면 말이 안된다.
 		// 
 		if (RandomBoxScreenCanvas.instance != null)
