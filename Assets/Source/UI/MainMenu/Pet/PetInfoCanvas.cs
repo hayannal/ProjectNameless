@@ -209,7 +209,7 @@ public class PetInfoCanvas : MonoBehaviour
 			if (_lastRemainTimeSecondForPetSale != (int)remainTime.TotalSeconds)
 			{
 				if (remainTime.Days > 0)
-					petSaleResetRemainText.text = string.Format("{0}d {1:00}:{2:00}:{3:00}", remainTime.Days, remainTime.Hours, remainTime.Minutes, remainTime.Seconds);
+					petSaleResetRemainText.text = string.Format("{0}d", remainTime.Days, remainTime.Hours, remainTime.Minutes, remainTime.Seconds);
 				else
 					petSaleResetRemainText.text = string.Format("{0:00}:{1:00}:{2:00}", remainTime.Hours, remainTime.Minutes, remainTime.Seconds);
 				_lastRemainTimeSecondForPetSale = (int)remainTime.TotalSeconds;
