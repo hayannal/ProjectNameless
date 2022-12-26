@@ -89,6 +89,22 @@ public class FestivalQuestCanvas : MonoBehaviour
 			if (TableDataManager.instance.festivalCollectTable.dataArray[i].group != FestivalData.instance.festivalId)
 				continue;
 
+			if (FestivalData.instance.IsGetFestivalCollect(TableDataManager.instance.festivalCollectTable.dataArray[i].num))
+				continue;
+
+			FestivalQuestCanvasListItem festivalCanvasListItem = _container.GetCachedItem(contentItemPrefab, contentRootRectTransform);
+			festivalCanvasListItem.Initialize(TableDataManager.instance.festivalCollectTable.dataArray[i]);
+			_listFestivalQuestCanvasListItem.Add(festivalCanvasListItem);
+		}
+
+		for (int i = 0; i < TableDataManager.instance.festivalCollectTable.dataArray.Length; ++i)
+		{
+			if (TableDataManager.instance.festivalCollectTable.dataArray[i].group != FestivalData.instance.festivalId)
+				continue;
+
+			if (FestivalData.instance.IsGetFestivalCollect(TableDataManager.instance.festivalCollectTable.dataArray[i].num) == false)
+				continue;
+
 			FestivalQuestCanvasListItem festivalCanvasListItem = _container.GetCachedItem(contentItemPrefab, contentRootRectTransform);
 			festivalCanvasListItem.Initialize(TableDataManager.instance.festivalCollectTable.dataArray[i]);
 			_listFestivalQuestCanvasListItem.Add(festivalCanvasListItem);
