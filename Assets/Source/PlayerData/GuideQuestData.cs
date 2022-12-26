@@ -30,10 +30,15 @@ public class GuideQuestData : MonoBehaviour
 		UseSkill = 3,
 
 		EnhanceCharacter = 11,	// 서브레벨업 하기
-		LevelUpCharacter = 12,	// 특정 레벨업 하기
+		LevelUpCharacter = 12,	// 특정 레벨업 하기. 그러나 세븐데이즈 페스티벌에선 그냥 레벨업하기로 쓰인다.
 		ClearStage = 13,		// 특정 층을 도달
 		Analysis = 14,			// 분석 하기
 		SpinChargeAlarm = 15,
+		FreeFortuneWheel = 16,
+		SpellGacha = 17,
+		CharacterGacha = 18,
+		EquipGacha = 19,
+		UseEnergy = 20,			// 에너지 소모하기
 	}
 
 	// 이거 서버에도 둬서 완료 체크할때 수량 체크를 느슨하게 하니 변경된다면 서버에도 등록해야한다.

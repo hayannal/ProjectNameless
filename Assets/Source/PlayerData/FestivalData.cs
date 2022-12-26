@@ -51,8 +51,9 @@ public class FestivalData : MonoBehaviour
 		// 이거 늘릴때는 서버의 StartFestival 함수 안의
 		// init proceeding
 		// 부분도 같이 수정해줘야한다.
-		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.KillBossMonster);
 		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.Analysis);
+		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.FreeFortuneWheel);
+		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.UseEnergy);
 	}
 
 	void Update()

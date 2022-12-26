@@ -53,7 +53,14 @@ public class MissionData : MonoBehaviour
 		// init proceeding
 		// 부분도 같이 수정해줘야한다.
 		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.KillBossMonster);
+		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.EnhanceCharacter);
+		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.LevelUpCharacter);
 		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.Analysis);
+		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.FreeFortuneWheel);
+		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.SpellGacha);
+		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.CharacterGacha);
+		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.EquipGacha);
+		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.UseEnergy);
 	}
 
 	void Update()
