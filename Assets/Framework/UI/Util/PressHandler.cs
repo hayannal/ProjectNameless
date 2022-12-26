@@ -36,7 +36,7 @@ public class PressHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
 				if (_sumCount == 1)
 				{
 					// 최초 1회 실행 후에는 가장 큰 딜레이를 준다.
-					_executeRemainTime = 1.0f;
+					_executeRemainTime = 0.5f;
 				}
 				else if (_sumCount > 1)
 				{
