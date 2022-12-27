@@ -12,6 +12,7 @@ public class FestivalQuestCanvas : MonoBehaviour
 
 	public Image currentSumPointImage;
 	public Text currentSumPointText;
+	public GameObject expiredObject;
 
 	public GameObject contentItemPrefab;
 	public RectTransform contentRootRectTransform;
@@ -60,12 +61,24 @@ public class FestivalQuestCanvas : MonoBehaviour
 
 		// show 상태가 아니면 안보이겠지만 혹시 모르니 안전하게 구해온다.
 		_festivalExpireDateTime = FestivalData.instance.festivalExpireTime;
+
+		_expired = false;
+		if (ServerTime.UtcNow < _festivalExpireDateTime) { }
+		else
+		{
+			_expired = true;
+			remainTimeText.text = "";
+		}
 	}
 
+	bool _expired = false;
 	DateTime _festivalExpireDateTime;
 	int _lastRemainTimeSecond = -1;
 	void UpdateRemainTime()
 	{
+		if (_expired)
+			return;
+
 		if (ServerTime.UtcNow < _festivalExpireDateTime)
 		{
 			if (remainTimeText != null)
@@ -83,9 +96,13 @@ public class FestivalQuestCanvas : MonoBehaviour
 		}
 		else
 		{
-			// 이벤트 기간이 끝났으면 닫아버리는게 제일 편하다.
 			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_EventExpired"), 2.0f);
-			FestivalTabCanvas.instance.gameObject.SetActive(false);
+
+			// 여기서는 닫는 대신 종료를 알려야한다.
+			//FestivalTabCanvas.instance.gameObject.SetActive(false);
+			_expired = true;
+			remainTimeText.text = "";
+			RefreshGrid();
 		}
 	}
 
@@ -100,6 +117,13 @@ public class FestivalQuestCanvas : MonoBehaviour
 		for (int i = 0; i < _listFestivalQuestCanvasListItem.Count; ++i)
 			_listFestivalQuestCanvasListItem[i].gameObject.SetActive(false);
 		_listFestivalQuestCanvasListItem.Clear();
+		expiredObject.SetActive(false);
+
+		if (_expired)
+		{
+			expiredObject.SetActive(true);
+			return;
+		}
 
 		for (int i = 0; i < TableDataManager.instance.festivalCollectTable.dataArray.Length; ++i)
 		{

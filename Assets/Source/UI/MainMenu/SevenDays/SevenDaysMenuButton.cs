@@ -8,14 +8,10 @@ public class SevenDaysMenuButton : MonoBehaviour
 {
 	public Text remainTimeText;
 	public GameObject buttonRootObject;
-	public bool festivalMenuButton;
 
 	void OnEnable()
 	{
-		if (festivalMenuButton)
-			_sevenDaysExpireDateTime = FestivalData.instance.festivalExpireTime;
-		else
-			_sevenDaysExpireDateTime = MissionData.instance.sevenDaysExpireTime;
+		_sevenDaysExpireDateTime = MissionData.instance.sevenDaysExpireTime;
 		ShowButton(ServerTime.UtcNow < _sevenDaysExpireDateTime);
 	}
 
@@ -58,9 +54,6 @@ public class SevenDaysMenuButton : MonoBehaviour
 
 	public void OnClickButton()
 	{
-		if (festivalMenuButton == false)
-			UIInstanceManager.instance.ShowCanvasAsync("SevenDaysTabCanvas", null);
-		else
-			UIInstanceManager.instance.ShowCanvasAsync("FestivalTabCanvas", null);
+		UIInstanceManager.instance.ShowCanvasAsync("SevenDaysTabCanvas", null);
 	}
 }

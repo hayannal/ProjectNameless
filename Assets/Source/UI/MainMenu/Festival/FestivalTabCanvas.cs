@@ -22,11 +22,13 @@ public class FestivalTabCanvas : MonoBehaviour
 		instance = this;
 	}
 
+	public int defaulMenuButtonIndex { get; set; }
+
 	// Start is called before the first frame update
 	void Start()
 	{
 		#region Tab Button
-		OnValueChangedToggle(0);
+		OnValueChangedToggle(defaulMenuButtonIndex);
 		#endregion
 	}
 
