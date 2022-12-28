@@ -72,18 +72,23 @@ public class SevenDaysCanvasListItem : MonoBehaviour
 			return;
 		}
 
-		PlayFabApiManager.instance.RequestGetSevenDaysReward(_sevenDaysRewardTableData, () =>
+		PlayFabApiManager.instance.RequestGetSevenDaysReward(_sevenDaysRewardTableData, OnRecvResult);
+	}
+
+	void OnRecvResult(string itemGrantString)
+	{
+		// 직접 수령이 있는 곳이라서 별도로 처리한다.
+		if (_sevenDaysRewardTableData.rewardType == "it" && string.IsNullOrEmpty(itemGrantString) == false)
 		{
-			UIInstanceManager.instance.ShowCanvasAsync("CommonRewardCanvas", () =>
-			{
-				Initialize(_sevenDaysRewardTableData);
-				SevenDaysTabCanvas.instance.currencySmallInfo.RefreshInfo();
-				SevenDaysCanvas.instance.RefreshSumReward();
-				SevenDaysCanvas.instance.RefreshDayAlarmObject();
-				SevenDaysTabCanvas.instance.RefreshAlarmObject();
-				MainCanvas.instance.RefreshSevenDaysAlarmObject();
-				CommonRewardCanvas.instance.RefreshReward(_sevenDaysRewardTableData.rewardType, _sevenDaysRewardTableData.rewardValue, _sevenDaysRewardTableData.rewardCount);
-			});
-		});
+			FestivalExchangeConfirmCanvas.GetItReward(_sevenDaysRewardTableData.rewardValue, itemGrantString, _sevenDaysRewardTableData.rewardCount);
+		}
+
+		Initialize(_sevenDaysRewardTableData);
+		SevenDaysTabCanvas.instance.currencySmallInfo.RefreshInfo();
+		SevenDaysCanvas.instance.RefreshSumReward();
+		SevenDaysCanvas.instance.RefreshDayAlarmObject();
+		SevenDaysTabCanvas.instance.RefreshAlarmObject();
+		MainCanvas.instance.RefreshSevenDaysAlarmObject();
+		ToastCanvas.instance.ShowToast(UIString.instance.GetString("ShopUI_GotFreeItem"), 2.0f);
 	}
 }

@@ -2239,18 +2239,38 @@ public class PlayFabApiManager : MonoBehaviour
 		});
 	}
 
-	public void RequestGetSevenDaysReward(SevenDaysRewardTableData sevenDaysRewardTableData, Action successCallback)
+	public void RequestGetSevenDaysReward(SevenDaysRewardTableData sevenDaysRewardTableData, Action<string> successCallback)
 	{
 		WaitingNetworkCanvas.Show(true);
 
 		string input = string.Format("{0}_{1}_{2}_{3}_{4}", MissionData.instance.sevenDaysId, sevenDaysRewardTableData.day, sevenDaysRewardTableData.num, sevenDaysRewardTableData.key, "qizolrms");
 		string checkSum = CheckSum(input);
-		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+
+		ExecuteCloudScriptRequest request = null;
+		if (sevenDaysRewardTableData.rewardType == "cu")
 		{
-			FunctionName = "GetSevenDaysReward",
-			FunctionParameter = new { SdGrpId = (int)MissionData.instance.sevenDaysId, Day = sevenDaysRewardTableData.day, Num = sevenDaysRewardTableData.num, InfCs = checkSum },
-			GeneratePlayStreamEvent = true,
-		}, (success) =>
+			request = new ExecuteCloudScriptRequest()
+			{
+				FunctionName = "GetSevenDaysReward",
+				FunctionParameter = new { SdGrpId = (int)MissionData.instance.sevenDaysId, Day = sevenDaysRewardTableData.day, Num = sevenDaysRewardTableData.num, InfCs = checkSum },
+				GeneratePlayStreamEvent = true,
+			};
+		}
+		else if (sevenDaysRewardTableData.rewardType == "it")
+		{
+			List<string> listItemId = new List<string>();
+			for (int i = 0; i < sevenDaysRewardTableData.rewardCount; ++i)
+				listItemId.Add(sevenDaysRewardTableData.rewardValue);
+			string checkSum2 = "";
+			List<ItemGrantRequest> listItemGrantRequest = GenerateGrantInfo(listItemId, ref checkSum2, ItemId2InitDataType(sevenDaysRewardTableData.rewardValue));
+			request = new ExecuteCloudScriptRequest()
+			{
+				FunctionName = "GetSevenDaysReward",
+				FunctionParameter = new { SdGrpId = (int)MissionData.instance.sevenDaysId, Day = sevenDaysRewardTableData.day, Num = sevenDaysRewardTableData.num, InfCs = checkSum, Lst = listItemGrantRequest, LstCs = checkSum2 },
+				GeneratePlayStreamEvent = true,
+			};
+		}
+		PlayFabClientAPI.ExecuteCloudScript(request, (success) =>
 		{
 			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
 			jsonResult.TryGetValue("retErr", out object retErr);
@@ -2259,11 +2279,14 @@ public class PlayFabApiManager : MonoBehaviour
 			{
 				WaitingNetworkCanvas.Show(false);
 
-				CurrencyData.instance.OnRecvProductReward(sevenDaysRewardTableData.rewardType, sevenDaysRewardTableData.rewardValue, sevenDaysRewardTableData.rewardCount);
 				MissionData.instance.sevenDaysSumPoint += sevenDaysRewardTableData.sumPoint;
 				MissionData.instance.OnRecvGetSevenDaysReward(sevenDaysRewardTableData.day, sevenDaysRewardTableData.num);
 
-				if (successCallback != null) successCallback.Invoke();
+				CurrencyData.instance.OnRecvProductReward(sevenDaysRewardTableData.rewardType, sevenDaysRewardTableData.rewardValue, sevenDaysRewardTableData.rewardCount);
+
+				jsonResult.TryGetValue("itmRet", out object itmRet);
+
+				if (successCallback != null) successCallback.Invoke((string)itmRet);
 			}
 		}, (error) =>
 		{
@@ -2271,18 +2294,38 @@ public class PlayFabApiManager : MonoBehaviour
 		});
 	}
 
-	public void RequestGetSevenDaysSumReward(SevenSumTableData sevenSumTableData, Action successCallback)
+	public void RequestGetSevenDaysSumReward(SevenSumTableData sevenSumTableData, Action<string> successCallback)
 	{
 		WaitingNetworkCanvas.Show(true);
 
 		string input = string.Format("{0}_{1}_{2}_{3}", MissionData.instance.sevenDaysId, sevenSumTableData.count, sevenSumTableData.key, "jfskeimz");
 		string checkSum = CheckSum(input);
-		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+
+		ExecuteCloudScriptRequest request = null;
+		if (sevenSumTableData.rewardType == "cu")
 		{
-			FunctionName = "GetSevenDaysSumReward",
-			FunctionParameter = new { SdGrpId = (int)MissionData.instance.sevenDaysId, Cnt = sevenSumTableData.count, InfCs = checkSum },
-			GeneratePlayStreamEvent = true,
-		}, (success) =>
+			request = new ExecuteCloudScriptRequest()
+			{
+				FunctionName = "GetSevenDaysSumReward",
+				FunctionParameter = new { SdGrpId = (int)MissionData.instance.sevenDaysId, Cnt = sevenSumTableData.count, InfCs = checkSum },
+				GeneratePlayStreamEvent = true,
+			};
+		}
+		else if(sevenSumTableData.rewardType == "it")
+		{
+			List<string> listItemId = new List<string>();
+			for (int i = 0; i < sevenSumTableData.rewardCount; ++i)
+				listItemId.Add(sevenSumTableData.rewardValue);
+			string checkSum2 = "";
+			List<ItemGrantRequest> listItemGrantRequest = GenerateGrantInfo(listItemId, ref checkSum2, ItemId2InitDataType(sevenSumTableData.rewardValue));
+			request = new ExecuteCloudScriptRequest()
+			{
+				FunctionName = "GetSevenDaysSumReward",
+				FunctionParameter = new { SdGrpId = (int)MissionData.instance.sevenDaysId, Cnt = sevenSumTableData.count, InfCs = checkSum, Lst = listItemGrantRequest, LstCs = checkSum2 },
+				GeneratePlayStreamEvent = true,
+			};
+		}
+		PlayFabClientAPI.ExecuteCloudScript(request, (success) =>
 		{
 			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
 			jsonResult.TryGetValue("retErr", out object retErr);
@@ -2291,10 +2334,13 @@ public class PlayFabApiManager : MonoBehaviour
 			{
 				WaitingNetworkCanvas.Show(false);
 
-				CurrencyData.instance.OnRecvProductReward(sevenSumTableData.rewardType, sevenSumTableData.rewardValue, sevenSumTableData.rewardCount);
 				MissionData.instance.OnRecvGetSevenDaysSumReward(sevenSumTableData.count);
 
-				if (successCallback != null) successCallback.Invoke();
+				CurrencyData.instance.OnRecvProductReward(sevenSumTableData.rewardType, sevenSumTableData.rewardValue, sevenSumTableData.rewardCount);
+
+				jsonResult.TryGetValue("itmRet", out object itmRet);
+
+				if (successCallback != null) successCallback.Invoke((string)itmRet);
 			}
 		}, (error) =>
 		{
