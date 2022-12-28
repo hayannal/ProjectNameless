@@ -84,6 +84,19 @@ public class RewardIcon : MonoBehaviour
 						if (sevenDaysObject != null) sevenDaysObject.SetActive(true);
 						countText.color = Color.white;
 						break;
+					case "Cash_sFestivalTotal":
+						FestivalTypeTableData festivalTypeTableData = TableDataManager.instance.FindFestivalTypeTableData(FestivalData.instance.festivalId);
+						if (festivalTypeTableData != null && uncommonImage != null)
+						{
+							AddressableAssetLoadManager.GetAddressableSprite(festivalTypeTableData.iconAddress, "Icon", (sprite) =>
+							{
+								uncommonImage.sprite = null;
+								uncommonImage.sprite = sprite;
+								uncommonImage.gameObject.SetActive(true);
+							});
+						}
+						countText.color = Color.white;
+						break;
 					case "Cash_sSpellGacha":
 						if (spellGachaObject != null) spellGachaObject.SetActive(true);
 						countText.color = Color.white;
