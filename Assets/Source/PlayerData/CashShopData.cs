@@ -55,23 +55,28 @@ public class CashShopData : MonoBehaviour
 		SevenSlot3 = 6,
 		PetSale = 7,
 		FortuneWheel = 8,
+		FestivalSlot0 = 9,
+		FestivalSlot1 = 10,
+		FestivalSlot2 = 11,
+		FestivalSlot3 = 12,
 
 		Amount,
 	}
 	List<ObscuredBool> _listCashConsumeFlag = new List<ObscuredBool>();
-	List<string> _listCashConsumeFlagKey = new List<string> { "Cash_sBrokenEnergy", "Cash_sEv4ContiNext", "Cash_sEv5OnePlTwoCash", "Cash_sSevenSlot0", "Cash_sSevenSlot1", "Cash_sSevenSlot2", "Cash_sSevenSlot3", "Cash_sPetSale", "Cash_sFortuneWheel" };
+	List<string> _listCashConsumeFlagKey = new List<string> { "Cash_sBrokenEnergy", "Cash_sEv4ContiNext", "Cash_sEv5OnePlTwoCash", "Cash_sSevenSlot0", "Cash_sSevenSlot1", "Cash_sSevenSlot2", "Cash_sSevenSlot3", "Cash_sPetSale", "Cash_sFortuneWheel", "Cash_sFestivalSlot0", "Cash_sFestivalSlot1", "Cash_sFestivalSlot2", "Cash_sFestivalSlot3" };
 
 	public enum eCashConsumeCountType
 	{
-		SevenTotal = 0,
-		SpellGacha = 1,
-		CharacterGacha = 2,
-		EquipGacha = 3,
+		SpellGacha = 0,
+		CharacterGacha = 1,
+		EquipGacha = 2,
+		SevenTotal = 3,
+		FestivalTotal = 4,
 
 		Amount,
 	}
 	List<ObscuredInt> _listCashConsumeCount = new List<ObscuredInt>();
-	List<string> _listCashConsumeCountKey = new List<string> { "Cash_sSevenTotal", "Cash_sSpellGacha", "Cash_sCharacterGacha", "Cash_sEquipGacha" };
+	List<string> _listCashConsumeCountKey = new List<string> { "Cash_sSpellGacha", "Cash_sCharacterGacha", "Cash_sEquipGacha", "Cash_sSevenTotal", "Cash_sFestivalTotal" };
 
 	public enum eCashItemCountType
 	{
@@ -411,11 +416,6 @@ public class CashShopData : MonoBehaviour
 	{
 		switch (value)
 		{
-			case "Cash_sSevenTotal":
-				PurchaseCount(eCashConsumeCountType.SevenTotal, count);
-				// SevenTotal은 구매 즉시 바로 소모시켜서 통계값으로 적용시키면 된다.
-				PlayFabApiManager.instance.RequestConsumeSevenTotal(null);
-				break;
 			case "Cash_sSpellGacha":
 				PurchaseCount(eCashConsumeCountType.SpellGacha, count);
 				break;
@@ -424,6 +424,15 @@ public class CashShopData : MonoBehaviour
 				break;
 			case "Cash_sEquipGacha":
 				PurchaseCount(eCashConsumeCountType.EquipGacha, count);
+				break;
+			case "Cash_sSevenTotal":
+				PurchaseCount(eCashConsumeCountType.SevenTotal, count);
+				// SevenTotal은 구매 즉시 바로 소모시켜서 통계값으로 적용시키면 된다.
+				PlayFabApiManager.instance.RequestConsumeSevenTotal(null);
+				break;
+			case "Cash_sFestivalTotal":
+				PurchaseCount(eCashConsumeCountType.FestivalTotal, count);
+				PlayFabApiManager.instance.RequestConsumeFestivalTotal(null);
 				break;
 		}
 	}
@@ -719,6 +728,10 @@ public class CashShopData : MonoBehaviour
 		{
 			FortuneWheelCanvas.ExternalRetryPurchase(pendingProduct);
 		}
+		else if (pendingProduct.definition.id.Contains("festivalgroup"))
+		{
+			FestivalTotalCanvas.ExternalRetryPurchase(pendingProduct);
+		}
 
 		return true;
 	}
@@ -817,6 +830,18 @@ public class CashShopData : MonoBehaviour
 				case eCashConsumeFlagType.SevenSlot3:
 					PlayFabApiManager.instance.RequestConsumeSevenSlot(3, null);
 					break;
+				case eCashConsumeFlagType.FestivalSlot0:
+					PlayFabApiManager.instance.RequestConsumeFestivalSlot(0, null);
+					break;
+				case eCashConsumeFlagType.FestivalSlot1:
+					PlayFabApiManager.instance.RequestConsumeFestivalSlot(1, null);
+					break;
+				case eCashConsumeFlagType.FestivalSlot2:
+					PlayFabApiManager.instance.RequestConsumeFestivalSlot(2, null);
+					break;
+				case eCashConsumeFlagType.FestivalSlot3:
+					PlayFabApiManager.instance.RequestConsumeFestivalSlot(3, null);
+					break;
 			}
 
 			if (process == false)
@@ -853,6 +878,9 @@ public class CashShopData : MonoBehaviour
 			{
 				case eCashConsumeCountType.SevenTotal:
 					PlayFabApiManager.instance.RequestConsumeSevenTotal(null);
+					break;
+				case eCashConsumeCountType.FestivalTotal:
+					PlayFabApiManager.instance.RequestConsumeFestivalTotal(null);
 					break;
 			}
 

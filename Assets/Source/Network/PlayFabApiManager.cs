@@ -2108,6 +2108,65 @@ public class PlayFabApiManager : MonoBehaviour
 			HandleCommonError(error);
 		});
 	}
+
+	public void RequestConsumeFestivalSlot(int buttonIndex, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "ConsumeFestivalSlot",
+			FunctionParameter = new { Idx = buttonIndex },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				CashShopData.instance.ConsumeFlag(CashShopData.eCashConsumeFlagType.FestivalSlot0 + buttonIndex);
+				FestivalData.instance.OnRecvPurchasedCashSlot(buttonIndex);
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
+	public void RequestConsumeFestivalTotal(Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		int count = CashShopData.instance.GetConsumeCount(CashShopData.eCashConsumeCountType.FestivalTotal);
+		string input = string.Format("{0}_{1}", count, "risdmozq");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "ConsumeFestivalTotal",
+			FunctionParameter = new { Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				CashShopData.instance.ConsumeCount(CashShopData.eCashConsumeCountType.FestivalTotal, count);
+				FestivalData.instance.festivalSumPoint += count;
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
 	#endregion
 
 	#region Costume

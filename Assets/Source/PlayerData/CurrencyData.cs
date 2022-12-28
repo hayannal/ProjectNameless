@@ -311,7 +311,14 @@ public class CurrencyData : MonoBehaviour
 			case "it":
 				// 어차피 받아야하는 곳에서 처리하고 있을텐데 이런 공용 처리가 필요할지 모르겠다.
 				// 필요해지면 추가하기로 한다.
-				//CashShopData.instance.OnRecvCashItem(type, value, count);
+				switch (value)
+				{
+					case "Cash_sSevenTotal":
+					case "Cash_sFestivalTotal":
+						// 캐시샵쪽에서 Consume은 전부 처리하고 있으니 넘기면 된다. SevenTotalCanvas에서 상품 구매시 이쪽으로 넘어와서 처리될거다.
+						CashShopData.instance.OnRecvConsumeItem(value, count);
+						break;
+				}
 				break;
 		}
 	}
