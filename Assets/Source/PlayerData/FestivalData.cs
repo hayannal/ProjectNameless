@@ -239,6 +239,7 @@ public class FestivalData : MonoBehaviour
 		// 시작할때 카운트는 항상 초기화해두고 시작해야한다.
 		_dicFestivalProceedingInfo.Clear();
 		if (_listFestivalCollect != null) _listFestivalCollect.Clear();
+		if (_dicFestivalExchange != null) _dicFestivalExchange.Clear();
 		if (_listFestivalCashSlotPurchased != null) _listFestivalCashSlotPurchased.Clear();
 		festivalSumPoint = 0;
 	}
