@@ -187,8 +187,8 @@ public class FortuneWheelCanvas : SimpleCashCanvas
 	}
 
 	bool _processed = false;
-	const int BaseRotationCount = 2;
-	const float Duration = 2.0f;
+	const int BaseRotationCount = 8;
+	const float Duration = 3.0f;
 	IEnumerator<float> SpinProcess()
 	{
 		if (_processed)
@@ -211,8 +211,8 @@ public class FortuneWheelCanvas : SimpleCashCanvas
 		Timing.RunCoroutine(PointerAnimatorProcess(Duration));
 		yield return Timing.WaitForSeconds(Duration + 0.05f);
 
-		circleRectTransform.DOLocalRotate(new Vector3(0.0f, 0.0f, circleRectTransform.eulerAngles.z - 10.0f), 0.3f);
-		yield return Timing.WaitForSeconds(0.3f);
+		circleRectTransform.DOLocalRotate(new Vector3(0.0f, 0.0f, circleRectTransform.eulerAngles.z - 10.0f), 1.2f);
+		yield return Timing.WaitForSeconds(1.2f);
 
 		// 혹시나 트윈이 틀어졌을때를 대비해서 최종 결과를 한번 더 적용한다.
 		circleRectTransform.eulerAngles = new Vector3(0.0f, 0.0f, resultTargetZ);
