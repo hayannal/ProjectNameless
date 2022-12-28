@@ -69,7 +69,7 @@ public class FestivalRewardCanvasListItem : MonoBehaviour
 
 		if (getTextObject.activeSelf == false)
 		{
-			ToastCanvas.instance.ShowToast(UIString.instance.GetString("SevenDaysUI_NotEnoughCondition"), 2.0f);
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("FestivalUI_NotEnoughPoint"), 2.0f);
 			return;
 		}
 
@@ -77,17 +77,5 @@ public class FestivalRewardCanvasListItem : MonoBehaviour
 		{
 			FestivalExchangeConfirmCanvas.instance.RefreshInfo(_festivalExchangeTableData);
 		});
-
-		/*
-		PlayFabApiManager.instance.RequestGetFestivalCollect(_festivalCollectTableData, () =>
-		{
-			FestivalQuestCanvas.instance.RefreshCount();
-			FestivalQuestCanvas.instance.RefreshGrid();
-			FestivalTabCanvas.instance.currencySmallInfo.RefreshInfo();
-			FestivalTabCanvas.instance.RefreshAlarmObject();
-			MainCanvas.instance.RefreshFestivalAlarmObject();
-			ToastCanvas.instance.ShowToast(UIString.instance.GetString("FestivalUI_CollectComplete"), 2.0f);
-		});
-		*/
 	}
 }

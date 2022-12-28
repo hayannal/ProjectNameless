@@ -79,6 +79,9 @@ public class FestivalExchangeConfirmCanvas : MonoBehaviour
 		needCountText.text = (_baseCount * _festivalExchangeTableData.neededCount).ToString("N0");
 		minusButtonImage.color = (_baseCount == 1) ? Color.gray : Color.white;
 		plusButtonImage.color = (_baseCount == _maxCount) ? Color.gray : Color.white;
+
+		// rewardIcon 개수도 갱신
+		rewardIcon.countText.text = (_baseCount * _festivalExchangeTableData.rewardCount).ToString("N0");
 	}
 
 	public void OnClickExchangeButton()
