@@ -16,6 +16,7 @@ public class FortuneWheelCanvas : SimpleCashCanvas
 
 	public CurrencySmallInfo currencySmallInfo;
 	public Text stageText;
+	public GameObject goldWheelBonusTextObject;
 	public RectTransform priceTextRectTransform;
 	public GameObject goldIconObject;
 
@@ -257,6 +258,7 @@ public class FortuneWheelCanvas : SimpleCashCanvas
 		goldCenterImageObject.SetActive(on);
 		arrowImage.enabled = !on;
 		goldArrowImageObject.SetActive(on);
+		goldWheelBonusTextObject.SetActive(on);
 	}
 
 
