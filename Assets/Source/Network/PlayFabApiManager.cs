@@ -878,6 +878,19 @@ public class PlayFabApiManager : MonoBehaviour
 		GrantItemsToUsersResult result = serializer.DeserializeObject<GrantItemsToUsersResult>(jsonItemGrantResults);
 		return result.ItemGrantResults;
 	}
+
+	string ItemId2InitDataType(string rewardValue)
+	{
+		if (rewardValue.StartsWith("Spell_"))
+			return "spell";
+		else if (rewardValue.StartsWith("Actor"))
+			return "character";
+		else if (rewardValue.StartsWith("Pet_"))
+			return "pet";
+		else if (rewardValue.StartsWith("Equip"))
+			return "equip";
+		return "";
+	}
 	#endregion
 
 
@@ -2382,6 +2395,65 @@ public class PlayFabApiManager : MonoBehaviour
 				FestivalData.instance.OnRecvGetFestivalCollect(festivalCollectTableData.num);
 
 				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
+	public void RequestFestivalExchange(FestivalExchangeTableData festivalExchangeTableData, int baseCount, Action<string> successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}_{2}_{3}_{4}", FestivalData.instance.festivalId, festivalExchangeTableData.num, baseCount, festivalExchangeTableData.key, "rzcepikn");
+		string checkSum = CheckSum(input);
+
+		ExecuteCloudScriptRequest request = null;
+		if (festivalExchangeTableData.rewardType == "cu")
+		{
+			request = new ExecuteCloudScriptRequest()
+			{
+				FunctionName = "FestivalExchange",
+				FunctionParameter = new { FsGrpId = (int)FestivalData.instance.festivalId, Num = festivalExchangeTableData.num, Cnt = baseCount, Cs = checkSum },
+				GeneratePlayStreamEvent = true,
+			};
+		}
+		else if (festivalExchangeTableData.rewardType == "it")
+		{
+			List<string> listItemId = new List<string>();
+			for (int i = 0; i < baseCount; ++i)
+			{
+				for (int j = 0; j < festivalExchangeTableData.rewardCount; ++j)
+					listItemId.Add(festivalExchangeTableData.rewardValue);
+			}
+			string checkSum2 = "";
+			List<ItemGrantRequest> listItemGrantRequest = GenerateGrantInfo(listItemId, ref checkSum2, ItemId2InitDataType(festivalExchangeTableData.rewardValue));
+			request = new ExecuteCloudScriptRequest()
+			{
+				FunctionName = "FestivalExchange",
+				FunctionParameter = new { FsGrpId = (int)FestivalData.instance.festivalId, Num = festivalExchangeTableData.num, Cnt = baseCount, Cs = checkSum, Lst = listItemGrantRequest, LstCs = checkSum2 },
+				GeneratePlayStreamEvent = true,
+			};
+		}
+
+		PlayFabClientAPI.ExecuteCloudScript(request, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				FestivalData.instance.festivalSumPoint -= festivalExchangeTableData.neededCount * baseCount;
+				FestivalData.instance.OnRecvFestivalExchange(festivalExchangeTableData.num, baseCount);
+
+				CurrencyData.instance.OnRecvProductReward(festivalExchangeTableData.rewardType, festivalExchangeTableData.rewardValue, festivalExchangeTableData.rewardCount);
+
+				jsonResult.TryGetValue("itmRet", out object itmRet);
+
+				if (successCallback != null) successCallback.Invoke((string)itmRet);
 			}
 		}, (error) =>
 		{

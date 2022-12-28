@@ -16,6 +16,13 @@ public class RewardIcon : MonoBehaviour
 	public GameObject spellGachaObject;
 	public GameObject characterGachaObject;
 	public GameObject equipGachaObject;
+	public Image equipIconImage;
+	public GameObject spellRootObject;
+	public Image spellImage;
+	public Text spellStarText;
+	public GameObject petRootObject;
+	public Image petImage;
+	public Text petStarText;
 	public Image uncommonImage;
 
 	public Image blurImage;
@@ -46,6 +53,10 @@ public class RewardIcon : MonoBehaviour
 		if (spellGachaObject != null) spellGachaObject.SetActive(false);
 		if (characterGachaObject != null) characterGachaObject.SetActive(false);
 		if (equipGachaObject != null) equipGachaObject.SetActive(false);
+		if (equipIconImage != null) equipIconImage.gameObject.SetActive(false);
+		if (spellRootObject != null) spellRootObject.SetActive(false);
+		if (petRootObject != null) petRootObject.SetActive(false);
+		if (uncommonImage != null) uncommonImage.gameObject.SetActive(false);
 		countText.text = rewardCount.ToString("N0");
 		switch (rewardType)
 		{
@@ -53,7 +64,7 @@ public class RewardIcon : MonoBehaviour
 				if (blurImage != null) blurImage.color = new Color(0.5f, 0.5f, 0.5f, 0.0f);
 				if (gradient != null) gradient.color1 = Color.white;
 				if (gradient != null) gradient.color2 = Color.black;
-				if (lineColorImage != null) lineColorImage.color = new Color(0.5f, 0.5f, 0.5f);
+				if (lineColorImage != null) lineColorImage.color = new Color(1.0f, 1.0f, 1.0f);
 				switch (rewardValue)
 				{
 					case "GO":
@@ -86,6 +97,46 @@ public class RewardIcon : MonoBehaviour
 						countText.color = Color.white;
 						break;
 				}
+				if (rewardValue.StartsWith("Spell_"))
+				{
+					SkillTableData skillTableData = TableDataManager.instance.FindSkillTableData(rewardValue);
+					if (skillTableData != null)
+					{
+						spellImage.sprite = SpellSpriteContainer.instance.FindSprite(skillTableData.iconPrefab);
+						InitializeGrade(5);
+						spellRootObject.SetActive(true);
+						spellStarText.text = skillTableData.star.ToString();
+					}
+				}
+				else if (rewardValue.StartsWith("Actor"))
+				{
+					// 액터는 현재 패스
+				}
+				else if (rewardValue.StartsWith("Pet_"))
+				{
+					PetTableData petTableData = TableDataManager.instance.FindPetTableData(rewardValue);
+					if (petTableData != null)
+					{
+						petImage.sprite = PetSpriteContainer.instance.FindSprite(petTableData.spriteName);
+						InitializeGrade(6);
+						petRootObject.SetActive(true);
+						petStarText.text = petTableData.star.ToString();
+					}
+				}
+				else if (rewardValue.StartsWith("Equip"))
+				{
+					EquipTableData equipTableData = TableDataManager.instance.FindEquipTableData(rewardValue);
+					if (equipTableData != null)
+					{
+						AddressableAssetLoadManager.GetAddressableSprite(equipTableData.shotAddress, "Icon", (sprite) =>
+						{
+							equipIconImage.sprite = null;
+							equipIconImage.sprite = sprite;
+						});
+						InitializeGrade(equipTableData.grade);
+						equipIconImage.gameObject.SetActive(true);
+					}
+				}
 				break;
 		}
 	}
@@ -106,6 +157,60 @@ public class RewardIcon : MonoBehaviour
 			punchTweenAnimation.DORestart();
 		else
 			punchTweenAnimation.DOPause();
+	}
+
+	// EquipCanvasListItem 에서 복사해서 쓴다.
+	public void InitializeGrade(int grade)
+	{
+		switch (grade)
+		{
+			case 0:
+				blurImage.color = new Color(0.5f, 0.5f, 0.5f, 0.0f);
+				gradient.color1 = Color.white;
+				gradient.color2 = Color.black;
+				lineColorImage.color = new Color(0.5f, 0.5f, 0.5f);
+				break;
+			case 1:
+				blurImage.color = new Color(0.28f, 1.0f, 0.53f, 0.0f);
+				gradient.color1 = new Color(0.0f, 1.0f, 0.3f);
+				gradient.color2 = new Color(0.8f, 0.8f, 0.8f);
+				lineColorImage.color = new Color(0.1f, 0.84f, 0.1f);
+				break;
+			case 2:
+				blurImage.color = new Color(0.28f, 0.78f, 1.0f, 0.0f);
+				gradient.color1 = new Color(0.0f, 0.7f, 1.0f);
+				gradient.color2 = new Color(0.8f, 0.8f, 0.8f);
+				lineColorImage.color = new Color(0.0f, 0.51f, 1.0f);
+				break;
+			case 3:
+				blurImage.color = new Color(0.73f, 0.31f, 1.0f, 0.0f);
+				gradient.color1 = new Color(0.66f, 0.0f, 1.0f);
+				gradient.color2 = new Color(0.8f, 0.8f, 0.8f);
+				lineColorImage.color = new Color(0.63f, 0.0f, 1.0f);
+				break;
+			case 4:
+				blurImage.color = new Color(1.0f, 0.78f, 0.31f, 0.0f);
+				gradient.color1 = new Color(1.0f, 0.5f, 0.0f);
+				gradient.color2 = new Color(0.8f, 0.8f, 0.8f);
+				lineColorImage.color = new Color(1.0f, 0.5f, 0.0f);
+				break;
+
+			case 5:
+				// for spell
+				blurImage.color = new Color(0.5f, 0.5f, 0.5f, 0.0f);
+				gradient.color1 = Color.white;
+				gradient.color2 = Color.black;
+				lineColorImage.color = new Color(0.0f, 0.8f, 0.8f);
+				break;
+				
+			case 6:
+				// for pet
+				blurImage.color = new Color(0.5f, 0.5f, 0.5f, 0.0f);
+				gradient.color1 = Color.white;
+				gradient.color2 = Color.black;
+				lineColorImage.color = new Color(0.0f, 0.9f, 0.0f);
+				break;
+		}
 	}
 
 

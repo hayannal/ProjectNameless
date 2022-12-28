@@ -72,7 +72,22 @@ public class FestivalTabCanvas : MonoBehaviour
 
 	public static bool IsAlarmFestivalReward()
 	{
-		return false;
+		bool buyable = false;
+		for (int i = 0; i < TableDataManager.instance.festivalExchangeTable.dataArray.Length; ++i)
+		{
+			if (TableDataManager.instance.festivalExchangeTable.dataArray[i].groupId != FestivalData.instance.festivalId)
+				continue;
+
+			if (FestivalData.instance.GetExchangeTime(TableDataManager.instance.festivalExchangeTable.dataArray[i].num) >= TableDataManager.instance.festivalExchangeTable.dataArray[i].exchangeTimes)
+				continue;
+
+			if (FestivalData.instance.festivalSumPoint < TableDataManager.instance.festivalExchangeTable.dataArray[i].neededCount)
+				continue;
+
+			buyable = true;
+			break;
+		}
+		return buyable;
 	}
 
 	public void RefreshAlarmObject()

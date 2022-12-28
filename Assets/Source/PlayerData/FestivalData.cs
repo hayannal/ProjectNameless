@@ -40,6 +40,9 @@ public class FestivalData : MonoBehaviour
 	// Collect 리스트
 	List<int> _listFestivalCollect;
 
+	// Exchange 정보
+	Dictionary<string, int> _dicFestivalExchange;
+
 	#region Festival Total Cash Product
 	List<int> _listFestivalCashSlotPurchased;
 	#endregion
@@ -188,6 +191,15 @@ public class FestivalData : MonoBehaviour
 					_listFestivalCollect = serializer.DeserializeObject<List<int>>(festivalCollectLstString);
 			}
 
+			// 교환 상태도 불러야한다.
+			_dicFestivalExchange = null;
+			if (userReadOnlyData.ContainsKey("festivalExchangeData"))
+			{
+				string festivalExchangeDataString = userReadOnlyData["festivalExchangeData"].Value;
+				if (string.IsNullOrEmpty(festivalExchangeDataString) == false)
+					_dicFestivalExchange = serializer.DeserializeObject<Dictionary<string, int>>(festivalExchangeDataString);
+			}
+
 			#region Festival Total Cash Product
 			_listFestivalCashSlotPurchased = null;
 			if (userReadOnlyData.ContainsKey("festivalCashSlotLst"))
@@ -330,7 +342,29 @@ public class FestivalData : MonoBehaviour
 			_listFestivalCollect.Add(num);
 		return _listFestivalCollect;
 	}
-	
+
+	#region Festival Exchange
+	public int GetExchangeTime(int num)
+	{
+		if (_dicFestivalExchange == null)
+			return 0;
+		if (_dicFestivalExchange.ContainsKey(num.ToString()))
+			return _dicFestivalExchange[num.ToString()];
+		return 0;
+	}
+	public Dictionary<string, int> OnRecvFestivalExchange(int num, int count)
+	{
+		if (_dicFestivalExchange == null)
+			_dicFestivalExchange = new Dictionary<string, int>();
+
+		if (_dicFestivalExchange.ContainsKey(num.ToString()) == false)
+			_dicFestivalExchange.Add(num.ToString(), count);
+		else
+			_dicFestivalExchange[num.ToString()] += count;
+		return _dicFestivalExchange;
+	}
+	#endregion
+
 	#region Festival Total Cash Product
 	public bool IsPurchasedCashSlot(int index)
 	{

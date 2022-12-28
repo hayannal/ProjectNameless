@@ -61,6 +61,7 @@ public class TableDataManager : MonoBehaviour
 
 	public FestivalTypeTable festivalTypeTable;
 	public FestivalCollectTable festivalCollectTable;
+	public FestivalExchangeTable festivalExchangeTable;
 
 	public GachaSpellTable gachaSpellTable;
 	public GachaActorTable gachaActorTable;
@@ -543,6 +544,16 @@ public class TableDataManager : MonoBehaviour
 		{
 			if (festivalTypeTable.dataArray[i].groupId == group)
 				return festivalTypeTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public FestivalExchangeTableData FindFestivalExchangeTableData(int group, int num)
+	{
+		for (int i = 0; i < festivalExchangeTable.dataArray.Length; ++i)
+		{
+			if (festivalExchangeTable.dataArray[i].groupId == group && festivalExchangeTable.dataArray[i].num == num)
+				return festivalExchangeTable.dataArray[i];
 		}
 		return null;
 	}
