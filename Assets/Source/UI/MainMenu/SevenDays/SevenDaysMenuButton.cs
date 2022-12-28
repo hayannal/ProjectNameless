@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using MEC;
 
 public class SevenDaysMenuButton : MonoBehaviour
 {
@@ -54,6 +55,34 @@ public class SevenDaysMenuButton : MonoBehaviour
 
 	public void OnClickButton()
 	{
+		Timing.RunCoroutine(ShowCanvasProcess());
+	}
+
+	IEnumerator<float> ShowCanvasProcess()
+	{
+		// 
+		if (SpellSpriteContainer.instance == null)
+		{
+			AddressableAssetLoadManager.GetAddressableGameObject("SpellSpriteContainer", "", (prefab) =>
+			{
+				BattleInstanceManager.instance.GetCachedObject(prefab, null);
+			});
+		}
+		while (SpellSpriteContainer.instance == null)
+			yield return Timing.WaitForOneFrame;
+		yield return Timing.WaitForOneFrame;
+
+		if (PetSpriteContainer.instance == null)
+		{
+			AddressableAssetLoadManager.GetAddressableGameObject("PetSpriteContainer", "", (prefab) =>
+			{
+				BattleInstanceManager.instance.GetCachedObject(prefab, null);
+			});
+		}
+		while (PetSpriteContainer.instance == null)
+			yield return Timing.WaitForOneFrame;
+		yield return Timing.WaitForOneFrame;
+
 		UIInstanceManager.instance.ShowCanvasAsync("SevenDaysTabCanvas", null);
 	}
 }

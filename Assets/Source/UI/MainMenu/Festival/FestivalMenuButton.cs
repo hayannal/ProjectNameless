@@ -80,7 +80,7 @@ public class FestivalMenuButton : MonoBehaviour
 
 	IEnumerator<float> ShowCanvasProcess()
 	{
-		// 
+		// 보상에 스펠도 펫도 다 나올 수 있으니 이렇게 로드를 체크해둔다.
 		if (SpellSpriteContainer.instance == null)
 		{
 			AddressableAssetLoadManager.GetAddressableGameObject("SpellSpriteContainer", "", (prefab) =>
