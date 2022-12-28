@@ -190,6 +190,22 @@ public class SpellCanvas : ResearchShowCanvasBase
 		if (CheckTotalLevelUp())
 			return true;
 
+		for (int i = 0; i < TableDataManager.instance.skillTable.dataArray.Length; ++i)
+		{
+			if (TableDataManager.instance.skillTable.dataArray[i].spell == false)
+				continue;
+			SpellData spellData = SpellManager.instance.GetSpellData(TableDataManager.instance.skillTable.dataArray[i].id);
+			if (spellData == null)
+				continue;
+			if (spellData.level >= TableDataManager.instance.skillTable.dataArray[i].maxLevel)
+				continue;
+			SpellGradeLevelTableData spellGradeLevelTableData = TableDataManager.instance.FindSpellGradeLevelTableData(TableDataManager.instance.skillTable.dataArray[i].grade, TableDataManager.instance.skillTable.dataArray[i].star, spellData.level);
+			if (spellGradeLevelTableData == null)
+				continue;
+			SpellGradeLevelTableData nextSpellGradeLevelTableData = TableDataManager.instance.FindSpellGradeLevelTableData(spellGradeLevelTableData.grade, spellGradeLevelTableData.star, spellGradeLevelTableData.level + 1);
+			if (CurrencyData.instance.gold >= nextSpellGradeLevelTableData.requiredGold && spellData.count >= nextSpellGradeLevelTableData.requiredAccumulatedPowerPoint)
+				return true;
+		}
 		return false;
 	}
 
