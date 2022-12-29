@@ -53,7 +53,7 @@ public class DownloadConfirmCanvas : MonoBehaviour
 			{
 				MainCanvas.instance.RefreshCashButton();
 				gameObject.SetActive(false);
-				CommonRewardCanvas.instance.RefreshReward(0, count);
+				CommonRewardCanvas.instance.RefreshReward(0, 0, count);
 			});
 		});
 	}

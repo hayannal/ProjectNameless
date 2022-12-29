@@ -43,7 +43,6 @@ public class CurrencyData : MonoBehaviour
 	// 과금 요소. 클라이언트에 존재하면 무조건 굴려서 없애야하는거다. 인앱결제 결과를 받아놓는 저장소로 쓰인다.
 	public ObscuredInt equipBoxKey { get; set; }
 	public ObscuredInt legendEquipKey { get; set; }
-	public ObscuredInt dailyDiaRemainCount { get; set; }
 
 	#region Betting
 	public ObscuredInt bettingCount { get; set; }
@@ -305,6 +304,7 @@ public class CurrencyData : MonoBehaviour
 				switch (value)
 				{
 					case "GO": gold += count; break;
+					case "DI": dia += count; break;
 					case "EN": OnRecvRefillEnergy(count); break;
 				}
 				break;

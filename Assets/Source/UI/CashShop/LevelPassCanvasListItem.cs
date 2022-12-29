@@ -86,7 +86,7 @@ public class LevelPassCanvasListItem : MonoBehaviour
 			{
 				Initialize(_level, _energy);
 				MainCanvas.instance.RefreshLevelPassAlarmObject();
-				CommonRewardCanvas.instance.RefreshReward(0, _energy, null);
+				CommonRewardCanvas.instance.RefreshReward(0, 0, _energy);
 			});
 		});
 	}

@@ -80,14 +80,14 @@ public class CashShopData : MonoBehaviour
 
 	public enum eCashItemCountType
 	{
-		DailyGold = 0,
+		DailyDiamond = 0,
 		CaptureBetter = 1,
 		CaptureBest = 2,
 
 		Amount,
 	}
 	List<ObscuredInt> _listCashItemCount = new List<ObscuredInt>();
-	List<string> _listCashItemCountKey = new List<string> { "Item_cDailyGold", "Item_cCaptureBetter", "Item_cCaptureBest" };
+	List<string> _listCashItemCountKey = new List<string> { "Item_cDailyGem", "Item_cCaptureBetter", "Item_cCaptureBest" };
 
 	// 레벨패스에서 받았음을 기억해두는 변수인데 어차피 받을때마다 서버검증 하기때문에 Obscured 안쓰고 그냥 사용하기로 한다.
 	List<int> _listLevelPassReward;
@@ -287,6 +287,13 @@ public class CashShopData : MonoBehaviour
 				energyUseForPayback = playerStatistics[i].Value;
 				break;
 			}
+		}
+
+		dailyDiamondReceived = false;
+		if (userReadOnlyData.ContainsKey("lasDaiDiaDat"))
+		{
+			if (string.IsNullOrEmpty(userReadOnlyData["lasDaiDiaDat"].Value) == false)
+				OnRecvDailyDiamondInfo(userReadOnlyData["lasDaiDiaDat"].Value);
 		}
 
 		/*
@@ -657,6 +664,28 @@ public class CashShopData : MonoBehaviour
 	{
 		if (_dicOnePlusTwoReward.ContainsKey(cashEventId))
 			_dicOnePlusTwoReward.Remove(cashEventId);
+	}
+	#endregion
+
+	#region DailyDiamomd
+	public ObscuredBool dailyDiamondReceived { get; set; }
+
+	void OnRecvDailyDiamondInfo(DateTime lastDailyPackageOpenTime)
+	{
+		if (ServerTime.UtcNow.Year == lastDailyPackageOpenTime.Year && ServerTime.UtcNow.Month == lastDailyPackageOpenTime.Month && ServerTime.UtcNow.Day == lastDailyPackageOpenTime.Day)
+			dailyDiamondReceived = true;
+		else
+			dailyDiamondReceived = false;
+	}
+
+	public void OnRecvDailyDiamondInfo(string lastDailyDiamondOpenTimeString)
+	{
+		DateTime lastDailyDiamondOpenTime = new DateTime();
+		if (DateTime.TryParse(lastDailyDiamondOpenTimeString, out lastDailyDiamondOpenTime))
+		{
+			DateTime universalTime = lastDailyDiamondOpenTime.ToUniversalTime();
+			OnRecvDailyDiamondInfo(universalTime);
+		}
 	}
 	#endregion
 

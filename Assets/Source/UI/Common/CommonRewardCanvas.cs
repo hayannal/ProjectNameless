@@ -41,7 +41,7 @@ public class CommonRewardCanvas : MonoBehaviour
 	}
 
 	// 이런식으로 값을 직접 받을때도 있을거고
-	public void RefreshReward(int gold, int energy, System.Action okAction = null)
+	public void RefreshReward(int gold, int dia, int energy, System.Action okAction = null)
 	{
 		_okAction = okAction;
 
@@ -55,6 +55,15 @@ public class CommonRewardCanvas : MonoBehaviour
 			commonRewardData.type = "cu";
 			commonRewardData.value = "GO";
 			commonRewardData.count = gold;
+			_listCommonRewardData.Add(commonRewardData);
+		}
+
+		if (dia > 0)
+		{
+			commonRewardData = new CommonRewardData();
+			commonRewardData.type = "cu";
+			commonRewardData.value = "DI";
+			commonRewardData.count = dia;
 			_listCommonRewardData.Add(commonRewardData);
 		}
 
@@ -77,7 +86,7 @@ public class CommonRewardCanvas : MonoBehaviour
 	}
 
 	// 재화는 합산하고 나머지 아이템은 리스트로 보여주는 SummonEventPoint도 있다.
-	public void RefreshReward(int gold, int energy, List<string> listItemValue, List<int> listItemCount, System.Action okAction = null)
+	public void RefreshReward(int gold, int dia, int energy, List<string> listItemValue, List<int> listItemCount, System.Action okAction = null)
 	{
 		_okAction = okAction;
 
@@ -91,6 +100,15 @@ public class CommonRewardCanvas : MonoBehaviour
 			commonRewardData.type = "cu";
 			commonRewardData.value = "GO";
 			commonRewardData.count = gold;
+			_listCommonRewardData.Add(commonRewardData);
+		}
+
+		if (dia > 0)
+		{
+			commonRewardData = new CommonRewardData();
+			commonRewardData.type = "cu";
+			commonRewardData.value = "DI";
+			commonRewardData.count = dia;
 			_listCommonRewardData.Add(commonRewardData);
 		}
 

@@ -421,7 +421,7 @@ public class MainCanvas : MonoBehaviour
 	#region AlarmObject
 	void RefreshAlarmObjectList()
 	{
-		//RefreshCashShopAlarmObject();
+		RefreshCashShopAlarmObject();
 		RefreshPlayerAlarmObject();
 		RefreshSpellAlarmObject();
 		RefreshCharacterAlarmObject();
@@ -442,10 +442,10 @@ public class MainCanvas : MonoBehaviour
 	public static bool IsAlarmCashShop()
 	{
 		bool result = false;
+		if (CashShopData.instance.GetCashItemCount(CashShopData.eCashItemCountType.DailyDiamond) > 0 && CashShopData.instance.dailyDiamondReceived == false)
+			result = true;
 		/*
 		if (DailyShopData.instance.GetTodayFreeItemData() != null && DailyShopData.instance.dailyFreeItemReceived == false)
-			result = true;
-		if (CurrencyData.instance.dailyDiaRemainCount > 0 && PlayerData.instance.sharedDailyPackageOpened == false)
 			result = true;
 		if (PlayerData.instance.chaosFragmentCount >= BattleInstanceManager.instance.GetCachedGlobalConstantInt("ChaosPowerPointsCost"))
 		{
@@ -461,9 +461,7 @@ public class MainCanvas : MonoBehaviour
 
 	public void RefreshCashShopAlarmObject()
 	{
-		/*
 		RefreshAlarmObject(IsAlarmCashShop(), cashShopAlarmRootTransform);
-		*/
 	}
 
 	public static bool IsAlarmCharacter()

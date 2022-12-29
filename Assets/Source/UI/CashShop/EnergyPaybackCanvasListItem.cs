@@ -80,7 +80,7 @@ public class EnergyPaybackCanvasListItem : MonoBehaviour
 			{
 				Initialize(_use, _payback);
 				MainCanvas.instance.RefreshEnergyPaybackAlarmObject();
-				CommonRewardCanvas.instance.RefreshReward(0, _payback, null);
+				CommonRewardCanvas.instance.RefreshReward(0, 0, _payback);
 			});
 		});
 	}

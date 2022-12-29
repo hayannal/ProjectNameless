@@ -12,10 +12,6 @@ public class CashShopCanvas : MonoBehaviour
 
 	public GameObject iapInitializeFailedRectObject;
 	
-	public Text characterBoxNameText;
-	public Text characterBoxPriceText;
-	public Text characterBoxAddText;
-
 	public GameObject equipBoxRectObject;
 	public Text equipBox1NameText;
 	public Text equipBox1PriceText;

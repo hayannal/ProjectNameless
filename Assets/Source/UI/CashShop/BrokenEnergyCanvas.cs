@@ -162,7 +162,7 @@ public class BrokenEnergyCanvas : SimpleCashCanvas
 		{
 			UIInstanceManager.instance.ShowCanvasAsync("CommonRewardCanvas", () =>
 			{
-				CommonRewardCanvas.instance.RefreshReward(0, currentBrokenEnergy, () =>
+				CommonRewardCanvas.instance.RefreshReward(0, 0, currentBrokenEnergy, () =>
 				{
 					if (instance != null)
 						instance.gameObject.SetActive(false);

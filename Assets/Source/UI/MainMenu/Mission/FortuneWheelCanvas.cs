@@ -227,7 +227,7 @@ public class FortuneWheelCanvas : SimpleCashCanvas
 
 		UIInstanceManager.instance.ShowCanvasAsync("CommonRewardCanvas", () =>
 		{
-			CommonRewardCanvas.instance.RefreshReward(_listReward[_currentIndex], 0, () =>
+			CommonRewardCanvas.instance.RefreshReward(_listReward[_currentIndex], 0, 0, () =>
 			{
 				RefreshInfo();
 				fortuneWheelRootObject.SetActive(false);
@@ -340,7 +340,7 @@ public class FortuneWheelCanvas : SimpleCashCanvas
 
 			UIInstanceManager.instance.ShowCanvasAsync("CommonRewardCanvas", () =>
 			{
-				CommonRewardCanvas.instance.RefreshReward(listReward[randomIndex], 0, null);
+				CommonRewardCanvas.instance.RefreshReward(listReward[randomIndex], 0, 0);
 			});
 		});
 	}

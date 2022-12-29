@@ -2167,6 +2167,40 @@ public class PlayFabApiManager : MonoBehaviour
 			HandleCommonError(error);
 		});
 	}
+
+	public void RequestReceiveDailyDiamond(int addDia, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "ReceiveDailyDiamond",
+			FunctionParameter = new { Di = addDia },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				CashShopData.instance.ConsumeCount(CashShopData.eCashItemCountType.DailyDiamond, 1);
+				CurrencyData.instance.dia += addDia;
+
+				jsonResult.TryGetValue("date", out object date);
+
+				// 성공시에는 서버에서 방금 기록한 마지막 수령 시간이 날아온다.
+				CashShopData.instance.OnRecvDailyDiamondInfo((string)date);
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
 	#endregion
 
 	#region Costume

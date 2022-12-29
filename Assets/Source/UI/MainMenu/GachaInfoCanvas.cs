@@ -1203,7 +1203,7 @@ public class GachaInfoCanvas : MonoBehaviour
 
 			GachaCanvas.instance.currencySmallInfo.RefreshInfo();
 			RefreshEnergy();
-			CommonRewardCanvas.instance.RefreshReward(_resultGold, _resultEnergy, _listResultItemValue, _listResultItemCount, () =>
+			CommonRewardCanvas.instance.RefreshReward(_resultGold, 0, _resultEnergy, _listResultItemValue, _listResultItemCount, () =>
 			{
 				// 평소라면 재화만 있을테니 바로 OnPostProcess로 넘어가고
 				if (_listResultItemValue.Count == 0 && _listResultItemValue.Count == _listResultItemCount.Count)

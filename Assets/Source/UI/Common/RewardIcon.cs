@@ -11,6 +11,7 @@ public class RewardIcon : MonoBehaviour
 
 	public Text countText;
 	public GameObject goldObject;
+	public GameObject diaObject;
 	public GameObject energyObject;
 	public GameObject sevenDaysObject;
 	public GameObject spellGachaObject;
@@ -48,6 +49,7 @@ public class RewardIcon : MonoBehaviour
 	public void RefreshReward(string rewardType, string rewardValue, int rewardCount)
 	{
 		goldObject.SetActive(false);
+		if (diaObject != null) diaObject.SetActive(false);
 		energyObject.SetActive(false);
 		if (sevenDaysObject != null) sevenDaysObject.SetActive(false);
 		if (spellGachaObject != null) spellGachaObject.SetActive(false);
@@ -70,6 +72,10 @@ public class RewardIcon : MonoBehaviour
 					case "GO":
 						goldObject.SetActive(true);
 						countText.color = _showOnlyIcon ? MailCanvasListItem.GetGoldTextColor() : Color.white;
+						break;
+					case "DI":
+						diaObject.SetActive(true);
+						countText.color = _showOnlyIcon ? MailCanvasListItem.GetDiaTextColor() : Color.white;
 						break;
 					case "EN":
 						energyObject.SetActive(true);
