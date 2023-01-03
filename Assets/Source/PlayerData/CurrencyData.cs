@@ -323,6 +323,39 @@ public class CurrencyData : MonoBehaviour
 		}
 	}
 
+	public void OnRecvProductRewardExtendConsume(ShopProductTableData shopProductTableData)
+	{
+		string rewardType = shopProductTableData.rewardType1;
+		string rewardValue = shopProductTableData.rewardValue1;
+		int rewardCount = shopProductTableData.rewardCount1;
+		if (rewardType == "cu") OnRecvProductReward(rewardType, rewardValue, rewardCount);
+		else if (rewardType == "it") CashShopData.instance.OnRecvConsumeItem(rewardValue, rewardCount);
+
+		rewardType = shopProductTableData.rewardType2;
+		rewardValue = shopProductTableData.rewardValue2;
+		rewardCount = shopProductTableData.rewardCount2;
+		if (rewardType == "cu") OnRecvProductReward(rewardType, rewardValue, rewardCount);
+		else if (rewardType == "it") CashShopData.instance.OnRecvConsumeItem(rewardValue, rewardCount);
+
+		rewardType = shopProductTableData.rewardType3;
+		rewardValue = shopProductTableData.rewardValue3;
+		rewardCount = shopProductTableData.rewardCount3;
+		if (rewardType == "cu") OnRecvProductReward(rewardType, rewardValue, rewardCount);
+		else if (rewardType == "it") CashShopData.instance.OnRecvConsumeItem(rewardValue, rewardCount);
+
+		rewardType = shopProductTableData.rewardType4;
+		rewardValue = shopProductTableData.rewardValue4;
+		rewardCount = shopProductTableData.rewardCount4;
+		if (rewardType == "cu") OnRecvProductReward(rewardType, rewardValue, rewardCount);
+		else if (rewardType == "it") CashShopData.instance.OnRecvConsumeItem(rewardValue, rewardCount);
+
+		rewardType = shopProductTableData.rewardType5;
+		rewardValue = shopProductTableData.rewardValue5;
+		rewardCount = shopProductTableData.rewardCount5;
+		if (rewardType == "cu") OnRecvProductReward(rewardType, rewardValue, rewardCount);
+		else if (rewardType == "it") CashShopData.instance.OnRecvConsumeItem(rewardValue, rewardCount);
+	}
+
 	#region Event Point
 	public void OnRecvStartEventPoint(string eventPointId, bool oneTime, string eventPointExpireTimeString)
 	{

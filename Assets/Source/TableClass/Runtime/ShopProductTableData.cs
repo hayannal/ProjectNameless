@@ -21,6 +21,10 @@ public class ShopProductTableData
   public bool free { get { return _free; } set { _free = value; } }
   
   [SerializeField]
+  int _times;
+  public int times { get { return _times; } set { _times = value; } }
+  
+  [SerializeField]
   float _eng;
   public float eng { get { return _eng; } set { _eng = value; } }
   

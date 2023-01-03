@@ -56,6 +56,69 @@ public class ConsumeProductProcessor : MonoBehaviour
 			_dicConsumeItem.Add(value, count);
 	}
 
+	// 샵프로덕트에 컨슘이 들어있을때도 있다.
+	public static bool ConstainsConsumeGacha(ShopProductTableData shopProductTableData)
+	{
+		// type만 검사하고 value까진 검사하지 않는다. 팔거라고 가정한 곳에서만 호출할테니 이렇게만 해도 된다.
+		if (shopProductTableData.rewardType1 == "it" ||
+			shopProductTableData.rewardType2 == "it" ||
+			shopProductTableData.rewardType3 == "it" ||
+			shopProductTableData.rewardType4 == "it" ||
+			shopProductTableData.rewardType5 == "it")
+			return true;
+
+		return false;
+	}
+
+	public void ConsumeGacha(ShopProductTableData shopProductTableData)
+	{
+		_dicConsumeItem.Clear();
+
+		// 주의. type만 검사하고 value까진 검사하지 않으니 컨슘 아닌거 넣으면 큰일난다.
+		if (shopProductTableData.rewardType1 == "it")
+		{
+			string value = shopProductTableData.rewardValue1;
+			if (_dicConsumeItem.ContainsKey(value))
+				_dicConsumeItem[value] += shopProductTableData.rewardCount1;
+			else
+				_dicConsumeItem.Add(value, shopProductTableData.rewardCount1);
+		}
+		if (shopProductTableData.rewardType2 == "it")
+		{
+			string value = shopProductTableData.rewardValue2;
+			if (_dicConsumeItem.ContainsKey(value))
+				_dicConsumeItem[value] += shopProductTableData.rewardCount2;
+			else
+				_dicConsumeItem.Add(value, shopProductTableData.rewardCount2);
+		}
+		if (shopProductTableData.rewardType3 == "it")
+		{
+			string value = shopProductTableData.rewardValue3;
+			if (_dicConsumeItem.ContainsKey(value))
+				_dicConsumeItem[value] += shopProductTableData.rewardCount3;
+			else
+				_dicConsumeItem.Add(value, shopProductTableData.rewardCount3);
+		}
+		if (shopProductTableData.rewardType4 == "it")
+		{
+			string value = shopProductTableData.rewardValue4;
+			if (_dicConsumeItem.ContainsKey(value))
+				_dicConsumeItem[value] += shopProductTableData.rewardCount4;
+			else
+				_dicConsumeItem.Add(value, shopProductTableData.rewardCount4);
+		}
+		if (shopProductTableData.rewardType5 == "it")
+		{
+			string value = shopProductTableData.rewardValue5;
+			if (_dicConsumeItem.ContainsKey(value))
+				_dicConsumeItem[value] += shopProductTableData.rewardCount5;
+			else
+				_dicConsumeItem.Add(value, shopProductTableData.rewardCount5);
+		}
+		ProcessConsume();
+	}
+
+
 	public void ProcessConsume()
 	{
 		if (_dicConsumeItem.Keys.Count == 0)
@@ -77,11 +140,20 @@ public class ConsumeProductProcessor : MonoBehaviour
 			case "Cash_sEquipGacha":
 				ConsumeEquipGacha(firstCount);
 				break;
+			case "Cash_sSpell3Gacha":
+				ConsumeSpellGacha(firstCount, 3);
+				break;
+			case "Cash_sSpell4Gacha":
+				ConsumeSpellGacha(firstCount, 4);
+				break;
+			case "Cash_sSpell5Gacha":
+				ConsumeSpellGacha(firstCount, 5);
+				break;
 		}
 	}
 
 	#region Spell
-	void ConsumeSpellGacha(int itemCount)
+	void ConsumeSpellGacha(int itemCount, int fixedStar = 0)
 	{
 		// 혹시나 로드 되어있지 않다면 로드 걸어둔다. 연출 다 되기 전엔 로딩 될거다.
 		if (SpellSpriteContainer.instance == null)
@@ -105,9 +177,9 @@ public class ConsumeProductProcessor : MonoBehaviour
 			}
 
 			// 연출창 시작과 동시에 패킷을 보내고
-			List<ObscuredString> listSpellId = SpellManager.instance.GetRandomIdList(itemCount);
+			List<ObscuredString> listSpellId = SpellManager.instance.GetRandomIdList(itemCount, fixedStar);
 			_count = listSpellId.Count;
-			PlayFabApiManager.instance.RequestConsumeSpellGacha(listSpellId, OnRecvResultSpell);
+			PlayFabApiManager.instance.RequestConsumeSpellGacha(listSpellId, fixedStar, OnRecvResultSpell);
 		});
 	}
 

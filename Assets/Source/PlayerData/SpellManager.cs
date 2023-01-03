@@ -244,13 +244,57 @@ public class SpellManager : MonoBehaviour
 		return _listGachaSpellIdInfo[index].id;
 	}
 
+	public string GetRandomGradeGachaResult(int fixedStar)
+	{
+		if (_listGachaSpellIdInfo == null)
+			_listGachaSpellIdInfo = new List<RandomGachaSpellIdInfo>();
+		_listGachaSpellIdInfo.Clear();
+
+		float sumWeight = 0.0f;
+		for (int i = 0; i < TableDataManager.instance.skillTable.dataArray.Length; ++i)
+		{
+			if (TableDataManager.instance.skillTable.dataArray[i].spell == false)
+				continue;
+			if (TableDataManager.instance.skillTable.dataArray[i].grade == 0 || TableDataManager.instance.skillTable.dataArray[i].star != fixedStar)
+				continue;
+
+			sumWeight += 1.0f;
+			RandomGachaSpellIdInfo newInfo = new RandomGachaSpellIdInfo();
+			newInfo.id = TableDataManager.instance.skillTable.dataArray[i].id;
+			newInfo.sumWeight = sumWeight;
+			_listGachaSpellIdInfo.Add(newInfo);
+		}
+
+		if (_listGachaSpellIdInfo.Count == 0)
+			return "";
+
+		int index = -1;
+		float random = Random.Range(0.0f, _listGachaSpellIdInfo[_listGachaSpellIdInfo.Count - 1].sumWeight);
+		for (int i = 0; i < _listGachaSpellIdInfo.Count; ++i)
+		{
+			if (random <= _listGachaSpellIdInfo[i].sumWeight)
+			{
+				index = i;
+				break;
+			}
+		}
+		if (index == -1)
+			return "";
+		return _listGachaSpellIdInfo[index].id;
+	}
+
 	List<ObscuredString> _listRandomObscuredId = new List<ObscuredString>();
-	public List<ObscuredString> GetRandomIdList(int count)
+	public List<ObscuredString> GetRandomIdList(int count, int fixedStar = 0)
 	{
 		_listRandomObscuredId.Clear();
 
 		for (int i = 0; i < count; ++i)
-			_listRandomObscuredId.Add(GetRandomGachaResult());
+		{
+			if (fixedStar == 0)
+				_listRandomObscuredId.Add(GetRandomGachaResult());
+			else
+				_listRandomObscuredId.Add(GetRandomGradeGachaResult(fixedStar));
+		}
 
 		return _listRandomObscuredId;
 	}

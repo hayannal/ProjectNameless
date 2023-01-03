@@ -54,6 +54,7 @@ public class TableDataManager : MonoBehaviour
 	public LevelPassTable levelPassTable;
 	public ConsumeItemTable consumeItemTable;
 	public EnergyUsePaybackTable energyUsePaybackTable;
+	public StageClearTable stageClearTable;
 
 	public SevenDaysTypeTable sevenDaysTypeTable;
 	public SevenDaysRewardTable sevenDaysRewardTable;

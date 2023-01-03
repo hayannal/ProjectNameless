@@ -2201,6 +2201,28 @@ public class PlayFabApiManager : MonoBehaviour
 			HandleCommonError(error);
 		});
 	}
+
+	public void RequestUpdateStageClearPackageList(string jsonStageClearPackageList, Action successCallback)
+	{
+		ExecuteCloudScriptRequest request = new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "UpdateStageClearPackageList",
+			FunctionParameter = new { Lst = jsonStageClearPackageList },
+			GeneratePlayStreamEvent = true,
+		};
+		Action action = () =>
+		{
+			PlayFabClientAPI.ExecuteCloudScript(request, (success) =>
+			{
+				RetrySendManager.instance.OnSuccess();
+				if (successCallback != null) successCallback.Invoke();
+			}, (error) =>
+			{
+				RetrySendManager.instance.OnFailure();
+			});
+		};
+		RetrySendManager.instance.RequestAction(action, false);
+	}
 	#endregion
 
 	#region Costume
@@ -2638,6 +2660,7 @@ public class PlayFabApiManager : MonoBehaviour
 
 		PlayerProfileViewConstraints playerProfileViewConstraints = new PlayerProfileViewConstraints();
 		playerProfileViewConstraints.ShowDisplayName = true;
+		playerProfileViewConstraints.ShowLocations = true;
 
 		PlayFabClientAPI.GetLeaderboard(new GetLeaderboardRequest()
 		{
@@ -2736,6 +2759,7 @@ public class PlayFabApiManager : MonoBehaviour
 	{
 		PlayerProfileViewConstraints playerProfileViewConstraints = new PlayerProfileViewConstraints();
 		playerProfileViewConstraints.ShowDisplayName = true;
+		playerProfileViewConstraints.ShowLocations = true;
 
 		PlayFabClientAPI.GetLeaderboard(new GetLeaderboardRequest()
 		{
@@ -2833,17 +2857,19 @@ public class PlayFabApiManager : MonoBehaviour
 		});
 	}
 
-	public void RequestConsumeSpellGacha(List<ObscuredString> listSpellId, Action<string> successCallback)
+	public void RequestConsumeSpellGacha(List<ObscuredString> listSpellId, int fixedStar, Action<string> successCallback)
 	{
 		// RandomBoxScreenCanvas에서 컨트롤할거니 여기서는 하지 않는다.
 		//WaitingNetworkCanvas.Show(true);
 
+		string input = string.Format("{0}_{1}_{2}", listSpellId.Count, fixedStar, "fosrqpmx");
+		string checkSum = CheckSum(input);
 		string checkSum2 = "";
 		List<ItemGrantRequest> listItemGrantRequest = GenerateGrantRequestInfo(listSpellId, ref checkSum2, "spell");
 		ExecuteCloudScriptRequest request = new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "ConsumeSpellGacha",
-			FunctionParameter = new { Lst = listItemGrantRequest, LstCs = checkSum2 },
+			FunctionParameter = new { Star = fixedStar, Cs = checkSum, Lst = listItemGrantRequest, LstCs = checkSum2 },
 			GeneratePlayStreamEvent = true,
 		};
 
@@ -2856,7 +2882,13 @@ public class PlayFabApiManager : MonoBehaviour
 			{
 				//WaitingNetworkCanvas.Show(false);
 
-				CashShopData.instance.ConsumeCount(CashShopData.eCashConsumeCountType.SpellGacha, listSpellId.Count);
+				switch (fixedStar)
+				{
+					case 3: CashShopData.instance.ConsumeCount(CashShopData.eCashConsumeCountType.Spell3Gacha, listSpellId.Count); break;
+					case 4: CashShopData.instance.ConsumeCount(CashShopData.eCashConsumeCountType.Spell4Gacha, listSpellId.Count); break;
+					case 5: CashShopData.instance.ConsumeCount(CashShopData.eCashConsumeCountType.Spell5Gacha, listSpellId.Count); break;
+					default: CashShopData.instance.ConsumeCount(CashShopData.eCashConsumeCountType.SpellGacha, listSpellId.Count); break;
+				}
 
 				jsonResult.TryGetValue("itmRet", out object itmRet);
 

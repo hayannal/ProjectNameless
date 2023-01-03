@@ -15,6 +15,9 @@ public class RewardIcon : MonoBehaviour
 	public GameObject energyObject;
 	public GameObject sevenDaysObject;
 	public GameObject spellGachaObject;
+	public GameObject spellStarGachaObject;
+	public GameObject spellGachaStarGroupRootObject;
+	public Text spellGachaStarText;
 	public GameObject characterGachaObject;
 	public GameObject equipGachaObject;
 	public Image equipIconImage;
@@ -53,6 +56,8 @@ public class RewardIcon : MonoBehaviour
 		energyObject.SetActive(false);
 		if (sevenDaysObject != null) sevenDaysObject.SetActive(false);
 		if (spellGachaObject != null) spellGachaObject.SetActive(false);
+		if (spellStarGachaObject != null) spellStarGachaObject.SetActive(false);
+		if (spellGachaStarGroupRootObject != null) spellGachaStarGroupRootObject.SetActive(false);
 		if (characterGachaObject != null) characterGachaObject.SetActive(false);
 		if (equipGachaObject != null) equipGachaObject.SetActive(false);
 		if (equipIconImage != null) equipIconImage.gameObject.SetActive(false);
@@ -106,6 +111,27 @@ public class RewardIcon : MonoBehaviour
 					case "Cash_sSpellGacha":
 						if (spellGachaObject != null) spellGachaObject.SetActive(true);
 						countText.color = Color.white;
+						break;
+					case "Cash_sSpell3Gacha":
+					case "Cash_sSpell4Gacha":
+					case "Cash_sSpell5Gacha":
+						if (spellStarGachaObject != null) spellStarGachaObject.SetActive(true);
+						countText.color = Color.white;
+						if (rewardValue == "Cash_sSpell3Gacha" && spellGachaStarGroupRootObject != null)
+						{
+							spellGachaStarGroupRootObject.SetActive(true);
+							spellGachaStarText.text = "3";
+						}
+						if (rewardValue == "Cash_sSpell4Gacha" && spellGachaStarGroupRootObject != null)
+						{
+							spellGachaStarGroupRootObject.SetActive(true);
+							spellGachaStarText.text = "4";
+						}
+						if (rewardValue == "Cash_sSpell5Gacha" && spellGachaStarGroupRootObject != null)
+						{
+							spellGachaStarGroupRootObject.SetActive(true);
+							spellGachaStarText.text = "5";
+						}
 						break;
 					case "Cash_sCharacterGacha":
 						if (characterGachaObject != null) characterGachaObject.SetActive(true);

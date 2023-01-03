@@ -72,11 +72,14 @@ public class CashShopData : MonoBehaviour
 		EquipGacha = 2,
 		SevenTotal = 3,
 		FestivalTotal = 4,
+		Spell3Gacha = 5,
+		Spell4Gacha = 6,
+		Spell5Gacha = 7,
 
 		Amount,
 	}
 	List<ObscuredInt> _listCashConsumeCount = new List<ObscuredInt>();
-	List<string> _listCashConsumeCountKey = new List<string> { "Cash_sSpellGacha", "Cash_sCharacterGacha", "Cash_sEquipGacha", "Cash_sSevenTotal", "Cash_sFestivalTotal" };
+	List<string> _listCashConsumeCountKey = new List<string> { "Cash_sSpellGacha", "Cash_sCharacterGacha", "Cash_sEquipGacha", "Cash_sSevenTotal", "Cash_sFestivalTotal", "Cash_sSpell3Gacha", "Cash_sSpell4Gacha", "Cash_sSpell5Gacha" };
 
 	public enum eCashItemCountType
 	{
@@ -93,6 +96,9 @@ public class CashShopData : MonoBehaviour
 	List<int> _listLevelPassReward;
 	// 구조가 거의 비슷해서 그대로 비슷하게 구현해본다.
 	List<int> _listEnergyPaybackReward;
+
+	// 스테이지 클리어 패키지 리스트
+	List<int> _listStageClearPackage;
 
 	#region EventPoint
 	public enum eEventStartCondition
@@ -296,6 +302,14 @@ public class CashShopData : MonoBehaviour
 				OnRecvDailyDiamondInfo(userReadOnlyData["lasDaiDiaDat"].Value);
 		}
 
+		_listStageClearPackage = null;
+		if (userReadOnlyData.ContainsKey("stgClrPckLst"))
+		{
+			string stgClrPckLstString = userReadOnlyData["stgClrPckLst"].Value;
+			if (string.IsNullOrEmpty(stgClrPckLstString) == false)
+				_listStageClearPackage = serializer.DeserializeObject<List<int>>(stgClrPckLstString);
+		}
+
 		/*
 		// 일일 무료 아이템 수령기록 데이터. 마지막 오픈 시간을 받는건 일퀘 때와 비슷한 구조다. 상점 슬롯과 별개로 처리된다.
 		if (userReadOnlyData.ContainsKey("lasFreDat"))
@@ -441,6 +455,15 @@ public class CashShopData : MonoBehaviour
 				PurchaseCount(eCashConsumeCountType.FestivalTotal, count);
 				PlayFabApiManager.instance.RequestConsumeFestivalTotal(null);
 				break;
+			case "Cash_sSpell3Gacha":
+				PurchaseCount(eCashConsumeCountType.Spell3Gacha, count);
+				break;
+			case "Cash_sSpell4Gacha":
+				PurchaseCount(eCashConsumeCountType.Spell4Gacha, count);
+				break;
+			case "Cash_sSpell5Gacha":
+				PurchaseCount(eCashConsumeCountType.Spell5Gacha, count);
+				break;
 		}
 	}
 
@@ -466,6 +489,8 @@ public class CashShopData : MonoBehaviour
 
 	public bool IsShowEvent(string eventId)
 	{
+		if (string.IsNullOrEmpty(eventId))
+			return false;
 		if (_dicExpireTime.ContainsKey(eventId) && ServerTime.UtcNow < _dicExpireTime[eventId])
 			return true;
 		return false;
@@ -689,6 +714,25 @@ public class CashShopData : MonoBehaviour
 	}
 	#endregion
 
+	#region Level Pass
+	public bool IsPurchasedStageClearPackage(int stage)
+	{
+		if (_listStageClearPackage == null)
+			return false;
+
+		return _listStageClearPackage.Contains(stage);
+	}
+
+	public List<int> OnRecvStageClearPackage(int stage)
+	{
+		if (_listStageClearPackage == null)
+			_listStageClearPackage = new List<int>();
+		if (_listStageClearPackage.Contains(stage) == false)
+			_listStageClearPackage.Add(stage);
+		return _listStageClearPackage;
+	}
+	#endregion
+
 
 	#region Pending Product
 	public bool CheckPendingProduct()
@@ -768,50 +812,34 @@ public class CashShopData : MonoBehaviour
 	public bool CheckUncomsumeProduct()
 	{
 		// 다른 컨슘보다도 스텝이 길고 중요한 가차박스는 따로 검사한다.
-		if (GetConsumeCount(eCashConsumeCountType.SpellGacha) > 0 || GetConsumeCount(eCashConsumeCountType.CharacterGacha) > 0 || GetConsumeCount(eCashConsumeCountType.EquipGacha) > 0)
+		if (GetConsumeCount(eCashConsumeCountType.SpellGacha) > 0 || GetConsumeCount(eCashConsumeCountType.CharacterGacha) > 0 || GetConsumeCount(eCashConsumeCountType.EquipGacha) > 0 ||
+			GetConsumeCount(eCashConsumeCountType.Spell3Gacha) > 0 || GetConsumeCount(eCashConsumeCountType.Spell4Gacha) > 0 || GetConsumeCount(eCashConsumeCountType.Spell5Gacha) > 0)
 		{
-			string itemName = "";
 			int count = GetConsumeCount(eCashConsumeCountType.SpellGacha);
 			if (count > 0)
-			{
 				ConsumeProductProcessor.instance.AddConsumeGacha(_listCashConsumeCountKey[(int)eCashConsumeCountType.SpellGacha], count);
-
-				ConsumeItemTableData consumeItemTableData = TableDataManager.instance.FindConsumeItemTableData(_listCashConsumeCountKey[(int)eCashConsumeCountType.SpellGacha]);
-				if (consumeItemTableData != null)
-					itemName = UIString.instance.GetString(consumeItemTableData.name);
-			}
 
 			count = GetConsumeCount(eCashConsumeCountType.CharacterGacha);
 			if (count > 0)
-			{
 				ConsumeProductProcessor.instance.AddConsumeGacha(_listCashConsumeCountKey[(int)eCashConsumeCountType.CharacterGacha], count);
-
-				ConsumeItemTableData consumeItemTableData = TableDataManager.instance.FindConsumeItemTableData(_listCashConsumeCountKey[(int)eCashConsumeCountType.CharacterGacha]);
-				if (consumeItemTableData != null)
-				{
-					if (string.IsNullOrEmpty(itemName))
-						itemName = UIString.instance.GetString(consumeItemTableData.name);
-					else
-						itemName = string.Format("{0}, {1}", itemName, UIString.instance.GetString(consumeItemTableData.name));
-				}
-			}
 
 			count = GetConsumeCount(eCashConsumeCountType.EquipGacha);
 			if (count > 0)
-			{
 				ConsumeProductProcessor.instance.AddConsumeGacha(_listCashConsumeCountKey[(int)eCashConsumeCountType.EquipGacha], count);
 
-				ConsumeItemTableData consumeItemTableData = TableDataManager.instance.FindConsumeItemTableData(_listCashConsumeCountKey[(int)eCashConsumeCountType.EquipGacha]);
-				if (consumeItemTableData != null)
-				{
-					if (string.IsNullOrEmpty(itemName))
-						itemName = UIString.instance.GetString(consumeItemTableData.name);
-					else
-						itemName = string.Format("{0}, {1}", itemName, UIString.instance.GetString(consumeItemTableData.name));
-				}
-			}
+			count = GetConsumeCount(eCashConsumeCountType.Spell3Gacha);
+			if (count > 0)
+				ConsumeProductProcessor.instance.AddConsumeGacha(_listCashConsumeCountKey[(int)eCashConsumeCountType.Spell3Gacha], count);
 
-			OkCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("ShopUI_NotDoneConsumeProgress", itemName), () =>
+			count = GetConsumeCount(eCashConsumeCountType.Spell4Gacha);
+			if (count > 0)
+				ConsumeProductProcessor.instance.AddConsumeGacha(_listCashConsumeCountKey[(int)eCashConsumeCountType.Spell4Gacha], count);
+
+			count = GetConsumeCount(eCashConsumeCountType.Spell5Gacha);
+			if (count > 0)
+				ConsumeProductProcessor.instance.AddConsumeGacha(_listCashConsumeCountKey[(int)eCashConsumeCountType.Spell5Gacha], count);
+
+			OkCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("ShopUI_NotDoneConsumeProgress"), () =>
 			{
 				ConsumeProductProcessor.instance.ProcessConsume();
 			}, -1, true);
