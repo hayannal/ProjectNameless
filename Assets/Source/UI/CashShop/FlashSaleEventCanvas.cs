@@ -25,6 +25,7 @@ public class FlashSaleEventCanvas : SimpleCashEventCanvas
 
 	void OnEnable()
 	{
+		SetInfo();
 		MainCanvas.instance.OnEnterCharacterMenu(true);
 	}
 

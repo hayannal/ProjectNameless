@@ -25,6 +25,7 @@ public class NuclearSaleEventCanvas : SimpleCashEventCanvas
 
 	void OnEnable()
 	{
+		SetInfo();
 		MainCanvas.instance.OnEnterCharacterMenu(true);
 	}
 

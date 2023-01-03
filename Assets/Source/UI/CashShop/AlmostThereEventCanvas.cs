@@ -25,6 +25,7 @@ public class AlmostThereEventCanvas : SimpleCashEventCanvas
 
 	void OnEnable()
 	{
+		SetInfo();
 		MainCanvas.instance.OnEnterCharacterMenu(true);
 	}
 
