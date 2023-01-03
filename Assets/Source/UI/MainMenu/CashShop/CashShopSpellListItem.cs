@@ -24,6 +24,7 @@ public class CashShopSpellListItem : MonoBehaviour
 	ShopSpellTableData _shopSpellTableData;
 	void OnEnable()
 	{
+		// hardcode ev10
 		bool eventApplied = CashShopData.instance.IsShowEvent("ev10");
 		//eventApplied = true;
 

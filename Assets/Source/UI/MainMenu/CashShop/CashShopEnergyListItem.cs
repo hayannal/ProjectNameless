@@ -20,6 +20,7 @@ public class CashShopEnergyListItem : SimpleCashCanvas
 	ShopProductTableData _shopProductTableData;
 	void OnEnable()
 	{
+		// hardcode ev9
 		bool eventApplied = CashShopData.instance.IsShowEvent("ev9");
 		//eventApplied = true;
 
