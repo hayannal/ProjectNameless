@@ -100,6 +100,9 @@ public class CashShopData : MonoBehaviour
 	// 스테이지 클리어 패키지 리스트
 	List<int> _listStageClearPackage;
 
+	// 첫구매 보상 받았는지 확인용
+	public ObscuredBool firstPurchaseRewarded { get; set; }
+
 	#region EventPoint
 	public enum eEventStartCondition
 	{
@@ -308,6 +311,13 @@ public class CashShopData : MonoBehaviour
 			string stgClrPckLstString = userReadOnlyData["stgClrPckLst"].Value;
 			if (string.IsNullOrEmpty(stgClrPckLstString) == false)
 				_listStageClearPackage = serializer.DeserializeObject<List<int>>(stgClrPckLstString);
+		}
+
+		firstPurchaseRewarded = false;
+		if (userReadOnlyData.ContainsKey("firstPurchaseReward"))
+		{
+			if (string.IsNullOrEmpty(userReadOnlyData["firstPurchaseReward"].Value) == false)
+				firstPurchaseRewarded = true;
 		}
 
 		/*

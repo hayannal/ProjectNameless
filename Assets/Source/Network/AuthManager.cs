@@ -260,6 +260,12 @@ public class AuthManager : MonoBehaviour
 		parameters.GetUserAccountInfo = true;
 		// 이름때문에 받아야한다.
 		parameters.GetPlayerProfile = true;
+
+		PlayerProfileViewConstraints playerProfileViewConstraints = new PlayerProfileViewConstraints();
+		playerProfileViewConstraints.ShowDisplayName = true;
+		playerProfileViewConstraints.ShowTotalValueToDateInUsd = true;
+		parameters.ProfileConstraints = playerProfileViewConstraints;
+
 		return parameters;
 	}
 

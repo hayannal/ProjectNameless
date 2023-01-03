@@ -64,6 +64,9 @@ public class PlayerData : MonoBehaviour
 	// 디스플레이 네임
 	public string displayName { get; set; }
 
+	// Vtd
+	public int vtd { get; set; }
+
 	// 네트워크 오류로 인해 씬을 재시작할때는 타이틀 떠서 진입하듯 초기 프로세스들을 검사해야한다.
 	public bool checkRestartScene { get; set; }
 
@@ -150,6 +153,7 @@ public class PlayerData : MonoBehaviour
 		downloadConfirmed = false;
 		downloadRewarded = false;
 		displayName = "";
+		vtd = 0;
 
 
 		// 계정 시작시 패킷 오류가 생기면 복구할 방법이 없기 때문에 여기서 처리하지 않기로 하고 Update돌면서 확인하기로 한다.
@@ -311,6 +315,10 @@ public class PlayerData : MonoBehaviour
 		displayName = "";
 		if (string.IsNullOrEmpty(playerProfile.DisplayName) == false)
 			displayName = playerProfile.DisplayName;
+
+		vtd = 0;
+		if (playerProfile.TotalValueToDateInUSD != null)
+			vtd = (int)playerProfile.TotalValueToDateInUSD;
 
 		if (userReadOnlyData.ContainsKey("delAccDat"))
 		{

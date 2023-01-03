@@ -34,6 +34,7 @@ public class MainCanvas : MonoBehaviour
 	public GameObject brokenEnergyButtonObject;
 	public GameObject sevenDaysButtonObject;
 	public GameObject festivalButtonObject;
+	public GameObject firstPurchaseButtonObject;
 	public Transform cashEventButtonRootTransform;
 	public CashEventButton[] cashEventButtonList;
 
@@ -52,6 +53,7 @@ public class MainCanvas : MonoBehaviour
 	public RectTransform levelPassAlarmRootTransform;
 	public RectTransform sevenDaysAlarmRootTransform;
 	public RectTransform festivalAlarmRootTransform;
+	public RectTransform firstPurchaseAlarmRootTransform;
 	public RectTransform energyPaybackAlarmRootTransform;   // ev6
 
 	public RectTransform continuousProduct1AlarmRootTransform;  // ev4
@@ -437,6 +439,7 @@ public class MainCanvas : MonoBehaviour
 		RefreshEnergyPaybackAlarmObject();
 		RefreshContinuousProduct1AlarmObject();
 		RefreshOnePlusTwo1AlarmObject();
+		RefreshFirstPurchaseAlarmObject();
 	}
 
 	public static bool IsAlarmCashShop()
@@ -704,6 +707,18 @@ public class MainCanvas : MonoBehaviour
 		RefreshAlarmObject(IsAlarmOnePlusTwo1(), onePlusTwo1AlarmRootTransform);
 	}
 
+	public static bool IsAlarmFirstPurchase()
+	{
+		if (PlayerData.instance.vtd > 0 && CashShopData.instance.firstPurchaseRewarded == false)
+			return true;
+		return false;
+	}
+
+	public void RefreshFirstPurchaseAlarmObject()
+	{
+		RefreshAlarmObject(IsAlarmFirstPurchase(), firstPurchaseAlarmRootTransform);
+	}
+
 	void RefreshAlarmObject(bool show, Transform alarmRootTransform)
 	{
 		if (show)
@@ -759,6 +774,8 @@ public class MainCanvas : MonoBehaviour
 		bool showBrokenEnergy = (CurrencyData.instance.brokenEnergy > 0);
 		brokenEnergyButtonObject.SetActive(showBrokenEnergy);
 
+		bool showFirstPurchase = (CashShopData.instance.firstPurchaseRewarded == false);
+		firstPurchaseButtonObject.SetActive(showFirstPurchase);
 	}
 
 	public void OnClickCashShopButton()
@@ -779,6 +796,11 @@ public class MainCanvas : MonoBehaviour
 	public void OnClickBrokenEnergyButton()
 	{
 		UIInstanceManager.instance.ShowCanvasAsync("BrokenEnergyCanvas", null);
+	}
+
+	public void OnClickFirstPurchaseButton()
+	{
+		UIInstanceManager.instance.ShowCanvasAsync("FirstPurchaseCanvas", null);
 	}
 	#endregion
 

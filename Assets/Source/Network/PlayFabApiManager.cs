@@ -1828,6 +1828,7 @@ public class PlayFabApiManager : MonoBehaviour
 #endif
 		}, (success) =>
 		{
+			PlayerData.instance.vtd += (int)price;
 			if (successCallback != null) successCallback.Invoke();
 		}, (error) =>
 		{
@@ -2222,6 +2223,35 @@ public class PlayFabApiManager : MonoBehaviour
 			});
 		};
 		RetrySendManager.instance.RequestAction(action, false);
+	}
+
+	public void RequestFirstPurchaseReward(ShopProductTableData shopProductTableData, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}_{2}", shopProductTableData.productId, shopProductTableData.key, "ewpnskaz");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "FirstPurchaseReward",
+			FunctionParameter = new { SpId = shopProductTableData.productId, InfCs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				CashShopData.instance.firstPurchaseRewarded = true;
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
 	}
 	#endregion
 
