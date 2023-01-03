@@ -64,26 +64,38 @@ public class StageGround : MonoBehaviour
 	public Vector3 endLinePosition { get; set; }
 	void InstantiateMap(StageTableData stageTableData, bool repeat)
 	{
+		Debug.LogWarning("1111");
+
 		if (_currentPlaneObject != null)
 			_currentPlaneObject.SetActive(false);
 		_currentPlaneObject = BattleInstanceManager.instance.GetCachedObject(_stagePlanePrefab, StageManager.instance.GetSafeWorldOffset(), Quaternion.identity);
 		BattleInstanceManager.instance.planeCollider = _currentPlaneObject.GetComponent<Collider>();
 
+		Debug.LogWarning("2222");
+
 		if (_currentGroundObject != null)
 			_currentGroundObject.SetActive(false);
 		_currentGroundObject = BattleInstanceManager.instance.GetCachedObject(_stageGroundPrefab, StageManager.instance.GetSafeWorldOffset(), Quaternion.identity);
+
+		Debug.LogWarning("3333");
 
 		if (_currentWallObject != null)
 			_currentWallObject.SetActive(false);
 		_currentWallObject = BattleInstanceManager.instance.GetCachedObject(_stageWallPrefab, StageManager.instance.GetSafeWorldOffset(), Quaternion.identity);
 
+		Debug.LogWarning("4444");
+
 		if (_currentEnvironmentSettingObject != null)
 			_currentEnvironmentSettingObject.SetActive(false);
 		_currentEnvironmentSettingObject = BattleInstanceManager.instance.GetCachedObject(_stageEnvPrefab, null);
 
+		Debug.LogWarning("5555");
+
 		if (_monsterSpawnPortalObject != null)
 			_monsterSpawnPortalObject.SetActive(false);
 		_monsterSpawnPortalObject = BattleInstanceManager.instance.GetCachedObject(monsterSpawnPortalPrefab, new Vector3(stageTableData.monsterSpawnx, 0.0f, stageTableData.monsterSpawnz) + StageManager.instance.GetSafeWorldOffset(), Quaternion.identity);
+
+		Debug.LogWarning("6666");
 
 		endLinePosition = new Vector3(stageTableData.redLinex, 0.0f, stageTableData.redLinez);
 		if (_endLineObject != null)
@@ -91,11 +103,15 @@ public class StageGround : MonoBehaviour
 		if (repeat == false)
 			_endLineObject = BattleInstanceManager.instance.GetCachedObject(endLinePrefab, new Vector3(stageTableData.redLinex, 0.0f, stageTableData.redLinez) + StageManager.instance.GetSafeWorldOffset(), Quaternion.identity);
 
+		Debug.LogWarning("7777");
+
 		// create callback
 		if (StageManager.instance != null)
 			StageManager.instance.OnInstantiateMap(stageTableData);
 		if (MainSceneBuilder.instance != null && MainSceneBuilder.instance.mainSceneBuilding)
 			MainSceneBuilder.instance.waitSpawnFlag = true;
+
+		Debug.LogWarning("8888");
 	}
 
 	bool _processing = false;
