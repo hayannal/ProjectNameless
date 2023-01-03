@@ -801,9 +801,12 @@ public class MainCanvas : MonoBehaviour
 				if (showButton)
 					cashEventButtonList[i].ShowButton(true);
 
-				if (showCanvas && IsHideState() == false)
-					CashEventButton.ShowEventCanvas(cashEventId);
-
+				if (showCanvas)
+				{
+					// ev1은 HideState 신경쓰지 않고 보이게 한다.
+					if (IsHideState() == false || cashEventId == "ev1")
+						CashEventButton.ShowEventCanvas(cashEventId);
+				}
 				break;
 			}
 		}
