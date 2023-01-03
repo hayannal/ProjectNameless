@@ -806,8 +806,10 @@ public class MainCanvas : MonoBehaviour
 
 	void RefreshCashAdditionalButton()
 	{
-		bool showSevenDays = (MissionData.instance.sevenDaysId != 0 && ServerTime.UtcNow < MissionData.instance.sevenDaysExpireTime);
-		sevenDaysButtonObject.SetActive(showSevenDays);
+		// sevenDays나 festival 둘다 전용 버튼 클래스 있어서 여기서 체크하지 않기로 한다.
+
+		//bool showSevenDays = (MissionData.instance.sevenDaysId != 0 && ServerTime.UtcNow < MissionData.instance.sevenDaysExpireTime);
+		//sevenDaysButtonObject.SetActive(showSevenDays);
 
 		//bool showFestival = (FestivalData.instance.festivalId != 0 && ServerTime.UtcNow < FestivalData.instance.festivalExpireTime);
 		//festivalButtonObject.SetActive(showFestival);
