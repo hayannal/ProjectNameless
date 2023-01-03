@@ -84,9 +84,6 @@ public class FestivalData : MonoBehaviour
 
 	public void StartFestival()
 	{
-		if (PlayerData.instance.downloadConfirmed == false)
-			return;
-
 		int newIdIndex = -1;
 		for (int i = 0; i < TableDataManager.instance.festivalTypeTable.dataArray.Length; ++i)
 		{
@@ -222,7 +219,7 @@ public class FestivalData : MonoBehaviour
 		}
 		if (downloadConfirmed)
 		{
-			if (festivalId == 0 || (ServerTime.UtcNow > festivalExpireTime && ServerTime.UtcNow > festivalExpireTime && ServerTime.UtcNow > festivalCoolExpireTime))
+			if (festivalId == 0 || (ServerTime.UtcNow > festivalExpireTime && ServerTime.UtcNow > festivalExpire2Time && ServerTime.UtcNow > festivalCoolExpireTime))
 				_retryStartRemainTime = 1.0f;
 		}
 	}
@@ -266,6 +263,9 @@ public class FestivalData : MonoBehaviour
 	
 	public void OnRefreshDay()
 	{
+		if (PlayerData.instance.downloadConfirmed == false)
+			return;
+
 		//if (FestivalCanvas.instance != null && FestivalCanvas.instance.gameObject.activeSelf)
 		//	FestivalCanvas.instance.RefreshLockObjectList();
 

@@ -88,9 +88,6 @@ public class MissionData : MonoBehaviour
 
 	public void StartSevenDays()
 	{
-		if (PlayerData.instance.downloadConfirmed == false)
-			return;
-
 		int newIdIndex = -1;
 		if (sevenDaysId == 0)
 			newIdIndex = 0;
@@ -273,6 +270,9 @@ public class MissionData : MonoBehaviour
 	{
 		if (SevenDaysCanvas.instance != null && SevenDaysCanvas.instance.gameObject.activeSelf)
 			SevenDaysCanvas.instance.RefreshLockObjectList();
+
+		if (PlayerData.instance.downloadConfirmed == false)
+			return;
 
 		// 부여받은적이 한번도 없다면 뭔가 이상한거다. 이럴땐 그냥 패스.
 		if (sevenDaysId == 0)
