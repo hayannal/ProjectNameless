@@ -749,7 +749,7 @@ public class CashShopData : MonoBehaviour
 		//Debug.LogFormat("IAPListener failed product storeSpecificId : {0}", failedProduct.definition.storeSpecificId);
 
 		// 완료되지 않은 구매상품의 아이디에 따라 뭘 진행시킬지 판단해야한다.
-		if (pendingProduct.definition.id == "bigboost")
+		if (pendingProduct.definition.id.Contains("bigboost"))
 		{
 			BigBoostEventCanvas.ExternalRetryPurchase(pendingProduct);
 		}
@@ -804,6 +804,22 @@ public class CashShopData : MonoBehaviour
 		else if (pendingProduct.definition.id.Contains("festivalgroup"))
 		{
 			FestivalTotalCanvas.ExternalRetryPurchase(pendingProduct);
+		}
+		else if (pendingProduct.definition.id.Contains("stageclear_"))
+		{
+			StageClearPackageBox.ExternalRetryPurchase(pendingProduct);
+		}
+		else if (pendingProduct.definition.id.Contains("almostthere"))
+		{
+			AlmostThereEventCanvas.ExternalRetryPurchase(pendingProduct);
+		}
+		else if (pendingProduct.definition.id.Contains("flashsale"))
+		{
+			FlashSaleEventCanvas.ExternalRetryPurchase(pendingProduct);
+		}
+		else if (pendingProduct.definition.id.Contains("nuclearsale"))
+		{
+			NuclearSaleEventCanvas.ExternalRetryPurchase(pendingProduct);
 		}
 
 		return true;
