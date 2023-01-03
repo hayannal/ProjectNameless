@@ -104,6 +104,13 @@ public class PetSearchCanvas : MonoBehaviour
 
 	void OnDisable()
 	{
+		// 원래라면 Pop하는게 맞지만 
+		// 씬을 종료하고 새 씬을 구축하러 나가는 로직으로 구현되어있기 때문에
+		// 하단 라인들로 넘어갈 이유가 없다. 그러니 여기서 리턴시킨다.
+		return;
+
+
+		// base code
 		if (StackCanvas.Pop(gameObject))
 			return;
 
