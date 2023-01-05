@@ -222,6 +222,14 @@ public class FestivalData : MonoBehaviour
 			if (festivalId == 0 || (ServerTime.UtcNow > festivalExpireTime && ServerTime.UtcNow > festivalExpire2Time && ServerTime.UtcNow > festivalCoolExpireTime))
 				_retryStartRemainTime = 1.0f;
 		}
+
+		// icon preload
+		if (festivalId != 0 && ServerTime.UtcNow < festivalExpire2Time)
+		{
+			FestivalTypeTableData festivalTypeTableData = TableDataManager.instance.FindFestivalTypeTableData(FestivalData.instance.festivalId);
+			if (festivalTypeTableData != null)
+				AddressableAssetLoadManager.GetAddressableSprite(festivalTypeTableData.iconAddress, "Icon");
+		}
 	}
 
 	public void OnRecvFestivalStartInfo(string lastFestivalExpireTimeString)
