@@ -359,5 +359,38 @@ public class SpellManager : MonoBehaviour
 		}
 		return listItemInstance;
 	}
+
+	public void OnRecvPurchaseItem(string rewardValue, int rewardCount)
+	{
+		SkillTableData skillTableData = TableDataManager.instance.FindSkillTableData(rewardValue);
+		if (skillTableData == null)
+			return;
+
+		SpellData currentSpellData = null;
+		for (int i = 0; i < _listSpellData.Count; ++i)
+		{
+			if (_listSpellData[i].spellId == rewardValue)
+			{
+				currentSpellData = _listSpellData[i];
+				break;
+			}
+		}
+
+		if (currentSpellData != null)
+			currentSpellData.SetCount(currentSpellData.count + rewardCount);
+		else
+		{
+			SpellData newSpellData = new SpellData();
+			newSpellData.uniqueId = "unfixedUniqueId";
+			newSpellData.spellId = rewardValue;
+			newSpellData.Initialize(rewardCount, null);
+			_listSpellData.Add(newSpellData);
+
+			// 없는 마법이 추가될땐 스탯부터 다 다시 계산해야한다.
+			OnChangedStatus();
+			if (BattleInstanceManager.instance.playerActor != null)
+				BattleInstanceManager.instance.playerActor.skillProcessor.AddSpell(newSpellData);
+		}
+	}
 	#endregion
 }

@@ -22,7 +22,7 @@ public class SpellData
 	public void Initialize(int count, Dictionary<string, string> customData)
 	{
 		int level = 1;
-		if (customData.ContainsKey(KeyLevel))
+		if (customData != null && customData.ContainsKey(KeyLevel))
 		{
 			int intValue = 0;
 			if (int.TryParse(customData[KeyLevel], out intValue))
@@ -54,6 +54,11 @@ public class SpellData
 			if (spellGradeLevelTableData != null)
 				_mainStatusValue = spellGradeLevelTableData.accumulatedAtk;
 		}
+	}
+
+	public void SetCount(int count)
+	{
+		_count = count;
 	}
 
 

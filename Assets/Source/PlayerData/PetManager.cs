@@ -550,5 +550,36 @@ public class PetManager : MonoBehaviour
 		}
 		return listItemInstance;
 	}
+
+	public void OnRecvPurchaseItem(string rewardValue, int rewardCount)
+	{
+		PetTableData petTableData = TableDataManager.instance.FindPetTableData(rewardValue);
+		if (petTableData == null)
+			return;
+
+		PetData currentPetData = null;
+		for (int i = 0; i < _listPetData.Count; ++i)
+		{
+			if (_listPetData[i].petId == rewardValue)
+			{
+				currentPetData = _listPetData[i];
+				break;
+			}
+		}
+
+		if (currentPetData != null)
+			currentPetData.SetCount(currentPetData.count + rewardCount);
+		else
+		{
+			PetData newPetData = new PetData();
+			newPetData.uniqueId = "unfixedUniqueId";
+			newPetData.petId = rewardValue;
+			newPetData.Initialize(rewardCount, 0, null);
+			_listPetData.Add(newPetData);
+
+			// 없는 펫이 추가될땐 스탯부터 다 다시 계산해야한다.
+			OnChangedStatus();
+		}
+	}
 	#endregion
 }

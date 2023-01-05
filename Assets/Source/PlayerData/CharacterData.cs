@@ -99,7 +99,7 @@ public class CharacterData
 		_pp = ppCount;
 
 		_level = 1;
-		if (customData.ContainsKey(KeyLevel))
+		if (customData != null && customData.ContainsKey(KeyLevel))
 		{
 			int intValue = 0;
 			if (int.TryParse(customData[KeyLevel], out intValue))
@@ -107,7 +107,7 @@ public class CharacterData
 		}
 
 		_transcend = 0;
-		if (customData.ContainsKey(KeyTranscend))
+		if (customData != null && customData.ContainsKey(KeyTranscend))
 		{
 			int intValue = 0;
 			if (int.TryParse(customData[KeyTranscend], out intValue))

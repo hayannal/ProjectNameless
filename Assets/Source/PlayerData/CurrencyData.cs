@@ -356,6 +356,63 @@ public class CurrencyData : MonoBehaviour
 		else if (rewardType == "it") CashShopData.instance.OnRecvConsumeItem(rewardValue, rewardCount);
 	}
 
+	// 인앱결제에서 아이템 직접 지급하기 위해 만든 함수. 결과창은 CommonReward로 통일해서 보여줄거다.
+	public void OnRecvProductRewardExtendItem(ShopProductTableData shopProductTableData)
+	{
+		string rewardType = shopProductTableData.rewardType1;
+		string rewardValue = shopProductTableData.rewardValue1;
+		int rewardCount = shopProductTableData.rewardCount1;
+		if (rewardType == "cu") OnRecvProductReward(rewardType, rewardValue, rewardCount);
+		else if (rewardType == "it") OnRecvPurchaseItem(rewardValue, rewardCount);
+
+		rewardType = shopProductTableData.rewardType2;
+		rewardValue = shopProductTableData.rewardValue2;
+		rewardCount = shopProductTableData.rewardCount2;
+		if (rewardType == "cu") OnRecvProductReward(rewardType, rewardValue, rewardCount);
+		else if (rewardType == "it") OnRecvPurchaseItem(rewardValue, rewardCount);
+
+		rewardType = shopProductTableData.rewardType3;
+		rewardValue = shopProductTableData.rewardValue3;
+		rewardCount = shopProductTableData.rewardCount3;
+		if (rewardType == "cu") OnRecvProductReward(rewardType, rewardValue, rewardCount);
+		else if (rewardType == "it") OnRecvPurchaseItem(rewardValue, rewardCount);
+
+		rewardType = shopProductTableData.rewardType4;
+		rewardValue = shopProductTableData.rewardValue4;
+		rewardCount = shopProductTableData.rewardCount4;
+		if (rewardType == "cu") OnRecvProductReward(rewardType, rewardValue, rewardCount);
+		else if (rewardType == "it") OnRecvPurchaseItem(rewardValue, rewardCount);
+
+		rewardType = shopProductTableData.rewardType5;
+		rewardValue = shopProductTableData.rewardValue5;
+		rewardCount = shopProductTableData.rewardCount5;
+		if (rewardType == "cu") OnRecvProductReward(rewardType, rewardValue, rewardCount);
+		else if (rewardType == "it") OnRecvPurchaseItem(rewardValue, rewardCount);
+	}
+
+	void OnRecvPurchaseItem(string rewardValue, int rewardCount)
+	{
+		//서버에선 직접 지급할거라서 클라는 아이디만 가지고 처리해야한다.
+		if (rewardValue.StartsWith("Spell_"))
+		{
+			SpellManager.instance.OnRecvPurchaseItem(rewardValue, rewardCount);
+		}
+		else if (rewardValue.StartsWith("Actor"))
+		{
+			// 액터는 지금 common reward icon 으로 표기는 하지 않지만 인앱결제로 제공할 가능성이 있으니 추가해두기로 한다.
+			CharacterManager.instance.OnRecvPurchaseItem(rewardValue, rewardCount);
+		}
+		else if (rewardValue.StartsWith("Pet_"))
+		{
+			PetManager.instance.OnRecvPurchaseItem(rewardValue, rewardCount);
+		}
+		else if (rewardValue.StartsWith("Equip"))
+		{
+			// 장비는 uniqueId가 무조건 있어야하므로 이렇게 추가하면 서버와 동기화를 할 수 없다.
+			Debug.LogError("Invalid Call. Equip need uniqueId.");
+		}
+	}
+
 	#region Event Point
 	public void OnRecvStartEventPoint(string eventPointId, bool oneTime, string eventPointExpireTimeString)
 	{

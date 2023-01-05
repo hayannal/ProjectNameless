@@ -2939,7 +2939,7 @@ public class PlayFabApiManager : MonoBehaviour
 		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "LevelUpSpell",
-			FunctionParameter = new { Id = (string)spellData.uniqueId, T = targetLevel, Cs = checkSum },
+			FunctionParameter = new { ItmId = (string)spellData.spellId, T = targetLevel, Cs = checkSum },
 			GeneratePlayStreamEvent = true,
 		}, (success) =>
 		{
@@ -2998,7 +2998,7 @@ public class PlayFabApiManager : MonoBehaviour
 		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "SpellPressLevelUp",
-			FunctionParameter = new { Id = (string)spellData.uniqueId, grade = spellData.cachedSkillTableData.grade, star = spellData.cachedSkillTableData.star, PvLv = prevSpellLevel, PvGo = prevGold, Lv = spellLevel, Go = gold, LvCnt = levelUpCount, Cs = checkSum },
+			FunctionParameter = new { ItmId = (string)spellData.spellId, grade = spellData.cachedSkillTableData.grade, star = spellData.cachedSkillTableData.star, PvLv = prevSpellLevel, PvGo = prevGold, Lv = spellLevel, Go = gold, LvCnt = levelUpCount, Cs = checkSum },
 			GeneratePlayStreamEvent = true,
 		}, (success) =>
 		{
@@ -3169,7 +3169,7 @@ public class PlayFabApiManager : MonoBehaviour
 		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "CharacterPressLevelUp",
-			FunctionParameter = new { Id = (string)characterData.uniqueId, grade = characterData.cachedActorTableData.grade, PvLv = prevCharacterLevel, PvGo = prevGold, Lv = characterLevel, Go = gold, LvCnt = levelUpCount, Cs = checkSum },
+			FunctionParameter = new { ItmId = (string)characterData.actorId, grade = characterData.cachedActorTableData.grade, PvLv = prevCharacterLevel, PvGo = prevGold, Lv = characterLevel, Go = gold, LvCnt = levelUpCount, Cs = checkSum },
 			GeneratePlayStreamEvent = true,
 		}, (success) =>
 		{
@@ -3196,7 +3196,7 @@ public class PlayFabApiManager : MonoBehaviour
 		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "CharacterTranscend",
-			FunctionParameter = new { Id = (string)characterData.uniqueId, grade = characterData.cachedActorTableData.grade, T = targetLevel, Pr = price, Cs = checkSum },
+			FunctionParameter = new { ItmId = (string)characterData.actorId, grade = characterData.cachedActorTableData.grade, T = targetLevel, Pr = price, Cs = checkSum },
 			GeneratePlayStreamEvent = true,
 		}, (success) =>
 		{
@@ -3377,7 +3377,7 @@ public class PlayFabApiManager : MonoBehaviour
 		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "HeartPet",
-			FunctionParameter = new { Id = (string)petData.uniqueId, T = targetHeart, Cs = checkSum },
+			FunctionParameter = new { ItmId = (string)petData.petId, T = targetHeart, Cs = checkSum },
 			GeneratePlayStreamEvent = true,
 		}, (success) =>
 		{
@@ -3408,7 +3408,7 @@ public class PlayFabApiManager : MonoBehaviour
 		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "PetMaxCount",
-			FunctionParameter = new { Id = (string)petData.uniqueId, star = petData.cachedPetTableData.star, T = targetLevel, Pr = price, Cs = checkSum },
+			FunctionParameter = new { ItmId = (string)petData.petId, star = petData.cachedPetTableData.star, T = targetLevel, Pr = price, Cs = checkSum },
 			GeneratePlayStreamEvent = true,
 		}, (success) =>
 		{

@@ -509,5 +509,55 @@ public class CharacterManager : MonoBehaviour
 		}
 		return listItemInstance;
 	}
+
+	public void OnRecvPurchaseItem(string rewardValue, int rewardCount)
+	{
+		ActorTableData actorTableData = null;
+		if (rewardValue.Substring(rewardValue.Length - 2) != "pp")
+			actorTableData = TableDataManager.instance.FindActorTableData(rewardValue);
+		else if (rewardValue.Substring(rewardValue.Length - 2) == "pp")
+		{
+			string itemId = rewardValue.Substring(0, rewardValue.Length - 2);
+			actorTableData = TableDataManager.instance.FindActorTableData(itemId);
+		}
+		if (actorTableData == null)
+			return;
+
+		CharacterData currentCharacterData = null;
+		for (int i = 0; i < _listCharacterData.Count; ++i)
+		{
+			if (_listCharacterData[i].actorId == rewardValue)
+			{
+				currentCharacterData = _listCharacterData[i];
+				break;
+			}
+		}
+
+		if (rewardValue.Substring(rewardValue.Length - 2) != "pp")
+		{
+			if (currentCharacterData != null)
+				currentCharacterData.SetCharacterCount(currentCharacterData.count + rewardCount);
+			else
+			{
+				CharacterData newCharacterData = new CharacterData();
+				newCharacterData.uniqueId = "unfixedUniqueId";
+				newCharacterData.actorId = rewardValue;
+				newCharacterData.Initialize(rewardCount, 0, null);
+				_listCharacterData.Add(newCharacterData);
+
+				// 없는 캐릭이 추가될땐 스탯부터 다 다시 계산해야한다.
+				OnChangedStatus();
+			}
+		}
+		else if (rewardValue.Substring(rewardValue.Length - 2) == "pp")
+		{
+			if (currentCharacterData != null)
+				currentCharacterData.SetPpCount(currentCharacterData.pp + rewardCount);
+			else
+			{
+				// 존재하지 않는 캐릭의 pp. 가능한가?
+			}
+		}
+	}
 	#endregion
 }

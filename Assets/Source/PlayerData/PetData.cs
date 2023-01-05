@@ -40,7 +40,7 @@ public class PetData
 	public void Initialize(int count, int heart, Dictionary<string, string> customData)
 	{
 		int step = 0;
-		if (customData.ContainsKey(KeyStep))
+		if (customData != null && customData.ContainsKey(KeyStep))
 		{
 			int intValue = 0;
 			if (int.TryParse(customData[KeyStep], out intValue))
