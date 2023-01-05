@@ -323,7 +323,7 @@ public class CurrencyData : MonoBehaviour
 		}
 	}
 
-	public void OnRecvProductRewardExtendConsume(ShopProductTableData shopProductTableData)
+	public void OnRecvProductRewardExtendGacha(ShopProductTableData shopProductTableData)
 	{
 		string rewardType = shopProductTableData.rewardType1;
 		string rewardValue = shopProductTableData.rewardValue1;
