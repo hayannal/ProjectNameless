@@ -457,7 +457,11 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 			return;
 		}
 
-		PlayFabApiManager.instance.RequestAnalysis(() =>
+		// 쌓아둔 게이지를 초로 환산해서 누적할 준비를 한다.
+		// 최초에 2분 30초 돌리자마자 쌓으면 150 쌓게될거다.
+		PrepareAnalysis();
+
+		PlayFabApiManager.instance.RequestAnalysis(_cachedSecond, _cachedResultGold, _cachedResultDia, _cachedResultEnergy, _listResultEventItemIdForPacket, () =>
 		{
 			GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.Analysis);
 			OnAnalysisResult();
@@ -478,6 +482,80 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 				AnalysisData.instance.CancelAnalysisNotification();
 		}
 	}
+
+
+	#region Prepare
+	ObscuredInt _cachedSecond = 0;
+	ObscuredInt _cachedResultGold = 0;
+	ObscuredInt _cachedResultDia = 0;
+	ObscuredInt _cachedResultEnergy = 0;
+	List<string> _listResultItemValue;
+	List<int> _listResultItemCount;
+	List<ObscuredString> _listResultEventItemIdForPacket;
+	public int cachedExpSecond { get { return _cachedSecond; } }
+	public int cachedResultGold { get { return _cachedResultGold; } }
+	public int cachedResultDia { get { return _cachedResultDia; } }
+	public int cachedResultEnergy { get { return _cachedResultEnergy; } }
+	public List<string> cachedResultItemValue { get { return _listResultItemValue; } }
+	public List<int> cachedResultItemCount { get { return _listResultItemCount; } }
+	public void PrepareAnalysis()
+	{
+		// UI 막혔을텐데 어떻게 호출한거지
+		if (AnalysisData.instance.analysisStarted == false)
+			return;
+		AnalysisTableData analysisTableData = TableDataManager.instance.FindAnalysisTableData(AnalysisData.instance.analysisLevel);
+		if (analysisTableData == null)
+			return;
+
+		ClearCachedInfo();
+
+		// ConsumeProcessor에 전달해야해서 클리어 목록에서 제외시켜둔다.
+		if (_listResultItemValue == null)
+			_listResultItemValue = new List<string>();
+		_listResultItemValue.Clear();
+		if (_listResultItemCount == null)
+			_listResultItemCount = new List<int>();
+		_listResultItemCount.Clear();
+
+		TimeSpan diffTime = ServerTime.UtcNow - AnalysisData.instance.analysisStartedTime;
+		int totalSeconds = Mathf.Min((int)diffTime.TotalSeconds, analysisTableData.maxTime);
+		_cachedSecond = totalSeconds;
+		Debug.LogFormat("Analysis Time = {0}", totalSeconds);
+
+		// 쌓아둔 초로 하나씩 체크해봐야한다.
+		// 제일 먼저 goldPerTime
+		// 시간당 골드로 적혀있으니 초로 변환해서 계산하면 된다.
+		float goldPerSec = analysisTableData.goldPerTime / 60.0f / 60.0f;
+		_cachedResultGold = (int)(goldPerSec * totalSeconds);
+		if (_cachedResultGold < 1)
+			_cachedResultGold = 1;
+
+		// 이렇게 계산된 second를 그냥 보내면 안되고 최고레벨 검사는 해놓고 보내야한다.
+		AnalysisTableData maxAnalysisTableData = TableDataManager.instance.FindAnalysisTableData(BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxAnalysisLevel"));
+		int maxAnalysisExp = maxAnalysisTableData.requiredAccumulatedTime;
+		if (AnalysisData.instance.analysisExp + _cachedSecond > maxAnalysisExp)
+			_cachedSecond = maxAnalysisExp - AnalysisData.instance.analysisExp;
+
+		// 가차처럼 컨슘 아이템 등록할 수 있다.
+		//_listResultItemValue.Add("Cash_sSpellGacha");
+		//_listResultItemCount.Add(1);
+		//_listResultEventItemIdForPacket.Add("Cash_sSpellGacha");
+
+		// 패킷 전달한 준비는 끝.
+	}
+
+	public void ClearCachedInfo()
+	{
+		_cachedSecond = 0;
+		_cachedResultGold = 0;
+		_cachedResultDia = 0;
+		_cachedResultEnergy = 0;
+		if (_listResultEventItemIdForPacket == null)
+			_listResultEventItemIdForPacket = new List<ObscuredString>();
+		_listResultEventItemIdForPacket.Clear();
+	}
+	#endregion
+
 
 	#region Exp Percent Gauge
 	public void RefreshExpPercent(float targetPercent, int levelUpCount)
@@ -593,23 +671,13 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 		};
 
 
-		// 보상 연출을 시작해야하는데 레벨업이 있을때와 없을때로 구분된다.
-		if (showLevelUp)
+		// 보상 연출을 시작해야하는데 레벨업이 있을때와 없을때로 구분했었다가 안하기로 한다.
+		// 풀스크린 메인창 하나로 간다.
+		UIInstanceManager.instance.ShowCanvasAsync("AnalysisResultCanvas", () =>
 		{
-			UIInstanceManager.instance.ShowCanvasAsync("AnalysisResultCanvas", () =>
-			{
-				AnalysisResultCanvas.instance.RefreshInfo(showLevelUp, _currentLevel, true);
-				action.Invoke();
-			});
-		}
-		else
-		{
-			// 이때는 심플 결과창을 띄운다. 평소에는 이걸 제일 많이 보게될거다.
-			UIInstanceManager.instance.ShowCanvasAsync("AnalysisSimpleResultCanvas", () =>
-			{
-				action.Invoke();
-			});
-		}
+			AnalysisResultCanvas.instance.RefreshInfo(showLevelUp, _currentLevel, true);
+			action.Invoke();
+		});
 	}
 	
 	// UI는 다 여기있으니 여기서 처리하는게 맞다.

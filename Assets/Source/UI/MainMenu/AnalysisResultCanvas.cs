@@ -9,11 +9,13 @@ public class AnalysisResultCanvas : MonoBehaviour
 {
 	public static AnalysisResultCanvas instance;
 
-	public RectTransform emptyRootRectTransform;
+	public RectTransform analysisRootRectTransform;
 	public RectTransform levelUpRootRectTransform;
 	public RectTransform goldDiaRootRectTransform;
 	public GameObject exitObject;
 
+	public Text expValueText;
+	public RectTransform expGroupRectTransform;
 	public Text levelValueText;
 	public DOTweenAnimation levelValueTweenAnimation;
 	public RectTransform atkGroupRectTransform;
@@ -33,13 +35,27 @@ public class AnalysisResultCanvas : MonoBehaviour
 	public RectTransform energyGroupRectTransform;
 	public Text energyValueText;
 
+	public GameObject contentItemPrefab;
+	public RectTransform contentRootRectTransform;
+
+	public class CustomItemContainer : CachedItemHave<RewardIcon>
+	{
+	}
+	CustomItemContainer _container = new CustomItemContainer();
+
 	void Awake()
 	{
 		instance = this;
 	}
 
+	void Start()
+	{
+		contentItemPrefab.SetActive(false);
+	}
+
 	void Update()
 	{
+		UpdateExpText();
 		UpdateLevelText();
 		UpdateGoldText();
 		UpdateDiaText();
@@ -62,12 +78,13 @@ public class AnalysisResultCanvas : MonoBehaviour
 			return;
 		}
 
-		// 캐릭터 결과창 영역이 빠지면서 그냥 항상 켜는게 나을거 같아서 수정해둔다.
-		emptyRootRectTransform.gameObject.SetActive(true);
-
 		// 나머지 처리는 항상 동일
+		analysisRootRectTransform.gameObject.SetActive(false);
 		levelUpRootRectTransform.gameObject.SetActive(false);
 		goldDiaRootRectTransform.gameObject.SetActive(false);
+		for (int i = 0; i < _listRewardIcon.Count; ++i)
+			_listRewardIcon[i].gameObject.SetActive(false);
+		_listRewardIcon.Clear();
 		exitObject.SetActive(false);
 
 		Timing.RunCoroutine(RewardProcess());
@@ -82,21 +99,26 @@ public class AnalysisResultCanvas : MonoBehaviour
 			return string.Format("{0}h", maxTimeMinute / 60);
 	}
 
+	int _addExp;
 	int _addLevel;
 	bool _goldBigSuccess;
 	int _addGold;
 	int _addDia;
 	int _addEnergy;
+	List<RewardIcon> _listRewardIcon = new List<RewardIcon>();
 	IEnumerator<float> RewardProcess()
 	{
 		// 0.1초 초기화 대기 후 시작
 		yield return Timing.WaitForSeconds(0.1f);
 
+		expValueText.text = "0s";
+		analysisRootRectTransform.gameObject.SetActive(true);
+		AnalysisTableData prevAnalysisTableData = TableDataManager.instance.FindAnalysisTableData(_prevAnalysisLevel);
+		AnalysisTableData analysisTableData = TableDataManager.instance.FindAnalysisTableData(AnalysisData.instance.analysisLevel);
 		if (_showLevelUp)
 		{
 			// 레벨업 하기 전 값으로 셋팅 후 Show
 			int prevMaxTime = 0;
-			AnalysisTableData prevAnalysisTableData = TableDataManager.instance.FindAnalysisTableData(_prevAnalysisLevel);
 			if (prevAnalysisTableData != null)
 			{
 				levelValueText.text = _prevAnalysisLevel.ToString();
@@ -106,11 +128,22 @@ public class AnalysisResultCanvas : MonoBehaviour
 			}
 			levelUpEffectTextObject.SetActive(false);
 			levelUpRootRectTransform.gameObject.SetActive(true);
-			AnalysisTableData analysisTableData = TableDataManager.instance.FindAnalysisTableData(AnalysisData.instance.analysisLevel);
 			atkGroupRectTransform.gameObject.SetActive(true);
 			timeGroupRectTransform.gameObject.SetActive(analysisTableData != null && prevMaxTime != analysisTableData.maxTime);
-			yield return Timing.WaitForSeconds(0.4f);
+		}
+		levelUpRootRectTransform.gameObject.SetActive(_showLevelUp);
+		yield return Timing.WaitForSeconds(0.1f);
 
+		// exp 연출을 제일 먼저 한다.
+		_addExp = ResearchInfoAnalysisCanvas.instance.cachedExpSecond;
+		_expChangeRemainTime = expChangeTime;
+		_expChangeSpeed = _addExp / _expChangeRemainTime;
+		_currentExp = 0.0f;
+		_updateExpText = true;
+		yield return Timing.WaitForSeconds(expChangeTime);
+
+		if (_showLevelUp)
+		{
 			// 숫자 변하는 
 			_addLevel = AnalysisData.instance.analysisLevel - _prevAnalysisLevel;
 			_levelChangeRemainTime = levelChangeTime;
@@ -142,13 +175,15 @@ public class AnalysisResultCanvas : MonoBehaviour
 			yield return Timing.WaitForSeconds(0.2f);
 
 			// 결과값들은 다 여기에 있다. 이 값 보고 판단해서 보여줄거 보여주면 된다.
-			int resultGold = AnalysisData.instance.cachedResultGold;
-			
+			int resultGold = ResearchInfoAnalysisCanvas.instance.cachedResultGold;
+			int resultDia = ResearchInfoAnalysisCanvas.instance.cachedResultDia;
+			int resultEnergy = ResearchInfoAnalysisCanvas.instance.cachedResultEnergy;
+
 			// SimpleResult에서 했던거처럼 값이 0보다 큰 것들만 보여주고 숫자가 증가하게 한다.
 			_goldBigSuccess = false;
 			_addGold = resultGold;
-			_addDia = 0;
-			_addEnergy = 0;
+			_addDia = resultDia;
+			_addEnergy = resultEnergy;
 			goldGroupRectTransform.gameObject.SetActive(_addGold > 0);
 			diaGroupRectTransform.gameObject.SetActive(_addDia > 0);
 			energyGroupRectTransform.gameObject.SetActive(_addEnergy > 0);
@@ -188,7 +223,18 @@ public class AnalysisResultCanvas : MonoBehaviour
 			if (_addGold > 0) _updateGoldText = true;
 			if (_addDia > 0) _updateDiaText = true;
 			if (_addEnergy > 0) _updateEnergyText = true;
-			yield return Timing.WaitForSeconds(0.6f);
+			yield return Timing.WaitForSeconds(0.2f);
+
+			// list
+			for (int i = 0; i < ResearchInfoAnalysisCanvas.instance.cachedResultItemValue.Count; ++i)
+			{
+				RewardIcon rewardIconItem = _container.GetCachedItem(contentItemPrefab, contentRootRectTransform);
+				rewardIconItem.RefreshReward("it", ResearchInfoAnalysisCanvas.instance.cachedResultItemValue[i], ResearchInfoAnalysisCanvas.instance.cachedResultItemCount[i]);
+				_listRewardIcon.Add(rewardIconItem);
+				yield return Timing.WaitForSeconds(0.1f);
+			}
+
+			yield return Timing.WaitForSeconds(0.4f);
 		}
 
 		yield return Timing.WaitForSeconds(0.5f);
@@ -197,20 +243,63 @@ public class AnalysisResultCanvas : MonoBehaviour
 
 		// 모든 표시가 끝나면 DropManager에 있는 정보를 강제로 초기화 시켜줘야한다.
 		// DropManager.instance.ClearLobbyDropInfo(); 대신 
-		AnalysisData.instance.ClearCachedInfo();
+		ResearchInfoAnalysisCanvas.instance.ClearCachedInfo();
 	}
 
 	public void OnClickExitButton()
 	{
-		emptyRootRectTransform.gameObject.SetActive(false);
+		analysisRootRectTransform.gameObject.SetActive(false);
 		levelUpRootRectTransform.gameObject.SetActive(false);
 		goldDiaRootRectTransform.gameObject.SetActive(false);
+		for (int i = 0; i < _listRewardIcon.Count; ++i)
+			_listRewardIcon[i].gameObject.SetActive(false);
+		_listRewardIcon.Clear();
 		exitObject.SetActive(false);
 		gameObject.SetActive(false);
+
+		if (ResearchInfoAnalysisCanvas.instance.cachedResultItemValue != null && ResearchInfoAnalysisCanvas.instance.cachedResultItemValue.Count > 0 &&
+			ResearchInfoAnalysisCanvas.instance.cachedResultItemValue.Count == ResearchInfoAnalysisCanvas.instance.cachedResultItemCount.Count)
+		{
+			ConsumeProductProcessor.instance.ConsumeGacha(ResearchInfoAnalysisCanvas.instance.cachedResultItemValue, ResearchInfoAnalysisCanvas.instance.cachedResultItemCount);
+		}
 	}
 
 
 	#region Gold Dia Energy Increase
+	const float expChangeTime = 0.6f;
+	float _expChangeRemainTime;
+	float _expChangeSpeed;
+	float _currentExp;
+	int _lastExp;
+	bool _updateExpText;
+	void UpdateExpText()
+	{
+		if (_updateExpText == false)
+			return;
+
+		_currentExp += _expChangeSpeed * Time.unscaledDeltaTime;
+		int currentExpInt = (int)_currentExp;
+		if (currentExpInt >= _addExp)
+		{
+			currentExpInt = _addExp;
+			_updateExpText = false;
+		}
+		if (currentExpInt != _lastExp)
+		{
+			_lastExp = currentExpInt;
+
+			int min = _lastExp / 60;
+			int hour = min / 60;
+			int day = hour / 24;
+			int sec = _lastExp % 60;
+			min = min % 60;
+			hour = hour % 60;
+			if (day > 0) expValueText.text = string.Format("{0}d {1}h {2}m {3}s", day, hour, min, sec);
+			else if (hour > 0) expValueText.text = string.Format("{0}h {1}m {2}s", hour, min, sec);
+			else if (min > 0) expValueText.text = string.Format("{0}m {1}s", min, sec);
+		}
+	}
+
 	const float levelChangeTime = 0.6f;
 	float _levelChangeRemainTime;
 	float _levelChangeSpeed;

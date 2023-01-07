@@ -225,48 +225,4 @@ public class AnalysisData : MonoBehaviour
 				MainCanvas.instance.RefreshAnalysisAlarmObject();
 		}
 	}
-
-
-	
-	ObscuredInt _cachedSecond = 0;
-	ObscuredInt _cachedResultGold = 0;
-	public int cachedExpSecond { get { return _cachedSecond; } }
-	public int cachedResultGold { get { return _cachedResultGold; } }
-	List<DropProcessor> _listCachedDropProcessor = new List<DropProcessor>();
-	public void PrepareAnalysis()
-	{
-		// UI 막혔을텐데 어떻게 호출한거지
-		if (analysisStarted == false)
-			return;
-		AnalysisTableData analysisTableData = TableDataManager.instance.FindAnalysisTableData(analysisLevel);
-		if (analysisTableData == null)
-			return;
-
-		TimeSpan diffTime = ServerTime.UtcNow - analysisStartedTime;
-		int totalSeconds = Mathf.Min((int)diffTime.TotalSeconds, analysisTableData.maxTime);
-		_cachedSecond = totalSeconds;
-		Debug.LogFormat("Analysis Time = {0}", totalSeconds);
-
-		// 쌓아둔 초로 하나씩 체크해봐야한다.
-		// 제일 먼저 goldPerTime
-		// 시간당 골드로 적혀있으니 초로 변환해서 계산하면 된다.
-		float goldPerSec = analysisTableData.goldPerTime / 60.0f / 60.0f;
-		_cachedResultGold = (int)(goldPerSec * totalSeconds);
-		if (_cachedResultGold < 1)
-			_cachedResultGold = 1;
-
-		// 이렇게 계산된 second를 그냥 보내면 안되고 최고레벨 검사는 해놓고 보내야한다.
-		AnalysisTableData maxAnalysisTableData = TableDataManager.instance.FindAnalysisTableData(BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxAnalysisLevel"));
-		int maxAnalysisExp = maxAnalysisTableData.requiredAccumulatedTime;
-		if (analysisExp + _cachedSecond > maxAnalysisExp)
-			_cachedSecond = maxAnalysisExp - analysisExp;
-
-		// 패킷 전달한 준비는 끝.
-	}
-	
-	public void ClearCachedInfo()
-	{
-		_cachedSecond = 0;
-		_cachedResultGold = 0;
-	}
 }

@@ -1634,27 +1634,22 @@ public class PlayFabApiManager : MonoBehaviour
 		});
 	}
 
-	public void RequestAnalysis(Action successCallback)
+	public void RequestAnalysis(int addExp, int resultGold, int resultDia, int resultEnergy, List<ObscuredString> listEventItemId, Action successCallback)
 	{
 		WaitingNetworkCanvas.Show(true);
 
-		// 쌓아둔 게이지를 초로 환산해서 누적할 준비를 한다.
-		// 최초에 2분 30초 돌리자마자 쌓으면 150 쌓게될거다.
-		AnalysisData.instance.PrepareAnalysis();
-
 		// 이 패킷 역시 Invasion 했던거처럼 다양하게 보낸다. 오리진 재화 등등
-		int addExp = AnalysisData.instance.cachedExpSecond;
 		int currentExp = AnalysisData.instance.analysisExp;
-		int resultGold = AnalysisData.instance.cachedResultGold;
 
 		string checkSum = "";
 		var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
-		checkSum = CheckSum(string.Format("{0}_{1}_{2}_{3}", addExp, currentExp, resultGold, "xzdliroa"));
-
+		checkSum = CheckSum(string.Format("{0}_{1}_{2}_{3}_{4}_{5}", addExp, currentExp, resultGold, resultDia, resultEnergy, "xzdliroa"));
+		string checkSum2 = "";
+		List<ItemGrantRequest> listItemGrantRequest = GenerateGrantRequestInfo(listEventItemId, ref checkSum2);
 		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "Analysis",
-			FunctionParameter = new { Xp = addExp, CurXp = currentExp, ReGo = resultGold, Cs = checkSum },
+			FunctionParameter = new { Xp = addExp, CurXp = currentExp, AddGo = resultGold, AddDi = resultDia, AddEn = resultEnergy, Cs = checkSum, Lst = listItemGrantRequest, LstCs = checkSum2 },
 			GeneratePlayStreamEvent = true,
 		}, (success) =>
 		{
@@ -1671,6 +1666,15 @@ public class PlayFabApiManager : MonoBehaviour
 
 				// 재화
 				CurrencyData.instance.gold += resultGold;
+				CurrencyData.instance.dia += resultDia;
+				CurrencyData.instance.OnRecvRefillEnergy(resultEnergy, true);
+
+				if (listEventItemId.Count > 0 && listItemGrantRequest.Count > 0)
+				{
+					// RequestGacha 처리했던거럼 똑같이 컨슘만 있을거라 이렇게 처리한다.
+					for (int i = 0; i < listEventItemId.Count; ++i)
+						CashShopData.instance.OnRecvConsumeItem(listEventItemId[i], 1);
+				}
 
 				// 시간을 셋팅해야 새 레벨에 맞는 CompleteTime으로 갱신이 제대로 된다.
 				// 성공시에만 date파싱을 한다.

@@ -10,6 +10,8 @@ public class AnalysisSimpleResultCanvas : MonoBehaviour
 
 	public RectTransform toastBackImageRectTransform;
 	public GameObject titleLineObject;
+	public RectTransform expGroupRectTransform;
+	public Text expValueText;
 	public RectTransform goldGroupRectTransform;
 	public Text goldValueText;
 	public GameObject goldBigSuccessObject;
@@ -19,24 +21,41 @@ public class AnalysisSimpleResultCanvas : MonoBehaviour
 	public Text energyValueText;
 	public GameObject exitObject;
 
+	public GameObject contentItemPrefab;
+	public RectTransform contentRootRectTransform;
+
+	public class CustomItemContainer : CachedItemHave<RewardIcon>
+	{
+	}
+	CustomItemContainer _container = new CustomItemContainer();
+
 	void Awake()
 	{
 		instance = this;
+	}
+
+	void Start()
+	{
+		contentItemPrefab.SetActive(false);
 	}
 
 	void OnEnable()
 	{
 		toastBackImageRectTransform.gameObject.SetActive(false);
 		titleLineObject.SetActive(false);
+		expGroupRectTransform.gameObject.SetActive(false);
 		goldGroupRectTransform.gameObject.SetActive(false);
 		diaGroupRectTransform.gameObject.SetActive(false);
 		energyGroupRectTransform.gameObject.SetActive(false);
-
+		for (int i = 0; i < _listRewardIcon.Count; ++i)
+			_listRewardIcon[i].gameObject.SetActive(false);
+		_listRewardIcon.Clear();
 		exitObject.SetActive(false);
 
 		Timing.RunCoroutine(RewardProcess());
 	}
 
+	List<RewardIcon> _listRewardIcon = new List<RewardIcon>();
 	IEnumerator<float> RewardProcess()
 	{
 		_processed = true;
@@ -48,7 +67,18 @@ public class AnalysisSimpleResultCanvas : MonoBehaviour
 
 		RefreshInfo();
 
-		yield return Timing.WaitForSeconds(0.5f);
+		yield return Timing.WaitForSeconds(0.2f);
+
+		// list
+		for (int i = 0; i < ResearchInfoAnalysisCanvas.instance.cachedResultItemValue.Count; ++i)
+		{
+			RewardIcon rewardIconItem = _container.GetCachedItem(contentItemPrefab, contentRootRectTransform);
+			rewardIconItem.RefreshReward("it", ResearchInfoAnalysisCanvas.instance.cachedResultItemValue[i], ResearchInfoAnalysisCanvas.instance.cachedResultItemCount[i]);
+			_listRewardIcon.Add(rewardIconItem);
+			yield return Timing.WaitForSeconds(0.1f);
+		}
+
+		yield return Timing.WaitForSeconds(0.3f);
 
 		exitObject.SetActive(true);
 
@@ -57,7 +87,7 @@ public class AnalysisSimpleResultCanvas : MonoBehaviour
 
 		// 모든 표시가 끝나면 DropManager에 있는 정보를 강제로 초기화 시켜줘야한다.
 		// DropManager.instance.ClearLobbyDropInfo(); 대신 
-		AnalysisData.instance.ClearCachedInfo();
+		ResearchInfoAnalysisCanvas.instance.ClearCachedInfo();
 	}
 
 	bool _processed = false;
@@ -73,36 +103,64 @@ public class AnalysisSimpleResultCanvas : MonoBehaviour
 	{
 		toastBackImageRectTransform.gameObject.SetActive(false);
 		titleLineObject.SetActive(false);
+		expGroupRectTransform.gameObject.SetActive(false);
 		goldGroupRectTransform.gameObject.SetActive(false);
 		diaGroupRectTransform.gameObject.SetActive(false);
 		energyGroupRectTransform.gameObject.SetActive(false);
+		for (int i = 0; i < _listRewardIcon.Count; ++i)
+			_listRewardIcon[i].gameObject.SetActive(false);
+		_listRewardIcon.Clear();
 		exitObject.SetActive(false);
+
 		gameObject.SetActive(false);
+
+		// 컨슘할게 있다면 창 닫을때 호출해준다.
+		if (ResearchInfoAnalysisCanvas.instance.cachedResultItemValue != null && ResearchInfoAnalysisCanvas.instance.cachedResultItemValue.Count > 0 &&
+			ResearchInfoAnalysisCanvas.instance.cachedResultItemValue.Count == ResearchInfoAnalysisCanvas.instance.cachedResultItemCount.Count)
+		{
+			ConsumeProductProcessor.instance.ConsumeGacha(ResearchInfoAnalysisCanvas.instance.cachedResultItemValue, ResearchInfoAnalysisCanvas.instance.cachedResultItemCount);
+		}
 	}
 
 	void Update()
 	{
+		UpdateExpText();
 		UpdateGoldText();
 		UpdateDiaText();
 		UpdateEnergyText();
 	}
 
 	bool _goldBigSuccess;
+	int _addExp;
 	int _addGold;
 	int _addDia;
 	int _addEnergy;
 	void RefreshInfo()
 	{
-		int resultGold = AnalysisData.instance.cachedResultGold;
+		int expSecond = ResearchInfoAnalysisCanvas.instance.cachedExpSecond;
+		int resultGold = ResearchInfoAnalysisCanvas.instance.cachedResultGold;
+		int resultDia = ResearchInfoAnalysisCanvas.instance.cachedResultDia;
+		int resultEnergy = ResearchInfoAnalysisCanvas.instance.cachedResultEnergy;
 
 		_goldBigSuccess = false;
+		_addExp = expSecond;
 		_addGold = resultGold;
-		_addDia = 0;
-		_addEnergy = 0;
+		_addDia = resultDia;
+		_addEnergy = resultEnergy;
 		titleLineObject.SetActive(true);
+		expGroupRectTransform.gameObject.SetActive(_addExp > 0);
 		goldGroupRectTransform.gameObject.SetActive(_addGold > 0);
 		diaGroupRectTransform.gameObject.SetActive(_addDia > 0);
 		energyGroupRectTransform.gameObject.SetActive(_addEnergy > 0);
+
+		if (_addExp > 0)
+		{
+			expValueText.text = "0s";
+			_expChangeRemainTime = expChangeTime;
+			_expChangeSpeed = _addExp / _expChangeRemainTime;
+			_currentExp = 0.0f;
+			_updateExpText = true;
+		}
 
 		if (_addGold > 0)
 		{
@@ -131,6 +189,40 @@ public class AnalysisSimpleResultCanvas : MonoBehaviour
 			_energyChangeSpeed = _addEnergy / _energyChangeRemainTime;
 			_currentEnergy = 0.0f;
 			_updateEnergyText = true;
+		}
+	}
+
+	const float expChangeTime = 0.6f;
+	float _expChangeRemainTime;
+	float _expChangeSpeed;
+	float _currentExp;
+	int _lastExp;
+	bool _updateExpText;
+	void UpdateExpText()
+	{
+		if (_updateExpText == false)
+			return;
+
+		_currentExp += _expChangeSpeed * Time.unscaledDeltaTime;
+		int currentExpInt = (int)_currentExp;
+		if (currentExpInt >= _addExp)
+		{
+			currentExpInt = _addExp;
+			_updateExpText = false;
+		}
+		if (currentExpInt != _lastExp)
+		{
+			_lastExp = currentExpInt;
+
+			int min = _lastExp / 60;
+			int hour = min / 60;
+			int day = hour / 24;
+			int sec = _lastExp % 60;
+			min = min % 60;
+			hour = hour % 60;
+			if (day > 0) expValueText.text = string.Format("{0}d {1}h {2}m {3}s", day, hour, min, sec);
+			else if (hour > 0) expValueText.text = string.Format("{0}h {1}m {2}s", hour, min, sec);
+			else if (min > 0) expValueText.text = string.Format("{0}m {1}s", min, sec);
 		}
 	}
 
