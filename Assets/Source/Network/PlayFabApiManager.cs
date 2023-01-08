@@ -1634,7 +1634,7 @@ public class PlayFabApiManager : MonoBehaviour
 		});
 	}
 
-	public void RequestAnalysis(int addExp, int resultGold, int resultDia, int resultEnergy, List<ObscuredString> listEventItemId, Action successCallback)
+	public void RequestAnalysis(int addExp, int useBoost, int resultGold, int resultDia, int resultEnergy, List<ObscuredString> listEventItemId, Action successCallback)
 	{
 		WaitingNetworkCanvas.Show(true);
 
@@ -1643,13 +1643,13 @@ public class PlayFabApiManager : MonoBehaviour
 
 		string checkSum = "";
 		var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
-		checkSum = CheckSum(string.Format("{0}_{1}_{2}_{3}_{4}_{5}", addExp, currentExp, resultGold, resultDia, resultEnergy, "xzdliroa"));
+		checkSum = CheckSum(string.Format("{0}_{1}_{2}_{3}_{4}_{5}_{6}", addExp, currentExp, useBoost, resultGold, resultDia, resultEnergy, "xzdliroa"));
 		string checkSum2 = "";
 		List<ItemGrantRequest> listItemGrantRequest = GenerateGrantRequestInfo(listEventItemId, ref checkSum2);
 		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "Analysis",
-			FunctionParameter = new { Xp = addExp, CurXp = currentExp, AddGo = resultGold, AddDi = resultDia, AddEn = resultEnergy, Cs = checkSum, Lst = listItemGrantRequest, LstCs = checkSum2 },
+			FunctionParameter = new { Xp = addExp, CurXp = currentExp, UseBoost = useBoost, AddGo = resultGold, AddDi = resultDia, AddEn = resultEnergy, Cs = checkSum, Lst = listItemGrantRequest, LstCs = checkSum2 },
 			GeneratePlayStreamEvent = true,
 		}, (success) =>
 		{
@@ -1663,6 +1663,9 @@ public class PlayFabApiManager : MonoBehaviour
 				// 레벨업이 있다면 먼저 레벨업을 적용시키고나서
 				AnalysisData.instance.AddExp(addExp);
 
+				// 부스트 삭제
+				if (useBoost > 0)
+					CashShopData.instance.ConsumeCount(CashShopData.eCashItemCountType.AnalysisBoost, useBoost);
 
 				// 재화
 				CurrencyData.instance.gold += resultGold;

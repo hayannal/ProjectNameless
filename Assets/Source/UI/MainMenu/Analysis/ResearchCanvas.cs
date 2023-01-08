@@ -26,8 +26,6 @@ public class ResearchCanvas : ResearchShowCanvasBase
 
 	void OnEnable()
 	{
-		if (_researchGroundObject != null)
-			_researchGroundObject.SetActive(true);
 		if (_menuObject != null)
 			_menuObject.SetActive(true);
 
@@ -38,12 +36,14 @@ public class ResearchCanvas : ResearchShowCanvasBase
 
 		SetInfoCameraMode(true);
 		MainCanvas.instance.OnEnterCharacterMenu(true);
+
+		if (_researchGroundObject != null)
+			_researchGroundObject.SetActive(true);
 	}
 
 	void OnDisable()
 	{
 		_menuObject.SetActive(false);
-		_researchGroundObject.SetActive(false);
 
 		if (StackCanvas.Pop(gameObject))
 			return;
@@ -57,6 +57,9 @@ public class ResearchCanvas : ResearchShowCanvasBase
 			return;
 		if (MainSceneBuilder.instance == null)
 			return;
+
+		if (_researchGroundObject != null)
+			_researchGroundObject.SetActive(false);
 
 		SetInfoCameraMode(false);
 		MainCanvas.instance.OnEnterCharacterMenu(false);

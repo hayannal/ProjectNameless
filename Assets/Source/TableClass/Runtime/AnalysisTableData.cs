@@ -25,12 +25,28 @@ public class AnalysisTableData
   public int maxTime { get { return _maxTime; } set { _maxTime = value; } }
   
   [SerializeField]
-  int _forceLeveling;
-  public int forceLeveling { get { return _forceLeveling; } set { _forceLeveling = value; } }
-  
-  [SerializeField]
   float _goldPerTime;
   public float goldPerTime { get { return _goldPerTime; } set { _goldPerTime = value; } }
+  
+  [SerializeField]
+  int _spellPeriod;
+  public int spellPeriod { get { return _spellPeriod; } set { _spellPeriod = value; } }
+  
+  [SerializeField]
+  int _companionPeriod;
+  public int companionPeriod { get { return _companionPeriod; } set { _companionPeriod = value; } }
+  
+  [SerializeField]
+  int _equipPeriod;
+  public int equipPeriod { get { return _equipPeriod; } set { _equipPeriod = value; } }
+  
+  [SerializeField]
+  int _gemPeriod;
+  public int gemPeriod { get { return _gemPeriod; } set { _gemPeriod = value; } }
+  
+  [SerializeField]
+  int _energyPeriod;
+  public int energyPeriod { get { return _energyPeriod; } set { _energyPeriod = value; } }
   
   [SerializeField]
   int _accumulatedAtk;

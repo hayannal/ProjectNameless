@@ -47,6 +47,8 @@ public class TableDataManager : MonoBehaviour
 	public EventTypeTable eventTypeTable;
 	public EventRewardTable eventRewardTable;
 	public AnalysisTable analysisTable;
+	public AnalysisDropTable analysisDropTable;
+	public AnalysisBoostTable analysisBoostTable;
 
 	public GuideQuestTable guideQuestTable;
 	public SummonTypeTable summonTypeTable;
@@ -445,6 +447,34 @@ public class TableDataManager : MonoBehaviour
 		{
 			if (analysisTable.dataArray[i].level == level)
 				return analysisTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public AnalysisDropTableData FindAnalysisDropTableData(string id)
+	{
+		for (int i = 0; i < analysisDropTable.dataArray.Length; ++i)
+		{
+			if (analysisDropTable.dataArray[i].id == id)
+				return analysisDropTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public AnalysisBoostTableData FindAnalysisBoostTableDataByIndex(int index)
+	{
+		if (index < analysisBoostTable.dataArray.Length)
+			return analysisBoostTable.dataArray[index];
+
+		return null;
+	}
+
+	public AnalysisBoostTableData FindAnalysisBoostTableDataByShopProductId(string shopProductId)
+	{
+		for (int i = 0; i < analysisBoostTable.dataArray.Length; ++i)
+		{
+			if (analysisBoostTable.dataArray[i].shopProductId == shopProductId)
+				return analysisBoostTable.dataArray[i];
 		}
 		return null;
 	}

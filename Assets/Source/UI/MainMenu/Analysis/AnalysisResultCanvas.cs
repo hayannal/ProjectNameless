@@ -16,6 +16,10 @@ public class AnalysisResultCanvas : MonoBehaviour
 
 	public Text expValueText;
 	public RectTransform expGroupRectTransform;
+	public GameObject expBoostedObject;
+	public Text boostValueText;
+	public RectTransform boostRootRectTransform;
+
 	public Text levelValueText;
 	public DOTweenAnimation levelValueTweenAnimation;
 	public RectTransform atkGroupRectTransform;
@@ -56,6 +60,7 @@ public class AnalysisResultCanvas : MonoBehaviour
 	void Update()
 	{
 		UpdateExpText();
+		UpdateBoostText();
 		UpdateLevelText();
 		UpdateGoldText();
 		UpdateDiaText();
@@ -63,23 +68,16 @@ public class AnalysisResultCanvas : MonoBehaviour
 	}
 
 	bool _showLevelUp = false;
-	bool _showAnalysisResult = false;
 	int _prevAnalysisLevel;
-	public void RefreshInfo(bool showLevelUp, int prevLevel, bool showAnalysisResult)
+	public void RefreshInfo(bool showLevelUp, int prevLevel)
 	{
 		_showLevelUp = showLevelUp;
-		_showAnalysisResult = showAnalysisResult;
 		_prevAnalysisLevel = prevLevel;
-
-		// 둘다 없는데 왜 호출한거지
-		if (showLevelUp == false && showAnalysisResult == false)
-		{
-			gameObject.SetActive(false);
-			return;
-		}
 
 		// 나머지 처리는 항상 동일
 		analysisRootRectTransform.gameObject.SetActive(false);
+		expBoostedObject.SetActive(false);
+		boostRootRectTransform.gameObject.SetActive(false);
 		levelUpRootRectTransform.gameObject.SetActive(false);
 		goldDiaRootRectTransform.gameObject.SetActive(false);
 		for (int i = 0; i < _listRewardIcon.Count; ++i)
@@ -142,6 +140,34 @@ public class AnalysisResultCanvas : MonoBehaviour
 		_updateExpText = true;
 		yield return Timing.WaitForSeconds(expChangeTime);
 
+		// 경험치 부스터 영역은 항상 나온다.
+		int remainBoost = CashShopData.instance.GetCashItemCount(CashShopData.eCashItemCountType.AnalysisBoost);
+		remainBoost += ResearchInfoAnalysisCanvas.instance.cachedBoostUses;
+		boostValueText.text = GetTimeString(remainBoost);
+		boostValueText.color = (remainBoost == 0) ? new Color(0.8f, 0.0f, 0.0f) : new Color(0.0f, 0.895f, 0.895f);
+		boostRootRectTransform.gameObject.SetActive(true);
+		yield return Timing.WaitForSeconds(0.3f);
+
+		// 적용해야할 부스터가 있다면 처리를 하고 없으면 바로 다음으로 넘어간다.
+		if (ResearchInfoAnalysisCanvas.instance.cachedBoostUses > 0)
+		{
+			// 부스트 표시
+			expBoostedObject.SetActive(true);
+			yield return Timing.WaitForSeconds(0.6f);
+
+			// 이후 
+			_addExp = ResearchInfoAnalysisCanvas.instance.cachedExpSecondBoosted;
+			_expChangeRemainTime = expChangeTime;
+			_expChangeSpeed = (_addExp - _currentExp) / _expChangeRemainTime;
+			_updateExpText = true;
+
+			_targetBoost = CashShopData.instance.GetCashItemCount(CashShopData.eCashItemCountType.AnalysisBoost);
+			_boostChangeSpeed = ResearchInfoAnalysisCanvas.instance.cachedBoostUses / _expChangeRemainTime;
+			_currentBoost = remainBoost;
+			_updateBoostText = true;
+			yield return Timing.WaitForSeconds(expChangeTime);
+		}
+
 		if (_showLevelUp)
 		{
 			// 숫자 변하는 
@@ -169,75 +195,71 @@ public class AnalysisResultCanvas : MonoBehaviour
 
 			levelUpEffectTextObject.SetActive(true);
 		}
-		
-		if (_showAnalysisResult)
+
+		// 재화쪽은 언제나 나온다.
+		yield return Timing.WaitForSeconds(0.2f);
+
+		// 결과값들은 다 여기에 있다. 이 값 보고 판단해서 보여줄거 보여주면 된다.
+		int resultGold = ResearchInfoAnalysisCanvas.instance.cachedResultGold;
+		int resultDia = ResearchInfoAnalysisCanvas.instance.cachedResultDia;
+		int resultEnergy = ResearchInfoAnalysisCanvas.instance.cachedResultEnergy;
+
+		// SimpleResult에서 했던거처럼 값이 0보다 큰 것들만 보여주고 숫자가 증가하게 한다.
+		_goldBigSuccess = false;
+		_addGold = resultGold;
+		_addDia = resultDia;
+		_addEnergy = resultEnergy;
+		goldGroupRectTransform.gameObject.SetActive(_addGold > 0);
+		diaGroupRectTransform.gameObject.SetActive(_addDia > 0);
+		energyGroupRectTransform.gameObject.SetActive(_addEnergy > 0);
+
+		if (_addGold > 0)
 		{
-			yield return Timing.WaitForSeconds(0.2f);
+			goldValueText.text = "0";
+			_goldChangeRemainTime = goldChangeTime;
+			_goldChangeSpeed = _addGold / _goldChangeRemainTime;
+			_currentGold = 0.0f;
 
-			// 결과값들은 다 여기에 있다. 이 값 보고 판단해서 보여줄거 보여주면 된다.
-			int resultGold = ResearchInfoAnalysisCanvas.instance.cachedResultGold;
-			int resultDia = ResearchInfoAnalysisCanvas.instance.cachedResultDia;
-			int resultEnergy = ResearchInfoAnalysisCanvas.instance.cachedResultEnergy;
-
-			// SimpleResult에서 했던거처럼 값이 0보다 큰 것들만 보여주고 숫자가 증가하게 한다.
-			_goldBigSuccess = false;
-			_addGold = resultGold;
-			_addDia = resultDia;
-			_addEnergy = resultEnergy;
-			goldGroupRectTransform.gameObject.SetActive(_addGold > 0);
-			diaGroupRectTransform.gameObject.SetActive(_addDia > 0);
-			energyGroupRectTransform.gameObject.SetActive(_addEnergy > 0);
-
-			if (_addGold > 0)
-			{
-				goldValueText.text = "0";
-				_goldChangeRemainTime = goldChangeTime;
-				_goldChangeSpeed = _addGold / _goldChangeRemainTime;
-				_currentGold = 0.0f;
-
-				goldBigSuccessObject.SetActive(false);
-			}
-
-			if (_addDia > 0)
-			{
-				diaValueText.text = "0";
-				_diaChangeRemainTime = diaChangeTime;
-				_diaChangeSpeed = _addDia / _diaChangeRemainTime;
-				_currentDia = 0.0f;
-			}
-
-			if (_addEnergy > 0)
-			{
-				energyValueText.text = "0";
-				_energyChangeRemainTime = energyChangeTime;
-				_energyChangeSpeed = _addEnergy / _energyChangeRemainTime;
-				_currentEnergy = 0.0f;
-			}
-
-			goldDiaRootRectTransform.localScale = Vector3.zero;
-			goldDiaRootRectTransform.gameObject.SetActive(true);
-			yield return Timing.WaitForOneFrame;
-			goldGroupTweenAnimation.DORestart();
-			yield return Timing.WaitForSeconds(0.4f);
-
-			if (_addGold > 0) _updateGoldText = true;
-			if (_addDia > 0) _updateDiaText = true;
-			if (_addEnergy > 0) _updateEnergyText = true;
-			yield return Timing.WaitForSeconds(0.2f);
-
-			// list
-			for (int i = 0; i < ResearchInfoAnalysisCanvas.instance.cachedResultItemValue.Count; ++i)
-			{
-				RewardIcon rewardIconItem = _container.GetCachedItem(contentItemPrefab, contentRootRectTransform);
-				rewardIconItem.RefreshReward("it", ResearchInfoAnalysisCanvas.instance.cachedResultItemValue[i], ResearchInfoAnalysisCanvas.instance.cachedResultItemCount[i]);
-				_listRewardIcon.Add(rewardIconItem);
-				yield return Timing.WaitForSeconds(0.1f);
-			}
-
-			yield return Timing.WaitForSeconds(0.4f);
+			goldBigSuccessObject.SetActive(false);
 		}
 
-		yield return Timing.WaitForSeconds(0.5f);
+		if (_addDia > 0)
+		{
+			diaValueText.text = "0";
+			_diaChangeRemainTime = diaChangeTime;
+			_diaChangeSpeed = _addDia / _diaChangeRemainTime;
+			_currentDia = 0.0f;
+		}
+
+		if (_addEnergy > 0)
+		{
+			energyValueText.text = "0";
+			_energyChangeRemainTime = energyChangeTime;
+			_energyChangeSpeed = _addEnergy / _energyChangeRemainTime;
+			_currentEnergy = 0.0f;
+		}
+
+		goldDiaRootRectTransform.localScale = Vector3.zero;
+		goldDiaRootRectTransform.gameObject.SetActive(true);
+		yield return Timing.WaitForOneFrame;
+		goldGroupTweenAnimation.DORestart();
+		yield return Timing.WaitForSeconds(0.4f);
+
+		if (_addGold > 0) _updateGoldText = true;
+		if (_addDia > 0) _updateDiaText = true;
+		if (_addEnergy > 0) _updateEnergyText = true;
+		yield return Timing.WaitForSeconds(0.2f);
+
+		// list
+		for (int i = 0; i < ResearchInfoAnalysisCanvas.instance.cachedResultItemValue.Count; ++i)
+		{
+			RewardIcon rewardIconItem = _container.GetCachedItem(contentItemPrefab, contentRootRectTransform);
+			rewardIconItem.RefreshReward("it", ResearchInfoAnalysisCanvas.instance.cachedResultItemValue[i], ResearchInfoAnalysisCanvas.instance.cachedResultItemCount[i]);
+			_listRewardIcon.Add(rewardIconItem);
+			yield return Timing.WaitForSeconds(0.1f);
+		}
+
+		yield return Timing.WaitForSeconds(0.8f);
 
 		exitObject.SetActive(true);
 
@@ -249,6 +271,7 @@ public class AnalysisResultCanvas : MonoBehaviour
 	public void OnClickExitButton()
 	{
 		analysisRootRectTransform.gameObject.SetActive(false);
+		boostRootRectTransform.gameObject.SetActive(false);
 		levelUpRootRectTransform.gameObject.SetActive(false);
 		goldDiaRootRectTransform.gameObject.SetActive(false);
 		for (int i = 0; i < _listRewardIcon.Count; ++i)
@@ -257,6 +280,7 @@ public class AnalysisResultCanvas : MonoBehaviour
 		exitObject.SetActive(false);
 		gameObject.SetActive(false);
 
+		ResearchInfoAnalysisCanvas.instance.RefreshBoostInfo();
 		if (ResearchInfoAnalysisCanvas.instance.cachedResultItemValue != null && ResearchInfoAnalysisCanvas.instance.cachedResultItemValue.Count > 0 &&
 			ResearchInfoAnalysisCanvas.instance.cachedResultItemValue.Count == ResearchInfoAnalysisCanvas.instance.cachedResultItemCount.Count)
 		{
@@ -287,17 +311,58 @@ public class AnalysisResultCanvas : MonoBehaviour
 		if (currentExpInt != _lastExp)
 		{
 			_lastExp = currentExpInt;
-
-			int min = _lastExp / 60;
-			int hour = min / 60;
-			int day = hour / 24;
-			int sec = _lastExp % 60;
-			min = min % 60;
-			hour = hour % 60;
-			if (day > 0) expValueText.text = string.Format("{0}d {1}h {2}m {3}s", day, hour, min, sec);
-			else if (hour > 0) expValueText.text = string.Format("{0}h {1}m {2}s", hour, min, sec);
-			else if (min > 0) expValueText.text = string.Format("{0}m {1}s", min, sec);
+			expValueText.text = GetTimeString(_lastExp);
 		}
+	}
+
+	int _targetBoost;
+	float _boostChangeSpeed;
+	float _currentBoost;
+	int _lastBoost;
+	bool _updateBoostText;
+	void UpdateBoostText()
+	{
+		if (_updateBoostText == false)
+			return;
+
+		_currentBoost -= _boostChangeSpeed * Time.unscaledDeltaTime;
+		int currentBoostInt = (int)_currentBoost;
+		if (currentBoostInt <= _targetBoost)
+		{
+			currentBoostInt = _targetBoost;
+			_updateBoostText = false;
+		}
+		if (currentBoostInt != _lastBoost)
+		{
+			_lastBoost = currentBoostInt;
+			boostValueText.text = GetTimeString(_lastBoost);
+			boostValueText.color = (_lastBoost == 0) ? new Color(0.8f, 0.0f, 0.0f) : new Color(0.0f, 0.895f, 0.895f);
+		}
+	}
+
+	public static string GetTimeString(int remainTime, bool shopItem = false)
+	{
+		string result = "";
+		int min = remainTime / 60;
+		int hour = min / 60;
+		int day = hour / 24;
+		int sec = remainTime % 60;
+		min = min % 60;
+		hour = hour % 24;
+
+		if (shopItem)
+		{
+			if (day > 0) result = string.Format("{0}d", day);
+			if (hour > 0) result = string.Format("{0} {1}h", result, hour);
+			if (min > 0) result = string.Format("{0} {1}m", result, min);
+			if (sec > 0) result = string.Format("{0} {1}m", result, sec);
+			return result;
+		}
+
+		if (day > 0) result = string.Format("{0}d {1}h {2}m {3}s", day, hour, min, sec);
+		else if (hour > 0) result = string.Format("{0}h {1}m {2}s", hour, min, sec);
+		else result = string.Format("{0}m {1}s", min, sec);
+		return result;
 	}
 
 	const float levelChangeTime = 0.6f;

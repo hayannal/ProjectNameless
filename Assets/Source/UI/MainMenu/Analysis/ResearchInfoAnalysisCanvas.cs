@@ -13,6 +13,15 @@ using MEC;
 
 public class ResearchInfoAnalysisCanvas : MonoBehaviour
 {
+	enum eAnalysisDropType
+	{
+		Spell = 1,
+		Companion = 2,
+		Equip = 3,
+		Gem = 4,
+		Energy = 5,
+	}
+
 	public static ResearchInfoAnalysisCanvas instance;
 
 	public Transform analysisTextTransform;
@@ -28,6 +37,9 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 	public Image expGaugeEndPointImage;
 
 	public Text atkText;
+
+	public Transform expBoostTextTransform;
+	public Text boostRemainTimeText;
 
 	public GameObject switchGroupObject;
 	public SwitchAnim alarmSwitch;
@@ -122,12 +134,13 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 
 	int _currentLevel;
 	float _currentExpPercent;
-	public void RefreshInfo()
+	void RefreshInfo()
 	{
 		analysisText.text = UIString.instance.GetString("AnalysisUI_Analysis");
 
 		RefreshAlarm();
 		RefreshLevelInfo();
+		RefreshBoostInfo();
 	}
 
 	bool _onCompleteAlarmState = false;
@@ -267,6 +280,21 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 		centerGaugeSlider.value = processRatio;
 		percentText.text = string.Format("{0:0.00}%", processRatio * 100.0f);
 		centerGaugeFillImage.color = (processRatio >= 1.0f) ? new Color(1.0f, 1.0f, 0.0f, centerGaugeFillImage.color.a) : new Color(1.0f, 1.0f, 1.0f, centerGaugeFillImage.color.a);
+	}
+
+	public void RefreshBoostInfo()
+	{
+		int remainBoost = CashShopData.instance.GetCashItemCount(CashShopData.eCashItemCountType.AnalysisBoost);
+		if (remainBoost == 0)
+		{
+			boostRemainTimeText.text = string.Format("0h 0m 0s");
+			boostRemainTimeText.color = Color.gray;
+		}
+		else
+		{
+			boostRemainTimeText.text = AnalysisResultCanvas.GetTimeString(remainBoost);
+			boostRemainTimeText.color = new Color(0.0f, 1.0f, 1.0f);
+		}
 	}
 
 	string _progressOngoingString = "";
@@ -439,6 +467,16 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 		UIInstanceManager.instance.ShowCanvasAsync("AnalysisLevelUpCanvas", null);
 	}
 
+	public void OnClickBoostDetailButton()
+	{
+		TooltipCanvas.Show(true, TooltipCanvas.eDirection.Bottom, UIString.instance.GetString("AnalysisUI_ExpMore"), 250, expBoostTextTransform, new Vector2(0.0f, -35.0f));
+	}
+
+	public void OnClickBuyBoostButton()
+	{
+		UIInstanceManager.instance.ShowCanvasAsync("AnalysisBoostCanvas", null);
+	}
+
 	public void OnClickRemainTimeButton()
 	{
 		TooltipCanvas.Show(true, TooltipCanvas.eDirection.Bottom, UIString.instance.GetString("AnalysisUI_LeftTimeMore"), 250, remainTimeText.transform, new Vector2(15.0f, -35.0f));
@@ -461,7 +499,17 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 		// 최초에 2분 30초 돌리자마자 쌓으면 150 쌓게될거다.
 		PrepareAnalysis();
 
-		PlayFabApiManager.instance.RequestAnalysis(_cachedSecond, _cachedResultGold, _cachedResultDia, _cachedResultEnergy, _listResultEventItemIdForPacket, () =>
+		#region Max Exp
+		// 계산된 second를 그냥 보내면 안되고 최고레벨 검사는 해놓고 보내야한다.
+		int packetSecond = _cachedSecond;
+		if (_cachedBoostUses > 0 && _cachedSecondBoosted > packetSecond)
+			packetSecond = _cachedSecondBoosted;
+		AnalysisTableData maxAnalysisTableData = TableDataManager.instance.FindAnalysisTableData(BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxAnalysisLevel"));
+		int maxAnalysisExp = maxAnalysisTableData.requiredAccumulatedTime;
+		if (AnalysisData.instance.analysisExp + packetSecond > maxAnalysisExp)
+			packetSecond = maxAnalysisExp - AnalysisData.instance.analysisExp;
+		#endregion
+		PlayFabApiManager.instance.RequestAnalysis(packetSecond, _cachedBoostUses, _cachedResultGold, _cachedResultDia, _cachedResultEnergy, _listResultEventItemIdForPacket, () =>
 		{
 			GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.Analysis);
 			OnAnalysisResult();
@@ -489,6 +537,8 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 	ObscuredInt _cachedResultGold = 0;
 	ObscuredInt _cachedResultDia = 0;
 	ObscuredInt _cachedResultEnergy = 0;
+	ObscuredInt _cachedBoostUses = 0;
+	ObscuredInt _cachedSecondBoosted = 0;
 	List<string> _listResultItemValue;
 	List<int> _listResultItemCount;
 	List<ObscuredString> _listResultEventItemIdForPacket;
@@ -496,6 +546,8 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 	public int cachedResultGold { get { return _cachedResultGold; } }
 	public int cachedResultDia { get { return _cachedResultDia; } }
 	public int cachedResultEnergy { get { return _cachedResultEnergy; } }
+	public int cachedBoostUses { get { return _cachedBoostUses; } }
+	public int cachedExpSecondBoosted { get { return _cachedSecondBoosted; } }
 	public List<string> cachedResultItemValue { get { return _listResultItemValue; } }
 	public List<int> cachedResultItemCount { get { return _listResultItemCount; } }
 	public void PrepareAnalysis()
@@ -522,6 +574,21 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 		_cachedSecond = totalSeconds;
 		Debug.LogFormat("Analysis Time = {0}", totalSeconds);
 
+		// 부스트 적용 여부
+		if (CashShopData.instance.GetCashItemCount(CashShopData.eCashItemCountType.AnalysisBoost) > 0)
+		{
+			int appliedAmount = CashShopData.instance.GetCashItemCount(CashShopData.eCashItemCountType.AnalysisBoost);
+			if (appliedAmount > totalSeconds)
+				appliedAmount = totalSeconds;
+
+			// 적용할 양을 캐싱하고 보상을 늘려놔야한다.
+			_cachedBoostUses = appliedAmount;
+
+			// 2를 적으면 두배로 받는거고 3을 적으면 3배가 되는게 맞으니 
+			totalSeconds = totalSeconds + (_cachedBoostUses * (BattleInstanceManager.instance.GetCachedGlobalConstantInt("AnalysisBoostRate") - 1));
+			_cachedSecondBoosted = totalSeconds;
+		}
+
 		// 쌓아둔 초로 하나씩 체크해봐야한다.
 		// 제일 먼저 goldPerTime
 		// 시간당 골드로 적혀있으니 초로 변환해서 계산하면 된다.
@@ -530,16 +597,134 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 		if (_cachedResultGold < 1)
 			_cachedResultGold = 1;
 
-		// 이렇게 계산된 second를 그냥 보내면 안되고 최고레벨 검사는 해놓고 보내야한다.
-		AnalysisTableData maxAnalysisTableData = TableDataManager.instance.FindAnalysisTableData(BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxAnalysisLevel"));
-		int maxAnalysisExp = maxAnalysisTableData.requiredAccumulatedTime;
-		if (AnalysisData.instance.analysisExp + _cachedSecond > maxAnalysisExp)
-			_cachedSecond = maxAnalysisExp - AnalysisData.instance.analysisExp;
+		#region Period
+		// period 가 있는 것들은 조금 다르게 처리한다.
+		// 쌓아둔 초를 가지고 몇번이나 시도할 수 있는지 판단하면 된다.
+		// 이 값이 1보다 크다면 그 횟수만큼 여러번 굴릴 수 있다는거고 1보다 작으면 확률로 굴리게 되는거다.
+		float spellRate = (float)totalSeconds / analysisTableData.spellPeriod;
+		int spellDropCount = (int)spellRate;
+		float spellDropRate = spellRate - spellDropCount;
+		if (spellDropRate > 0.0f)
+		{
+			if (UnityEngine.Random.value <= spellDropRate)
+			{
+				// 확률 검사를 통과하면 dropCount를 1회 올린다.
+				++spellDropCount;
+			}
+		}
+		int key = (int)eAnalysisDropType.Spell;
+		AnalysisDropTableData analysisDropTableData = TableDataManager.instance.FindAnalysisDropTableData(key.ToString());
+		if (analysisDropTableData != null)
+		{
+			for (int i = 0; i < spellDropCount; ++i)
+			{
+				if (UnityEngine.Random.value > analysisDropTableData.probability)
+					continue;
 
-		// 가차처럼 컨슘 아이템 등록할 수 있다.
-		//_listResultItemValue.Add("Cash_sSpellGacha");
-		//_listResultItemCount.Add(1);
-		//_listResultEventItemIdForPacket.Add("Cash_sSpellGacha");
+				int count = UnityEngine.Random.Range(analysisDropTableData.minValue, analysisDropTableData.maxValue);
+				_listResultItemValue.Add("Cash_sSpellGacha");
+				_listResultItemCount.Add(count);
+				for (int j = 0; j < count; ++j)
+					_listResultEventItemIdForPacket.Add("Cash_sSpellGacha");
+			}
+		}
+
+		float companionRate = (float)totalSeconds / analysisTableData.companionPeriod;
+		int companionDropCount = (int)companionRate;
+		float companionDropRate = companionRate - companionDropCount;
+		if (companionDropRate > 0.0f)
+		{
+			if (UnityEngine.Random.value <= companionDropRate)
+				++companionDropCount;
+		}
+		key = (int)eAnalysisDropType.Companion;
+		analysisDropTableData = TableDataManager.instance.FindAnalysisDropTableData(key.ToString());
+		if (analysisDropTableData != null)
+		{
+			for (int i = 0; i < companionDropCount; ++i)
+			{
+				if (UnityEngine.Random.value > analysisDropTableData.probability)
+					continue;
+
+				int count = UnityEngine.Random.Range(analysisDropTableData.minValue, analysisDropTableData.maxValue);
+				_listResultItemValue.Add("Cash_sCharacterGacha");
+				_listResultItemCount.Add(count);
+				for (int j = 0; j < count; ++j)
+					_listResultEventItemIdForPacket.Add("Cash_sCharacterGacha");
+			}
+		}
+
+		float equipRate = (float)totalSeconds / analysisTableData.equipPeriod;
+		int equipDropCount = (int)equipRate;
+		float equipDropRate = equipRate - equipDropCount;
+		if (equipDropRate > 0.0f)
+		{
+			if (UnityEngine.Random.value <= equipDropRate)
+				++equipDropCount;
+		}
+		key = (int)eAnalysisDropType.Equip;
+		analysisDropTableData = TableDataManager.instance.FindAnalysisDropTableData(key.ToString());
+		if (analysisDropTableData != null)
+		{
+			for (int i = 0; i < equipDropCount; ++i)
+			{
+				if (UnityEngine.Random.value > analysisDropTableData.probability)
+					continue;
+
+				int count = UnityEngine.Random.Range(analysisDropTableData.minValue, analysisDropTableData.maxValue);
+				_listResultItemValue.Add("Cash_sEquipGacha");
+				_listResultItemCount.Add(count);
+				for (int j = 0; j < count; ++j)
+					_listResultEventItemIdForPacket.Add("Cash_sEquipGacha");
+			}
+		}
+
+		// 다이아랑 에너지도 비슷한 방법으로 해본다.
+		float diaRate = (float)totalSeconds / analysisTableData.gemPeriod;
+		int diaDropCount = (int)diaRate;
+		float diaDropRate = diaRate - diaDropCount;
+		if (diaDropRate > 0.0f)
+		{
+			if (UnityEngine.Random.value <= diaDropRate)
+				++diaDropCount;
+		}
+		key = (int)eAnalysisDropType.Gem;
+		analysisDropTableData = TableDataManager.instance.FindAnalysisDropTableData(key.ToString());
+		if (analysisDropTableData != null)
+		{
+			for (int i = 0; i < diaDropCount; ++i)
+			{
+				if (UnityEngine.Random.value > analysisDropTableData.probability)
+					continue;
+
+				int count = UnityEngine.Random.Range(analysisDropTableData.minValue, analysisDropTableData.maxValue);
+				_cachedResultDia += count;
+			}
+		}
+
+		// 다음은 에너지인데 에너지 역시 드랍없이 직접 계산하는 형태다.
+		float energyRate = (float)totalSeconds / analysisTableData.energyPeriod;
+		int energyDropCount = (int)energyRate;
+		float energyDropRate = energyRate - energyDropCount;
+		if (energyDropRate > 0.0f)
+		{
+			if (UnityEngine.Random.value <= energyDropRate)
+				++energyDropCount;
+		}
+		key = (int)eAnalysisDropType.Energy;
+		analysisDropTableData = TableDataManager.instance.FindAnalysisDropTableData(key.ToString());
+		if (analysisDropTableData != null)
+		{
+			for (int i = 0; i < energyDropCount; ++i)
+			{
+				if (UnityEngine.Random.value > analysisDropTableData.probability)
+					continue;
+
+				int count = UnityEngine.Random.Range(analysisDropTableData.minValue, analysisDropTableData.maxValue);
+				_cachedResultEnergy += count;
+			}
+		}
+		#endregion
 
 		// 패킷 전달한 준비는 끝.
 	}
@@ -550,6 +735,7 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 		_cachedResultGold = 0;
 		_cachedResultDia = 0;
 		_cachedResultEnergy = 0;
+		_cachedBoostUses = 0;
 		if (_listResultEventItemIdForPacket == null)
 			_listResultEventItemIdForPacket = new List<ObscuredString>();
 		_listResultEventItemIdForPacket.Clear();
@@ -675,58 +861,7 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 		// 풀스크린 메인창 하나로 간다.
 		UIInstanceManager.instance.ShowCanvasAsync("AnalysisResultCanvas", () =>
 		{
-			AnalysisResultCanvas.instance.RefreshInfo(showLevelUp, _currentLevel, true);
-			action.Invoke();
-		});
-	}
-	
-	// UI는 다 여기있으니 여기서 처리하는게 맞다.
-	public IEnumerator<float> LevelUpAnalysisProcess()
-	{
-		// 인풋 차단
-		ResearchCanvas.instance.inputLockObject.SetActive(true);
-		getButtonImage.color = ColorUtil.halfGray;
-		getButtonText.color = ColorUtil.halfGray;
-
-		// 시간 업뎃을 멈추고 여기선 게이지 내릴 필요 없으니 바로 퍼센트만 처리한다.
-		_needUpdate = false;
-		bool showLevelUp = (AnalysisData.instance.analysisLevel - _currentLevel > 0);
-		CalcExpPercent();
-		RefreshExpPercent(_currentExpPercent, AnalysisData.instance.analysisLevel - _currentLevel);
-		//yield return Timing.WaitForSeconds(LevelUpExpFillTime - 0.3f);
-
-
-		// 오브젝트 정지
-		ResearchObjects.instance.objectTweenAnimation.DOTogglePause();
-		yield return Timing.WaitForSeconds(0.3f);
-
-		// 이펙트
-		BattleInstanceManager.instance.GetCachedObject(effectPrefab, ResearchObjects.instance.effectRootTransform);
-		yield return Timing.WaitForSeconds(2.0f);
-
-
-		// 마지막에 알람도 다시 예약. 이 잠깐의 연출이 나오는동안 앱을 종료시키면 예약이 안될수도 있는데 이런 경우는 패스하기로 한다.
-		if (_onCompleteAlarmState)
-			AnalysisData.instance.ReserveAnalysisNotification();
-
-
-		// 결과창 로딩 후 열리는 타이밍에 마지막 처리를 전달
-		Action action = () =>
-		{
-			RefreshLevelInfo();
-
-			// 토글 복구
-			ResearchObjects.instance.objectTweenAnimation.DOTogglePause();
-
-			// 인풋 복구
-			ResearchCanvas.instance.inputLockObject.SetActive(false);
-		};
-
-
-		// 레벨업 결과만 보여주는거니 풀스크린 결과창을 띄운다
-		UIInstanceManager.instance.ShowCanvasAsync("AnalysisResultCanvas", () =>
-		{
-			AnalysisResultCanvas.instance.RefreshInfo(true, _currentLevel, false);
+			AnalysisResultCanvas.instance.RefreshInfo(showLevelUp, _currentLevel);
 			action.Invoke();
 		});
 	}

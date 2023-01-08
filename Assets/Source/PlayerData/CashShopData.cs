@@ -86,11 +86,12 @@ public class CashShopData : MonoBehaviour
 		DailyDiamond = 0,
 		CaptureBetter = 1,
 		CaptureBest = 2,
+		AnalysisBoost = 3,
 
 		Amount,
 	}
 	List<ObscuredInt> _listCashItemCount = new List<ObscuredInt>();
-	List<string> _listCashItemCountKey = new List<string> { "Item_cDailyGem", "Item_cCaptureBetter", "Item_cCaptureBest" };
+	List<string> _listCashItemCountKey = new List<string> { "Item_cDailyGem", "Item_cCaptureBetter", "Item_cCaptureBest", "Item_cAnalysisBoost" };
 
 	// 레벨패스에서 받았음을 기억해두는 변수인데 어차피 받을때마다 서버검증 하기때문에 Obscured 안쓰고 그냥 사용하기로 한다.
 	List<int> _listLevelPassReward;
@@ -830,6 +831,10 @@ public class CashShopData : MonoBehaviour
 		else if (pendingProduct.definition.id.Contains("nuclearsale"))
 		{
 			NuclearSaleEventCanvas.ExternalRetryPurchase(pendingProduct);
+		}
+		else if (pendingProduct.definition.id.Contains("analysisboost_"))
+		{
+			AnalysisBoostCanvasListItem.ExternalRetryPurchase(pendingProduct);
 		}
 
 		return true;

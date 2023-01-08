@@ -10,59 +10,33 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 80e14a72067f1ad408ec8d661bc560ce, type: 3}
-  m_Name: AnalysisTableImporter
+  m_Name: AnalysisDropTableImporter
   m_EditorClassIdentifier: 
   templatePath: AssetStore/QuickSheet/ExcelPlugin/Templates
   scriptFilePath: Source/TableClass/Runtime
   editorScriptFilePath: Source/TableClass/Editor
   sheetName: Analysis.xlsx
-  workSheetName: AnalysisTable
+  workSheetName: AnalysisDropTable
   columnHeaderList:
-  - type: 3
-    name: level
-    isEnable: 0
-    isArray: 0
-  - type: 3
-    name: requiredTime
-    isEnable: 0
-    isArray: 0
-  - type: 3
-    name: requiredAccumulatedTime
-    isEnable: 0
-    isArray: 0
-  - type: 3
-    name: maxTime
+  - type: 1
+    name: id
     isEnable: 0
     isArray: 0
   - type: 5
-    name: goldPerTime
+    name: probability
     isEnable: 0
     isArray: 0
   - type: 3
-    name: spellPeriod
+    name: minValue
     isEnable: 0
     isArray: 0
   - type: 3
-    name: companionPeriod
-    isEnable: 0
-    isArray: 0
-  - type: 3
-    name: equipPeriod
-    isEnable: 0
-    isArray: 0
-  - type: 3
-    name: gemPeriod
-    isEnable: 0
-    isArray: 0
-  - type: 3
-    name: energyPeriod
-    isEnable: 0
-    isArray: 0
-  - type: 3
-    name: accumulatedAtk
+    name: maxValue
     isEnable: 0
     isArray: 0
   excelFilePath: ../Excel/Analysis.xlsx
   SheetNames:
   - AnalysisTable
-  currentSelectedSheet: 0
+  - AnalysisDropTable
+  - AnalysisBoostTable
+  currentSelectedSheet: 1
