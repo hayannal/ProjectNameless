@@ -741,6 +741,7 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 		_cachedResultDia = 0;
 		_cachedResultEnergy = 0;
 		_cachedBoostUses = 0;
+		_cachedSecondBoosted = 0;
 		if (_listResultEventItemIdForPacket == null)
 			_listResultEventItemIdForPacket = new List<ObscuredString>();
 		_listResultEventItemIdForPacket.Clear();
