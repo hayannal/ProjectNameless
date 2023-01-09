@@ -616,15 +616,18 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 		AnalysisDropTableData analysisDropTableData = TableDataManager.instance.FindAnalysisDropTableData(key.ToString());
 		if (analysisDropTableData != null)
 		{
+			int resultCount = 0;
 			for (int i = 0; i < spellDropCount; ++i)
 			{
 				if (UnityEngine.Random.value > analysisDropTableData.probability)
 					continue;
-
-				int count = UnityEngine.Random.Range(analysisDropTableData.minValue, analysisDropTableData.maxValue);
+				resultCount += UnityEngine.Random.Range(analysisDropTableData.minValue, analysisDropTableData.maxValue + 1);
+			}
+			if (resultCount > 0)
+			{
 				_listResultItemValue.Add("Cash_sSpellGacha");
-				_listResultItemCount.Add(count);
-				for (int j = 0; j < count; ++j)
+				_listResultItemCount.Add(resultCount);
+				for (int j = 0; j < resultCount; ++j)
 					_listResultEventItemIdForPacket.Add("Cash_sSpellGacha");
 			}
 		}
@@ -641,15 +644,18 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 		analysisDropTableData = TableDataManager.instance.FindAnalysisDropTableData(key.ToString());
 		if (analysisDropTableData != null)
 		{
+			int resultCount = 0;
 			for (int i = 0; i < companionDropCount; ++i)
 			{
 				if (UnityEngine.Random.value > analysisDropTableData.probability)
 					continue;
-
-				int count = UnityEngine.Random.Range(analysisDropTableData.minValue, analysisDropTableData.maxValue);
+				resultCount += UnityEngine.Random.Range(analysisDropTableData.minValue, analysisDropTableData.maxValue + 1);
+			}
+			if (resultCount > 0)
+			{
 				_listResultItemValue.Add("Cash_sCharacterGacha");
-				_listResultItemCount.Add(count);
-				for (int j = 0; j < count; ++j)
+				_listResultItemCount.Add(resultCount);
+				for (int j = 0; j < resultCount; ++j)
 					_listResultEventItemIdForPacket.Add("Cash_sCharacterGacha");
 			}
 		}
@@ -666,15 +672,18 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 		analysisDropTableData = TableDataManager.instance.FindAnalysisDropTableData(key.ToString());
 		if (analysisDropTableData != null)
 		{
+			int resultCount = 0;
 			for (int i = 0; i < equipDropCount; ++i)
 			{
 				if (UnityEngine.Random.value > analysisDropTableData.probability)
 					continue;
-
-				int count = UnityEngine.Random.Range(analysisDropTableData.minValue, analysisDropTableData.maxValue);
+				resultCount += UnityEngine.Random.Range(analysisDropTableData.minValue, analysisDropTableData.maxValue + 1);
+			}
+			if (resultCount > 0)
+			{
 				_listResultItemValue.Add("Cash_sEquipGacha");
-				_listResultItemCount.Add(count);
-				for (int j = 0; j < count; ++j)
+				_listResultItemCount.Add(resultCount);
+				for (int j = 0; j < resultCount; ++j)
 					_listResultEventItemIdForPacket.Add("Cash_sEquipGacha");
 			}
 		}
@@ -696,9 +705,7 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 			{
 				if (UnityEngine.Random.value > analysisDropTableData.probability)
 					continue;
-
-				int count = UnityEngine.Random.Range(analysisDropTableData.minValue, analysisDropTableData.maxValue);
-				_cachedResultDia += count;
+				_cachedResultDia += UnityEngine.Random.Range(analysisDropTableData.minValue, analysisDropTableData.maxValue + 1);
 			}
 		}
 
@@ -719,9 +726,7 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 			{
 				if (UnityEngine.Random.value > analysisDropTableData.probability)
 					continue;
-
-				int count = UnityEngine.Random.Range(analysisDropTableData.minValue, analysisDropTableData.maxValue);
-				_cachedResultEnergy += count;
+				_cachedResultEnergy += UnityEngine.Random.Range(analysisDropTableData.minValue, analysisDropTableData.maxValue + 1);
 			}
 		}
 		#endregion
