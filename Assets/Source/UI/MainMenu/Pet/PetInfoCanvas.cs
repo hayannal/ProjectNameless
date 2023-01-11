@@ -27,6 +27,7 @@ public class PetInfoCanvas : MonoBehaviour
 	public GameObject countLevelUpButtonObject;
 	public Text heartText;
 	public GameObject heartImageEffectObject;
+	public GameObject heartEffectPrefab;
 	public Text atkText;
 
 	#region Pet Sale
@@ -313,6 +314,7 @@ public class PetInfoCanvas : MonoBehaviour
 			{
 				PetListCanvas.instance.currentCanvasPetActor.animator.Play("Heart");
 				heartImageEffectObject.SetActive(true);
+				BattleInstanceManager.instance.GetCachedObject(heartEffectPrefab, PetListCanvas.instance.currentCanvasPetActor.cachedTransform.position + new Vector3(0.0f, 0.0f, -0.5f), Quaternion.identity);
 				RefreshHeart();
 				MainCanvas.instance.RefreshPetAlarmObject();
 			});
