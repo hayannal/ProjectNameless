@@ -857,7 +857,7 @@ public class MainCanvas : MonoBehaviour
 		int count = 0;
 		for (int i = 0; i < cashEventButtonRootTransform.childCount; ++i)
 		{
-			if (cashEventButtonRootTransform.GetChild(0).gameObject.activeSelf)
+			if (cashEventButtonRootTransform.GetChild(i).gameObject.activeSelf)
 				++count;
 		}
 
