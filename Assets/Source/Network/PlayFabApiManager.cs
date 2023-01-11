@@ -1508,14 +1508,14 @@ public class PlayFabApiManager : MonoBehaviour
 
 
 	#region CashEvent
-	public void RequestOpenCashEvent(string openEventId, string eventSub, int givenTime, int coolTime, Action successCallback)
+	public void RequestOpenCashEvent(string openEventId, string eventSub, string generatedParameter, int givenTime, int coolTime, Action successCallback)
 	{
-		string input = string.Format("{0}_{1}_{2}_{3}_{4}", openEventId, eventSub, givenTime, coolTime, "ldruqzvm");
+		string input = string.Format("{0}_{1}_{2}_{3}_{4}_{5}", openEventId, eventSub, generatedParameter, givenTime, coolTime, "ldruqzvm");
 		string checkSum = CheckSum(input);
 		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "OpenCashEvent",
-			FunctionParameter = new { EvId = openEventId, EvSub = eventSub, GiTim = givenTime, CoTim = coolTime, Cs = checkSum },
+			FunctionParameter = new { EvId = openEventId, EvSub = eventSub, GePa = generatedParameter, GiTim = givenTime, CoTim = coolTime, Cs = checkSum },
 			GeneratePlayStreamEvent = true,
 		}, (success) =>
 		{
@@ -1537,7 +1537,7 @@ public class PlayFabApiManager : MonoBehaviour
 				}
 
 				// 추가로 해야할 설정들이 있는지 확인
-				CashShopData.instance.OnOpenCashEvent(openEventId, eventSub);
+				CashShopData.instance.OnOpenCashEvent(openEventId, eventSub, generatedParameter);
 
 				if (successCallback != null) successCallback.Invoke();
 			}
@@ -2252,6 +2252,68 @@ public class PlayFabApiManager : MonoBehaviour
 				WaitingNetworkCanvas.Show(false);
 
 				CashShopData.instance.firstPurchaseRewarded = true;
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
+	public void RequestConsumeAcquiredSpell(string selectedId, int count, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}_{2}", selectedId, count, "ecosaplq");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "ConsumeAcquiredSpell",
+			FunctionParameter = new { ItmId = selectedId, Cnt = count, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				CashShopData.instance.ConsumeFlag(CashShopData.eCashConsumeFlagType.AcquiredSpell);
+				SpellManager.instance.OnRecvPurchaseItem(selectedId, count);
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
+	public void RequestConsumeUnacquiredSpell(string selectedId, int count, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}_{2}", selectedId, count, "xcodapmq");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "ConsumeUnacquiredSpell",
+			FunctionParameter = new { ItmId = selectedId, Cnt = count, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				CashShopData.instance.ConsumeFlag(CashShopData.eCashConsumeFlagType.UnacquiredSpell);
+				SpellManager.instance.OnRecvPurchaseItem(selectedId, count);
 
 				if (successCallback != null) successCallback.Invoke();
 			}

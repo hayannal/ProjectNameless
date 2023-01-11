@@ -108,6 +108,11 @@ public class SpellManager : MonoBehaviour
 		return sumSpellCount;
 	}
 
+	public int GetSpellKindsCount()
+	{
+		return _listSpellData.Count;
+	}
+
 	public SpellData GetSpellData(string id)
 	{
 		for (int i = 0; i < _listSpellData.Count; ++i)
@@ -125,6 +130,50 @@ public class SpellManager : MonoBehaviour
 			return spellData.level;
 		return 0;
 	}
+
+
+	#region Pick One
+	public string PickOneAcquiredSpellId(bool acquired)
+	{
+		if (_listGachaSpellIdInfo == null)
+			_listGachaSpellIdInfo = new List<RandomGachaSpellIdInfo>();
+		_listGachaSpellIdInfo.Clear();
+
+		float sumWeight = 0.0f;
+		for (int i = 0; i < TableDataManager.instance.pickOneSpellTable.dataArray.Length; ++i)
+		{
+			if (TableDataManager.instance.pickOneSpellTable.dataArray[i].acquired != acquired)
+				continue;
+			if (acquired && GetSpellData(TableDataManager.instance.pickOneSpellTable.dataArray[i].spellId) == null)
+				continue;
+			if (!acquired && GetSpellData(TableDataManager.instance.pickOneSpellTable.dataArray[i].spellId) != null)
+				continue;
+
+			sumWeight += 1.0f;
+			RandomGachaSpellIdInfo newInfo = new RandomGachaSpellIdInfo();
+			newInfo.id = TableDataManager.instance.pickOneSpellTable.dataArray[i].spellId;
+			newInfo.sumWeight = sumWeight;
+			_listGachaSpellIdInfo.Add(newInfo);
+		}
+
+		if (_listGachaSpellIdInfo.Count == 0)
+			return "";
+
+		int index = -1;
+		float random = UnityEngine.Random.Range(0.0f, _listGachaSpellIdInfo[_listGachaSpellIdInfo.Count - 1].sumWeight);
+		for (int i = 0; i < _listGachaSpellIdInfo.Count; ++i)
+		{
+			if (random <= _listGachaSpellIdInfo[i].sumWeight)
+			{
+				index = i;
+				break;
+			}
+		}
+		if (index == -1)
+			return "";
+		return _listGachaSpellIdInfo[index].id;
+	}
+	#endregion
 
 
 	#region Total

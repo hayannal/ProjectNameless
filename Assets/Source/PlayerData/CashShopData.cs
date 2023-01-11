@@ -32,6 +32,14 @@ public class CashShopData : MonoBehaviour
 	Dictionary<string, int> _dicContinuousProductStep = new Dictionary<string, int>();
 	Dictionary<string, List<int>> _dicOnePlusTwoReward = new Dictionary<string, List<int>>();
 
+	// 미습득 스펠 캐릭 패키지 같은 경우엔
+	// 클라이언트가 골라서 디비에 기록해두는 경우도 있다.
+	public ObscuredString acquiredSpellSelectedId { get; set; }
+	public ObscuredString unacquiredSpellSelectedId { get; set; }
+	public ObscuredString acquiredCharacterSelectedId { get; set; }
+	public ObscuredString acquiredCharacterPpSelectedId { get; set; }
+	public ObscuredString unacquiredCharacterSelectedId { get; set; }
+
 	// CF에다가 비트플래그로 구분하는건 중복 구매시 다음 아이템의 플래그가 켜질 수 있어서 안하기로 한다.
 	// 이 플래그 대신 아이템에다가 접두사로 구분하는 형태로 해서 인벤토리를 검사하는 형태로 변경하기로 한다.
 	public enum eCashFlagType
@@ -59,11 +67,20 @@ public class CashShopData : MonoBehaviour
 		FestivalSlot1 = 10,
 		FestivalSlot2 = 11,
 		FestivalSlot3 = 12,
+		AcquiredSpell = 13,
+		UnacquiredSpell = 14,
+		AcquiredCompanion = 15,
+		AcquiredCompanionPp = 16,
+		UnacquiredCompanion = 17,
 
 		Amount,
 	}
 	List<ObscuredBool> _listCashConsumeFlag = new List<ObscuredBool>();
-	List<string> _listCashConsumeFlagKey = new List<string> { "Cash_sBrokenEnergy", "Cash_sEv4ContiNext", "Cash_sEv5OnePlTwoCash", "Cash_sSevenSlot0", "Cash_sSevenSlot1", "Cash_sSevenSlot2", "Cash_sSevenSlot3", "Cash_sPetSale", "Cash_sFortuneWheel", "Cash_sFestivalSlot0", "Cash_sFestivalSlot1", "Cash_sFestivalSlot2", "Cash_sFestivalSlot3" };
+	List<string> _listCashConsumeFlagKey = new List<string> { "Cash_sBrokenEnergy", "Cash_sEv4ContiNext", "Cash_sEv5OnePlTwoCash",
+		"Cash_sSevenSlot0", "Cash_sSevenSlot1", "Cash_sSevenSlot2", "Cash_sSevenSlot3", "Cash_sPetSale", "Cash_sFortuneWheel",
+		"Cash_sFestivalSlot0", "Cash_sFestivalSlot1", "Cash_sFestivalSlot2", "Cash_sFestivalSlot3",
+		"Cash_sAcquiredSpell", "Cash_sUnacquiredSpell", "Cash_sAcquiredCompanion", "Cash_sAcquiredCompanionPp", "Cash_sUnacquiredCompanion",
+	};
 
 	public enum eCashConsumeCountType
 	{
@@ -79,7 +96,9 @@ public class CashShopData : MonoBehaviour
 		Amount,
 	}
 	List<ObscuredInt> _listCashConsumeCount = new List<ObscuredInt>();
-	List<string> _listCashConsumeCountKey = new List<string> { "Cash_sSpellGacha", "Cash_sCharacterGacha", "Cash_sEquipGacha", "Cash_sSevenTotal", "Cash_sFestivalTotal", "Cash_sSpell3Gacha", "Cash_sSpell4Gacha", "Cash_sSpell5Gacha" };
+	List<string> _listCashConsumeCountKey = new List<string> { "Cash_sSpellGacha", "Cash_sCharacterGacha", "Cash_sEquipGacha", "Cash_sSevenTotal", "Cash_sFestivalTotal",
+		"Cash_sSpell3Gacha", "Cash_sSpell4Gacha", "Cash_sSpell5Gacha"
+	};
 
 	public enum eCashItemCountType
 	{
@@ -127,6 +146,11 @@ public class CashShopData : MonoBehaviour
 		_dicCoolTimeExpireTime.Clear();
 		_dicContinuousProductStep.Clear();
 		_dicOnePlusTwoReward.Clear();
+		acquiredSpellSelectedId = "";
+		unacquiredSpellSelectedId = "";
+		acquiredCharacterSelectedId = "";
+		acquiredCharacterPpSelectedId = "";
+		unacquiredCharacterSelectedId = "";
 
 		// 이벤트는 여러개 있고 각각의 유효기간이 있으니 테이블 돌면서
 		var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
@@ -197,6 +221,49 @@ public class CashShopData : MonoBehaviour
 							}
 						}
 						break;
+
+						#region Sub Condition
+					case "acquiredspell":
+						key = "evAcquiredSpell";
+						if (userReadOnlyData.ContainsKey(key))
+						{
+							if (string.IsNullOrEmpty(userReadOnlyData[key].Value) == false)
+								acquiredSpellSelectedId = userReadOnlyData[key].Value;
+						}
+						break;
+					case "unacquiredspell":
+						key = "evUnacquiredSpell";
+						if (userReadOnlyData.ContainsKey(key))
+						{
+							if (string.IsNullOrEmpty(userReadOnlyData[key].Value) == false)
+								unacquiredSpellSelectedId = userReadOnlyData[key].Value;
+						}
+						break;
+					case "acquiredcompanion":
+						key = "evAcquiredCompanion";
+						if (userReadOnlyData.ContainsKey(key))
+						{
+							if (string.IsNullOrEmpty(userReadOnlyData[key].Value) == false)
+								acquiredCharacterSelectedId = userReadOnlyData[key].Value;
+						}
+						break;
+					case "acquiredcompanionpp":
+						key = "evAcquiredCompanionPp";
+						if (userReadOnlyData.ContainsKey(key))
+						{
+							if (string.IsNullOrEmpty(userReadOnlyData[key].Value) == false)
+								acquiredCharacterPpSelectedId = userReadOnlyData[key].Value;
+						}
+						break;
+					case "unacquiredcompanion":
+						key = "evUnacquiredCompanion";
+						if (userReadOnlyData.ContainsKey(key))
+						{
+							if (string.IsNullOrEmpty(userReadOnlyData[key].Value) == false)
+								unacquiredCharacterSelectedId = userReadOnlyData[key].Value;
+						}
+						break;
+						#endregion
 				}
 			}
 		}
@@ -566,11 +633,18 @@ public class CashShopData : MonoBehaviour
 					continue;
 			}
 
+			string generatedParameter = "";
+			if (CheckSubCondition(TableDataManager.instance.eventTypeTable.dataArray[i].eventSub, ref generatedParameter) == false)
+			{
+				// 
+				continue;
+			}
+
 			// 아직 이벤트가 다 완성된게 아니니 우선 이거로 막아둔다.
 			//if ((eEventStartCondition)TableDataManager.instance.eventTypeTable.dataArray[i].triggerCondition != eEventStartCondition.SpinZero)
 			//	continue;
 
-			PlayFabApiManager.instance.RequestOpenCashEvent(TableDataManager.instance.eventTypeTable.dataArray[i].id, TableDataManager.instance.eventTypeTable.dataArray[i].eventSub, TableDataManager.instance.eventTypeTable.dataArray[i].givenTime, TableDataManager.instance.eventTypeTable.dataArray[i].coolTime, () =>
+			PlayFabApiManager.instance.RequestOpenCashEvent(TableDataManager.instance.eventTypeTable.dataArray[i].id, TableDataManager.instance.eventTypeTable.dataArray[i].eventSub, generatedParameter, TableDataManager.instance.eventTypeTable.dataArray[i].givenTime, TableDataManager.instance.eventTypeTable.dataArray[i].coolTime, () =>
 			{
 				if (MainCanvas.instance != null && MainCanvas.instance.gameObject.activeSelf)
 					MainCanvas.instance.ShowCashEvent(TableDataManager.instance.eventTypeTable.dataArray[i].id, true, true);
@@ -581,7 +655,7 @@ public class CashShopData : MonoBehaviour
 		}
 	}
 
-	public void OnOpenCashEvent(string openEventId, string eventSub)
+	public void OnOpenCashEvent(string openEventId, string eventSub, string generatedParameter)
 	{
 		if (string.IsNullOrEmpty(eventSub) == false)
 		{
@@ -597,8 +671,60 @@ public class CashShopData : MonoBehaviour
 				case "oneplustwo":
 					ResetOnePlusTwoReward(openEventId);
 					break;
+				case "acquiredspell": acquiredSpellSelectedId = generatedParameter; break;
+				case "unacquiredspell": unacquiredSpellSelectedId = generatedParameter; break;
+				case "acquiredcompanion": acquiredCharacterSelectedId = generatedParameter; break;
+				case "acquiredcompanionpp": acquiredCharacterPpSelectedId = generatedParameter; break;
+				case "unacquiredcompanion": unacquiredCharacterSelectedId = generatedParameter; break;
 			}
 		}
+	}
+
+	bool CheckSubCondition(string eventSub, ref string generatedParameter)
+	{
+		// 일부 이벤트들은 없는 캐릭터 아이디를 클라에서 선택해서 서버로 보내는 등의 추가 절차가 필요했다.
+		// 이 로직을 구현하기 위해 이렇게 generatedParameter 라는 걸 추가해서 전달하기로 한다.
+		switch (eventSub)
+		{
+			// hardcode ev13
+			case "acquiredspell":
+				// 있는 스펠을 골라내서 대량으로 파는 이벤트
+				// 습득한 스펠이 5개 이하일땐 활성화 되지 않는다.
+				if (SpellManager.instance.GetSpellKindsCount() <= 5)
+					return false;
+				// 펫 세일과 마찬가지로 컨슘이 남아있다면 구매 복원을 완료할때까지 시작하지 않는게 맞다.
+				if (IsPurchasedFlag(eCashConsumeFlagType.AcquiredSpell))
+					return false;
+
+				// 적절한 스펠을 골라낸다.
+				string selectedSpellId = SpellManager.instance.PickOneAcquiredSpellId(true);
+				if (string.IsNullOrEmpty(selectedSpellId))
+					return false;
+				generatedParameter = selectedSpellId;
+				return true;
+			// hardcode ev14
+			case "unacquiredspell":
+				// 없는 스펠을 골라내서 소량 파는 이벤트
+				// 습득한 스킬이 중간에 획득될 경우 이벤트를 종료하는 로직도 필요하다.
+				if (SpellManager.instance.GetSpellKindsCount() <= 5)
+					return false;
+				if (IsPurchasedFlag(eCashConsumeFlagType.UnacquiredSpell))
+					return false;
+				string selectedNewSpellId = SpellManager.instance.PickOneAcquiredSpellId(false);
+				if (string.IsNullOrEmpty(selectedNewSpellId))
+					return false;
+				generatedParameter = selectedNewSpellId;
+				return true;
+			case "acquiredcompanion":
+				return false;
+			case "acquiredcompanionpp":
+				return false;
+			case "unacquiredcompanion":
+				return false;
+		}
+
+		// 특별한 조건 체크가 없다면 항상 true
+		return true;
 	}
 	#endregion
 
@@ -836,6 +962,14 @@ public class CashShopData : MonoBehaviour
 		{
 			AnalysisBoostCanvasListItem.ExternalRetryPurchase(pendingProduct);
 		}
+		else if (pendingProduct.definition.id.Contains("acquiredspell"))
+		{
+			AcquiredSpellSaleCanvas.ExternalRetryPurchase(pendingProduct);
+		}
+		else if (pendingProduct.definition.id.Contains("unacquiredspell"))
+		{
+			UnacquiredSpellSaleCanvas.ExternalRetryPurchase(pendingProduct);
+		}
 
 		return true;
 	}
@@ -885,13 +1019,24 @@ public class CashShopData : MonoBehaviour
 
 			bool process = false;
 			string itemName = "";
+			string processMessage = "";
 			switch ((eCashConsumeFlagType)i)
 			{
 				case eCashConsumeFlagType.BrokenEnergy:
 				case eCashConsumeFlagType.PetSale:
+				case eCashConsumeFlagType.AcquiredSpell:
+				case eCashConsumeFlagType.UnacquiredSpell:
+				case eCashConsumeFlagType.AcquiredCompanion:
+				case eCashConsumeFlagType.AcquiredCompanionPp:
+				case eCashConsumeFlagType.UnacquiredCompanion:
 					ConsumeItemTableData consumeItemTableData = TableDataManager.instance.FindConsumeItemTableData(_listCashConsumeFlagKey[i]);
 					if (consumeItemTableData != null)
+					{
 						itemName = UIString.instance.GetString(consumeItemTableData.name);
+						processMessage = string.Format("{0}\n\n{1}", itemName, UIString.instance.GetString("ShopUI_NotDoneConsumeProgress"));
+					}
+					else
+						processMessage = UIString.instance.GetString("ShopUI_NotDoneConsumeProgress");
 					process = true;
 					break;
 				case eCashConsumeFlagType.Ev4ContiNext:
@@ -935,7 +1080,7 @@ public class CashShopData : MonoBehaviour
 			if (process == false)
 				continue;
 
-			OkCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("ShopUI_NotDoneConsumeProgress", itemName), () =>
+			OkCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), processMessage, () =>
 			{
 				switch ((eCashConsumeFlagType)i)
 				{
@@ -947,6 +1092,18 @@ public class CashShopData : MonoBehaviour
 						break;
 					case eCashConsumeFlagType.FortuneWheel:
 						FortuneWheelCanvas.ConsumeProduct();
+						break;
+					case eCashConsumeFlagType.AcquiredSpell:
+						AcquiredSpellSaleCanvas.ConsumeProduct();
+						break;
+					case eCashConsumeFlagType.UnacquiredSpell:
+						UnacquiredSpellSaleCanvas.ConsumeProduct();
+						break;
+					case eCashConsumeFlagType.AcquiredCompanion:
+						break;
+					case eCashConsumeFlagType.AcquiredCompanionPp:
+						break;
+					case eCashConsumeFlagType.UnacquiredCompanion:
 						break;
 				}
 				

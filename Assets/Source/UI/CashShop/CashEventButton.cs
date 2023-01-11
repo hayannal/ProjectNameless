@@ -72,6 +72,24 @@ public class CashEventButton : MonoBehaviour
 
 	public static void ShowEventCanvas(string id)
 	{
+		// hardcode ev13
+		if (id == "ev13" || id == "ev14")
+		{
+			if (SpellSpriteContainer.instance == null)
+			{
+				DelayedLoadingCanvas.Show(true);
+				AddressableAssetLoadManager.GetAddressableGameObject("SpellSpriteContainer", "", (prefab) =>
+				{
+					BattleInstanceManager.instance.GetCachedObject(prefab, null);
+					DelayedLoadingCanvas.Show(false);
+					UIInstanceManager.instance.ShowCanvasAsync(string.Format("{0}CashEventCanvas", id), null);
+				});
+			}
+			else
+				UIInstanceManager.instance.ShowCanvasAsync(string.Format("{0}CashEventCanvas", id), null);
+			return;
+		}
+
 		UIInstanceManager.instance.ShowCanvasAsync(string.Format("{0}CashEventCanvas", id), null);
 	}
 }
