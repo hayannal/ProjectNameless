@@ -690,7 +690,7 @@ public class CashShopData : MonoBehaviour
 			case "acquiredspell":
 				// 있는 스펠을 골라내서 대량으로 파는 이벤트
 				// 습득한 스펠이 5개 이하일땐 활성화 되지 않는다.
-				if (SpellManager.instance.GetSpellKindsCount() <= 5)
+				if (SpellManager.instance.GetSpellKindsCount() <= BattleInstanceManager.instance.GetCachedGlobalConstantInt("Ev13CountLimit"))
 					return false;
 				// 펫 세일과 마찬가지로 컨슘이 남아있다면 구매 복원을 완료할때까지 시작하지 않는게 맞다.
 				if (IsPurchasedFlag(eCashConsumeFlagType.AcquiredSpell))
@@ -706,7 +706,7 @@ public class CashShopData : MonoBehaviour
 			case "unacquiredspell":
 				// 없는 스펠을 골라내서 소량 파는 이벤트
 				// 습득한 스킬이 중간에 획득될 경우 이벤트를 종료하는 로직도 필요하다.
-				if (SpellManager.instance.GetSpellKindsCount() <= 5)
+				if (SpellManager.instance.GetSpellKindsCount() <= BattleInstanceManager.instance.GetCachedGlobalConstantInt("Ev14CountLimit"))
 					return false;
 				if (IsPurchasedFlag(eCashConsumeFlagType.UnacquiredSpell))
 					return false;
