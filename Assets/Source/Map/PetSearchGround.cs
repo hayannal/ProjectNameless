@@ -695,8 +695,8 @@ public class PetSearchGround : MonoBehaviour
 		ForceDirectionCamera(9.0f, 0.6f);
 		yield return Timing.WaitForSeconds(0.6f);
 
-		ToastZigzagCanvas.instance.ShowToast(UIString.instance.GetString(_oneForFailure ? "PetUI_FailureExtraGainToast" : "PetUI_ExtraGainToast"), 3.0f, 0.8f, true);
-		yield return Timing.WaitForSeconds(2.0f);
+		ToastZigzagCanvas.instance.ShowToast(UIString.instance.GetString(_oneForFailure ? "PetUI_FailureExtraGainToast" : "PetUI_ExtraGainToast"), 2.3f, 0.8f, true);
+		yield return Timing.WaitForSeconds(2.3f);
 
 		PetSearchCanvas.instance.ShowResult(true, false);
 	}
