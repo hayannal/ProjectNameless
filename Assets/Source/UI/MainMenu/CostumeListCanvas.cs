@@ -72,6 +72,18 @@ public class CostumeListCanvas : MonoBehaviour
 	}
 
 
+	public void OnClickBackButton()
+	{
+		if (string.IsNullOrEmpty(CharacterCanvas.instance.previewId) == false)
+		{
+			CharacterCanvas.instance.ShowCanvasPlayerActorWithCostume("", () =>
+			{
+				CharacterCanvas.instance.ShowPreviewObject(false, "");
+			});
+		}
+		gameObject.SetActive(false);
+	}
+
 	public Sprite GetSprite(string portraitAddress)
 	{
 		for (int i = 0; i < spriteList.Length; ++i)

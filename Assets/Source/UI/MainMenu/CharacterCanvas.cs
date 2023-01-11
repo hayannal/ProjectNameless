@@ -81,6 +81,17 @@ public class CharacterCanvas : CharacterShowCanvasBase
 		UIInstanceManager.instance.ShowCanvasAsync("CharacterDetailCanvas", null);
 	}
 
+	public void OnClickBackButton()
+	{
+		if (string.IsNullOrEmpty(previewId) == false)
+		{
+			UIInstanceManager.instance.ShowCanvasAsync("CostumeListCanvas", null);
+			return;
+		}
+
+		gameObject.SetActive(false);
+	}
+
 	public string previewId { get; private set; }
 	GameObject _previewObject;
 	public void ShowPreviewObject(bool show, string id)
