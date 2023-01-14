@@ -34,11 +34,11 @@ public class CashShopData : MonoBehaviour
 
 	// 미습득 스펠 캐릭 패키지 같은 경우엔
 	// 클라이언트가 골라서 디비에 기록해두는 경우도 있다.
-	public ObscuredString acquiredSpellSelectedId { get; set; }
 	public ObscuredString unacquiredSpellSelectedId { get; set; }
+	public ObscuredString acquiredSpellSelectedId { get; set; }
+	public ObscuredString unacquiredCharacterSelectedId { get; set; }
 	public ObscuredString acquiredCharacterSelectedId { get; set; }
 	public ObscuredString acquiredCharacterPpSelectedId { get; set; }
-	public ObscuredString unacquiredCharacterSelectedId { get; set; }
 
 	// CF에다가 비트플래그로 구분하는건 중복 구매시 다음 아이템의 플래그가 켜질 수 있어서 안하기로 한다.
 	// 이 플래그 대신 아이템에다가 접두사로 구분하는 형태로 해서 인벤토리를 검사하는 형태로 변경하기로 한다.
@@ -67,11 +67,11 @@ public class CashShopData : MonoBehaviour
 		FestivalSlot1 = 10,
 		FestivalSlot2 = 11,
 		FestivalSlot3 = 12,
-		AcquiredSpell = 13,
-		UnacquiredSpell = 14,
-		AcquiredCompanion = 15,
-		AcquiredCompanionPp = 16,
-		UnacquiredCompanion = 17,
+		UnacquiredSpell = 13,
+		AcquiredSpell = 14,
+		UnacquiredCompanion = 15,
+		AcquiredCompanion = 16,
+		AcquiredCompanionPp = 17,
 
 		Amount,
 	}
@@ -79,7 +79,7 @@ public class CashShopData : MonoBehaviour
 	List<string> _listCashConsumeFlagKey = new List<string> { "Cash_sBrokenEnergy", "Cash_sEv4ContiNext", "Cash_sEv5OnePlTwoCash",
 		"Cash_sSevenSlot0", "Cash_sSevenSlot1", "Cash_sSevenSlot2", "Cash_sSevenSlot3", "Cash_sPetSale", "Cash_sFortuneWheel",
 		"Cash_sFestivalSlot0", "Cash_sFestivalSlot1", "Cash_sFestivalSlot2", "Cash_sFestivalSlot3",
-		"Cash_sAcquiredSpell", "Cash_sUnacquiredSpell", "Cash_sAcquiredCompanion", "Cash_sAcquiredCompanionPp", "Cash_sUnacquiredCompanion",
+		"Cash_sUnacquiredSpell", "Cash_sAcquiredSpell", "Cash_sUnacquiredCompanion", "Cash_sAcquiredCompanion", "Cash_sAcquiredCompanionPp",
 	};
 
 	public enum eCashConsumeCountType
@@ -146,11 +146,11 @@ public class CashShopData : MonoBehaviour
 		_dicCoolTimeExpireTime.Clear();
 		_dicContinuousProductStep.Clear();
 		_dicOnePlusTwoReward.Clear();
-		acquiredSpellSelectedId = "";
 		unacquiredSpellSelectedId = "";
+		acquiredSpellSelectedId = "";
+		unacquiredCharacterSelectedId = "";
 		acquiredCharacterSelectedId = "";
 		acquiredCharacterPpSelectedId = "";
-		unacquiredCharacterSelectedId = "";
 
 		// 이벤트는 여러개 있고 각각의 유효기간이 있으니 테이블 돌면서
 		var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
@@ -223,6 +223,14 @@ public class CashShopData : MonoBehaviour
 						break;
 
 						#region Sub Condition
+					case "unacquiredspell":
+						key = "evUnacquiredSpell";
+						if (userReadOnlyData.ContainsKey(key))
+						{
+							if (string.IsNullOrEmpty(userReadOnlyData[key].Value) == false)
+								unacquiredSpellSelectedId = userReadOnlyData[key].Value;
+						}
+						break;
 					case "acquiredspell":
 						key = "evAcquiredSpell";
 						if (userReadOnlyData.ContainsKey(key))
@@ -231,12 +239,12 @@ public class CashShopData : MonoBehaviour
 								acquiredSpellSelectedId = userReadOnlyData[key].Value;
 						}
 						break;
-					case "unacquiredspell":
-						key = "evUnacquiredSpell";
+					case "unacquiredcompanion":
+						key = "evUnacquiredCompanion";
 						if (userReadOnlyData.ContainsKey(key))
 						{
 							if (string.IsNullOrEmpty(userReadOnlyData[key].Value) == false)
-								unacquiredSpellSelectedId = userReadOnlyData[key].Value;
+								unacquiredCharacterSelectedId = userReadOnlyData[key].Value;
 						}
 						break;
 					case "acquiredcompanion":
@@ -253,14 +261,6 @@ public class CashShopData : MonoBehaviour
 						{
 							if (string.IsNullOrEmpty(userReadOnlyData[key].Value) == false)
 								acquiredCharacterPpSelectedId = userReadOnlyData[key].Value;
-						}
-						break;
-					case "unacquiredcompanion":
-						key = "evUnacquiredCompanion";
-						if (userReadOnlyData.ContainsKey(key))
-						{
-							if (string.IsNullOrEmpty(userReadOnlyData[key].Value) == false)
-								unacquiredCharacterSelectedId = userReadOnlyData[key].Value;
 						}
 						break;
 						#endregion
@@ -671,11 +671,11 @@ public class CashShopData : MonoBehaviour
 				case "oneplustwo":
 					ResetOnePlusTwoReward(openEventId);
 					break;
-				case "acquiredspell": acquiredSpellSelectedId = generatedParameter; break;
 				case "unacquiredspell": unacquiredSpellSelectedId = generatedParameter; break;
+				case "acquiredspell": acquiredSpellSelectedId = generatedParameter; break;
+				case "unacquiredcompanion": unacquiredCharacterSelectedId = generatedParameter; break;
 				case "acquiredcompanion": acquiredCharacterSelectedId = generatedParameter; break;
 				case "acquiredcompanionpp": acquiredCharacterPpSelectedId = generatedParameter; break;
-				case "unacquiredcompanion": unacquiredCharacterSelectedId = generatedParameter; break;
 			}
 		}
 	}
@@ -687,10 +687,23 @@ public class CashShopData : MonoBehaviour
 		switch (eventSub)
 		{
 			// hardcode ev13
+			case "unacquiredspell":
+				// 없는 스펠을 골라내서 소량 파는 이벤트
+				// 습득한 스킬이 중간에 획득될 경우 이벤트를 종료하는 로직도 필요하다.
+				if (SpellManager.instance.GetSpellKindsCount() <= BattleInstanceManager.instance.GetCachedGlobalConstantInt("Ev13CountLimit"))
+					return false;
+				if (IsPurchasedFlag(eCashConsumeFlagType.UnacquiredSpell))
+					return false;
+				string selectedNewSpellId = SpellManager.instance.PickOneAcquiredSpellId(false);
+				if (string.IsNullOrEmpty(selectedNewSpellId))
+					return false;
+				generatedParameter = selectedNewSpellId;
+				return true;
+			// hardcode ev14
 			case "acquiredspell":
 				// 있는 스펠을 골라내서 대량으로 파는 이벤트
 				// 습득한 스펠이 5개 이하일땐 활성화 되지 않는다.
-				if (SpellManager.instance.GetSpellKindsCount() <= BattleInstanceManager.instance.GetCachedGlobalConstantInt("Ev13CountLimit"))
+				if (SpellManager.instance.GetSpellKindsCount() <= BattleInstanceManager.instance.GetCachedGlobalConstantInt("Ev14CountLimit"))
 					return false;
 				// 펫 세일과 마찬가지로 컨슘이 남아있다면 구매 복원을 완료할때까지 시작하지 않는게 맞다.
 				if (IsPurchasedFlag(eCashConsumeFlagType.AcquiredSpell))
@@ -702,25 +715,39 @@ public class CashShopData : MonoBehaviour
 					return false;
 				generatedParameter = selectedSpellId;
 				return true;
-			// hardcode ev14
-			case "unacquiredspell":
-				// 없는 스펠을 골라내서 소량 파는 이벤트
-				// 습득한 스킬이 중간에 획득될 경우 이벤트를 종료하는 로직도 필요하다.
-				if (SpellManager.instance.GetSpellKindsCount() <= BattleInstanceManager.instance.GetCachedGlobalConstantInt("Ev14CountLimit"))
-					return false;
-				if (IsPurchasedFlag(eCashConsumeFlagType.UnacquiredSpell))
-					return false;
-				string selectedNewSpellId = SpellManager.instance.PickOneAcquiredSpellId(false);
-				if (string.IsNullOrEmpty(selectedNewSpellId))
-					return false;
-				generatedParameter = selectedNewSpellId;
-				return true;
-			case "acquiredcompanion":
-				return false;
-			case "acquiredcompanionpp":
-				return false;
+			// hardcode ev15
 			case "unacquiredcompanion":
-				return false;
+				if (CharacterManager.instance.listCharacterData.Count <= BattleInstanceManager.instance.GetCachedGlobalConstantInt("Ev15CountLimit"))
+					return false;
+				if (IsPurchasedFlag(eCashConsumeFlagType.UnacquiredCompanion))
+					return false;
+				string selectedNewActorId = CharacterManager.instance.PickOneAcquiredActorId(AcquiredCharacterSaleCanvas.eAcquiredType.UnacquiredCharacter);
+				if (string.IsNullOrEmpty(selectedNewActorId))
+					return false;
+				generatedParameter = selectedNewActorId;
+				return true;
+			// hardcode ev16
+			case "acquiredcompanion":
+				if (CharacterManager.instance.listCharacterData.Count <= BattleInstanceManager.instance.GetCachedGlobalConstantInt("Ev16CountLimit"))
+					return false;
+				if (IsPurchasedFlag(eCashConsumeFlagType.AcquiredCompanion))
+					return false;
+				string selectedActorId = CharacterManager.instance.PickOneAcquiredActorId(AcquiredCharacterSaleCanvas.eAcquiredType.AcquiredCharacter);
+				if (string.IsNullOrEmpty(selectedActorId))
+					return false;
+				generatedParameter = selectedActorId;
+				return true;
+			// hardcode ev17
+			case "acquiredcompanionpp":
+				if (CharacterManager.instance.listCharacterData.Count <= BattleInstanceManager.instance.GetCachedGlobalConstantInt("Ev17CountLimit"))
+					return false;
+				if (IsPurchasedFlag(eCashConsumeFlagType.AcquiredCompanionPp))
+					return false;
+				string selectedActorPpId = CharacterManager.instance.PickOneAcquiredActorId(AcquiredCharacterSaleCanvas.eAcquiredType.AcquiredCharacterPp);
+				if (string.IsNullOrEmpty(selectedActorPpId))
+					return false;
+				generatedParameter = selectedActorPpId;
+				return true;
 		}
 
 		// 특별한 조건 체크가 없다면 항상 true
@@ -962,13 +989,25 @@ public class CashShopData : MonoBehaviour
 		{
 			AnalysisBoostCanvasListItem.ExternalRetryPurchase(pendingProduct);
 		}
+		else if (pendingProduct.definition.id.Contains("unacquiredspell"))
+		{
+			UnacquiredSpellSaleCanvas.ExternalRetryPurchase(pendingProduct);
+		}
 		else if (pendingProduct.definition.id.Contains("acquiredspell"))
 		{
 			AcquiredSpellSaleCanvas.ExternalRetryPurchase(pendingProduct);
 		}
-		else if (pendingProduct.definition.id.Contains("unacquiredspell"))
+		else if (pendingProduct.definition.id.Contains("unacquiredcompanion"))
 		{
-			UnacquiredSpellSaleCanvas.ExternalRetryPurchase(pendingProduct);
+			UnacquiredCharacterSaleCanvas.ExternalRetryPurchase(pendingProduct);
+		}
+		else if (pendingProduct.definition.id.Contains("acquiredcompanionpp"))
+		{
+			AcquiredCharacterPpSaleCanvas.ExternalRetryPurchase(pendingProduct);
+		}
+		else if (pendingProduct.definition.id.Contains("acquiredcompanion"))
+		{
+			AcquiredCharacterSaleCanvas.ExternalRetryPurchase(pendingProduct);
 		}
 
 		return true;
@@ -1024,11 +1063,11 @@ public class CashShopData : MonoBehaviour
 			{
 				case eCashConsumeFlagType.BrokenEnergy:
 				case eCashConsumeFlagType.PetSale:
-				case eCashConsumeFlagType.AcquiredSpell:
 				case eCashConsumeFlagType.UnacquiredSpell:
+				case eCashConsumeFlagType.AcquiredSpell:
+				case eCashConsumeFlagType.UnacquiredCompanion:
 				case eCashConsumeFlagType.AcquiredCompanion:
 				case eCashConsumeFlagType.AcquiredCompanionPp:
-				case eCashConsumeFlagType.UnacquiredCompanion:
 					ConsumeItemTableData consumeItemTableData = TableDataManager.instance.FindConsumeItemTableData(_listCashConsumeFlagKey[i]);
 					if (consumeItemTableData != null)
 					{
@@ -1093,17 +1132,20 @@ public class CashShopData : MonoBehaviour
 					case eCashConsumeFlagType.FortuneWheel:
 						FortuneWheelCanvas.ConsumeProduct();
 						break;
-					case eCashConsumeFlagType.AcquiredSpell:
-						AcquiredSpellSaleCanvas.ConsumeProduct();
-						break;
 					case eCashConsumeFlagType.UnacquiredSpell:
 						UnacquiredSpellSaleCanvas.ConsumeProduct();
 						break;
-					case eCashConsumeFlagType.AcquiredCompanion:
-						break;
-					case eCashConsumeFlagType.AcquiredCompanionPp:
+					case eCashConsumeFlagType.AcquiredSpell:
+						AcquiredSpellSaleCanvas.ConsumeProduct();
 						break;
 					case eCashConsumeFlagType.UnacquiredCompanion:
+						UnacquiredCharacterSaleCanvas.ConsumeProduct();
+						break;
+					case eCashConsumeFlagType.AcquiredCompanion:
+						AcquiredCharacterSaleCanvas.ConsumeProduct();
+						break;
+					case eCashConsumeFlagType.AcquiredCompanionPp:
+						AcquiredCharacterPpSaleCanvas.ConsumeProduct();
 						break;
 				}
 				

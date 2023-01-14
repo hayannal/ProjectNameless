@@ -42,6 +42,7 @@ public class TableDataManager : MonoBehaviour
 	public ShopActorTable shopActorTable;
 	public ShopEquipTable shopEquipTable;
 	public PickOneSpellTable pickOneSpellTable;
+	public PickOneCharacterTable pickOneCharacterTable;
 
 	public EventPointTypeTable eventPointTypeTable;
 	public EventPointRewardTable eventPointRewardTable;
@@ -408,6 +409,16 @@ public class TableDataManager : MonoBehaviour
 		{
 			if (pickOneSpellTable.dataArray[i].acquired == acquired && pickOneSpellTable.dataArray[i].spellId == spellId)
 				return pickOneSpellTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public PickOneCharacterTableData FindPickOneCharacterTableData(int acquired, string actorId)
+	{
+		for (int i = 0; i < pickOneCharacterTable.dataArray.Length; ++i)
+		{
+			if (pickOneCharacterTable.dataArray[i].acquired == acquired && pickOneCharacterTable.dataArray[i].actorId == actorId)
+				return pickOneCharacterTable.dataArray[i];
 		}
 		return null;
 	}

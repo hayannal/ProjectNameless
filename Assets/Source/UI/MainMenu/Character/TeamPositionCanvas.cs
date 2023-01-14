@@ -20,7 +20,7 @@ public class TeamPositionCanvas : MonoBehaviour
 			CharacterData characterData = CharacterManager.instance.GetCharacterData(CharacterManager.instance.leftCharacterId);
 			if (characterData != null)
 			{
-				leftCharacterCanvasListItem.Initialize(characterData.actorId, characterData.level, characterData.transcend, 0, null, null, null);
+				leftCharacterCanvasListItem.Initialize(characterData.actorId, characterData.level, characterData.transcend, false, 0, null, null, null);
 				leftCharacterCanvasListItem.equippedObject.SetActive(false);
 				leftCharacterCanvasListItem.gameObject.SetActive(true);
 			}
@@ -32,7 +32,7 @@ public class TeamPositionCanvas : MonoBehaviour
 			CharacterData characterData = CharacterManager.instance.GetCharacterData(CharacterManager.instance.rightCharacterId);
 			if (characterData != null)
 			{
-				rightCharacterCanvasListItem.Initialize(characterData.actorId, characterData.level, characterData.transcend, 0, null, null, null);
+				rightCharacterCanvasListItem.Initialize(characterData.actorId, characterData.level, characterData.transcend, false, 0, null, null, null);
 				rightCharacterCanvasListItem.equippedObject.SetActive(false);
 				rightCharacterCanvasListItem.gameObject.SetActive(true);
 			}

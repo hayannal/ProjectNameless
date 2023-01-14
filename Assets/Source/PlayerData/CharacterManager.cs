@@ -183,6 +183,64 @@ public class CharacterManager : MonoBehaviour
 	#endregion
 
 
+	#region Pick One
+	public string PickOneAcquiredActorId(AcquiredCharacterSaleCanvas.eAcquiredType acquiredType)
+	{
+		int maxTrascendPoint = BattleInstanceManager.instance.GetCachedGlobalConstantInt("GachaActorMaxTrp");
+
+		if (_listGachaCharacterId == null)
+			_listGachaCharacterId = new List<RandomGachaCharacterId>();
+		_listGachaCharacterId.Clear();
+
+		float sumWeight = 0.0f;
+		for (int i = 0; i < TableDataManager.instance.pickOneCharacterTable.dataArray.Length; ++i)
+		{
+			if (TableDataManager.instance.pickOneCharacterTable.dataArray[i].acquired != (int)acquiredType)
+				continue;
+			if (acquiredType == AcquiredCharacterSaleCanvas.eAcquiredType.AcquiredCharacter || acquiredType == AcquiredCharacterSaleCanvas.eAcquiredType.AcquiredCharacterPp)
+			{
+				if (ContainsActor(TableDataManager.instance.pickOneCharacterTable.dataArray[i].actorId) == false)
+					continue;
+				if (acquiredType == AcquiredCharacterSaleCanvas.eAcquiredType.AcquiredCharacter)
+				{
+					// 풀 초월이라면 후보에서 삭제해야한다.
+					CharacterData characterData = GetCharacterData(TableDataManager.instance.pickOneCharacterTable.dataArray[i].actorId);
+					if (characterData != null && (characterData.transcendPoint + TableDataManager.instance.pickOneCharacterTable.dataArray[i].count) > maxTrascendPoint)
+						continue;
+				}
+			}
+			if (acquiredType == AcquiredCharacterSaleCanvas.eAcquiredType.UnacquiredCharacter)
+			{
+				if (ContainsActor(TableDataManager.instance.pickOneCharacterTable.dataArray[i].actorId))
+					continue;
+			}
+
+			sumWeight += 1.0f;
+			RandomGachaCharacterId newInfo = new RandomGachaCharacterId();
+			newInfo.actorId = TableDataManager.instance.pickOneCharacterTable.dataArray[i].actorId;
+			newInfo.sumWeight = sumWeight;
+			_listGachaCharacterId.Add(newInfo);
+		}
+
+		if (_listGachaCharacterId.Count == 0)
+			return "";
+
+		int index = -1;
+		float random = UnityEngine.Random.Range(0.0f, _listGachaCharacterId[_listGachaCharacterId.Count - 1].sumWeight);
+		for (int i = 0; i < _listGachaCharacterId.Count; ++i)
+		{
+			if (random <= _listGachaCharacterId[i].sumWeight)
+			{
+				index = i;
+				break;
+			}
+		}
+		if (index == -1)
+			return "";
+		return _listGachaCharacterId[index].actorId;
+	}
+	#endregion
+
 
 	#region Grant
 	class RandomGachaCharacterGrade
@@ -512,21 +570,20 @@ public class CharacterManager : MonoBehaviour
 
 	public void OnRecvPurchaseItem(string rewardValue, int rewardCount)
 	{
+		string actorId = "";
 		ActorTableData actorTableData = null;
 		if (rewardValue.Substring(rewardValue.Length - 2) != "pp")
-			actorTableData = TableDataManager.instance.FindActorTableData(rewardValue);
+			actorId = rewardValue;
 		else if (rewardValue.Substring(rewardValue.Length - 2) == "pp")
-		{
-			string itemId = rewardValue.Substring(0, rewardValue.Length - 2);
-			actorTableData = TableDataManager.instance.FindActorTableData(itemId);
-		}
+			actorId = rewardValue.Substring(0, rewardValue.Length - 2);
+		actorTableData = TableDataManager.instance.FindActorTableData(actorId);
 		if (actorTableData == null)
 			return;
 
 		CharacterData currentCharacterData = null;
 		for (int i = 0; i < _listCharacterData.Count; ++i)
 		{
-			if (_listCharacterData[i].actorId == rewardValue)
+			if (_listCharacterData[i].actorId == actorId)
 			{
 				currentCharacterData = _listCharacterData[i];
 				break;

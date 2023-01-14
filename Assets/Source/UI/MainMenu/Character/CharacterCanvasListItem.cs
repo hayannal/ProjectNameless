@@ -48,7 +48,7 @@ public class CharacterCanvasListItem : MonoBehaviour
 	*/
 
 	public string actorId { get; set; }
-	public void Initialize(string actorId, int level, int transcendLevel, int suggestedPowerLevel, string[] suggestedActorIdList, List<int> listPenaltyPowerSource, Action<string> clickCallback)
+	public void Initialize(string actorId, int level, int transcendLevel, bool shopItem, int suggestedPowerLevel, string[] suggestedActorIdList, List<int> listPenaltyPowerSource,  Action<string> clickCallback)
 	{
 		this.actorId = actorId;
 
@@ -102,7 +102,7 @@ public class CharacterCanvasListItem : MonoBehaviour
 		}
 		*/
 		bool showBlackObject = false;
-		if (lobby && level == 0) showBlackObject = true;
+		if (lobby && level == 0 && shopItem == false) showBlackObject = true;
 		/*
 		if (InvasionEnterCanvas.instance != null && InvasionEnterCanvas.instance.gameObject.activeSelf && ContentsData.instance.listInvasionEnteredActorId.Contains(actorId)) showBlackObject = true;
 		*/

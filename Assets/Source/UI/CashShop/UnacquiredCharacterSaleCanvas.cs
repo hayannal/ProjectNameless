@@ -3,17 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Purchasing;
+using MEC;
 
-// hardcode ev14
-public class AcquiredSpellSaleCanvas : SimpleCashEventCanvas
+// hardcode ev15
+public class UnacquiredCharacterSaleCanvas : SimpleCashEventCanvas
 {
-	public static AcquiredSpellSaleCanvas instance;
+	public static UnacquiredCharacterSaleCanvas instance;
 
 	public IAPButton iapButton;
 
-	public SkillIcon skillIcon;
-	public Text nameText;
-	public Text shopCountText;
+	public CharacterCanvasListItem characterCanvasListItem;
 
 	void Awake()
 	{
@@ -26,56 +25,73 @@ public class AcquiredSpellSaleCanvas : SimpleCashEventCanvas
 		RefreshInfo();
 	}
 
-	//private void Update()
+	//void Update()
 	//{
 	//	UpdateRemainTime();
 
 	//	if (Input.GetKeyDown(KeyCode.A))
 	//	{
-	//		CashShopData.instance.PurchaseFlag(CashShopData.eCashConsumeFlagType.AcquiredSpell);
+	//		CashShopData.instance.PurchaseFlag(CashShopData.eCashConsumeFlagType.UnacquiredCompanion);
 	//		ConsumeProduct();
 	//	}
 	//}
 
-	SkillTableData _skillTableData;
-	PickOneSpellTableData _pickOneSpellTableData;
+	ActorTableData _actorTableData;
+	PickOneCharacterTableData _pickOneCharacterTableData;
 	void RefreshInfo()
 	{
-		// acquiredSpellSelectedId
-		string selectedSpellId = CashShopData.instance.acquiredSpellSelectedId;
-		if (string.IsNullOrEmpty(selectedSpellId))
+		// unacquiredCharacterSelectedId
+		string selectedActorId = CashShopData.instance.unacquiredCharacterSelectedId;
+		if (string.IsNullOrEmpty(selectedActorId))
 			return;
-		SkillTableData skillTableData = TableDataManager.instance.FindSkillTableData(selectedSpellId);
-		if (skillTableData == null)
+		ActorTableData actorTableData = TableDataManager.instance.FindActorTableData(selectedActorId);
+		if (actorTableData == null)
 			return;
-		skillIcon.SetInfo(skillTableData, false);
-		_skillTableData = skillTableData;
+		int level = 0;
+		int transcend = 0;
+		characterCanvasListItem.Initialize(actorTableData.actorId, level, transcend, true, 0, null, null, null);
+		_actorTableData = actorTableData;
 
-		SkillLevelTableData skillLevelTableData = TableDataManager.instance.FindSkillLevelTableData(selectedSpellId, 1);
-		if (skillLevelTableData == null)
+		_pickOneCharacterTableData = TableDataManager.instance.FindPickOneCharacterTableData((int)AcquiredCharacterSaleCanvas.eAcquiredType.UnacquiredCharacter, selectedActorId);
+		if (_pickOneCharacterTableData == null)
 			return;
-		nameText.SetLocalizedText(UIString.instance.GetString(skillTableData.useNameIdOverriding ? skillLevelTableData.nameId : skillTableData.nameId));
-		_descString = UIString.instance.GetString(skillTableData.useDescriptionIdOverriding ? skillLevelTableData.descriptionId : skillTableData.descriptionId, skillLevelTableData.parameter);
 
-		_pickOneSpellTableData = TableDataManager.instance.FindPickOneSpellTableData(true, selectedSpellId);
-		if (_pickOneSpellTableData == null)
-			return;
-		shopCountText.text = string.Format("x{0:N0}", _pickOneSpellTableData.count);
-
-		ShopProductTableData shopProductTableData = TableDataManager.instance.FindShopProductTableData(_pickOneSpellTableData.shopProductId);
+		ShopProductTableData shopProductTableData = TableDataManager.instance.FindShopProductTableData(_pickOneCharacterTableData.shopProductId);
 		if (shopProductTableData == null)
 			return;
 		iapButton.productId = shopProductTableData.serverItemId;
 		RefreshPrice(shopProductTableData.serverItemId, shopProductTableData.kor, shopProductTableData.eng);
 	}
 
-	string _descString;
 	public void OnClickDetailButton()
 	{
-		UIInstanceManager.instance.ShowCanvasAsync("SpellInfoCanvas", () =>
+		Timing.RunCoroutine(ShowCharacterInfoCanvasProcess());
+	}
+
+	IEnumerator<float> ShowCharacterInfoCanvasProcess()
+	{
+		FadeCanvas.instance.FadeOut(0.2f, 1.0f, true);
+		yield return Timing.WaitForSeconds(0.2f);
+
+		// 이거로 막아둔다.
+		DelayedLoadingCanvas.Show(true);
+
+		gameObject.SetActive(false);
+
+		while (gameObject.activeSelf)
+			yield return Timing.WaitForOneFrame;
+		yield return Timing.WaitForOneFrame;
+
+		UIInstanceManager.instance.ShowCanvasAsync("CharacterListCanvas", () =>
 		{
-			SpellInfoCanvas.instance.SetInfo(_skillTableData, "", nameText.text, _descString);
+			CharacterListCanvas.instance.OnClickListItem(CashShopData.instance.unacquiredCharacterSelectedId);
 		});
+
+		while ((CharacterInfoCanvas.instance != null && CharacterInfoCanvas.instance.gameObject.activeSelf) == false)
+			yield return Timing.WaitForOneFrame;
+
+		DelayedLoadingCanvas.Show(false);
+		FadeCanvas.instance.FadeIn(0.4f);
 	}
 
 
@@ -116,7 +132,7 @@ public class AcquiredSpellSaleCanvas : SimpleCashEventCanvas
 				instance.gameObject.SetActive(false);
 			#endregion
 
-			CashShopData.instance.PurchaseFlag(CashShopData.eCashConsumeFlagType.AcquiredSpell);
+			CashShopData.instance.PurchaseFlag(CashShopData.eCashConsumeFlagType.UnacquiredCompanion);
 			ConsumeProduct();
 
 			CodelessIAPStoreListener.Instance.StoreController.ConfirmPendingPurchase(product);
@@ -145,14 +161,14 @@ public class AcquiredSpellSaleCanvas : SimpleCashEventCanvas
 
 	public static void ConsumeProduct()
 	{
-		string selectedId = CashShopData.instance.acquiredSpellSelectedId;
+		string selectedId = CashShopData.instance.unacquiredCharacterSelectedId;
 		if (string.IsNullOrEmpty(selectedId))
 			return;
-		PickOneSpellTableData pickOneSpellTableData = TableDataManager.instance.FindPickOneSpellTableData(true, selectedId);
-		if (pickOneSpellTableData == null)
+		PickOneCharacterTableData pickOneCharacterTableData = TableDataManager.instance.FindPickOneCharacterTableData((int)AcquiredCharacterSaleCanvas.eAcquiredType.UnacquiredCharacter, selectedId);
+		if (pickOneCharacterTableData == null)
 			return;
 
-		PlayFabApiManager.instance.RequestConsumeAcquiredSpell(selectedId, pickOneSpellTableData.count, () =>
+		PlayFabApiManager.instance.RequestConsumeUnacquiredCharacter(selectedId, pickOneCharacterTableData.count, () =>
 		{
 			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_CompletePurchase"), 2.0f);
 		});

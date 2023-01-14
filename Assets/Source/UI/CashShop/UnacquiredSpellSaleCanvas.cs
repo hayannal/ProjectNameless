@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Purchasing;
 
-// hardcode ev14
+// hardcode ev13
 public class UnacquiredSpellSaleCanvas : SimpleCashEventCanvas
 {
 	public static UnacquiredSpellSaleCanvas instance;

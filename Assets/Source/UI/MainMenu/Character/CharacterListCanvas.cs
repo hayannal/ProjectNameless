@@ -150,7 +150,7 @@ public class CharacterListCanvas : CharacterShowCanvasBase
 			for (int i = 0; i < _listTempCharacterData.Count; ++i)
 			{
 				CharacterCanvasListItem characterCanvasListItem = _container.GetCachedItem(contentItemPrefab, contentRootRectTransform);
-				characterCanvasListItem.Initialize(_listTempCharacterData[i].actorId, _listTempCharacterData[i].level, _listTempCharacterData[i].transcend, 0, null, null, OnClickListItem);
+				characterCanvasListItem.Initialize(_listTempCharacterData[i].actorId, _listTempCharacterData[i].level, _listTempCharacterData[i].transcend, false, 0, null, null, OnClickListItem);
 				_listCharacterCanvasListItem.Add(characterCanvasListItem);
 			}
 		}
@@ -180,7 +180,7 @@ public class CharacterListCanvas : CharacterShowCanvasBase
 		for (int i = 0; i < _listTempTableData.Count; ++i)
 		{
 			CharacterCanvasListItem characterCanvasListItem = _noGainContainer.GetCachedItem(contentItemPrefab, noGainContentRootRectTransform);
-			characterCanvasListItem.Initialize(_listTempTableData[i].actorId, 0, 0, 0, null, null, OnClickListItem);
+			characterCanvasListItem.Initialize(_listTempTableData[i].actorId, 0, 0, false, 0, null, null, OnClickListItem);
 			characterCanvasListItem.ShowAlarm(false);
 			_listCharacterCanvasListItem.Add(characterCanvasListItem);
 		}

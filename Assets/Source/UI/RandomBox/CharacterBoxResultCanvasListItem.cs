@@ -23,7 +23,7 @@ public class CharacterBoxResultCanvasListItem : MonoBehaviour
 			level = characterData.level;
 			transcend = characterData.transcend;
 		}
-		characterCanvasListItem.Initialize(actorTableData.actorId, level, transcend, 0, null, null, null);
+		characterCanvasListItem.Initialize(actorTableData.actorId, level, transcend, true, 0, null, null, null);
 
 		countText.gameObject.SetActive(false);
 		newText.SetLocalizedText(UIString.instance.GetString(newCharacter ? "ShopUI_NewCharacter" : "ShopUI_TranscendReward"));
@@ -42,7 +42,7 @@ public class CharacterBoxResultCanvasListItem : MonoBehaviour
 			level = characterData.level;
 			transcend = characterData.transcend;
 		}
-		characterCanvasListItem.Initialize(actorTableData.actorId, level, transcend, 0, null, null, null);
+		characterCanvasListItem.Initialize(actorTableData.actorId, level, transcend, false, 0, null, null, null);
 
 		newText.gameObject.SetActive(false);
 		countText.text = string.Format("+ {0:N0}", itemInstance.UsesIncrementedBy);
