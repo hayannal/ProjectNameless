@@ -526,8 +526,7 @@ public class CharacterManager : MonoBehaviour
 				newCharacterData.Initialize((listItemInstance[i].RemainingUses != null) ? (int)listItemInstance[i].RemainingUses : 0, 0, listItemInstance[i].CustomData);
 				_listCharacterData.Add(newCharacterData);
 
-				// 없는 캐릭이 추가될땐 스탯부터 다 다시 계산해야한다.
-				OnChangedStatus();
+				OnAddItem(newCharacterData);
 			}
 		}
 
@@ -568,6 +567,25 @@ public class CharacterManager : MonoBehaviour
 		return listItemInstance;
 	}
 
+	void OnAddItem(CharacterData characterData)
+	{
+		// 없는 캐릭이 추가될땐 스탯부터 다 다시 계산해야한다.
+		OnChangedStatus();
+
+		// hardcode ev15
+		string cashEventId = "ev15";
+		if (CashShopData.instance.IsShowEvent(cashEventId) && CashShopData.instance.unacquiredCharacterSelectedId == characterData.actorId)
+		{
+			PlayFabApiManager.instance.RequestCloseCashEvent(cashEventId, () =>
+			{
+				if (MainCanvas.instance != null && MainCanvas.instance.gameObject.activeSelf)
+					MainCanvas.instance.CloseCashEventButton(cashEventId);
+				if (UnacquiredCharacterSaleCanvas.instance != null && UnacquiredCharacterSaleCanvas.instance.gameObject.activeSelf)
+					UnacquiredCharacterSaleCanvas.instance.gameObject.SetActive(false);
+			});
+		}
+	}
+
 	public void OnRecvPurchaseItem(string rewardValue, int rewardCount)
 	{
 		string actorId = "";
@@ -602,8 +620,7 @@ public class CharacterManager : MonoBehaviour
 				newCharacterData.Initialize(rewardCount, 0, null);
 				_listCharacterData.Add(newCharacterData);
 
-				// 없는 캐릭이 추가될땐 스탯부터 다 다시 계산해야한다.
-				OnChangedStatus();
+				OnAddItem(newCharacterData);
 			}
 		}
 		else if (rewardValue.Substring(rewardValue.Length - 2) == "pp")

@@ -12,7 +12,8 @@ public class GoldBoxRoomCanvas : RoomShowCanvasBase
 	public Text goldBoxRoomTargetValueText;
 	public GameObject sumMyObject;
 	public Text sumMyValueText;
-	public Text winText;
+	public Text winValueText;
+	public RectTransform winRectTransform;
 	public DOTweenAnimation winTextTweenAnimation;
 
 	public GameObject[] remainIconImageList;
@@ -43,9 +44,10 @@ public class GoldBoxRoomCanvas : RoomShowCanvasBase
 		sumMyValueText.text = "0";
 
 		int betRate = GachaInfoCanvas.instance.GetBetRate();
-		winText.gameObject.SetActive(betRate > 1);
+		winRectTransform.gameObject.SetActive(betRate > 1);
+		_needAdjustRect3 = (betRate > 1);
 		if (betRate > 1)
-			winText.text = string.Format("WIN X{0}", betRate);
+			winValueText.text = string.Format("x{0}", betRate);
 	}
 
 	void OnDisable()
@@ -58,6 +60,7 @@ public class GoldBoxRoomCanvas : RoomShowCanvasBase
 
 	bool _needAdjustRect1 = false;
 	bool _needAdjustRect2 = false;
+	bool _needAdjustRect3 = false;
 	void Update()
 	{
 		if (_needAdjustRect1)
@@ -74,6 +77,13 @@ public class GoldBoxRoomCanvas : RoomShowCanvasBase
 			_needAdjustRect2 = false;
 		}
 
+		if (_needAdjustRect3)
+		{
+			winRectTransform.gameObject.SetActive(false);
+			winRectTransform.gameObject.SetActive(true);
+			_needAdjustRect3 = false;
+		}
+
 		UpdateStoleValue();
 	}
 
@@ -83,8 +93,8 @@ public class GoldBoxRoomCanvas : RoomShowCanvasBase
 			return;
 		if (MainSceneBuilder.instance == null)
 			return;
-		winText.gameObject.SetActive(false);
-		winText.transform.localScale = Vector3.one;
+		winRectTransform.gameObject.SetActive(false);
+		winRectTransform.localScale = Vector3.one;
 		SetInfoCameraMode(false);
 
 		// 닫을때는 어차피 가차창으로 돌아가는거니 해제하지 않는다.
@@ -94,7 +104,7 @@ public class GoldBoxRoomCanvas : RoomShowCanvasBase
 
 	public void UseKey()
 	{
-		for (int i = remainIconImageList.Length - 1; i >= 0; --i)
+		for (int i = 0; i < remainIconImageList.Length; ++i)
 		{
 			if (remainIconImageList[i].activeSelf)
 			{
@@ -146,6 +156,6 @@ public class GoldBoxRoomCanvas : RoomShowCanvasBase
 
 	public void ScaleZeroWinText()
 	{
-		winText.transform.DOScale(0.0f, 0.3f);
+		winRectTransform.DOScale(0.0f, 0.3f);
 	}
 }

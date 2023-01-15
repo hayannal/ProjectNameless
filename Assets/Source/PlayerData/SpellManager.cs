@@ -400,13 +400,31 @@ public class SpellManager : MonoBehaviour
 				newSpellData.Initialize((listItemInstance[i].RemainingUses != null) ? (int)listItemInstance[i].RemainingUses : 0, listItemInstance[i].CustomData);
 				_listSpellData.Add(newSpellData);
 
-				// 없는 마법이 추가될땐 스탯부터 다 다시 계산해야한다.
-				OnChangedStatus();
-				if (BattleInstanceManager.instance.playerActor != null)
-					BattleInstanceManager.instance.playerActor.skillProcessor.AddSpell(newSpellData);
+				OnAddItem(newSpellData);
 			}
 		}
 		return listItemInstance;
+	}
+
+	void OnAddItem(SpellData spellData)
+	{
+		// 없는 마법이 추가될땐 스탯부터 다 다시 계산해야한다.
+		OnChangedStatus();
+		if (BattleInstanceManager.instance.playerActor != null)
+			BattleInstanceManager.instance.playerActor.skillProcessor.AddSpell(spellData);
+
+		// hardcode ev13
+		string cashEventId = "ev13";
+		if (CashShopData.instance.IsShowEvent(cashEventId) && CashShopData.instance.unacquiredSpellSelectedId == spellData.spellId)
+		{
+			PlayFabApiManager.instance.RequestCloseCashEvent(cashEventId, () =>
+			{
+				if (MainCanvas.instance != null && MainCanvas.instance.gameObject.activeSelf)
+					MainCanvas.instance.CloseCashEventButton(cashEventId);
+				if (UnacquiredSpellSaleCanvas.instance != null && UnacquiredSpellSaleCanvas.instance.gameObject.activeSelf)
+					UnacquiredSpellSaleCanvas.instance.gameObject.SetActive(false);
+			});
+		}
 	}
 
 	public void OnRecvPurchaseItem(string rewardValue, int rewardCount)
@@ -435,10 +453,7 @@ public class SpellManager : MonoBehaviour
 			newSpellData.Initialize(rewardCount, null);
 			_listSpellData.Add(newSpellData);
 
-			// 없는 마법이 추가될땐 스탯부터 다 다시 계산해야한다.
-			OnChangedStatus();
-			if (BattleInstanceManager.instance.playerActor != null)
-				BattleInstanceManager.instance.playerActor.skillProcessor.AddSpell(newSpellData);
+			OnAddItem(newSpellData);
 		}
 	}
 	#endregion
