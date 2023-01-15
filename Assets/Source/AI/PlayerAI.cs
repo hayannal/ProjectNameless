@@ -346,6 +346,7 @@ public class PlayerAI : MonoBehaviour
 		return true;
 	}
 
+	RangeIndicator _rangeIndicator;
 	void UpdateAttackRange()
 	{
 		if (targetCollider == null)
@@ -358,7 +359,9 @@ public class PlayerAI : MonoBehaviour
 		Transform targetTransform = BattleInstanceManager.instance.GetTransformFromCollider(targetCollider);
 		Vector3 diff = targetTransform.position - actor.cachedTransform.position;
 		diff.y = 0.0f;
-		RangeIndicator.instance.ShowIndicator(currentAttackRange, !IsInAttackRange(diff), actor.cachedTransform, false);
+		if (_rangeIndicator == null)
+			_rangeIndicator = Instantiate<GameObject>(CommonBattleGroup.instance.rangeIndicatorPrefab).GetComponent<RangeIndicator>();
+		_rangeIndicator.ShowIndicator(currentAttackRange, !IsInAttackRange(diff), actor.cachedTransform, false);
 	}
 
 	NavMeshPath _navMeshPath;
