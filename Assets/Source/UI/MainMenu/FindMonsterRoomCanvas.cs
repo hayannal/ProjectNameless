@@ -11,11 +11,10 @@ public class FindMonsterRoomCanvas : MonoBehaviour
 	public Transform roomCameraTransform;
 
 	#region UI
-	public GameObject successObject;
-	public GameObject missObject;
 	public GameObject sumMyObject;
 	public Text sumMyValueText;
-	public Text winText;
+	public Text winValueText;
+	public RectTransform winRectTransform;
 	public DOTweenAnimation winTextTweenAnimation;
 	#endregion
 
@@ -70,9 +69,6 @@ public class FindMonsterRoomCanvas : MonoBehaviour
 		MainCanvas.instance.OnEnterCharacterMenu(true);
 
 		#region UI
-		successObject.SetActive(false);
-		missObject.SetActive(false);
-
 		sumMyValueText.text = "0";
 		_needAdjustRect2 = true;
 
@@ -81,10 +77,11 @@ public class FindMonsterRoomCanvas : MonoBehaviour
 		sumMyValueText.text = "0";
 
 		int betRate = GachaInfoCanvas.instance.GetBetRate();
-		winText.transform.localScale = Vector3.one;
-		winText.gameObject.SetActive(betRate > 1);
+		winRectTransform.localScale = Vector3.one;
+		winRectTransform.gameObject.SetActive(betRate > 1);
+		_needAdjustRect3 = (betRate > 1);
 		if (betRate > 1)
-			winText.text = string.Format("WIN X{0}", betRate);
+			winValueText.text = string.Format("x{0}", betRate);
 		#endregion
 	}
 
@@ -97,6 +94,7 @@ public class FindMonsterRoomCanvas : MonoBehaviour
 	}
 
 	bool _needAdjustRect2 = false;
+	bool _needAdjustRect3 = false;
 	void Update()
 	{
 		if (_needAdjustRect2)
@@ -104,6 +102,13 @@ public class FindMonsterRoomCanvas : MonoBehaviour
 			sumMyObject.SetActive(false);
 			sumMyObject.SetActive(true);
 			_needAdjustRect2 = false;
+		}
+
+		if (_needAdjustRect3)
+		{
+			winRectTransform.gameObject.SetActive(false);
+			winRectTransform.gameObject.SetActive(true);
+			_needAdjustRect3 = false;
 		}
 
 		UpdateStoleValue();
@@ -137,12 +142,6 @@ public class FindMonsterRoomCanvas : MonoBehaviour
 	}
 
 	#region UI
-	public void ShowSuccess(bool success)
-	{
-		successObject.SetActive(success);
-		missObject.SetActive(!success);
-	}
-
 	public void SetStoleValue(int getGold)
 	{
 		_targetValue = getGold;
@@ -185,7 +184,7 @@ public class FindMonsterRoomCanvas : MonoBehaviour
 
 	public void ScaleZeroWinText()
 	{
-		winText.transform.DOScale(0.0f, 0.3f);
+		winRectTransform.DOScale(0.0f, 0.3f);
 	}
 	#endregion
 }
