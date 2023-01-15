@@ -304,7 +304,7 @@ public class GachaInfoCanvas : MonoBehaviour
 			return;
 
 		bool add = false;
-		int result = energy / 10;
+		int result = energy / BattleInstanceManager.instance.GetCachedGlobalConstantInt("BoostEnergyDivide");
 		for (int i = 0; i < CurrencyData.instance.listBetInfo.Count; ++i)
 		{
 			int bet = CurrencyData.instance.listBetInfo[i];
