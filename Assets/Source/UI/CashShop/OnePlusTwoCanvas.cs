@@ -41,12 +41,12 @@ public class OnePlusTwoCanvas : SimpleCashEventCanvas
 	{
 		RefreshButtonState();
 		SetInfo();
-		MainCanvas.instance.OnEnterCharacterMenu(true);
+		//MainCanvas.instance.OnEnterCharacterMenu(true);
 	}
 
 	void OnDisable()
 	{
-		MainCanvas.instance.OnEnterCharacterMenu(false);
+		//MainCanvas.instance.OnEnterCharacterMenu(false);
 	}
 
 

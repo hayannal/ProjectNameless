@@ -23,17 +23,6 @@ public class AlmostThereEventCanvas : SimpleCashEventCanvas
 		RefreshPrice(shopProductTableData.serverItemId, shopProductTableData.kor, shopProductTableData.eng);
 	}
 
-	void OnEnable()
-	{
-		SetInfo();
-		MainCanvas.instance.OnEnterCharacterMenu(true);
-	}
-
-	void OnDisable()
-	{
-		MainCanvas.instance.OnEnterCharacterMenu(false);
-	}
-
 
 
 

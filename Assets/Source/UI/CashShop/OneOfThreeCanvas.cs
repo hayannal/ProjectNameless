@@ -51,17 +51,6 @@ public class OneOfThreeCanvas : SimpleCashEventCanvas
 		}
 	}
 
-	void OnEnable()
-	{
-		SetInfo();
-		MainCanvas.instance.OnEnterCharacterMenu(true);
-	}
-
-	void OnDisable()
-	{
-		MainCanvas.instance.OnEnterCharacterMenu(false);
-	}
-
 	int _buttonIndex;
 	public void OnClickButton(int index)
 	{

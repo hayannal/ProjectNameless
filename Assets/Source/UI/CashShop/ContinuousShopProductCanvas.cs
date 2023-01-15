@@ -27,7 +27,7 @@ public class ContinuousShopProductCanvas : SimpleCashEventCanvas
 	{
 		SetInfo();
 
-		MainCanvas.instance.OnEnterCharacterMenu(true);
+		//MainCanvas.instance.OnEnterCharacterMenu(true);
 
 		if (DragThresholdController.instance != null)
 			DragThresholdController.instance.ApplyUIDragThreshold();
@@ -61,7 +61,7 @@ public class ContinuousShopProductCanvas : SimpleCashEventCanvas
 		if (DragThresholdController.instance != null)
 			DragThresholdController.instance.ResetUIDragThreshold();
 
-		MainCanvas.instance.OnEnterCharacterMenu(false);
+		//MainCanvas.instance.OnEnterCharacterMenu(false);
 	}
 
 

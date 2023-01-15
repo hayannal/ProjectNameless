@@ -44,7 +44,7 @@ public class EnergyPaybackCanvas : SimpleCashEventCanvas
 		usedCountText.text = CashShopData.instance.energyUseForPayback.ToString("N0");
 
 		SetInfo();
-		MainCanvas.instance.OnEnterCharacterMenu(true);
+		//MainCanvas.instance.OnEnterCharacterMenu(true);
 
 		if (DragThresholdController.instance != null)
 			DragThresholdController.instance.ApplyUIDragThreshold();
@@ -55,7 +55,7 @@ public class EnergyPaybackCanvas : SimpleCashEventCanvas
 		if (DragThresholdController.instance != null)
 			DragThresholdController.instance.ResetUIDragThreshold();
 
-		MainCanvas.instance.OnEnterCharacterMenu(false);
+		//MainCanvas.instance.OnEnterCharacterMenu(false);
 	}
 
 	List<EnergyPaybackCanvasListItem> _listEnergyPaybackCanvasListItem = new List<EnergyPaybackCanvasListItem>();
