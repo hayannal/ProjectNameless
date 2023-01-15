@@ -333,10 +333,16 @@ public class PetInfoCanvas : MonoBehaviour
 			return;
 		}
 
+		PetCountTableData nextPetCountTableData = TableDataManager.instance.FindPetCountTableData(_petData.cachedPetTableData.star, _petData.step + 1);
+		if (CurrencyData.instance.gold < nextPetCountTableData.cost)
+		{
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughGold"), 2.0f);
+			return;
+		}
+
 		UIInstanceManager.instance.ShowCanvasAsync("ConfirmSpendCanvas", () =>
 		{
 			PetCountTableData petCountTableData = TableDataManager.instance.FindPetCountTableData(_petData.cachedPetTableData.star, _petData.step);
-			PetCountTableData nextPetCountTableData = TableDataManager.instance.FindPetCountTableData(_petData.cachedPetTableData.star, _petData.step + 1);
 
 			string nextValue = string.Format("<color=#FF3300>{0}</color> -> {1}", petCountTableData.max, nextPetCountTableData.max);
 			string message = string.Format("{0}\n\n{1}", UIString.instance.GetString("PetUI_ConfirmMaxCount"), nextValue);
