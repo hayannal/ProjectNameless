@@ -356,7 +356,7 @@ public class MainCanvas : MonoBehaviour
 		MissionListCanvas.ShowCanvasAsyncWithPrepareGround("EquipGroundCanvas", null);
 	}
 
-	public void OnEnterCharacterMenu(bool enter)
+	public void OnEnterCharacterMenu(bool enter, bool ignoreStartEvent = false)
 	{
 		if (inputRectObject == null)
 			return;
@@ -373,6 +373,9 @@ public class MainCanvas : MonoBehaviour
 
 		if (enter == false)
 		{
+			if (ignoreStartEvent)
+				return;
+
 			RefreshAlarmObjectList();
 			CashShopData.instance.CheckStartEvent(CashShopData.eEventStartCondition.OnCloseMainMenu);
 		}
