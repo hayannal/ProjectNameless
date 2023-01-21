@@ -21,7 +21,6 @@ public class FindMonsterRoomGround : MonoBehaviour
 		instance = this;
 	}
 
-	Vector3[] _defaultOpenTransformRotation;
 	void Start()
 	{
 		worldCanvas.worldCamera = UIInstanceManager.instance.GetCachedCameraMain();
