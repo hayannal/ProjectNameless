@@ -385,6 +385,9 @@ public sealed class LocalPlayerController : BaseCharacterController
 			return;
 		}
 
+		if (playerAI.useTeamMemberAI)
+			return;
+
 
 		// Handle your custom input here...
 
