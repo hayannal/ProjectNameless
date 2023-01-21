@@ -1200,11 +1200,17 @@ public class PlayFabApiManager : MonoBehaviour
 				CurrencyData.instance.bettingCount += 1;
 
 				CurrencyData.instance.gold += resultGold;
-				CurrencyData.instance.brokenEnergy = Math.Min(CurrencyData.instance.brokenEnergy + resultBrokenEnergy, BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxBrokenEnergy"));
-				CurrencyData.instance.eventPoint += resultEventPoint;
 
 				if (resultBrokenEnergy > 0)
+				{
+					int maxBrokenEnergy = CashShopData.instance.GetMaxBrokenEnergy();
+					CurrencyData.instance.brokenEnergy = Math.Min(CurrencyData.instance.brokenEnergy + resultBrokenEnergy, maxBrokenEnergy);
+					if (CurrencyData.instance.brokenEnergy >= maxBrokenEnergy)
+						CashShopData.instance.brokenEnergyMaxReached = true;
 					MainCanvas.instance.RefreshCashButton();
+				}
+
+				CurrencyData.instance.eventPoint += resultEventPoint;
 
 				if (useEnergy == resultEnergy)
 				{
@@ -1907,14 +1913,78 @@ public class PlayFabApiManager : MonoBehaviour
 		});
 	}
 
-	public void RequestConsumeBrokenEnergy(Action successCallback)
+	public void RequestStartBrokenEnergyExpire(int givenTime, Action successCallback, Action failureCallback)
+	{
+		string input = string.Format("{0}_{1}", givenTime, "riezqpsa");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "StartBrokenEnergyExpire",
+			FunctionParameter = new { GiTim = givenTime, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				jsonResult.TryGetValue("date", out object date);
+
+				// 성공시에는 서버에서 방금 기록한 유효기간 만료 시간이 날아온다.
+				CashShopData.instance.brokenEnergyExpireStarted = true;
+				CashShopData.instance.OnRecvStartBrokenEnergyExpire((string)date);
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			//HandleCommonError(error);
+			if (failureCallback != null) failureCallback.Invoke();
+		});
+	}
+
+	public void RequestNextStepBrokenEnergy(int currentLevel, int nextLevel, Action successCallback, Action failureCallback)
+	{
+		string input = string.Format("{0}_{1}_{2}", currentLevel, nextLevel, "zreqalpn");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "NextStepBrokenEnergy",
+			FunctionParameter = new { CuLv = currentLevel, NeLv = nextLevel, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				CashShopData.instance.brokenEnergyExpireStarted = false;
+				CashShopData.instance.brokenEnergyLevel = nextLevel;
+				CurrencyData.instance.brokenEnergy = 0;
+				if (MainCanvas.instance != null)
+					MainCanvas.instance.RefreshCashButton();
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			//HandleCommonError(error);
+			if (failureCallback != null) failureCallback.Invoke();
+		});
+	}
+
+	public void RequestConsumeBrokenEnergy(int currentLevel, int nextLevel, Action successCallback)
 	{
 		WaitingNetworkCanvas.Show(true);
-		
+
+		string input = string.Format("{0}_{1}_{2}", currentLevel, nextLevel, "xreqbipm");
+		string checkSum = CheckSum(input);
 		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "ConsumeBrokenEnergy",
-			FunctionParameter = new { Con = 1 },
+			FunctionParameter = new { CuLv = currentLevel, NeLv = nextLevel, Cs = checkSum },
 			GeneratePlayStreamEvent = true,
 		}, (success) =>
 		{
@@ -1926,8 +1996,11 @@ public class PlayFabApiManager : MonoBehaviour
 
 				CashShopData.instance.ConsumeFlag(CashShopData.eCashConsumeFlagType.BrokenEnergy);
 				CurrencyData.instance.OnRecvRefillEnergy(CurrencyData.instance.brokenEnergy);
+				CashShopData.instance.brokenEnergyExpireStarted = false;
+				CashShopData.instance.brokenEnergyLevel = nextLevel;
 				CurrencyData.instance.brokenEnergy = 0;
-				MainCanvas.instance.RefreshCashButton();
+				if (MainCanvas.instance != null)
+					MainCanvas.instance.RefreshCashButton();
 
 				if (successCallback != null) successCallback.Invoke();
 			}

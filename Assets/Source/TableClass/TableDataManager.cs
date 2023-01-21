@@ -56,6 +56,7 @@ public class TableDataManager : MonoBehaviour
 	public SummonTypeTable summonTypeTable;
 	public ShopProductTable shopProductTable;
 	public LevelPassTable levelPassTable;
+	public BrokenEnergyTable brokenEnergyTable;
 	public ConsumeItemTable consumeItemTable;
 	public EnergyUsePaybackTable energyUsePaybackTable;
 	public StageClearTable stageClearTable;
@@ -547,6 +548,16 @@ public class TableDataManager : MonoBehaviour
 		{
 			if (levelPassTable.dataArray[i].level == level)
 				return levelPassTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public BrokenEnergyTableData FindBrokenEnergyTableData(int level)
+	{
+		for (int i = 0; i < brokenEnergyTable.dataArray.Length; ++i)
+		{
+			if (brokenEnergyTable.dataArray[i].level == level)
+				return brokenEnergyTable.dataArray[i];
 		}
 		return null;
 	}

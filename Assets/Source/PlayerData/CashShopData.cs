@@ -120,6 +120,13 @@ public class CashShopData : MonoBehaviour
 	// 스테이지 클리어 패키지 리스트
 	List<int> _listStageClearPackage;
 
+	// 브로큰 에너지 레벨
+	ObscuredInt _brokenEnergyLevel;
+	public int brokenEnergyLevel { get { return _brokenEnergyLevel; } set { _brokenEnergyLevel = value; } }
+	// 브로큰 에너지는 항상 Expire 되는게 아니다. 특정 조건이 되면 발동된다.
+	public ObscuredBool brokenEnergyExpireStarted { get; set; }
+	public DateTime brokenEnergyExpireTime { get; set; }
+
 	// 첫구매 보상 받았는지 확인용
 	public ObscuredBool firstPurchaseRewarded { get; set; }
 
@@ -388,6 +395,43 @@ public class CashShopData : MonoBehaviour
 				firstPurchaseRewarded = true;
 		}
 
+		_brokenEnergyLevel = 1;
+		if (userReadOnlyData.ContainsKey("brokenEnergyLevel"))
+		{
+			int intValue = 0;
+			if (int.TryParse(userReadOnlyData["brokenEnergyLevel"].Value, out intValue))
+				_brokenEnergyLevel = intValue;
+			if (_brokenEnergyLevel > BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxBrokenStep"))
+				_brokenEnergyLevel = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxBrokenStep");
+		}
+
+		brokenEnergyExpireStarted = false;
+		if (userReadOnlyData.ContainsKey("brokenEnergyExpireStarted"))
+		{
+			if (string.IsNullOrEmpty(userReadOnlyData["brokenEnergyExpireStarted"].Value) == false)
+			{
+				if (userReadOnlyData["brokenEnergyExpireStarted"].Value == "1")
+				{
+					if (userReadOnlyData.ContainsKey("brokenEnergyExpDat"))
+					{
+						if (string.IsNullOrEmpty(userReadOnlyData["brokenEnergyExpDat"].Value) == false)
+						{
+							DateTime expireDateTime = new DateTime();
+							if (DateTime.TryParse(userReadOnlyData["brokenEnergyExpDat"].Value, out expireDateTime))
+							{
+								brokenEnergyExpireTime = expireDateTime.ToUniversalTime();
+								brokenEnergyExpireStarted = true;
+
+								// 플레이 중에 갑자기 확 바뀌는건 좀 그러니 로그인 시점에서만 expireTime 지났는지 확인해서 다음 레벨로 바꾸기로 해본다.
+								if (ServerTime.UtcNow > brokenEnergyExpireTime)
+									brokenEnergyNeedNextStep = true;
+							}
+						}
+					}
+				}
+			}
+		}
+
 		/*
 		// 일일 무료 아이템 수령기록 데이터. 마지막 오픈 시간을 받는건 일퀘 때와 비슷한 구조다. 상점 슬롯과 별개로 처리된다.
 		if (userReadOnlyData.ContainsKey("lasFreDat"))
@@ -418,6 +462,11 @@ public class CashShopData : MonoBehaviour
 		// 구매기록은 정시에 갱신된다.
 		dailyShopSlotPurchasedResetTime = new DateTime(ServerTime.UtcNow.Year, ServerTime.UtcNow.Month, ServerTime.UtcNow.Day) + TimeSpan.FromDays(1);
 		*/
+	}
+
+	void Update()
+	{
+		UpdateBrokenEnergy();
 	}
 
 	public bool IsPurchasedFlag(eCashFlagType cashFlagType)
@@ -773,6 +822,78 @@ public class CashShopData : MonoBehaviour
 		return _listLevelPassReward;
 	}
 	public bool levelPassAlarmStateForNoPass { get; set; }
+	#endregion
+
+	#region Broken Energy
+	public int GetMaxBrokenEnergy()
+	{
+		BrokenEnergyTableData brokenEnergyTableData = TableDataManager.instance.FindBrokenEnergyTableData(_brokenEnergyLevel);
+		if (brokenEnergyTableData != null)
+			return brokenEnergyTableData.maxEnergy;
+		return 0;
+	}
+
+	public void OnRecvStartBrokenEnergyExpire(string brokenEnergyExpireTimeString)
+	{
+		DateTime brokenEnergyExpireTime = new DateTime();
+		if (DateTime.TryParse(brokenEnergyExpireTimeString, out brokenEnergyExpireTime))
+			this.brokenEnergyExpireTime = brokenEnergyExpireTime.ToUniversalTime();
+	}
+
+	void UpdateBrokenEnergy()
+	{
+		UpdateStartBrokenEnergyExpire();
+		UpdateEndBrokenEnergyExpire();
+	}
+
+	// 이게 켜지면 패킷을 보내서 ExpireDateTime을 활성화 해야한다.
+	public bool brokenEnergyMaxReached { get; set; }
+	bool _waitResponse;
+	void UpdateStartBrokenEnergyExpire()
+	{
+		if (_waitResponse)
+			return;
+		if (brokenEnergyMaxReached == false)
+			return;
+		if (brokenEnergyExpireStarted)
+			return;
+
+		_waitResponse = true;
+		PlayFabApiManager.instance.RequestStartBrokenEnergyExpire(BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxBrokenGivenTime"), () =>
+		{
+			brokenEnergyMaxReached = false;
+			_waitResponse = false;
+		}, () =>
+		{
+			_waitResponse = false;
+		});
+	}
+
+	public bool brokenEnergyNeedNextStep { get; set; }
+	void UpdateEndBrokenEnergyExpire()
+	{
+		if (_waitResponse)
+			return;
+		if (BrokenEnergyCanvas.instance != null && BrokenEnergyCanvas.instance.gameObject.activeSelf)
+			return;
+		if (brokenEnergyNeedNextStep == false)
+			return;
+		if (brokenEnergyExpireStarted == false)
+			return;
+
+		_waitResponse = true;
+		int nextLevel = brokenEnergyLevel + 1;
+		if (nextLevel > BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxBrokenStep"))
+			nextLevel = 1;
+		PlayFabApiManager.instance.RequestNextStepBrokenEnergy(brokenEnergyLevel, nextLevel, () =>
+		{
+			brokenEnergyNeedNextStep = false;
+			_waitResponse = false;
+		}, () =>
+		{
+			_waitResponse = false;
+		});
+	}
 	#endregion
 
 	#region Energy Payback

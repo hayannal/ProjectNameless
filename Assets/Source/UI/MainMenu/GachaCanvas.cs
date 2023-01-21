@@ -91,7 +91,7 @@ public class GachaCanvas : ResearchShowCanvasBase
 			case GachaInfoCanvas.eGachaResult.BrokenEnergy2:
 			case GachaInfoCanvas.eGachaResult.BrokenEnergy3:
 				_useMaxObject = true;
-				_maxValue = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxBrokenEnergy");
+				_maxValue = CashShopData.instance.GetMaxBrokenEnergy();
 				//subResultIconImage.sprite = ;
 				break;
 			case GachaInfoCanvas.eGachaResult.Junk1:
