@@ -138,6 +138,9 @@ public class TransportSummonAffector : AffectorBase
 
 	void SummonObject()
 	{
+		if (string.IsNullOrEmpty(_affectorValueLevelTableData.sValue2))
+			return;
+
 		GameObject summonPrefab = FindPreloadObject(_affectorValueLevelTableData.sValue2);
 		if (summonPrefab == null)
 			return;
