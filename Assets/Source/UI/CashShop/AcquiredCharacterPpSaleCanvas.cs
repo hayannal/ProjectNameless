@@ -56,7 +56,7 @@ public class AcquiredCharacterPpSaleCanvas : SimpleCashEventCanvas
 			level = characterData.level;
 			transcend = characterData.transcend;
 		}
-		characterCanvasListItem.Initialize(actorTableData.actorId, level, transcend, true, 0, null, null, null);
+		characterCanvasListItem.Initialize(actorTableData.actorId, level, transcend, false, 0, null, null, null);
 		_actorTableData = actorTableData;
 
 		_pickOneCharacterTableData = TableDataManager.instance.FindPickOneCharacterTableData((int)AcquiredCharacterSaleCanvas.eAcquiredType.AcquiredCharacterPp, selectedActorId);
