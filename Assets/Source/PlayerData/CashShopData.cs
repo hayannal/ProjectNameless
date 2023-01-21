@@ -999,7 +999,7 @@ public class CashShopData : MonoBehaviour
 	}
 	#endregion
 
-	#region Level Pass
+	#region Stage Clear Package
 	public bool IsPurchasedStageClearPackage(int stage)
 	{
 		if (_listStageClearPackage == null)
