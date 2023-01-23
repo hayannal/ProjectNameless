@@ -79,7 +79,7 @@ public class CharacterCanvasListItem : MonoBehaviour
 
 		InitializeGrade(actorTableData.grade);
 
-		if (CharacterManager.instance.leftCharacterId == actorId || CharacterManager.instance.rightCharacterId == actorId)
+		if (shopItem == false && (CharacterManager.instance.leftCharacterId == actorId || CharacterManager.instance.rightCharacterId == actorId))
 			equippedObject.SetActive(true);
 		else
 			equippedObject.SetActive(false);
