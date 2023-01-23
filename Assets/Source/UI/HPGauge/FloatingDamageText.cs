@@ -125,7 +125,7 @@ public class FloatingDamageText : MonoBehaviour
 	float _firstPositionAniRemainTime = 0.0f;
 	void UpdateFirstPositionAni()
 	{
-		positionAnimationTransform.localPosition = Vector3.Lerp(positionAnimationTransform.localPosition, _targetPosition, Time.deltaTime * 5.0f);
+		positionAnimationTransform.localPosition = Vector3.Lerp(positionAnimationTransform.localPosition, _targetPosition, Time.deltaTime * 10.0f);
 
 		if (_firstPositionAniRemainTime > 0.0f)
 		{

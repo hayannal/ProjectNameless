@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3291230543706156444}
   - component: {fileID: 1469190018228558475}
   - component: {fileID: 3601826603862386839}
+  - component: {fileID: 2238440584108946571}
   - component: {fileID: 456100271860529902}
   m_Layer: 5
   m_Name: Text
@@ -137,8 +138,8 @@ MonoBehaviour:
   targetGO: {fileID: 0}
   tweenTargetIsTargetGO: 1
   delay: 0
-  duration: 0.35
-  easeType: 6
+  duration: 0.25
+  easeType: 37
   easeCurve:
     serializedVersion: 2
     m_Curve:
@@ -151,6 +152,15 @@ MonoBehaviour:
       weightedMode: 0
       inWeight: 0
       outWeight: 0
+    - serializedVersion: 3
+      time: 0.5
+      value: 2.5
+      inSlope: 1.4999774
+      outSlope: 1.4999774
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
       value: 1
@@ -196,6 +206,21 @@ MonoBehaviour:
   optionalRotationMode: 0
   optionalScrambleMode: 0
   optionalString: 
+--- !u!114 &2238440584108946571
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3289120113757642707}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
+  m_EffectDistance: {x: 1, y: -1}
+  m_UseGraphicAlpha: 1
 --- !u!114 &456100271860529902
 MonoBehaviour:
   m_ObjectHideFlags: 0
