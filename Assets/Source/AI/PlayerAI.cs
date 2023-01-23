@@ -376,7 +376,7 @@ public class PlayerAI : MonoBehaviour
 		*/
 		if (actor.targetingProcessor.checkNavMeshReachable == false)
 			return true;
-		if (BattleManager.instance != null && BattleManager.instance.IsNodeWar())
+		if (StageManager.instance != null && StageManager.instance.noNavStage)
 			return true;
 
 		if (_navMeshPath == null)

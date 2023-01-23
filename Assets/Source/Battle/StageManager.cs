@@ -49,6 +49,7 @@ public class StageManager : MonoBehaviour
 	public bool worldOffsetState { get; set; }
 	public Vector3 worldOffset = new Vector3(100.0f, 0.0f, 0.0f);
 	public Vector3 GetSafeWorldOffset() { return worldOffsetState ? worldOffset : Vector3.zero; }
+	public bool noNavStage { get; set; }
 
 	public static float RepeatModeInterval = 3.0f;
 

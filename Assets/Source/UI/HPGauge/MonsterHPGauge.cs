@@ -70,7 +70,7 @@ public class MonsterHPGauge : MonoBehaviour
 	{
 		Vector3 position = cachedTransform.position - StageManager.instance.GetSafeWorldOffset();
 		float rotateY = position.x * 2.0f;
-		if (BattleManager.instance != null && BattleManager.instance.IsNodeWar())
+		if (StageManager.instance != null && StageManager.instance.noNavStage)
 			rotateY = 0.0f;
 		cachedTransform.rotation = Quaternion.Euler(0.0f, rotateY, 0.0f);
 	}

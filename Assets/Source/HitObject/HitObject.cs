@@ -1488,7 +1488,7 @@ public class HitObject : MonoBehaviour
 		float maxDistance = _signal.maxDistance;
 		if (_signal.useDynamicMaxDistanceByTargetDistance && _dynamicMaxDistanceByTargetDistance > 0.0f)
 			maxDistance = _dynamicMaxDistanceByTargetDistance;
-		if (BattleManager.instance != null && BattleManager.instance.IsNodeWar())
+		if (StageManager.instance != null && StageManager.instance.noNavStage)
 		{
 			if (maxDistance == 0.0f || (_hitObjectMovement != null && _hitObjectMovement.IsAppliedRicochet()))
 				maxDistance = NodeWarProcessor.SpawnDistance;

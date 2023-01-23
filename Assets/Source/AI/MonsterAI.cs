@@ -208,7 +208,7 @@ public class MonsterAI : MonoBehaviour
 		}
 		if (targetActor != null)
 			return;
-		if (BattleManager.instance != null && BattleManager.instance.IsNodeWar() && BattleInstanceManager.instance.playerActor.actorStatus.IsDie())
+		if (StageManager.instance != null && StageManager.instance.noNavStage && BattleInstanceManager.instance.playerActor.actorStatus.IsDie())
 			return;
 
 		_currentFindDelay -= Time.deltaTime;
@@ -349,7 +349,7 @@ public class MonsterAI : MonoBehaviour
 			NavMeshQueryFilter navMeshQueryFilter = new NavMeshQueryFilter();
 			navMeshQueryFilter.areaMask = NavMesh.AllAreas;
 			navMeshQueryFilter.agentTypeID = pathFinderController.agent.agentTypeID;
-			if (BattleManager.instance != null && BattleManager.instance.IsNodeWar())
+			if (StageManager.instance != null && StageManager.instance.noNavStage)
 			{
 				result = randomPosition;
 				break;
@@ -381,7 +381,7 @@ public class MonsterAI : MonoBehaviour
 			}
 		}
 
-		if (BattleManager.instance != null && BattleManager.instance.IsNodeWar())
+		if (StageManager.instance != null && StageManager.instance.noNavStage)
 		{
 			nodeWarDestinationState = true;
 			nodeWarDestinationPosition = result;
@@ -525,7 +525,7 @@ public class MonsterAI : MonoBehaviour
 			NavMeshQueryFilter navMeshQueryFilter = new NavMeshQueryFilter();
 			navMeshQueryFilter.areaMask = NavMesh.AllAreas;
 			navMeshQueryFilter.agentTypeID = pathFinderController.agent.agentTypeID;
-			if (BattleManager.instance != null && BattleManager.instance.IsNodeWar())
+			if (StageManager.instance != null && StageManager.instance.noNavStage)
 			{
 				_straightMoveDirection = randomDirection.normalized;
 				return;
@@ -749,7 +749,7 @@ public class MonsterAI : MonoBehaviour
 
 	public void ResetPath()
 	{
-		if (BattleManager.instance != null && BattleManager.instance.IsNodeWar())
+		if (StageManager.instance != null && StageManager.instance.noNavStage)
 		{
 			nodeWarDestinationState = false;
 			nodeWarDestinationPosition = Vector3.zero;

@@ -106,7 +106,7 @@ public class JumpAffector : AffectorBase
 			NavMeshQueryFilter navMeshQueryFilter = new NavMeshQueryFilter();
 			navMeshQueryFilter.areaMask = NavMesh.AllAreas;
 			navMeshQueryFilter.agentTypeID = _agentTypeID;
-			if (BattleManager.instance != null && BattleManager.instance.IsNodeWar())
+			if (StageManager.instance != null && StageManager.instance.noNavStage)
 			{
 				result = randomPosition;
 				break;

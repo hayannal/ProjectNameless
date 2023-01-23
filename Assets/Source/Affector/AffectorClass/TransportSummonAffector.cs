@@ -24,7 +24,7 @@ public class TransportSummonAffector : AffectorBase
 
 		// 먼저 내비 위의 임의의 위치에 히트오브젝트 소환
 		_transportPosition = Vector3.zero;
-		if (BattleManager.instance != null && BattleManager.instance.IsNodeWar())
+		if (StageManager.instance != null && StageManager.instance.noNavStage)
 		{
 			// 플레이어 주변에서 생성하면 될듯
 			_transportPosition = _actor.cachedTransform.position;
@@ -37,7 +37,7 @@ public class TransportSummonAffector : AffectorBase
 			_transportPosition = _actor.cachedTransform.position;
 			Vector2 randomRadius = Random.insideUnitCircle.normalized * 2.0f;
 			_transportPosition += new Vector3(randomRadius.x, 0.0f, randomRadius.y);
-			if (BattleManager.instance != null && BattleManager.instance.IsNodeWar() == false && BattleInstanceManager.instance.currentGround != null)
+			if (StageManager.instance != null && StageManager.instance.noNavStage == false && BattleInstanceManager.instance.currentGround != null)
 				_transportPosition = BattleInstanceManager.instance.currentGround.SamplePositionInQuadBound(_transportPosition);
 		}
 		else

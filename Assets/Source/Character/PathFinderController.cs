@@ -85,7 +85,7 @@ public class PathFinderController : BaseAgentController
 			return Vector3.zero;
 
 		var desiredVelocity = Vector3.zero;
-		if (BattleManager.instance != null && BattleManager.instance.IsNodeWar())
+		if (StageManager.instance != null && StageManager.instance.noNavStage)
 		{
 			if (monsterAI.nodeWarDestinationState)
 				moveDirection = (monsterAI.nodeWarDestinationPosition - actor.cachedTransform.position).normalized;

@@ -194,7 +194,7 @@ public class MeSummon : MecanimEventBase
 					if (checkNavPosition) _createPosition = GetNavPosition(_createPosition);
 					else
 					{
-						if (BattleManager.instance != null && BattleManager.instance.IsNodeWar() == false && BattleInstanceManager.instance.currentGround != null)
+						if (StageManager.instance != null && StageManager.instance.noNavStage == false && BattleInstanceManager.instance.currentGround != null)
 							_createPosition = BattleInstanceManager.instance.currentGround.SamplePositionInQuadBound(_createPosition);
 					}
 					_createRotation = Quaternion.LookRotation(_actor.cachedTransform.TransformDirection(direction));
@@ -218,7 +218,7 @@ public class MeSummon : MecanimEventBase
 					if (checkNavPosition) _createPosition = GetNavPosition(_createPosition);
 					else
 					{
-						if (BattleManager.instance != null && BattleManager.instance.IsNodeWar() == false && BattleInstanceManager.instance.currentGround != null)
+						if (StageManager.instance != null && StageManager.instance.noNavStage == false && BattleInstanceManager.instance.currentGround != null)
 							_createPosition = BattleInstanceManager.instance.currentGround.SamplePositionInQuadBound(_createPosition);
 					}
 					_createRotation = Quaternion.LookRotation(_actor.cachedTransform.TransformDirection(direction));
@@ -242,7 +242,7 @@ public class MeSummon : MecanimEventBase
 					if (checkNavPosition) _createPosition = GetNavPosition(_createPosition);
 					else
 					{
-						if (BattleManager.instance != null && BattleManager.instance.IsNodeWar() == false && BattleInstanceManager.instance.currentGround != null)
+						if (StageManager.instance != null && StageManager.instance.noNavStage == false && BattleInstanceManager.instance.currentGround != null)
 							_createPosition = BattleInstanceManager.instance.currentGround.SamplePositionInQuadBound(_createPosition);
 					}
 					_createRotation = Quaternion.LookRotation(_actor.cachedTransform.TransformDirection(direction));
@@ -271,7 +271,7 @@ public class MeSummon : MecanimEventBase
 			NavMeshQueryFilter navMeshQueryFilter = new NavMeshQueryFilter();
 			navMeshQueryFilter.areaMask = NavMesh.AllAreas;
 			navMeshQueryFilter.agentTypeID = _agentTypeID;
-			if (BattleManager.instance != null && BattleManager.instance.IsNodeWar())
+			if (StageManager.instance != null && StageManager.instance.noNavStage)
 			{
 				result = desirePosition;
 				break;
