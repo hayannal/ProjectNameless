@@ -68,6 +68,22 @@ public class CustomFollowCamera : MonoBehaviour
 		}
 	}
 
+	private Vector3 playerBaseRelativePosition
+	{
+		get
+		{
+			Vector3 result = targetTransform.position - cachedTransform.forward * distanceToTarget;
+			if (_quadLoaded && checkPlaneLeftRightQuad)
+			{
+				if (result.x < _quadLeft - LEFT_LIMIT)
+					result.x = _quadLeft - LEFT_LIMIT;
+				if (result.x > _quadRight - RIGHT_LIMIT)
+					result.x = _quadRight - RIGHT_LIMIT;
+			}
+			return result;
+		}
+	}
+
 	#endregion
 
 	#region MONOBEHAVIOUR
@@ -98,6 +114,10 @@ public class CustomFollowCamera : MonoBehaviour
 
 	public bool immediatelyUpdate { set { _immediatelyUpdate = value; } }
 	bool _immediatelyUpdate;
+	public bool immediatelyPlayerBaseUpdate { set { _immediatelyPlayerBaseUpdate = value; } }
+	bool _immediatelyPlayerBaseUpdate;
+	public bool followPlayerPosition { set { _followPlayerPosition = value; } }
+	bool _followPlayerPosition;
 	Vector3 _velocity = Vector3.zero;
 	public void LateUpdate()
 	{
@@ -108,6 +128,13 @@ public class CustomFollowCamera : MonoBehaviour
 		{
 			cachedTransform.position = cameraRelativePosition;
 			_immediatelyUpdate = false;
+			return;
+		}
+
+		if (_immediatelyPlayerBaseUpdate)
+		{
+			cachedTransform.position = playerBaseRelativePosition;
+			_immediatelyPlayerBaseUpdate = false;
 			return;
 		}
 
@@ -128,8 +155,9 @@ public class CustomFollowCamera : MonoBehaviour
 		//cachedTransform.position = Vector3.SmoothDamp(cachedTransform.position, cameraRelativePosition, ref _velocity, smoothTime, _followSpeed * 2.0f, Time.smoothDeltaTime);
 		//cachedTransform.position = Vector3.SmoothDamp(cachedTransform.position, cameraRelativePosition, ref _velocity, smoothTime, _followSpeed * 2.0f, Time.fixedDeltaTime);
 
-		// 그나마 이 방법이 기존에 쓰던 Lerp보다 조금은 더 나은거 같아서 쓰기로 한다.
-		//cachedTransform.position = Vector3.SmoothDamp(cachedTransform.position, cameraRelativePosition, ref _velocity, smoothTime, Mathf.Infinity, Time.smoothDeltaTime);
+		if (_followPlayerPosition)
+			// 그나마 이 방법이 기존에 쓰던 Lerp보다 조금은 더 나은거 같아서 쓰기로 한다.
+			cachedTransform.position = Vector3.SmoothDamp(cachedTransform.position, playerBaseRelativePosition, ref _velocity, smoothTime, Mathf.Infinity, Time.smoothDeltaTime);
 
 		//LateUpdateTargetFrameRate();
 	}
