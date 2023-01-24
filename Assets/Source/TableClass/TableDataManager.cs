@@ -78,6 +78,10 @@ public class TableDataManager : MonoBehaviour
 	public PetCaptureTable petCaptureTable;
 	public PetSaleTable petSaleTable;
 
+	public AttendanceTypeTable attendanceTypeTable;
+	public AttendanceRewardTable attendanceRewardTable;
+	public AttendanceEarlyTable attendanceEarlyTable;
+
 	public EquipTable equipTable;
 
 	void Awake()
@@ -666,6 +670,26 @@ public class TableDataManager : MonoBehaviour
 		{
 			if (petSaleTable.dataArray[i].star == star)
 				return petSaleTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public AttendanceTypeTableData FindAttendanceTypeTableData(string id)
+	{
+		for (int i = 0; i < attendanceTypeTable.dataArray.Length; ++i)
+		{
+			if (attendanceTypeTable.dataArray[i].attendanceId == id)
+				return attendanceTypeTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public AttendanceRewardTableData FindAttendanceRewardTableData(string id, int num)
+	{
+		for (int i = 0; i < attendanceRewardTable.dataArray.Length; ++i)
+		{
+			if (attendanceRewardTable.dataArray[i].attendanceId == id && attendanceRewardTable.dataArray[i].num == num)
+				return attendanceRewardTable.dataArray[i];
 		}
 		return null;
 	}
