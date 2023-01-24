@@ -32,7 +32,7 @@ public class FloatingDamageText : MonoBehaviour
 		damageText.font = UIString.instance.GetUnlocalizedFont();
 		damageText.fontStyle = UIString.instance.useSystemUnlocalizedFont ? FontStyle.Bold : FontStyle.Normal;
 		damageText.color = critical ? Color.red : Color.white;
-		damageText.text = intDamage.ToString();
+		damageText.text = intDamage.ToString("N0");
 		InitializeText(actor, index);
 	}
 
