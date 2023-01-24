@@ -11,6 +11,11 @@ public class AttendanceCanvas : MonoBehaviour
 	public CurrencySmallInfo currencySmallInfo;
 	public Text remainTimeText;
 	public AttendanceCanvasListItem lastItem;
+	public GameObject earlyInfoRectObject;
+	public GameObject earlyBonusRectObject;
+	public Text earlyBonusNumberText;
+	public AttendanceCanvasListItem earlyBonusItem;
+
 	public GameObject nextAttendanceRootObject;
 	public Text nextAttendanceRemainTimeText;
 
@@ -37,6 +42,7 @@ public class AttendanceCanvas : MonoBehaviour
 		RefreshRemainTime();
 		RefreshGrid();
 		RefreshNextInfo();
+		RefreshEarlyBonusRectInfo();
 
 		MainCanvas.instance.OnEnterCharacterMenu(true);
 
@@ -52,7 +58,7 @@ public class AttendanceCanvas : MonoBehaviour
 		MainCanvas.instance.OnEnterCharacterMenu(false);
 	}
 
-	void RefreshRemainTime()
+	public void RefreshRemainTime()
 	{
 		// show 상태가 아니면 안보이겠지만 혹시 모르니 안전하게 구해온다.
 		if (AttendanceData.instance.attendanceId == "")
@@ -149,5 +155,25 @@ public class AttendanceCanvas : MonoBehaviour
 		{
 			nextAttendanceRootObject.SetActive(false);
 		}
+	}
+
+	public void RefreshEarlyBonusRectInfo()
+	{
+		int earlyBonusDays = AttendanceData.instance.earlyBonusDays;
+		earlyInfoRectObject.SetActive(earlyBonusDays == 0);
+		earlyBonusRectObject.SetActive(earlyBonusDays > 0);
+
+		if (earlyBonusDays == 0)
+			return;
+
+		earlyBonusNumberText.text = earlyBonusDays.ToString();
+
+		// 아무거나 가져와서 셋팅부터 하고
+		AttendanceRewardTableData tempAttendanceRewardTableData = TableDataManager.instance.FindAttendanceRewardTableData(AttendanceData.instance.attendanceId, 1);
+		earlyBonusItem.RefreshInfo(0, tempAttendanceRewardTableData);
+
+		// earlyBonus로 받은 에너지로 덮어쓴다. 보여주려고 하는거라 이렇게 처리해도 된다.
+		earlyBonusItem.rewardIcon.RefreshReward("cu", "EN", earlyBonusDays * BattleInstanceManager.instance.GetCachedGlobalConstantInt("AttendanceEarlyEnergy"));
+		earlyBonusItem.countText.text = earlyBonusItem.rewardIcon.countText.text;
 	}
 }

@@ -80,7 +80,6 @@ public class TableDataManager : MonoBehaviour
 
 	public AttendanceTypeTable attendanceTypeTable;
 	public AttendanceRewardTable attendanceRewardTable;
-	public AttendanceEarlyTable attendanceEarlyTable;
 
 	public EquipTable equipTable;
 

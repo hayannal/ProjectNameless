@@ -39,6 +39,9 @@ public class AttendanceData : MonoBehaviour
 	// 오늘 출석체크 했다면
 	public ObscuredBool todayReceiveRecorded { get; set; }
 
+	// early bonus 기록용
+	public int earlyBonusDays { get; set; }
+
 	void Update()
 	{
 		UpdateStarted();
@@ -99,11 +102,7 @@ public class AttendanceData : MonoBehaviour
 		if (userReadOnlyData.ContainsKey("attendanceExpDat"))
 		{
 			if (string.IsNullOrEmpty(userReadOnlyData["attendanceExpDat"].Value) == false)
-			{
-				DateTime expireDateTime = new DateTime();
-				if (DateTime.TryParse(userReadOnlyData["attendanceExpDat"].Value, out expireDateTime))
-					attendanceExpireTime = expireDateTime.ToUniversalTime();
-			}
+				OnRecvAttendanceExpireInfo(userReadOnlyData["attendanceExpDat"].Value);
 		}
 
 		rewardReceiveCount = 0;
@@ -124,10 +123,19 @@ public class AttendanceData : MonoBehaviour
 				listAttendanceOneTime = serializer.DeserializeObject<List<string>>(userReadOnlyData["attendanceOneTimeLst"].Value);
 		}
 
+		todayReceiveRecorded = false;
 		if (userReadOnlyData.ContainsKey("attendanceRwdRcvDat"))
 		{
 			if (string.IsNullOrEmpty(userReadOnlyData["attendanceRwdRcvDat"].Value) == false)
 				OnRecvRepeatLoginInfo(userReadOnlyData["attendanceRwdRcvDat"].Value);
+		}
+
+		earlyBonusDays = 0;
+		if (userReadOnlyData.ContainsKey("attendanceEarlyCnt"))
+		{
+			int intValue = 0;
+			if (int.TryParse(userReadOnlyData["attendanceEarlyCnt"].Value, out intValue))
+				earlyBonusDays = intValue;
 		}
 
 		// 로그인 할때마다 시작 상태가 아니라면 초기화를 진행해야한다.
@@ -150,18 +158,24 @@ public class AttendanceData : MonoBehaviour
 	{
 		this.attendanceId = attendanceId;
 		this.rewardReceiveCount = 0;
+		this.earlyBonusDays = 0;
 
-		DateTime lastAttendanceExpireTime = new DateTime();
-		if (DateTime.TryParse(lastAttendanceExpireTimeString, out lastAttendanceExpireTime))
-		{
-			DateTime universalTime = lastAttendanceExpireTime.ToUniversalTime();
-			attendanceExpireTime = universalTime;
-		}
+		OnRecvAttendanceExpireInfo(lastAttendanceExpireTimeString);
 
 		if (oneTime)
 		{
 			if (listAttendanceOneTime.Contains(attendanceId) == false)
 				listAttendanceOneTime.Add(attendanceId);
+		}
+	}
+
+	public void OnRecvAttendanceExpireInfo(string lastAttendanceExpireTimeString)
+	{
+		DateTime lastAttendanceExpireTime = new DateTime();
+		if (DateTime.TryParse(lastAttendanceExpireTimeString, out lastAttendanceExpireTime))
+		{
+			DateTime universalTime = lastAttendanceExpireTime.ToUniversalTime();
+			attendanceExpireTime = universalTime;
 		}
 	}
 

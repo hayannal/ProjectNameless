@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,6 +20,7 @@ public class AttendanceCanvasListItem : MonoBehaviour
 	public RectTransform alarmRootTransform;
 
 	AttendanceRewardTableData _attendanceRewardTableData;
+	ObscuredBool _lastItem;
 	public void RefreshInfo(int lastRewardNum, AttendanceRewardTableData attendanceRewardTableData)
 	{
 		_attendanceRewardTableData = attendanceRewardTableData;
@@ -26,9 +28,11 @@ public class AttendanceCanvasListItem : MonoBehaviour
 		rewardIcon.RefreshReward(attendanceRewardTableData.rewardType1, attendanceRewardTableData.rewardValue1, attendanceRewardTableData.rewardCount1);
 		RefreshClaimState(attendanceRewardTableData);
 
+		_lastItem = false;
 		if (lastRewardNum == attendanceRewardTableData.num)
 		{
 			// last item
+			_lastItem = true;
 			rewardIcon.ShowOnlyIcon(true, 1.3f);
 
 			if (rewardIcon2 != null)
@@ -117,7 +121,15 @@ public class AttendanceCanvasListItem : MonoBehaviour
 			if (addGold > 0 && CurrencyData.instance.CheckMaxGold())
 				return;
 
-			PlayFabApiManager.instance.RequestGetAttendanceReward(_attendanceRewardTableData.rewardType1, _attendanceRewardTableData.key, addDia, addGold, addEnergy, () =>
+			int earlyBonus = 0;
+			if (_lastItem)
+			{
+				TimeSpan remainTime = AttendanceData.instance.attendanceExpireTime - ServerTime.UtcNow;
+				earlyBonus = remainTime.Days;
+				if (earlyBonus > 10) earlyBonus = 10;
+			}
+
+			PlayFabApiManager.instance.RequestGetAttendanceReward(_attendanceRewardTableData.rewardType1, _attendanceRewardTableData.key, addDia, addGold, addEnergy, earlyBonus, () =>
 			{
 				RefreshClaimState(_attendanceRewardTableData);
 				AttendanceCanvas.instance.currencySmallInfo.RefreshInfo();
@@ -127,7 +139,17 @@ public class AttendanceCanvasListItem : MonoBehaviour
 
 				UIInstanceManager.instance.ShowCanvasAsync("CommonRewardCanvas", () =>
 				{
-					CommonRewardCanvas.instance.RefreshReward(addGold, addDia, addEnergy);
+					CommonRewardCanvas.instance.RefreshReward(addGold, addDia, addEnergy, () =>
+					{
+						if (earlyBonus > 0)
+						{
+							AttendanceCanvas.instance.RefreshRemainTime();
+							UIInstanceManager.instance.ShowCanvasAsync("AttendanceEarlyCanvas", () =>
+							{
+								AttendanceEarlyCanvas.instance.RefreshInfo(earlyBonus);
+							});
+						}
+					});
 				});
 			});
 		}

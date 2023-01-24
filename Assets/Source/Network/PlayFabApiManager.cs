@@ -3987,16 +3987,16 @@ public class PlayFabApiManager : MonoBehaviour
 		});
 	}
 
-	public void RequestGetAttendanceReward(string rewardType, int key, int addDia, int addGold, int addEnergy, Action successCallback)
+	public void RequestGetAttendanceReward(string rewardType, int key, int addDia, int addGold, int addEnergy, int earlyBonus, Action successCallback)
 	{
 		WaitingNetworkCanvas.Show(true);
 
-		string input = string.Format("{0}_{1}_{2}_{3}", AttendanceData.instance.attendanceId, rewardType, key, "orapzvqb");
+		string input = string.Format("{0}_{1}_{2}_{3}_{4}", AttendanceData.instance.attendanceId, rewardType, earlyBonus, key, "orapzvqb");
 		string infoCheckSum = CheckSum(input);
 		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "GetAttendanceReward",
-			FunctionParameter = new { Tp = rewardType, InfCs = infoCheckSum },
+			FunctionParameter = new { Tp = rewardType, Early = earlyBonus, InfCs = infoCheckSum },
 			GeneratePlayStreamEvent = true,
 		}, (success) =>
 		{
@@ -4014,6 +4014,16 @@ public class PlayFabApiManager : MonoBehaviour
 
 				CurrencyData.instance.dia += addDia;
 				CurrencyData.instance.gold += addGold;
+
+				AttendanceData.instance.earlyBonusDays = earlyBonus;
+				if (earlyBonus > 0)
+				{
+					addEnergy += (BattleInstanceManager.instance.GetCachedGlobalConstantInt("AttendanceEarlyEnergy") * earlyBonus);
+
+					// 마지막 earlyBonus를 받는 타이밍에는 이벤트를 빠르게 종료시키기 위해 조정된 expireTime이 날아온다.
+					jsonResult.TryGetValue("adjustdate", out object adjustdate);
+					AttendanceData.instance.OnRecvAttendanceExpireInfo((string)adjustdate);
+				}
 				if (addEnergy > 0)
 					CurrencyData.instance.OnRecvRefillEnergy(addEnergy);
 
