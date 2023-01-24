@@ -274,6 +274,7 @@ public class PlayFabApiManager : MonoBehaviour
 		MissionData.instance.OnRecvMissionData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 		SubMissionData.instance.OnRecvSubMissionData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 		FestivalData.instance.OnRecvFestivalData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
+		AttendanceData.instance.OnRecvAttendanceData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 		RankingData.instance.OnRecvRankingData(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 
 		// PlayerData 만 다 받고 처리하고 다른 인벤이나 스펠은 여기서 처리한다.
@@ -3944,6 +3945,77 @@ public class PlayFabApiManager : MonoBehaviour
 					SubMissionData.instance.fortuneWheelDailyCount += 1;
 				CurrencyData.instance.gold += reward;
 				CashShopData.instance.ConsumeFlag(CashShopData.eCashConsumeFlagType.FortuneWheel);
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+	#endregion
+
+
+	#region Attendance
+	public void RequestStartAttendance(string startAttendanceId, int givenTime, bool oneTime, bool completeRefresh, Action successCallback, Action failureCallback)
+	{
+		string input = string.Format("{0}_{1}_{2}_{3}", startAttendanceId, givenTime, oneTime ? 1 : 0, "dmnapoqz");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "StartAttendance",
+			FunctionParameter = new { AttId = startAttendanceId, GiTim = givenTime, OnTim = oneTime ? 1 : 0, CoRe = completeRefresh ? 1 : 0, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				jsonResult.TryGetValue("date", out object date);
+
+				// 성공시에는 서버에서 방금 기록한 유효기간 만료 시간이 날아온다.
+				AttendanceData.instance.OnRecvAttendanceExpireInfo(startAttendanceId, oneTime, (string)date);
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			//HandleCommonError(error);
+			if (failureCallback != null) failureCallback.Invoke();
+		});
+	}
+
+	public void RequestGetAttendanceReward(string rewardType, int key, int addDia, int addGold, int addEnergy, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}_{2}_{3}", AttendanceData.instance.attendanceId, rewardType, key, "orapzvqb");
+		string infoCheckSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "GetAttendanceReward",
+			FunctionParameter = new { Tp = rewardType, InfCs = infoCheckSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				// 성공시에는 서버에서 방금 기록한 마지막 수령 시간이 날아온다.
+				jsonResult.TryGetValue("date", out object date);
+				AttendanceData.instance.OnRecvRepeatLoginInfo((string)date);
+				AttendanceData.instance.rewardReceiveCount += 1;
+
+				CurrencyData.instance.dia += addDia;
+				CurrencyData.instance.gold += addGold;
+				if (addEnergy > 0)
+					CurrencyData.instance.OnRecvRefillEnergy(addEnergy);
 
 				if (successCallback != null) successCallback.Invoke();
 			}

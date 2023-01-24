@@ -91,6 +91,7 @@ public class PlayerData : MonoBehaviour
 		SubMissionData.instance.OnRefreshDay();
 		FestivalData.instance.OnRefreshDay();
 		PetManager.instance.OnRefreshDay();
+		AttendanceData.instance.OnRefreshDay();
 	}
 
 	List<string> _listTitleKey;

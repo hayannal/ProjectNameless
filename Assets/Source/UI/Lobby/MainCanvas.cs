@@ -34,6 +34,7 @@ public class MainCanvas : MonoBehaviour
 	public GameObject brokenEnergyButtonObject;
 	public GameObject sevenDaysButtonObject;
 	public GameObject festivalButtonObject;
+	public GameObject attendanceButtonObject;
 	public GameObject firstPurchaseButtonObject;
 	public Transform cashEventButtonRootTransform;
 	public CashEventButton[] cashEventButtonList;
@@ -54,6 +55,7 @@ public class MainCanvas : MonoBehaviour
 	public RectTransform sevenDaysAlarmRootTransform;
 	public RectTransform festivalAlarmRootTransform;
 	public RectTransform firstPurchaseAlarmRootTransform;
+	public RectTransform attendanceAlarmRootTransform;
 	public RectTransform energyPaybackAlarmRootTransform;   // ev6
 
 	public RectTransform continuousProduct1AlarmRootTransform;  // ev4
@@ -443,6 +445,7 @@ public class MainCanvas : MonoBehaviour
 		RefreshContinuousProduct1AlarmObject();
 		RefreshOnePlusTwo1AlarmObject();
 		RefreshFirstPurchaseAlarmObject();
+		RefreshAttendanceAlarmObject();
 	}
 
 	public static bool IsAlarmCashShop()
@@ -722,6 +725,26 @@ public class MainCanvas : MonoBehaviour
 		RefreshAlarmObject(IsAlarmFirstPurchase(), firstPurchaseAlarmRootTransform);
 	}
 
+	public static bool IsAlarmAttendance()
+	{
+		if (string.IsNullOrEmpty(AttendanceData.instance.attendanceId))
+			return false;
+
+		AttendanceTypeTableData attendanceTypeTableData = TableDataManager.instance.FindAttendanceTypeTableData(AttendanceData.instance.attendanceId);
+		if (attendanceTypeTableData == null)
+			return false;
+
+		if (AttendanceData.instance.rewardReceiveCount < attendanceTypeTableData.lastRewardNum && AttendanceData.instance.todayReceiveRecorded == false)
+			return true;
+
+		return false;
+	}
+
+	public void RefreshAttendanceAlarmObject()
+	{
+		RefreshAlarmObject(IsAlarmAttendance(), attendanceAlarmRootTransform);
+	}
+
 	void RefreshAlarmObject(bool show, Transform alarmRootTransform)
 	{
 		if (show)
@@ -779,6 +802,9 @@ public class MainCanvas : MonoBehaviour
 
 		bool showFirstPurchase = (CashShopData.instance.firstPurchaseRewarded == false);
 		firstPurchaseButtonObject.SetActive(showFirstPurchase);
+
+		bool showAttendance = (AttendanceData.instance.attendanceId != "");
+		attendanceButtonObject.SetActive(showAttendance);
 	}
 
 	public void OnClickCashShopButton()
@@ -804,6 +830,11 @@ public class MainCanvas : MonoBehaviour
 	public void OnClickFirstPurchaseButton()
 	{
 		UIInstanceManager.instance.ShowCanvasAsync("FirstPurchaseCanvas", null);
+	}
+
+	public void OnClickAttendanceButton()
+	{
+		UIInstanceManager.instance.ShowCanvasAsync("AttendanceCanvas", null);
 	}
 	#endregion
 
