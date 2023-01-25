@@ -153,14 +153,11 @@ public class PetSearchCanvas : MonoBehaviour
 	#region UI
 	public void InitializePhase()
 	{
-		if (PetManager.instance.listPetData.Count == 0)
+		if (string.IsNullOrEmpty(PetManager.instance.activePetId))
 		{
 			captureButtonObject.SetActive(false);
 			return;
 		}
-
-		if (string.IsNullOrEmpty(PetManager.instance.activePetId))
-			return;
 
 		int count = CashShopData.instance.GetCashItemCount(CashShopData.eCashItemCountType.CaptureBetter);
 		captureBetterCountText.text = count.ToString("N0");

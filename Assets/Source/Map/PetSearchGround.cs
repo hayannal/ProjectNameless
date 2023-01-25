@@ -63,16 +63,11 @@ public class PetSearchGround : MonoBehaviour
 	GameObject _activePetObject;
 	void InitializePhase()
 	{
-		if (PetManager.instance.listPetData.Count == 0)
-		{
-			// 펫이 하나도 없을땐 최초 획득 로직을 수행해야한다.
-			InitializeFirstGet();
-			return;
-		}
-
 		if (string.IsNullOrEmpty(PetManager.instance.activePetId))
 		{
-			// 액티브가 없을 수 없을텐데 이상하다.
+			// 다른 곳에서 펫을 얻을 수 있게 되면서 펫이 하나도 없을땐 최초 획득 로직을 수행하는건 조건이 안맞게 되었다.
+			// 액티브가 없을 때로 판단해서 FirstGet 처리를 하기로 한다.
+			InitializeFirstGet();
 			return;
 		}
 
