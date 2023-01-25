@@ -10,13 +10,11 @@ public class ChangePowerCanvas : MonoBehaviour
 	public CanvasGroup canvasGroup;
 	public GameObject textRootObject;
 	public Text diffValueText;
-	public Text scaleDiffValueText;
+	public Text changeValueText;
 
-	Color _defaultFontColor;
 	void Awake()
 	{
 		instance = this;
-		_defaultFontColor = diffValueText.color;
 	}
 
 	void OnEnable()
@@ -49,9 +47,8 @@ public class ChangePowerCanvas : MonoBehaviour
 		_targetValue = diff;
 		_valueChangeSpeed = _targetValue / valueChangeTime;
 
-		diffValueText.color = _defaultFontColor;
 		diffValueText.text = prevString;
-		scaleDiffValueText.text = "";
+		changeValueText.text = diff.ToString("N0");
 	}
 
 	public void OnCompleteScaleAnimation()
@@ -80,8 +77,7 @@ public class ChangePowerCanvas : MonoBehaviour
 		if (currentValueInt >= _targetValue)
 		{
 			currentValueInt = _targetValue;
-			diffValueText.color = Color.clear;
-			scaleDiffValueText.text = (_baseValue + _targetValue).ToString("N0");
+			diffValueText.text = (_baseValue + _targetValue).ToString("N0");
 			_updateValueText = false;
 		}
 		if (currentValueInt != _lastValue)
