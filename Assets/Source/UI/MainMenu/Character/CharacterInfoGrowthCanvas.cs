@@ -518,6 +518,7 @@ public class CharacterInfoGrowthCanvas : MonoBehaviour
 	int _prevGold;
 	int _levelUpCount;
 	bool _pressed = false;
+	int _prevHighestCharacterLevel;
 	public void OnPressInitialize()
 	{
 		// 패킷에 전송할만한 초기화 내용을 기억해둔다.
@@ -526,6 +527,9 @@ public class CharacterInfoGrowthCanvas : MonoBehaviour
 		_prevGold = CurrencyData.instance.gold;
 		_levelUpCount = 0;
 		_pressed = true;
+
+		// for quest
+		_prevHighestCharacterLevel = CharacterManager.instance.GetHighestCharacterLevel();
 	}
 
 	public void OnPressLevelUp()
@@ -612,6 +616,10 @@ public class CharacterInfoGrowthCanvas : MonoBehaviour
 
 		PlayFabApiManager.instance.RequestCharacterPressLevelUp(_characterData, _prevCharacterLevel, _prevGold, _characterData.level, CurrencyData.instance.gold, _levelUpCount, () =>
 		{
+			int highestCharacterLevel = CharacterManager.instance.GetHighestCharacterLevel();
+			if (highestCharacterLevel > _prevHighestCharacterLevel)
+				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.LevelUpCharacter, highestCharacterLevel - _prevHighestCharacterLevel);
+
 			CharacterListCanvas.instance.RefreshGrid();
 			CharacterListCanvas.instance.RefreshAlarmList();
 			MainCanvas.instance.RefreshCharacterAlarmObject();

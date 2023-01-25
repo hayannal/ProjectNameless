@@ -233,6 +233,17 @@ public class PetManager : MonoBehaviour
 		return false;
 	}
 
+	public int GetHighestPetCount()
+	{
+		int highestCount = 0;
+		for (int i = 0; i < _listPetData.Count; ++i)
+		{
+			if (highestCount < _listPetData[i].count)
+				highestCount = _listPetData[i].count;
+		}
+		return highestCount;
+	}
+
 	#region Daily
 	void OnRecvDailySearchInfo(DateTime lastSearchTime)
 	{
@@ -492,6 +503,7 @@ public class PetManager : MonoBehaviour
 	{
 		List<ItemInstance> listItemInstance = PlayFabApiManager.instance.DeserializeItemGrantResult(jsonItemGrantResults);
 
+		int prevHighestPetCount = GetHighestPetCount();
 		int totalCount = 0;
 		for (int i = 0; i < listItemInstance.Count; ++i)
 		{
@@ -508,6 +520,7 @@ public class PetManager : MonoBehaviour
 			return null;
 		}
 
+		int addPetCount = 0;
 		for (int i = 0; i < listItemInstance.Count; ++i)
 		{
 			PetTableData petTableData = TableDataManager.instance.FindPetTableData(listItemInstance[i].ItemId);
@@ -546,8 +559,18 @@ public class PetManager : MonoBehaviour
 
 				// 없는 펫이 추가될땐 스탯부터 다 다시 계산해야한다.
 				OnChangedStatus();
+
+				addPetCount += 1;
 			}
 		}
+
+		if (addPetCount > 0)
+			GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.GatherPet, addPetCount);
+
+		int highestPetCount = GetHighestPetCount();
+		if (highestPetCount > prevHighestPetCount)
+			GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.GatherPetCount, highestPetCount - prevHighestPetCount);
+
 		return listItemInstance;
 	}
 
@@ -568,7 +591,13 @@ public class PetManager : MonoBehaviour
 		}
 
 		if (currentPetData != null)
+		{
+			int prevHighestPetCount = GetHighestPetCount();
+			if ((currentPetData.count + rewardCount) > prevHighestPetCount)
+				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.GatherPetCount, (currentPetData.count + rewardCount) - prevHighestPetCount);
+
 			currentPetData.SetCount(currentPetData.count + rewardCount);
+		}
 		else
 		{
 			PetData newPetData = new PetData();
@@ -579,6 +608,8 @@ public class PetManager : MonoBehaviour
 
 			// 없는 펫이 추가될땐 스탯부터 다 다시 계산해야한다.
 			OnChangedStatus();
+
+			GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.GatherPet);
 		}
 	}
 	#endregion

@@ -180,6 +180,17 @@ public class CharacterManager : MonoBehaviour
 		}
 	}
 	*/
+
+	public int GetHighestCharacterLevel()
+	{
+		int highestLevel = 0;
+		for (int i = 0; i < _listCharacterData.Count; ++i)
+		{
+			if (highestLevel < _listCharacterData[i].level)
+				highestLevel = _listCharacterData[i].level;
+		}
+		return highestLevel;
+	}
 	#endregion
 
 
@@ -490,6 +501,7 @@ public class CharacterManager : MonoBehaviour
 			return null;
 		}
 
+		int addCharacterCount = 0;
 		for (int i = 0; i < listItemInstance.Count; ++i)
 		{
 			if (listItemInstance[i].ItemId.Substring(listItemInstance[i].ItemId.Length - 2) == "pp")
@@ -527,8 +539,13 @@ public class CharacterManager : MonoBehaviour
 				_listCharacterData.Add(newCharacterData);
 
 				OnAddItem(newCharacterData);
+
+				addCharacterCount += 1;
 			}
 		}
+
+		if (addCharacterCount > 0)
+			GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.GatherCharacter, addCharacterCount);
 
 		// 두번째 루프 돌땐 pp들을 처리한다.
 		for (int i = 0; i < listItemInstance.Count; ++i)
@@ -621,6 +638,8 @@ public class CharacterManager : MonoBehaviour
 				_listCharacterData.Add(newCharacterData);
 
 				OnAddItem(newCharacterData);
+
+				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.GatherCharacter);
 			}
 		}
 		else if (rewardValue.Substring(rewardValue.Length - 2) == "pp")

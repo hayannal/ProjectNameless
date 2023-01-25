@@ -315,6 +315,9 @@ public class SpellCanvas : ResearchShowCanvasBase
 
 		PlayFabApiManager.instance.RequestTotalSpellPressLevelUp(_prevTotalSpellLevel, _prevGold, SpellManager.instance.spellTotalLevel, CurrencyData.instance.gold, _levelUpCount, () =>
 		{
+			if (_levelUpCount > 0)
+				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.LevelUpSpellTotal, _levelUpCount);
+
 			MainCanvas.instance.RefreshSpellAlarmObject();
 
 			float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
