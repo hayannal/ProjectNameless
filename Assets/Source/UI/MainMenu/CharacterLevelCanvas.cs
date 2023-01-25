@@ -321,7 +321,7 @@ public class CharacterLevelCanvas : MonoBehaviour
 			float prevValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
 			PlayFabApiManager.instance.RequestLevelUp(_price, _salePrice, () =>
 			{
-				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.LevelUpCharacter);
+				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.LevelUpPlayer);
 
 				float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
 
@@ -341,7 +341,7 @@ public class CharacterLevelCanvas : MonoBehaviour
 			float prevValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
 			PlayFabApiManager.instance.RequestSubLevelUp(_price, _salePrice, () =>
 			{
-				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.EnhanceCharacter);
+				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.EnhancePlayer);
 
 				float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
 
@@ -460,9 +460,9 @@ public class CharacterLevelCanvas : MonoBehaviour
 		PlayFabApiManager.instance.RequestPressLevelUp(_prevLevel, _prevSubLevel, _prevGold, PlayerData.instance.playerLevel, PlayerData.instance.subLevel, CurrencyData.instance.gold, _levelUpCount, _subLevelUpCount, _salePrice, () =>
 		{
 			if (_levelUpCount > 0)
-				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.LevelUpCharacter, _levelUpCount);
+				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.LevelUpPlayer, _levelUpCount);
 			if (_subLevelUpCount > 0)
-				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.EnhanceCharacter, _subLevelUpCount);
+				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.EnhancePlayer, _subLevelUpCount);
 
 			MainCanvas.instance.RefreshPlayerAlarmObject();
 

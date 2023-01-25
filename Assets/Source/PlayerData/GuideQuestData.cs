@@ -29,8 +29,8 @@ public class GuideQuestData : MonoBehaviour
 		KillBossMonster = 2,
 		UseSkill = 3,
 
-		EnhanceCharacter = 11,	// 서브레벨업 하기
-		LevelUpCharacter = 12,	// 특정 레벨업 하기. 그러나 세븐데이즈 페스티벌에선 그냥 레벨업하기로 쓰인다.
+		EnhancePlayer = 11,	// 서브레벨업 하기
+		LevelUpPlayer = 12,		// 특정 레벨업 하기. 그러나 세븐데이즈 페스티벌에선 그냥 레벨업하기로 쓰인다.
 		ClearStage = 13,		// 특정 층을 도달
 		Analysis = 14,			// 분석 하기
 		SpinChargeAlarm = 15,
@@ -234,12 +234,12 @@ public class GuideQuestData : MonoBehaviour
 		eQuestClearType questClearType = (eQuestClearType)nextGuideQuestTableData.typeId;
 		switch (questClearType)
 		{
-			case eQuestClearType.EnhanceCharacter:
+			case eQuestClearType.EnhancePlayer:
 				// 최대 레벨에 막히는거면 어떻게 통과시켜주지? 우선 1개씩만 해서 못찍는 상황을 만들지 않기로 해본다.
 				if (PlayerData.instance.playerLevel >= BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxPlayerLevel"))
 					processed = true;
 				break;
-			case eQuestClearType.LevelUpCharacter:
+			case eQuestClearType.LevelUpPlayer:
 				return Mathf.Min(PlayerData.instance.playerLevel, nextGuideQuestTableData.needCount);
 			case eQuestClearType.ClearStage:
 				return Mathf.Min(PlayerData.instance.highestClearStage, nextGuideQuestTableData.needCount);
