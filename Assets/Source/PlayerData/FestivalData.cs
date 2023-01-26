@@ -114,6 +114,10 @@ public class FestivalData : MonoBehaviour
 			if (MainCanvas.instance != null)
 				MainCanvas.instance.festivalButtonObject.SetActive(true);
 
+			// icon preload
+			if (festivalTypeTableData != null)
+				AddressableAssetLoadManager.GetAddressableSprite(festivalTypeTableData.iconAddress, "Icon");
+
 			_waitPacket = false;
 		}, () =>
 		{
