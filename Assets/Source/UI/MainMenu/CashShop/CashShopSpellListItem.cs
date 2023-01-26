@@ -93,9 +93,9 @@ public class CashShopSpellListItem : MonoBehaviour
 	int _count;
 	public void OnClickButton()
 	{
-		if (CurrencyData.instance.gold < _shopSpellTableData.price)
+		if (CurrencyData.instance.dia < _shopSpellTableData.price)
 		{
-			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughGold"), 2.0f);
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughDiamond"), 2.0f);
 			return;
 		}
 

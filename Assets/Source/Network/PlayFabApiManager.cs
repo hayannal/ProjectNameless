@@ -3111,7 +3111,7 @@ public class PlayFabApiManager : MonoBehaviour
 			{
 				//WaitingNetworkCanvas.Show(false);
 
-				CurrencyData.instance.gold -= price;
+				CurrencyData.instance.dia -= price;
 				
 				jsonResult.TryGetValue("itmRet", out object itmRet);
 
@@ -3307,7 +3307,7 @@ public class PlayFabApiManager : MonoBehaviour
 			{
 				//WaitingNetworkCanvas.Show(false);
 
-				CurrencyData.instance.gold -= price;
+				CurrencyData.instance.dia -= price;
 
 				jsonResult.TryGetValue("itmRet", out object itmRet);
 
@@ -3759,7 +3759,7 @@ public class PlayFabApiManager : MonoBehaviour
 			{
 				//WaitingNetworkCanvas.Show(false);
 
-				CurrencyData.instance.gold -= price;
+				CurrencyData.instance.dia -= price;
 
 				jsonResult.TryGetValue("itmRet", out object itmRet);
 

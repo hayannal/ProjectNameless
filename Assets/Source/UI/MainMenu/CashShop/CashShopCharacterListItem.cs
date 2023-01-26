@@ -37,9 +37,9 @@ public class CashShopCharacterListItem : MonoBehaviour
 		if (PlayerData.instance.CheckConfirmDownload() == false)
 			return;
 
-		if (CurrencyData.instance.gold < _shopActorTableData.price)
+		if (CurrencyData.instance.dia < _shopActorTableData.price)
 		{
-			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughGold"), 2.0f);
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughDiamond"), 2.0f);
 			return;
 		}
 
