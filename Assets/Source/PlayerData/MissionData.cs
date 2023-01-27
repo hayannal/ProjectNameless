@@ -63,7 +63,10 @@ public class MissionData : MonoBehaviour
 		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.UseEnergy);
 		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.LevelUpSpellTotal);
 		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.GatherCharacter);
+		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.LevelUpCharacter);
 		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.GatherPet);
+		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.GatherPetCount);
+		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.GradeUpEquip);
 	}
 
 	void Update()
