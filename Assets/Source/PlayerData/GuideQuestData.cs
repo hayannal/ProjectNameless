@@ -30,7 +30,7 @@ public class GuideQuestData : MonoBehaviour
 		UseSkill = 3,
 
 		EnhancePlayer = 11,		// 서브레벨업 하기
-		LevelUpPlayer = 12,		// 특정 레벨업 하기. 그러나 세븐데이즈 페스티벌에선 그냥 레벨업하기로 쓰인다.
+		LevelUpPlayer = 12,		// 특정 레벨업 하기. 세븐데이즈에서도 마찬가지. 페스티벌에선 사용 못한다.
 		ClearStage = 13,		// 특정 층을 도달
 		Analysis = 14,			// 분석 하기
 		SpinChargeAlarm = 15,
@@ -237,44 +237,41 @@ public class GuideQuestData : MonoBehaviour
 		if (nextGuideQuestTableData == null)
 			return 0;
 
-		bool processed = false;
+		// 이미 완료처리 해야할게 있는지 확인
+		bool complete = false;
 		eQuestClearType questClearType = (eQuestClearType)nextGuideQuestTableData.typeId;
 		switch (questClearType)
 		{
 			case eQuestClearType.EnhancePlayer:
 				// 최대 레벨에 막히는거면 어떻게 통과시켜주지? 우선 1개씩만 해서 못찍는 상황을 만들지 않기로 해본다.
 				if (PlayerData.instance.playerLevel >= BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxPlayerLevel"))
-					processed = true;
+					complete = true;
 				break;
-			case eQuestClearType.LevelUpPlayer:
-				return Mathf.Min(PlayerData.instance.playerLevel, nextGuideQuestTableData.needCount);
-			case eQuestClearType.ClearStage:
-				return Mathf.Min(PlayerData.instance.highestClearStage, nextGuideQuestTableData.needCount);
 			case eQuestClearType.SpinChargeAlarm:
 				if (OptionManager.instance.energyAlarm == 1)
-					processed = true;
+					complete = true;
 				break;
-			case eQuestClearType.LevelUpSpellTotal:
-				return Mathf.Min(SpellManager.instance.spellTotalLevel, nextGuideQuestTableData.needCount);
-			case eQuestClearType.GatherCharacter:
-				return Mathf.Min(CharacterManager.instance.listCharacterData.Count, nextGuideQuestTableData.needCount);
-			case eQuestClearType.LevelUpCharacter:
-				return Mathf.Min(CharacterManager.instance.GetHighestCharacterLevel(), nextGuideQuestTableData.needCount);
-			case eQuestClearType.GatherPet:
-				return Mathf.Min(PetManager.instance.listPetData.Count, nextGuideQuestTableData.needCount);
-			case eQuestClearType.GatherPetCount:
-				return Mathf.Min(PetManager.instance.GetHighestPetCount(), nextGuideQuestTableData.needCount);
 		}
-		if (processed == false)
-			return 0;
+		if (complete)
+			return nextGuideQuestTableData.needCount;
 
-		// 이제 컴플릿 후에 별도 패킷으로 보내는게 아니라 컴플릿 안에다가 실어서 보내는거니 필요없다.
-		//PlayFabApiManager.instance.RequestGuideQuestProceedingCount(currentGuideQuestIndex, 1, () =>
-		//{
-		//	GuideQuestInfo.instance.OnAddCount(0);
-		//	if (currentGuideQuestProceedingCount + 1 >= guideQuestTableData.needCount)
-		//		GuideQuestInfo.instance.RefreshAlarmObject();
-		//});
-		return nextGuideQuestTableData.needCount;
+		// 카운트를 채워서 시작해야할게 있는지 확인
+		int nextInitialProceedingCount = GetNextInitialProceedingCount(questClearType);
+		return Mathf.Min(nextInitialProceedingCount, nextGuideQuestTableData.needCount);
+	}
+
+	public static int GetNextInitialProceedingCount(eQuestClearType questClearType)
+	{
+		switch (questClearType)
+		{
+			case eQuestClearType.LevelUpPlayer: return PlayerData.instance.playerLevel;
+			case eQuestClearType.ClearStage: return PlayerData.instance.highestClearStage;
+			case eQuestClearType.LevelUpSpellTotal: return SpellManager.instance.spellTotalLevel;
+			case eQuestClearType.GatherCharacter: return CharacterManager.instance.listCharacterData.Count;
+			case eQuestClearType.LevelUpCharacter: return CharacterManager.instance.GetHighestCharacterLevel();
+			case eQuestClearType.GatherPet: return PetManager.instance.listPetData.Count;
+			case eQuestClearType.GatherPetCount: return PetManager.instance.GetHighestPetCount();
+		}
+		return 0;
 	}
 }

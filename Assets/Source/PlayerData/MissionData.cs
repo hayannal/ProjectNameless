@@ -55,12 +55,14 @@ public class MissionData : MonoBehaviour
 		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.KillBossMonster);
 		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.EnhancePlayer);
 		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.LevelUpPlayer);
+		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.ClearStage);
 		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.Analysis);
 		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.FreeFortuneWheel);
 		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.SpellGacha);
 		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.CharacterGacha);
 		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.EquipGacha);
 		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.UseEnergy);
+
 		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.LevelUpSpellTotal);
 		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.GatherCharacter);
 		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.LevelUpCharacter);
@@ -232,6 +234,32 @@ public class MissionData : MonoBehaviour
 				_retryStartRemainTime = 1.0f;
 		}
 	}
+
+	#region Initial Count
+	List<int> _listInitialCount = new List<int>();
+	public List<int> GetInitialCount()
+	{
+		_listInitialCount.Clear();
+
+		for (int i = 0; i < _listAvailableQuestType.Count; ++i)
+		{
+			int initialCount = GuideQuestData.GetNextInitialProceedingCount(_listAvailableQuestType[i]);
+			_listInitialCount.Add(initialCount);
+		}
+		return _listInitialCount;
+	}
+
+	public void OnRecvInitialCountList(List<int> listInitialCount)
+	{
+		// 초기값이 있는 항목들도 있을거다. 거기에 맞춰서 저장해둔다.
+		// OnRecvSevenDaysStartInfo 직후에 호출되는 구조다.
+		for (int i = 0; i < _listAvailableQuestType.Count; ++i)
+		{
+			int intType = (int)_listAvailableQuestType[i];
+			_dicSevenDaysProceedingInfo.Add(intType, listInitialCount[i]);
+		}
+	}
+	#endregion
 
 	public void OnRecvSevenDaysStartInfo(string lastSevenDaysExpireTimeString)
 	{

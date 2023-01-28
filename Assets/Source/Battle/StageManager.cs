@@ -497,9 +497,12 @@ public class StageManager : MonoBehaviour
 			if (CheatingListener.detectedCheatTable)
 				return;
 
+			int prevHighestClearStage = PlayerData.instance.highestClearStage;
 			PlayFabApiManager.instance.RequestEndBoss(PlayerData.instance.selectedStage, currentFloor, () =>
 			{
-				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.ClearStage);
+				int highestCharacterLevel = PlayerData.instance.highestClearStage;
+				if (highestCharacterLevel > prevHighestClearStage)
+					GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.ClearStage, highestCharacterLevel - prevHighestClearStage);
 
 				// 패킷 통과하면 다음 처리로 넘어간다.
 				Timing.RunCoroutine(ClearProcess());

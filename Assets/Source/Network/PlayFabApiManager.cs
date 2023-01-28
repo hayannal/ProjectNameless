@@ -2559,12 +2559,16 @@ public class PlayFabApiManager : MonoBehaviour
 	#region SevenDays
 	public void RequestStartSevenDays(int newGroupId, int givenTime, int coolTime, Action successCallback, Action failureCallback)
 	{
-		string input = string.Format("{0}_{1}_{2}_{3}", newGroupId, givenTime, coolTime, "vmpqalxj");
+		List<int> listInitialCount = MissionData.instance.GetInitialCount();
+		var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
+		string jsonInitialCounts = serializer.SerializeObject(listInitialCount);
+
+		string input = string.Format("{0}_{1}_{2}_{3}_{4}", newGroupId, givenTime, coolTime, jsonInitialCounts, "vmpqalxj");
 		string checkSum = CheckSum(input);
 		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "StartSevenDays",
-			FunctionParameter = new { SdGrpId = newGroupId, GiTim = givenTime, CoTim = coolTime, Cs = checkSum },
+			FunctionParameter = new { SdGrpId = newGroupId, GiTim = givenTime, CoTim = coolTime, CntLst = listInitialCount, Cs = checkSum },
 			GeneratePlayStreamEvent = true,
 		}, (success) =>
 		{
@@ -2577,6 +2581,7 @@ public class PlayFabApiManager : MonoBehaviour
 
 				// 성공시에는 서버에서 방금 기록한 유효기간 만료 시간이 날아온다.
 				MissionData.instance.OnRecvSevenDaysStartInfo((string)date);
+				MissionData.instance.OnRecvInitialCountList(listInitialCount);
 
 				jsonResult.TryGetValue("cool", out object useCool);
 				if ((useCool.ToString()) == "1")
