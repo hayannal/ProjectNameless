@@ -5,6 +5,8 @@ using ActorStatusDefine;
 
 public class ChangeActorStatusAffector : AffectorBase
 {
+	AffectorValueLevelTableData _teamChangeActorStatusAffectorValue;
+
 	float _endTime;
 	eActorStatus _eType;
 	float _value;
@@ -40,6 +42,25 @@ public class ChangeActorStatusAffector : AffectorBase
 		_effectShowTime = Time.time;
 
 		_actor.actorStatus.OnChangedStatus(_eType);
+
+
+		// 동료도 발동시켜야한다.
+		if (affectorValueLevelTableData.sValue1 == "1")
+		{
+			if (_teamChangeActorStatusAffectorValue == null)
+			{
+				_teamChangeActorStatusAffectorValue = new AffectorValueLevelTableData();
+				_teamChangeActorStatusAffectorValue.fValue1 = affectorValueLevelTableData.fValue1;
+				// fValue3의 수치만큼 곱해서 동료에 적용시킨다.
+				_teamChangeActorStatusAffectorValue.fValue2 = affectorValueLevelTableData.fValue2 * affectorValueLevelTableData.fValue3;
+				_teamChangeActorStatusAffectorValue.iValue1 = affectorValueLevelTableData.iValue1;
+				_teamChangeActorStatusAffectorValue.iValue2 = affectorValueLevelTableData.iValue2;
+				// 동료꺼니 sValue는 복사하지 않는다.
+				//_teamChangeActorStatusAffectorValue.sValue4 = affectorValueLevelTableData.sValue4;
+			}
+
+			TeamManager.instance.ExecuteAffectorValueTeamMember(eAffectorType.ChangeActorStatus, _teamChangeActorStatusAffectorValue);
+		}
 	}
 
 	public override void OverrideAffector(AffectorValueLevelTableData affectorValueLevelTableData, HitParameter hitParameter)

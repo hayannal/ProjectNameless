@@ -200,6 +200,16 @@ public class TeamManager : MonoBehaviour
 		}
 	}
 
+	public void ExecuteAffectorValueTeamMember(eAffectorType affectorType, AffectorValueLevelTableData levelData)
+	{
+		for (int i = 0; i < _listPlayerActor.Count; ++i)
+		{
+			if (_listPlayerActor[i] == null)
+				continue;
+			_listPlayerActor[i].affectorProcessor.ExecuteAffectorValueWithoutTable(affectorType, levelData, _listPlayerActor[i], false);
+		}
+	}
+
 	#region Pet
 	PetActor _petActor;
 	public void SpawnActivePet()
