@@ -262,6 +262,7 @@ public class TeamManager : MonoBehaviour
 			return;
 
 		petActor.cachedTransform.position = BattleInstanceManager.instance.playerActor.cachedTransform.position + new Vector3(-0.48f, 0.0f, -0.3f);
+		petActor.cachedTransform.rotation = Quaternion.Euler(0.0f, 25.0f, 0.0f);
 	}
 	#endregion
 }
