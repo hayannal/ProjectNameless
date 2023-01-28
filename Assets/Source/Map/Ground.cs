@@ -68,7 +68,7 @@ public class Ground : MonoBehaviour
 			position.z = _bounds.min.z;
 		if (position.z > _bounds.max.z)
 			position.z = _bounds.max.z;
-		return position;
+		return position + new Vector3(cachedTransform.position.x, 0.0f, cachedTransform.position.z);
 	}
 
 	public Vector3 GetRandomPositionInQuadBound(float boundAdjust = 0.0f)
@@ -76,7 +76,7 @@ public class Ground : MonoBehaviour
 		Vector3 position = Vector3.zero;
 		position.x = Random.Range(_bounds.min.x + boundAdjust, _bounds.max.x - boundAdjust);
 		position.z = Random.Range(_bounds.min.z + boundAdjust, _bounds.max.z - boundAdjust);
-		return position;
+		return position + new Vector3(cachedTransform.position.x, 0.0f, cachedTransform.position.z);
 	}
 
 	#region Runtime NavMesh
@@ -129,5 +129,18 @@ public class Ground : MonoBehaviour
 				return true;
 		}
 		return false;
+	}
+
+
+
+	Transform _transform;
+	public Transform cachedTransform
+	{
+		get
+		{
+			if (_transform == null)
+				_transform = GetComponent<Transform>();
+			return _transform;
+		}
 	}
 }
