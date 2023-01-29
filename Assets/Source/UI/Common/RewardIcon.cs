@@ -10,6 +10,7 @@ public class RewardIcon : MonoBehaviour
 	public int num;
 
 	public Text countText;
+	public RectTransform countTextRectTransform;
 	public GameObject goldObject;
 	public GameObject diaObject;
 	public GameObject energyObject;
@@ -36,6 +37,12 @@ public class RewardIcon : MonoBehaviour
 	public GameObject[] frameObjectList;
 	public Transform iconRootTransform;
 	public DOTweenAnimation punchTweenAnimation;
+
+	Vector2 _defaultCountTextSizeDelta;
+	void Awake()
+	{
+		_defaultCountTextSizeDelta = countTextRectTransform.sizeDelta;
+	}
 
 	void OnEnable()
 	{
@@ -187,13 +194,17 @@ public class RewardIcon : MonoBehaviour
 	}
 
 	bool _showOnlyIcon = false;
-	public void ShowOnlyIcon(bool onlyIcon, float onlyIconScale = 1.5f)
+	public void ShowOnlyIcon(bool onlyIcon, float onlyIconScale = 1.5f, int adjustCountTextWidth = 70)
 	{
 		_showOnlyIcon = onlyIcon;
 		for (int i = 0; i < frameObjectList.Length; ++i)
 			frameObjectList[i].SetActive(!onlyIcon);
 
 		iconRootTransform.localScale = onlyIcon ? new Vector3(onlyIconScale, onlyIconScale, onlyIconScale) : Vector3.one;
+
+		if (_defaultCountTextSizeDelta.x == 0.0f) _defaultCountTextSizeDelta.x = 70.0f;
+		if (_defaultCountTextSizeDelta.y == 0.0f) _defaultCountTextSizeDelta.y = 24.0f;
+		countTextRectTransform.sizeDelta = onlyIcon ? new Vector2(adjustCountTextWidth, _defaultCountTextSizeDelta.y) : _defaultCountTextSizeDelta;
 	}
 
 	public void ActivePunchAnimation(bool active)

@@ -38,7 +38,7 @@ public class AttendanceCanvasListItem : MonoBehaviour
 			if (rewardIcon2 != null)
 			{
 				rewardIcon2.RefreshReward(attendanceRewardTableData.rewardType2, attendanceRewardTableData.rewardValue2, attendanceRewardTableData.rewardCount2);
-				rewardIcon2.ShowOnlyIcon(true, 1.3f);
+				rewardIcon2.ShowOnlyIcon(true, 1.3f, 100);
 			}
 		}
 		else
