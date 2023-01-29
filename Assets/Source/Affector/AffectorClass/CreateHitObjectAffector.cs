@@ -81,6 +81,12 @@ public class CreateHitObjectAffector : AffectorBase
 
 			if (affectorValueLevelTableData.iValue3 == 1)
 				FollowTransform.Follow(hitObject.cachedTransform, parentActor.cachedTransform, Vector3.zero);
+
+			GameObject onStartEffectPrefab = null;
+			if (!string.IsNullOrEmpty(affectorValueLevelTableData.sValue4))
+				onStartEffectPrefab = FindPreloadObject(affectorValueLevelTableData.sValue4);
+			if (onStartEffectPrefab != null)
+				BattleInstanceManager.instance.GetCachedObject(onStartEffectPrefab, _actor.cachedTransform.position, _actor.cachedTransform.rotation, (affectorValueLevelTableData.iValue3 == 1) ? _actor.cachedTransform : null);
 		}
 	}
 }
