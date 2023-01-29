@@ -321,6 +321,11 @@ public class PetInfoCanvas : MonoBehaviour
 		});
 	}
 
+	public void OnClickAbilityInfoButton()
+	{
+		ToastCanvas.instance.ShowToast(UIString.instance.GetString("SystemUI_WaitUpdate"), 2.0f);
+	}
+
 	float _prevCombatValue = 0.0f;
 	public void OnClickStepUpButton()
 	{
