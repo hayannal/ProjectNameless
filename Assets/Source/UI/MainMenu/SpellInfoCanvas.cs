@@ -20,12 +20,14 @@ public class SpellInfoCanvas : MonoBehaviour
 	public Text nameText;
 	public Text descText;
 
-	public void SetInfo(SkillTableData skillTableData, string levelString, string nameString, string descString)
+	public void SetInfo(SkillTableData skillTableData, string levelString, string nameString, string descString, float cooltime)
 	{
 		skillIcon.SetInfo(skillTableData, false);
 		levelText.text = levelString;
 		nameText.SetLocalizedText(nameString);
-		descText.SetLocalizedText(descString);
+
+		string cooltimeString = UIString.instance.GetString("SkillUI_CoolTime", cooltime);
+		descText.SetLocalizedText(string.Format("{0}\n\n{1}", descString, cooltimeString));
 	}
 
 	public void OnClickBackground()
@@ -87,8 +89,9 @@ public class SpellInfoCanvas : MonoBehaviour
 
 			string nameString = UIString.instance.GetString(skillTableData.useNameIdOverriding ? skillLevelTableData.nameId : skillTableData.nameId);
 			string descString = UIString.instance.GetString(skillTableData.useDescriptionIdOverriding ? skillLevelTableData.descriptionId : skillTableData.descriptionId, skillLevelTableData.parameter);
+			float cooltime = skillTableData.useCooltimeOverriding ? skillLevelTableData.cooltime : skillTableData.cooltime;
 
-			SetInfo(skillTableData, "", nameString, descString);
+			SetInfo(skillTableData, "", nameString, descString, cooltime);
 			++_showIndex;
 		}
 		else if (_showIndex == _listId.Count)

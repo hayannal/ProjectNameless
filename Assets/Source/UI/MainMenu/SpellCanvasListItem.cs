@@ -40,7 +40,7 @@ public class SpellCanvasListItem : MonoBehaviour
 			return;
 
 		skillIcon.SetInfo(skillTableData, false);
-		RefreshInfo(skillInfo.iconPrefab, skillInfo.nameId, skillInfo.descriptionId, skillTableData.maxLevel, skillLevelTableData, spellGradeLevelTableData);
+		RefreshInfo(skillInfo.iconPrefab, skillInfo.nameId, skillInfo.descriptionId, skillInfo.cooltime, skillTableData.maxLevel, skillLevelTableData, spellGradeLevelTableData);
 
 		for (int i = 0; i < noGainGrayTextList.Length; ++i)
 			noGainGrayTextList[i].color = Color.white;
@@ -56,6 +56,7 @@ public class SpellCanvasListItem : MonoBehaviour
 		RefreshInfo(skillTableData.iconPrefab,
 			skillTableData.useNameIdOverriding ? skillLevelTableData.nameId : skillTableData.nameId,
 			skillTableData.useDescriptionIdOverriding ? skillLevelTableData.descriptionId : skillTableData.descriptionId,
+			skillTableData.useCooltimeOverriding ? skillLevelTableData.cooltime : skillTableData.cooltime,
 			skillTableData.maxLevel,
 			skillLevelTableData,
 			spellGradeLevelTableData);
@@ -66,12 +67,13 @@ public class SpellCanvasListItem : MonoBehaviour
 			noGainGrayImageList[i].color = Color.gray;
 	}
 
-	void RefreshInfo(string iconPrefabAddress, string nameId, string descriptionId, int maxLevel, SkillLevelTableData skillLevelTableData, SpellGradeLevelTableData spellGradeLevelTableData)
+	void RefreshInfo(string iconPrefabAddress, string nameId, string descriptionId, float cooltime, int maxLevel, SkillLevelTableData skillLevelTableData, SpellGradeLevelTableData spellGradeLevelTableData)
 	{
 		atkText.text = spellGradeLevelTableData.accumulatedAtk.ToString("N0");
 
 		nameText.SetLocalizedText(UIString.instance.GetString(nameId));
 		_descString = UIString.instance.GetString(descriptionId, skillLevelTableData.parameter);
+		_cooltime = cooltime;
 
 		AlarmObject.Hide(alarmRootTransform);
 		if (spellGradeLevelTableData.level >= maxLevel)
@@ -109,11 +111,12 @@ public class SpellCanvasListItem : MonoBehaviour
 	}
 
 	string _descString = "";
+	float _cooltime;
 	public void OnClickDetailButton()
 	{
 		UIInstanceManager.instance.ShowCanvasAsync("SpellInfoCanvas", () =>
 		{
-			SpellInfoCanvas.instance.SetInfo(_skillTableData, levelText.text, nameText.text, _descString);
+			SpellInfoCanvas.instance.SetInfo(_skillTableData, levelText.text, nameText.text, _descString, _cooltime);
 		});
 	}
 

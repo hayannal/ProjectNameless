@@ -59,6 +59,7 @@ public class UnacquiredSpellSaleCanvas : SimpleCashEventCanvas
 			return;
 		nameText.SetLocalizedText(UIString.instance.GetString(skillTableData.useNameIdOverriding ? skillLevelTableData.nameId : skillTableData.nameId));
 		_descString = UIString.instance.GetString(skillTableData.useDescriptionIdOverriding ? skillLevelTableData.descriptionId : skillTableData.descriptionId, skillLevelTableData.parameter);
+		_cooltime = skillTableData.useCooltimeOverriding ? skillLevelTableData.cooltime : skillTableData.cooltime;
 		atkText.text = spellGradeLevelTableData.accumulatedAtk.ToString("N0");
 
 		_pickOneSpellTableData = TableDataManager.instance.FindPickOneSpellTableData(false, selectedSpellId);
@@ -73,11 +74,12 @@ public class UnacquiredSpellSaleCanvas : SimpleCashEventCanvas
 	}
 
 	string _descString;
+	float _cooltime;
 	public void OnClickDetailButton()
 	{
 		UIInstanceManager.instance.ShowCanvasAsync("SpellInfoCanvas", () =>
 		{
-			SpellInfoCanvas.instance.SetInfo(_skillTableData, "", nameText.text, _descString);
+			SpellInfoCanvas.instance.SetInfo(_skillTableData, "", nameText.text, _descString, _cooltime);
 		});
 	}
 
