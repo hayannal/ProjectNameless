@@ -8,6 +8,7 @@ public class GachaSpellInfoCanvas : MonoBehaviour
 	public static GachaSpellInfoCanvas instance;
 
 	public Text skillTotalLevelText;
+	public Text currentSkillTotalLevelText;
 
 	public GameObject contentItemPrefab;
 	public RectTransform contentRootRectTransform;
@@ -65,6 +66,7 @@ public class GachaSpellInfoCanvas : MonoBehaviour
 		string leftString = UIString.instance.GetString("GameUI_Lv", _listTotalSpellGachaStep[_currentProbIndex]);
 		string rightString = UIString.instance.GetString("GameUI_Lv", nextValue - 1);
 		skillTotalLevelText.text = string.Format("{0}  -  {1}", leftString, rightString);
+		currentSkillTotalLevelText.text = UIString.instance.GetString("GameUI_Lv", SpellManager.instance.spellTotalLevel);
 	}
 
 	List<GachaSpellInfoCanvasListItem> _listGachaSpellInfoCanvasListItem = new List<GachaSpellInfoCanvasListItem>();

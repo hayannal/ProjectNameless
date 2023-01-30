@@ -227,7 +227,7 @@ public class SpellCanvas : ResearchShowCanvasBase
 
 	public void OnClickTitleDetailButton()
 	{
-		TooltipCanvas.Show(true, TooltipCanvas.eDirection.Bottom, UIString.instance.GetString("SpellUI_TotalSkillLevelMore"), 300, skillTotalLevelButtonTransform, new Vector2(0.0f, -35.0f));
+		TooltipCanvas.Show(true, TooltipCanvas.eDirection.Bottom, UIString.instance.GetString("SpellUI_TotalSkillLevelMore"), 300, skillTotalLevelButtonTransform, new Vector2(0.0f, -30.0f));
 	}
 
 	public void OnClickLevelUpTotalSkill()
