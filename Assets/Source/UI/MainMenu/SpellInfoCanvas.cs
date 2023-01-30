@@ -26,7 +26,7 @@ public class SpellInfoCanvas : MonoBehaviour
 		levelText.text = levelString;
 		nameText.SetLocalizedText(nameString);
 
-		string cooltimeString = UIString.instance.GetString("SkillUI_CoolTime", cooltime);
+		string cooltimeString = UIString.instance.GetString("SpellUI_CoolTime", cooltime);
 		descText.SetLocalizedText(string.Format("{0}\n\n{1}", descString, cooltimeString));
 	}
 
