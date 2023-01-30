@@ -41,7 +41,8 @@ public class RewardIcon : MonoBehaviour
 	Vector2 _defaultCountTextSizeDelta;
 	void Awake()
 	{
-		_defaultCountTextSizeDelta = countTextRectTransform.sizeDelta;
+		if (countTextRectTransform != null)
+			_defaultCountTextSizeDelta = countTextRectTransform.sizeDelta;
 	}
 
 	void OnEnable()
@@ -202,9 +203,12 @@ public class RewardIcon : MonoBehaviour
 
 		iconRootTransform.localScale = onlyIcon ? new Vector3(onlyIconScale, onlyIconScale, onlyIconScale) : Vector3.one;
 
-		if (_defaultCountTextSizeDelta.x == 0.0f) _defaultCountTextSizeDelta.x = 70.0f;
-		if (_defaultCountTextSizeDelta.y == 0.0f) _defaultCountTextSizeDelta.y = 24.0f;
-		countTextRectTransform.sizeDelta = onlyIcon ? new Vector2(adjustCountTextWidth, _defaultCountTextSizeDelta.y) : _defaultCountTextSizeDelta;
+		if (countTextRectTransform != null)
+		{
+			if (_defaultCountTextSizeDelta.x == 0.0f) _defaultCountTextSizeDelta.x = 70.0f;
+			if (_defaultCountTextSizeDelta.y == 0.0f) _defaultCountTextSizeDelta.y = 24.0f;
+			countTextRectTransform.sizeDelta = onlyIcon ? new Vector2(adjustCountTextWidth, _defaultCountTextSizeDelta.y) : _defaultCountTextSizeDelta;
+		}
 	}
 
 	public void ActivePunchAnimation(bool active)
