@@ -1758,7 +1758,7 @@ public class PlayFabApiManager : MonoBehaviour
 			HandleCommonError(error);
 		});
 	}
-	public void RequestCompleteGuideQuest(int currentGuideQuestIndex, string rewardType, int key, int addDia, int addGold, int addEnergy, Action successCallback)
+	public void RequestCompleteGuideQuest(int currentGuideQuestIndex, string rewardType, int key, int addDia, int addGold, int addEnergy, List<ObscuredString> listEventItemId, Action successCallback)
 	{
 		WaitingNetworkCanvas.Show(true);
 
@@ -1767,10 +1767,12 @@ public class PlayFabApiManager : MonoBehaviour
 
 		string input = string.Format("{0}_{1}_{2}_{3}_{4}", currentGuideQuestIndex, rewardType, nextInitialProceedingCount, key, "witpnvfwk");
 		string infoCheckSum = CheckSum(input);
+		string checkSum2 = "";
+		List<ItemGrantRequest> listItemGrantRequest = GenerateGrantRequestInfo(listEventItemId, ref checkSum2);
 		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "CompleteGuideQuest",
-			FunctionParameter = new { Tp = rewardType, Np = nextInitialProceedingCount, InfCs = infoCheckSum },
+			FunctionParameter = new { Tp = rewardType, Np = nextInitialProceedingCount, InfCs = infoCheckSum, Lst = listItemGrantRequest, LstCs = checkSum2 },
 			GeneratePlayStreamEvent = true,
 		}, (success) =>
 		{
@@ -1789,28 +1791,13 @@ public class PlayFabApiManager : MonoBehaviour
 				if (addEnergy > 0)
 					CurrencyData.instance.OnRecvRefillEnergy(addEnergy);
 
-				/*
-				jsonResult.TryGetValue("adChrIdPay", out object adChrIdPayload);
-				if (characterBox)
+				if (listEventItemId.Count > 0 && listItemGrantRequest.Count > 0)
 				{
-					List<DropManager.CharacterPpRequest> listPpInfo = DropManager.instance.GetPowerPointInfo();
-					int addBalancePp = DropManager.instance.GetLobbyBalancePpAmount();
-					List<string> listGrantInfo = DropManager.instance.GetGrantCharacterInfo();
-					List<DropManager.CharacterTrpRequest> listTrpInfo = DropManager.instance.GetTranscendPointInfo();
-
-					++PlayerData.instance.questCharacterBoxOpenCount;
-					if ((listTrpInfo.Count + listGrantInfo.Count) == 0)
-						PlayerData.instance.notStreakCharCount += 2;
-					else
-						PlayerData.instance.notStreakCharCount = 0;
-
-					// update
-					PlayerData.instance.OnRecvUpdateCharacterStatistics(listPpInfo, listTrpInfo, addBalancePp);
-					PlayerData.instance.OnRecvGrantCharacterList(adChrIdPayload);
+					// RequestGacha 처리했던거처럼 컨슘 아이템으로 한정되어있기 때문에 이렇게 Consume 전용으로 호출해본다.
+					for (int i = 0; i < listEventItemId.Count; ++i)
+						CashShopData.instance.OnRecvConsumeItem(listEventItemId[i], 1);
 				}
 
-				jsonResult.TryGetValue("itmRet", out object itmRet);
-				*/
 				if (successCallback != null) successCallback.Invoke();
 			}
 		}, (error) =>

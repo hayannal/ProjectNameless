@@ -56,6 +56,14 @@ public class ConsumeProductProcessor : MonoBehaviour
 			_dicConsumeItem.Add(value, count);
 	}
 
+	// 가이드처럼 단독 아이템을 줄때도 있다.
+	public void ConsumeGacha(string rewardValue, int rewardCount)
+	{
+		_dicConsumeItem.Clear();
+		_dicConsumeItem.Add(rewardValue, rewardCount);
+		ProcessConsume();
+	}
+
 	// 샵프로덕트에 컨슘이 들어있을때도 있다.
 	public static bool ConstainsConsumeGacha(ShopProductTableData shopProductTableData)
 	{

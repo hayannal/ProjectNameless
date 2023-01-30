@@ -21,13 +21,10 @@ public class GuideQuestInfo : MonoBehaviour
 	public Image iconImage;
 	public Text nameText;
 	public Image proceedingCountImage;
-	public GameObject proceedingCountTextRootObject;
 	public Text proceedingCountText;
 	public Text additionalRewardText;
 
-	public GameObject goldIconObject;
-	public GameObject diaIconObject;
-	public GameObject energyIconObject;
+	public RewardIcon rewardIcon;
 	public Text rewardCountText;
 	public GameObject specialRewardRootObject;
 	public Text specialRewardText;
@@ -158,30 +155,11 @@ public class GuideQuestInfo : MonoBehaviour
 		else
 			additionalRewardText.SetLocalizedText(UIString.instance.GetString(guideQuestTableData.rewardAdditionalText));
 
-		goldIconObject.SetActive(false);
-		diaIconObject.SetActive(false);
-		energyIconObject.SetActive(false);
-
-		if (guideQuestTableData.rewardType == "cu")
-		{
-			if (guideQuestTableData.rewardValue == CurrencyData.GoldCode())
-				goldIconObject.SetActive(true);
-			else if (guideQuestTableData.rewardValue == CurrencyData.DiamondCode())
-				diaIconObject.SetActive(true);
-			else if (guideQuestTableData.rewardValue == CurrencyData.EnergyCode())
-				energyIconObject.SetActive(true);
-			rewardCountText.text = guideQuestTableData.rewardCount.ToString("N0");
-		}
-		else if (guideQuestTableData.rewardType == "be")
-		{
-			/*
-			if (guideQuestTableData.rewardValue == "3" && guideQuestTableData.rewardCount >= 3)
-				equipBigBoxObject.SetActive(true);
-			else
-				equipBoxObject.SetActive(true);
-			rewardCountText.text = "";
-			*/
-		}
+		// reward
+		rewardIcon.RefreshReward(guideQuestTableData.rewardType, guideQuestTableData.rewardValue, guideQuestTableData.rewardCount);
+		rewardIcon.countText.gameObject.SetActive(false);
+		rewardIcon.ShowOnlyIcon(true, 0.9f);
+		rewardCountText.text = rewardIcon.countText.text;
 
 		specialRewardRootObject.SetActive(false);
 		specialRewardText.text = "";
@@ -268,6 +246,7 @@ public class GuideQuestInfo : MonoBehaviour
 	}
 
 	float _claimReopenRemainTime;
+	List<ObscuredString> _listResultEventItemIdForPacket;
 	void ClaimReward()
 	{
 		// CumulativeEventListItem에서 가져와서 적절히 변형시켜 쓴다.
@@ -275,109 +254,60 @@ public class GuideQuestInfo : MonoBehaviour
 		if (guideQuestTableData == null)
 			return;
 
-		if (guideQuestTableData.rewardType == "be" || guideQuestTableData.rewardType == "bm")
+		int addGold = 0;
+		int addDia = 0;
+		int addEnergy = 0;
+		if (_listResultEventItemIdForPacket == null)
+			_listResultEventItemIdForPacket = new List<ObscuredString>();
+		_listResultEventItemIdForPacket.Clear();
+
+		if (guideQuestTableData.rewardType == "cu")
 		{
-			/*
-			// 상자일 경우 드랍프로세서
-			if (TimeSpaceData.instance.IsInventoryVisualMax())
-			{
-				ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_ManageInventory"), 2.0f);
-				return;
-			}
-
-			// 장비박스 했을때처럼 드랍프로세서로부터 하나 뽑아와야한다.
-			bool result = PrepareDropProcessor(guideQuestTableData.rewardType, guideQuestTableData.rewardValue, guideQuestTableData.rewardCount);
-			if (CheatingListener.detectedCheatTable)
-				return;
-			if (result == false)
-				return;
-
-			if (DotMainMenuCanvas.instance != null && DotMainMenuCanvas.instance.gameObject.activeSelf)
-				DotMainMenuCanvas.instance.OnClickBackButton();
-
-			PlayFabApiManager.instance.RequestCompleteGuideQuest(GuideQuestData.instance.currentGuideQuestIndex, guideQuestTableData.rewardType, guideQuestTableData.key, 0, 0, 0, 0, DropManager.instance.GetLobbyDropItemInfo(), false, OnRecvEquipBox);
-			*/
-		}
-		else if (guideQuestTableData.rewardType == "bc")
-		{
-			/*
-			// 가장 핵심은 드랍부터 굴려서 보상정보를 얻어오는거다.
-			_cachedDropProcessor = DropProcessor.Drop(BattleInstanceManager.instance.cachedTransform, "Zoflrfh", "", true, true);
-			_cachedDropProcessor.AdjustDropRange(3.7f);
-			if (CheatingListener.detectedCheatTable)
-				return;
-
-			if (DotMainMenuCanvas.instance != null && DotMainMenuCanvas.instance.gameObject.activeSelf)
-				DotMainMenuCanvas.instance.OnClickBackButton();
-
-			PlayFabApiManager.instance.RequestCompleteGuideQuest(GuideQuestData.instance.currentGuideQuestIndex, guideQuestTableData.rewardType, guideQuestTableData.key, 0, 0, 0, 0, null, true, OnRecvCharacterBox);
-			*/
-		}
-		else if (guideQuestTableData.rewardType == "cu")
-		{
-			bool showCurrencySmallInfo = false;
-
-			int addGold = 0;
-			int addDia = 0;
-			int addEnergy = 0;
 			if (guideQuestTableData.rewardValue == CurrencyData.GoldCode())
 			{
 				if (CurrencyData.instance.CheckMaxGold())
 					return;
 
 				addGold += guideQuestTableData.rewardCount;
-				showCurrencySmallInfo = true;
 			}
 			else if (guideQuestTableData.rewardValue == CurrencyData.DiamondCode())
 			{
 				addDia += guideQuestTableData.rewardCount;
-				showCurrencySmallInfo = true;
 			}
 			else if (guideQuestTableData.rewardValue == CurrencyData.EnergyCode())
 				addEnergy += guideQuestTableData.rewardCount;
-
-			/*
-			if (showCurrencySmallInfo)
-				CurrencySmallInfoCanvas.Show(true);
-			*/
-
-			PlayFabApiManager.instance.RequestCompleteGuideQuest(GuideQuestData.instance.currentGuideQuestIndex, guideQuestTableData.rewardType, guideQuestTableData.key, addDia, addGold, addEnergy, () =>
-			{
-				if (showCurrencySmallInfo)
-				{
-					/*
-					CurrencySmallInfoCanvas.RefreshInfo();
-					*/
-					Timing.RunCoroutine(DelayedHideCurrencySmallInfo(2.0f));
-				}
-
-				infoRootTweenAnimation.gameObject.SetActive(false);
-				smallBackButtonRootObject.SetActive(false);
-				_openRemainTime = _closeRemainTime = 0.0f;
-
-				RefreshInfo();
-				RefreshAlarmObject();
-				ToastCanvas.instance.ShowToast(UIString.instance.GetString("ShopUI_GotFreeItem"), 2.0f);
-
-				// 1.5초 뒤에 바로 받은거처럼 
-				_claimReopenRemainTime = 1.5f;
-			});
 		}
-	}
+		else if (guideQuestTableData.rewardType == "it")
+		{
+			for (int j = 0; j < guideQuestTableData.rewardCount; ++j)
+				_listResultEventItemIdForPacket.Add(guideQuestTableData.rewardValue);
+		}
 
-	IEnumerator<float> DelayedHideCurrencySmallInfo(float delay)
-	{
-		yield return Timing.WaitForSeconds(delay);
+		PlayFabApiManager.instance.RequestCompleteGuideQuest(GuideQuestData.instance.currentGuideQuestIndex, guideQuestTableData.rewardType, guideQuestTableData.key, addDia, addGold, addEnergy, _listResultEventItemIdForPacket, () =>
+		{
+			infoRootTweenAnimation.gameObject.SetActive(false);
+			smallBackButtonRootObject.SetActive(false);
+			_openRemainTime = _closeRemainTime = 0.0f;
 
-		// avoid gc
-		if (this == null)
-			yield break;
-		if (gameObject.activeSelf == false)
-			yield break;
+			RefreshInfo();
+			RefreshAlarmObject();
 
-		/*
-		CurrencySmallInfoCanvas.Show(false);
-		*/
+			if (guideQuestTableData.rewardType == "cu")
+				ToastCanvas.instance.ShowToast(UIString.instance.GetString("ShopUI_GotFreeItem"), 2.0f);
+			else if (guideQuestTableData.rewardType == "it")
+			{
+				UIInstanceManager.instance.ShowCanvasAsync("CommonRewardCanvas", () =>
+				{
+					CommonRewardCanvas.instance.RefreshReward(guideQuestTableData.rewardType, guideQuestTableData.rewardValue, guideQuestTableData.rewardCount, () =>
+					{
+						ConsumeProductProcessor.instance.ConsumeGacha(guideQuestTableData.rewardValue, guideQuestTableData.rewardCount);
+					});
+				});
+			}
+
+			// 1.5초 뒤에 바로 받은거처럼 
+			_claimReopenRemainTime = 1.5f;
+		});
 	}
 	
 
