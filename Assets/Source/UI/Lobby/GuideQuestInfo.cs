@@ -80,13 +80,10 @@ public class GuideQuestInfo : MonoBehaviour
 
 		if (_claimReopenRemainTime > 0.0f)
 		{
-			// 이상하게 CharacterBoxShowCanvas가 나오고 나서 CharacterBoxResultCanvas가 나올때는 LobbyCanvas가 미리 보이게 된다.
-			// 그래서 결과창 뒤에서 퀘스트 알람이 나오게 되길래 이렇게 예외처리 해둔다.
+			// 연출 도중에는 퀘스트 갱신되서 보이지 않게 하기위해 이렇게 예외처리 해둔다.
 			bool ignore = false;
-			/*
-			if (CharacterBoxResultCanvas.instance != null && CharacterBoxResultCanvas.instance.gameObject.activeSelf)
+			if (RandomBoxScreenCanvas.instance != null && RandomBoxScreenCanvas.instance.gameObject.activeSelf)
 				ignore = true;
-			*/
 
 			if (ignore == false)
 				_claimReopenRemainTime -= Time.deltaTime;
@@ -293,20 +290,18 @@ public class GuideQuestInfo : MonoBehaviour
 			RefreshAlarmObject();
 
 			if (guideQuestTableData.rewardType == "cu")
+			{
 				ToastCanvas.instance.ShowToast(UIString.instance.GetString("ShopUI_GotFreeItem"), 2.0f);
+
+				// 1.5초 뒤에 바로 받은거처럼 
+				_claimReopenRemainTime = 1.5f;
+			}
 			else if (guideQuestTableData.rewardType == "it")
 			{
-				UIInstanceManager.instance.ShowCanvasAsync("CommonRewardCanvas", () =>
-				{
-					CommonRewardCanvas.instance.RefreshReward(guideQuestTableData.rewardType, guideQuestTableData.rewardValue, guideQuestTableData.rewardCount, () =>
-					{
-						ConsumeProductProcessor.instance.ConsumeGacha(guideQuestTableData.rewardValue, guideQuestTableData.rewardCount);
-					});
-				});
+				// 다른 곳과 달리 바로 나오는게 좋을거 같다해서 CommonRewardCanvas 띄우지않고 바로 진행한다.
+				ConsumeProductProcessor.instance.ConsumeGacha(guideQuestTableData.rewardValue, guideQuestTableData.rewardCount); 
+				_claimReopenRemainTime = 1.0f;
 			}
-
-			// 1.5초 뒤에 바로 받은거처럼 
-			_claimReopenRemainTime = 1.5f;
 		});
 	}
 	
