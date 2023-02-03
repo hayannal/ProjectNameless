@@ -680,6 +680,12 @@ public class HitObject : MonoBehaviour
 		statusStructForHitObject.actorInstanceId = actor.GetInstanceID();
 		statusStructForHitObject.teamId = actor.team.teamId;
 		statusStructForHitObject.skillLevel = actor.actionController.GetCurrentSkillLevelByCurrentAction();
+		if (actor.IsPlayerActor())
+		{
+			PlayerActor playerActor = actor as PlayerActor;
+			if (playerActor != null)
+				statusStructForHitObject.player = (playerActor.playerAI.useTeamMemberAI == false);
+		}
 
 		statusStructForHitObject.targetDetectType = meHit.targetDetectType;
 		statusStructForHitObject.weaponIDAtCreation = 0;

@@ -257,6 +257,12 @@ public class SkillProcessor : MonoBehaviour
 		statusStructForHitObject.actorInstanceId = actor.GetInstanceID();
 		statusStructForHitObject.teamId = actor.team.teamId;
 		statusStructForHitObject.skillLevel = 0;
+		if (actor.IsPlayerActor())
+		{
+			PlayerActor playerActor = actor as PlayerActor;
+			if (playerActor != null)
+				statusStructForHitObject.player = (playerActor.playerAI.useTeamMemberAI == false);
+		}
 
 		//statusStructForHitObject.weaponIDAtCreation = 0;
 		//if (meHit.useWeaponHitEffect)

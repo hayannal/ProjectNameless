@@ -249,9 +249,9 @@ public class ActorStatus : MonoBehaviour
 				value += AddAttackByContinuousKillAffector.GetValue(actor.affectorProcessor);
 				value += OnMoveBuffAffector.GetAttackAddRate(actor.affectorProcessor);
 				break;
-			case eActorStatus.SpGainAddRate:
-				value += AddSpGainByHpAffector.GetValue(actor.affectorProcessor);
-				break;
+			//case eActorStatus.SpGainAddRate:
+			//	value += AddSpGainByHpAffector.GetValue(actor.affectorProcessor);
+			//	break;
 		}
 		return value;
 	}

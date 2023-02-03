@@ -74,4 +74,19 @@ public class InstantDeathAffector : AffectorBase
 		float rate = StandardHitCountForPlayerKillingMonster / (StandardHitCountForPlayerKillingMonster - 1.0f) * result / (result + 1.0f);
 		return (Random.value <= rate);
 	}
+
+	public static bool CheckSimpleInstantDeath(float instantDeathRate, Actor defenderActor)
+	{
+		if (defenderActor.IsMonsterActor())
+		{
+			MonsterActor monsterActor = defenderActor as MonsterActor;
+			if (monsterActor != null && monsterActor.bossMonster)
+				return false;
+		}
+
+		if (defenderActor.actionController.mecanimState.IsState((int)eMecanimState.DontDie))
+			return false;
+
+		return (Random.value <= instantDeathRate);
+	}
 }

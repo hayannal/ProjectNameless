@@ -263,6 +263,7 @@ public class BaseDamageAffector : AffectorBase {
 			}
 		}
 
+		bool instantDeathApplied = false;
 		if (_actor.actorStatus.GetHP() == _actor.actorStatus.GetValue(eActorStatus.MaxHp))
 		{
 			if (attackerActor == null) attackerActor = BattleInstanceManager.instance.FindActorByInstanceId(hitParameter.statusStructForHitObject.actorInstanceId);
@@ -279,14 +280,57 @@ public class BaseDamageAffector : AffectorBase {
 					{
 						damage = _actor.actorStatus.GetHP() + 1.0f;
 						FloatingDamageTextRootCanvas.instance.ShowText(FloatingDamageText.eFloatingDamageType.Headshot, _actor);
+						instantDeathApplied = true;
 					}
 				}
 			}
 		}
 
-		if (_actor.IsMonsterActor() && monsterActor != null)
+		if (instantDeathApplied == false && affectorValueLevelTableData.sValue3 == "1" && hitParameter.statusStructForHitObject.player && (int)eActorStatus.InstantDeathRate < hitParameter.statusBase.valueList.Length)
 		{
-			FloatingDamageTextRootCanvas.instance.ShowText(damage, appliedCritical, _actor);
+			float instantDeathRate = hitParameter.statusBase.valueList[(int)eActorStatus.InstantDeathRate];
+			instantDeathRate = 0.4f;
+			if (instantDeathRate > 0.0f && InstantDeathAffector.CheckSimpleInstantDeath(instantDeathRate, _actor))
+			{
+				damage = _actor.actorStatus.GetHP() + 1.0f;
+				FloatingDamageTextRootCanvas.instance.ShowText(FloatingDamageText.eFloatingDamageType.Headshot, _actor);
+				instantDeathApplied = true;
+			}
+		}
+
+		bool appliedStike = false;
+		if (instantDeathApplied == false && affectorValueLevelTableData.sValue3 == "1" && hitParameter.statusStructForHitObject.player && monsterActor != null && monsterActor.bossMonster && (int)eActorStatus.StrikeRate < hitParameter.statusBase.valueList.Length)
+		{
+			float strikeExpectDamage = BattleInstanceManager.instance.GetCachedGlobalConstantFloat("MinimumStrikeDamageRate") * _actor.actorStatus.GetValue(eActorStatus.MaxHp);
+			float strikeRate = hitParameter.statusBase.valueList[(int)eActorStatus.StrikeRate];
+			if (damage < strikeExpectDamage && strikeRate > 0.0f && Random.value <= strikeRate)
+			{
+				float strikeDamageRate = BattleInstanceManager.instance.GetCachedGlobalConstantFloat("MinimumStrikeDamageRate");
+				strikeDamageRate += hitParameter.statusBase.valueList[(int)eActorStatus.StrikeDamageAddRate];
+				if (strikeDamageRate > BattleInstanceManager.instance.GetCachedGlobalConstantFloat("MaximumStrikeDamageRate"))
+					strikeDamageRate = BattleInstanceManager.instance.GetCachedGlobalConstantFloat("MaximumStrikeDamageRate");
+				damage = strikeDamageRate * _actor.actorStatus.GetValue(eActorStatus.MaxHp);
+				appliedStike = true;
+			}
+		}
+
+		if (_actor.IsMonsterActor() && monsterActor != null && instantDeathApplied == false)
+		{
+			FloatingDamageTextRootCanvas.instance.ShowText(damage, appliedCritical, appliedStike, _actor);
+		}
+
+		// 넉백
+		if (affectorValueLevelTableData.sValue3 == "1" && hitParameter.statusStructForHitObject.player)
+		{
+			if ((int)eActorStatus.KnockbackRate < hitParameter.statusBase.valueList.Length)
+			{
+				float knockbackRate = hitParameter.statusBase.valueList[(int)eActorStatus.KnockbackRate];
+				if (knockbackRate > 0.0f && Random.value <= knockbackRate)
+				{
+					_actor.affectorProcessor.ApplyAffectorValue("AddForceKnockback", hitParameter, false, true);
+					FloatingDamageTextRootCanvas.instance.ShowText(FloatingDamageText.eFloatingDamageType.Knockback, _actor);
+				}
+			}
 		}
 
 		/*
