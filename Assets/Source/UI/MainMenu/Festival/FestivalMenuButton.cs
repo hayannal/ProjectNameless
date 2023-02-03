@@ -36,6 +36,14 @@ public class FestivalMenuButton : MonoBehaviour
 		if (buttonRootObject == null)
 			buttonRootObject = gameObject;
 		buttonRootObject.SetActive(show);
+
+		if (show)
+		{
+			// icon preload
+			FestivalTypeTableData festivalTypeTableData = TableDataManager.instance.FindFestivalTypeTableData(FestivalData.instance.festivalId);
+			if (festivalTypeTableData != null)
+				AddressableAssetLoadManager.GetAddressableSprite(festivalTypeTableData.iconAddress, "Icon");
+		}
 	}
 
 	DateTime _festivalExpireDateTime;
