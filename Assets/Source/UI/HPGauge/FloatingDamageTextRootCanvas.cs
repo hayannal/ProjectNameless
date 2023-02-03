@@ -51,7 +51,7 @@ public class FloatingDamageTextRootCanvas : MonoBehaviour
 		floatingDamageText.InitializeText(floatingDamageType, actor, index);
 	}
 
-	public void ShowText(float damage, bool critical, Actor actor)
+	public void ShowText(float damage, bool critical, bool strike, Actor actor)
 	{
 #if UNITY_EDITOR
 		if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "BattleScene")
@@ -59,11 +59,11 @@ public class FloatingDamageTextRootCanvas : MonoBehaviour
 #endif
 
 		// position ani
-		int index = FloatingDamageTextRootCanvas.instance.GetPositionAnimationIndex(actor);
+		int index = GetPositionAnimationIndex(actor);
 		index = index % floatingDamageTextPrefabList.Length;
 
 		FloatingDamageText floatingDamageText = GetCachedFloatingDamageText(floatingDamageTextPrefabList[index]);
-		floatingDamageText.InitializeText(damage, critical, actor, index);
+		floatingDamageText.InitializeText(damage, critical, strike, actor, index);
 	}
 
 	Dictionary<GameObject, List<FloatingDamageText>> _dicFloatingDamageTextInstancePool = new Dictionary<GameObject, List<FloatingDamageText>>();

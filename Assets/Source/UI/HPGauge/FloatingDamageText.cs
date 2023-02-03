@@ -18,60 +18,86 @@ public class FloatingDamageText : MonoBehaviour
 		HealSpOnAttack,
 		Critical,
 		MaxHpIncrease,
+		Knockback,
 	}
 
 	public Text damageText;
+	public Text localizedText;
+	public Image strikeImage;
 	public Transform positionAnimationTransform;
 	public DOTweenAnimation alphaTweenAnimation;
 	public CanvasGroup alphaCanvasGroup;
 
-	public void InitializeText(float damage, bool critical, Actor actor, int index)
+	public void InitializeText(float damage, bool critical, bool strike, Actor actor, int index)
 	{
 		int intDamage = (int)damage;
 
 		damageText.font = UIString.instance.GetUnlocalizedFont();
 		damageText.fontStyle = UIString.instance.useSystemUnlocalizedFont ? FontStyle.Bold : FontStyle.Normal;
-		damageText.color = critical ? Color.red : Color.white;
 		damageText.text = intDamage.ToString("N0");
+
+		if (strike)
+		{
+			damageText.color = new Color(1.0f, 0.0f, 0.5f);
+			damageText.gameObject.SetActive(true);
+			localizedText.SetLocalizedText(UIString.instance.GetString("GameUI_Strike"));
+			localizedText.color = Color.white;
+			localizedText.gameObject.SetActive(true);
+			strikeImage.gameObject.SetActive(true);
+			InitializeText(actor, index);
+			return;
+		}
+
+		damageText.color = critical ? Color.red : Color.white;
+		damageText.gameObject.SetActive(true);
+		localizedText.gameObject.SetActive(false);
+		strikeImage.gameObject.SetActive(false);
 		InitializeText(actor, index);
 	}
 
 	public void InitializeText(eFloatingDamageType floatingDamageType, Actor actor, int index)
 	{
+		localizedText.color = Color.white;
 		switch (floatingDamageType)
 		{
 			case eFloatingDamageType.Miss:
-				damageText.SetLocalizedText(UIString.instance.GetString("GameUI_Miss"));
+				localizedText.SetLocalizedText(UIString.instance.GetString("GameUI_Miss"));
 				break;
 			case eFloatingDamageType.Invincible:
-				damageText.SetLocalizedText(UIString.instance.GetString("GameUI_Invincible"));
+				localizedText.SetLocalizedText(UIString.instance.GetString("GameUI_Invincible"));
 				break;
 			case eFloatingDamageType.Headshot:
-				damageText.SetLocalizedText(UIString.instance.GetString("GameUI_Headshot"));
+				localizedText.SetLocalizedText(UIString.instance.GetString("GameUI_Headshot"));
 				break;
 			case eFloatingDamageType.Immortal:
-				damageText.SetLocalizedText(UIString.instance.GetString("GameUI_ImmortalWill"));
+				localizedText.SetLocalizedText(UIString.instance.GetString("GameUI_ImmortalWill"));
 				break;
 			case eFloatingDamageType.ReduceContinuousDamage:
-				damageText.SetLocalizedText(UIString.instance.GetString("GameUI_ReduceContinuousDmg"));
+				localizedText.SetLocalizedText(UIString.instance.GetString("GameUI_ReduceContinuousDmg"));
 				break;
 			case eFloatingDamageType.DefenseStrongDamage:
-				damageText.SetLocalizedText(UIString.instance.GetString("GameUI_DefenseStrongDmg"));
+				localizedText.SetLocalizedText(UIString.instance.GetString("GameUI_DefenseStrongDmg"));
 				break;
 			case eFloatingDamageType.PaybackSp:
-				damageText.SetLocalizedText(UIString.instance.GetString("GameUI_PaybackSp"));
+				localizedText.SetLocalizedText(UIString.instance.GetString("GameUI_PaybackSp"));
 				break;
 			case eFloatingDamageType.HealSpOnAttack:
-				damageText.SetLocalizedText(UIString.instance.GetString("GameUI_HealSp"));
+				localizedText.SetLocalizedText(UIString.instance.GetString("GameUI_HealSp"));
 				break;
 			case eFloatingDamageType.Critical:
-				damageText.SetLocalizedText(UIString.instance.GetString("GameUI_Critical"));
+				localizedText.SetLocalizedText(UIString.instance.GetString("GameUI_Critical"));
 				break;
 			case eFloatingDamageType.MaxHpIncrease:
-				damageText.SetLocalizedText(UIString.instance.GetString("GameUI_MaxHpIncrease"));
+				localizedText.SetLocalizedText(UIString.instance.GetString("GameUI_MaxHpIncrease"));
+				break;
+			case eFloatingDamageType.Knockback:
+				localizedText.SetLocalizedText(UIString.instance.GetString("GameUI_Knockback"));
+				localizedText.color = new Color(0.0f, 0.75f, 1.0f);
 				break;
 		}
-		damageText.color = Color.white;
+		localizedText.gameObject.SetActive(true);
+		damageText.gameObject.SetActive(false);
+		strikeImage.gameObject.SetActive(false);
 		InitializeText(actor, index);
 	}
 
