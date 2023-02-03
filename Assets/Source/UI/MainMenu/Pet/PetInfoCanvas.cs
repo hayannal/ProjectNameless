@@ -30,6 +30,8 @@ public class PetInfoCanvas : MonoBehaviour
 	public GameObject heartEffectPrefab;
 	public Text atkText;
 
+	public RectTransform abilityButtonRectTransform;
+
 	#region Pet Sale
 	public GameObject petSaleButtonRootObject;
 	public Text petSaleResetRemainText;
@@ -131,6 +133,7 @@ public class PetInfoCanvas : MonoBehaviour
 			if (petCountTableData != null)
 				countLevelUpButtonObject.SetActive(true);
 		}
+		abilityButtonRectTransform.anchoredPosition = new Vector2(abilityButtonRectTransform.anchoredPosition.x, _contains ? 260.0f : 190.0f);
 
 		RefreshPetSale();
 	}
