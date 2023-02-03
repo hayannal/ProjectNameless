@@ -347,7 +347,8 @@ public class EquipManager : MonoBehaviour
 			if (TableDataManager.instance.equipTable.dataArray[i].grade != selectedGrade)
 				continue;
 
-			sumWeight += TableDataManager.instance.equipTable.dataArray[i].equipGachaWeight;
+			//sumWeight += TableDataManager.instance.equipTable.dataArray[i].equipGachaWeight;
+			sumWeight += 1.0f;
 			RandomGachaEquipId newInfo = new RandomGachaEquipId();
 			newInfo.equipId = TableDataManager.instance.equipTable.dataArray[i].equipId;
 			newInfo.sumWeight = sumWeight;

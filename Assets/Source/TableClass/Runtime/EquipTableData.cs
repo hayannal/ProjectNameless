@@ -21,6 +21,10 @@ public class EquipTableData
   public int grade { get { return _grade; } set { _grade = value; } }
   
   [SerializeField]
+  int _atk;
+  public int atk { get { return _atk; } set { _atk = value; } }
+  
+  [SerializeField]
   string _prefabAddress;
   public string prefabAddress { get { return _prefabAddress; } set { _prefabAddress = value; } }
   
@@ -31,9 +35,5 @@ public class EquipTableData
   [SerializeField]
   string _nameId;
   public string nameId { get { return _nameId; } set { _nameId = value; } }
-  
-  [SerializeField]
-  float _equipGachaWeight;
-  public float equipGachaWeight { get { return _equipGachaWeight; } set { _equipGachaWeight = value; } }
   
 }
