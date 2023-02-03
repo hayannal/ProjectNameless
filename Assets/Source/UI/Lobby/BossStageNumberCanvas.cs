@@ -85,6 +85,9 @@ public class BossStageNumberCanvas : MonoBehaviour
 			stageText.text = _stage.ToString("N0");
 		}
 
+		yield return Timing.WaitForOneFrame;
+		yield return Timing.WaitForOneFrame;
+
 		// 마지막은 중앙으로 되돌아오기.
 		nodeTransform.DOAnchorPosX(0.0f, duration).SetEase(Ease.Linear);
 		yield return Timing.WaitForSeconds(duration);
