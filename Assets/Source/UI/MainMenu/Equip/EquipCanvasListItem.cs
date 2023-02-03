@@ -94,10 +94,7 @@ public class EquipCanvasListItem : MonoBehaviour
 	// 변할 수 있는 정보들만 따로 빼둔다.
 	public void RefreshStatus()
 	{
-		if (equipData.enhanceLevel > 0)
-			enhanceLevelText.text = string.Format("+{0}", equipData.enhanceLevel);
-		else
-			enhanceLevelText.text = "";
+		enhanceLevelText.text = "";
 
 		// isLock
 		lockImage.gameObject.SetActive(equipData.isLock);

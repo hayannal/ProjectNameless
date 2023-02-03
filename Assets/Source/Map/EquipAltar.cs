@@ -165,10 +165,10 @@ public class EquipAltar : MonoBehaviour
 			if (quickOutline == null)
 			{
 				quickOutline = newObject.AddComponent<QuickOutline>();
-				quickOutline.OutlineColor = GetGradeOutlineColor(grade);
 				quickOutline.OutlineWidth = 0.9f;
 				quickOutline.SetBlink(1.0f);
 			}
+			quickOutline.OutlineColor = GetGradeOutlineColor(grade);
 			quickOutline.enabled = true;
 		}
 		else

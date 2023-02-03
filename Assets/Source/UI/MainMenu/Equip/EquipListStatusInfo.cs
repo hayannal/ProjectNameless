@@ -102,6 +102,11 @@ public class EquipListStatusInfo : MonoBehaviour
 	{
 		equipListItem.Initialize(_equipData, null);
 
+		//mainStatusFillImage.fillAmount = _equipData.GetMainStatusRatio();
+		mainStatusFillImage.fillAmount = 1.0f;
+		bool fullGauge = (mainStatusFillImage.fillAmount == 1.0f);
+		mainStatusText.text = _equipData.mainStatusValue.ToString("N0");
+		mainStatusFillImage.color = GetGaugeColor(fullGauge);
 	}
 
 	public void OnClickDetailShowButton()

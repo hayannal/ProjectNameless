@@ -74,6 +74,7 @@ public class ActorStatus : MonoBehaviour
 		_statusBase.valueList[(int)eActorStatus.Attack] += PetManager.instance.cachedValue;
 
 		// equip
+		_statusBase.valueList[(int)eActorStatus.Attack] += EquipManager.instance.cachedValue;
 
 		_statusBase.valueList[(int)eActorStatus.CombatPower] = _statusBase.valueList[(int)eActorStatus.Attack];
 		_statusBase.valueList[(int)eActorStatus.AttackMulti] = actorTableData.multiAtk;
