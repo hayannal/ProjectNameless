@@ -268,7 +268,7 @@ public class SpellManager : MonoBehaviour
 			if (TableDataManager.instance.skillTable.dataArray[i].grade != _listGachaSpellInfo[index].grade || TableDataManager.instance.skillTable.dataArray[i].star != _listGachaSpellInfo[index].star)
 				continue;
 
-			sumWeight += 1.0f;
+			sumWeight += TableDataManager.instance.skillTable.dataArray[i].gachaWeight;
 			RandomGachaSpellIdInfo newInfo = new RandomGachaSpellIdInfo();
 			newInfo.id = TableDataManager.instance.skillTable.dataArray[i].id;
 			newInfo.sumWeight = sumWeight;
