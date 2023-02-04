@@ -301,14 +301,14 @@ public class BaseDamageAffector : AffectorBase {
 		bool appliedStike = false;
 		if (instantDeathApplied == false && affectorValueLevelTableData.sValue3 == "1" && hitParameter.statusStructForHitObject.player && monsterActor != null && monsterActor.bossMonster && (int)eActorStatus.StrikeRate < hitParameter.statusBase.valueList.Length)
 		{
-			float strikeExpectDamage = BattleInstanceManager.instance.GetCachedGlobalConstantFloat("MinimumStrikeDamageRate") * _actor.actorStatus.GetValue(eActorStatus.MaxHp);
+			float strikeExpectDamage = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MinimumStrikeDamageRate10000") * 0.0001f * _actor.actorStatus.GetValue(eActorStatus.MaxHp);
 			float strikeRate = hitParameter.statusBase.valueList[(int)eActorStatus.StrikeRate];
 			if (damage < strikeExpectDamage && strikeRate > 0.0f && Random.value <= strikeRate)
 			{
-				float strikeDamageRate = BattleInstanceManager.instance.GetCachedGlobalConstantFloat("MinimumStrikeDamageRate");
+				float strikeDamageRate = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MinimumStrikeDamageRate10000") * 0.0001f;
 				strikeDamageRate += hitParameter.statusBase.valueList[(int)eActorStatus.StrikeDamageAddRate];
-				if (strikeDamageRate > BattleInstanceManager.instance.GetCachedGlobalConstantFloat("MaximumStrikeDamageRate"))
-					strikeDamageRate = BattleInstanceManager.instance.GetCachedGlobalConstantFloat("MaximumStrikeDamageRate");
+				if (strikeDamageRate > BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaximumStrikeDamageRate10000") * 0.0001f)
+					strikeDamageRate = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaximumStrikeDamageRate10000") * 0.0001f;
 				damage = strikeDamageRate * _actor.actorStatus.GetValue(eActorStatus.MaxHp);
 				appliedStike = true;
 			}
