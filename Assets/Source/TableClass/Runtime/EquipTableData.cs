@@ -36,4 +36,8 @@ public class EquipTableData
   string _nameId;
   public string nameId { get { return _nameId; } set { _nameId = value; } }
   
+  [SerializeField]
+  float _equipGachaWeight;
+  public float equipGachaWeight { get { return _equipGachaWeight; } set { _equipGachaWeight = value; } }
+  
 }
