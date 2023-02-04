@@ -289,7 +289,6 @@ public class BaseDamageAffector : AffectorBase {
 		if (instantDeathApplied == false && affectorValueLevelTableData.sValue3 == "1" && hitParameter.statusStructForHitObject.player && (int)eActorStatus.InstantDeathRate < hitParameter.statusBase.valueList.Length)
 		{
 			float instantDeathRate = hitParameter.statusBase.valueList[(int)eActorStatus.InstantDeathRate];
-			instantDeathRate = 0.4f;
 			if (instantDeathRate > 0.0f && InstantDeathAffector.CheckSimpleInstantDeath(instantDeathRate, _actor))
 			{
 				damage = _actor.actorStatus.GetHP() + 1.0f;
