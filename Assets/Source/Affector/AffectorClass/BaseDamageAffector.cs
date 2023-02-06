@@ -74,7 +74,9 @@ public class BaseDamageAffector : AffectorBase {
 			damage = 1.0f;
 
 		// 방어력 빼고나서 제일 먼저 하는게 multiAtk 곱하는거다.
-		damage *= hitParameter.statusBase.valueList[(int)eActorStatus.AttackMulti];
+		// 이거 평타에만 적용해야한다.
+		if (affectorValueLevelTableData.sValue3 == "1")
+			damage *= hitParameter.statusBase.valueList[(int)eActorStatus.AttackMulti];
 
 		// 저렙일때의 보정처리는 damage 오자마자 최초에 처리한다.
 		// 사실 이건 CollisionDamageAffector에서도 하고 ReflectDamageAffector에서도 필요한거긴 하지만
