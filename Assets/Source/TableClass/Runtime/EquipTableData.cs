@@ -40,4 +40,44 @@ public class EquipTableData
   float _equipGachaWeight;
   public float equipGachaWeight { get { return _equipGachaWeight; } set { _equipGachaWeight = value; } }
   
+  [SerializeField]
+  int _option3;
+  public int option3 { get { return _option3; } set { _option3 = value; } }
+  
+  [SerializeField]
+  float _option3Value;
+  public float option3Value { get { return _option3Value; } set { _option3Value = value; } }
+  
+  [SerializeField]
+  int _option4;
+  public int option4 { get { return _option4; } set { _option4 = value; } }
+  
+  [SerializeField]
+  float _option4Value;
+  public float option4Value { get { return _option4Value; } set { _option4Value = value; } }
+  
+  [SerializeField]
+  int _option5;
+  public int option5 { get { return _option5; } set { _option5 = value; } }
+  
+  [SerializeField]
+  float _option5Value;
+  public float option5Value { get { return _option5Value; } set { _option5Value = value; } }
+  
+  [SerializeField]
+  int _option6;
+  public int option6 { get { return _option6; } set { _option6 = value; } }
+  
+  [SerializeField]
+  float _option6Value;
+  public float option6Value { get { return _option6Value; } set { _option6Value = value; } }
+  
+  [SerializeField]
+  string _skillId;
+  public string skillId { get { return _skillId; } set { _skillId = value; } }
+  
+  [SerializeField]
+  int _skillActive;
+  public int skillActive { get { return _skillActive; } set { _skillActive = value; } }
+  
 }
