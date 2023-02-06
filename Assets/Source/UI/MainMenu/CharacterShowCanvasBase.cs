@@ -96,6 +96,7 @@ public class CharacterShowCanvasBase : MonoBehaviour
 					_environmentSetting.SetDefaultLightIntensity(_defaultLightIntensity);
 
 				_groundTransform.gameObject.SetActive(true);
+				_groundTransform.position = _rootOffsetPosition;
 			}
 
 			//if (TimeSpaceGround.instance != null && TimeSpaceGround.instance.gameObject.activeSelf)

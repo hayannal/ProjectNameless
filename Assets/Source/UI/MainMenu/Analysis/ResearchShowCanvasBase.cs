@@ -45,6 +45,7 @@ public class ResearchShowCanvasBase : MonoBehaviour
 				_groundTransform = BattleInstanceManager.instance.GetCachedObject(CommonMenuGroup.instance.menuInfoGroundPrefab, _rootOffsetPosition, Quaternion.identity).transform;
 			else
 				_groundTransform.gameObject.SetActive(true);
+			_groundTransform.position = _rootOffsetPosition;
 			CharacterInfoGround.instance.stoneObject.SetActive(false);
 
 			// setting
