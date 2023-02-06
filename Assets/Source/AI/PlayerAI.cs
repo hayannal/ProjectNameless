@@ -52,7 +52,6 @@ public class PlayerAI : MonoBehaviour
 		UpdateTargetingObject();
 		UpdateAttack();
 		UpdateAttackRange();
-		UpdateSpell();
 	}
 
 	float _currentFindDelay;
@@ -400,39 +399,5 @@ public class PlayerAI : MonoBehaviour
 			return false;
 		}
 		return _lastNavMeshResult;
-	}
-
-
-
-	Cooltime _globalSpellCooltime;
-	void UpdateSpell()
-	{
-		if (useTeamMemberAI)
-			return;
-
-		// 공격하는거랑 비슷하긴 한데 최종적으로 SkillProcessor에게 요청해서 스킬을 발동시킬거다.
-		if (actor.actorStatus.IsDie())
-			return;
-
-		// 스킬이 동시에 다 나가는게 별로면 전역 딜레이라도 두는게 낫지 않을까.
-		if (_globalSpellCooltime != null && _globalSpellCooltime.CheckCooltime())
-			return;
-
-		// 움직일 수 없다면 스킬도 안나가는게 맞는건가?
-		if (actor.affectorProcessor.IsContinuousAffectorType(eAffectorType.CannotAction))
-			return;
-
-		// 스킬은 항상 자동으로 나가는게 가능하니까 이동이나 공격 상태를 검사할 필요가 없다.
-		bool autoSkillUsable = true;
-
-		// no target
-		if (targetCollider == null)
-			autoSkillUsable = false;
-
-		if (!autoSkillUsable)
-			return;
-
-		if (skillProcessor.UseRandomAutoSpell())
-			_globalSpellCooltime = actor.cooltimeProcessor.GetCooltime(SkillProcessor.GlobalSpellCooltimeId);
 	}
 }

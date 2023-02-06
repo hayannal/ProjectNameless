@@ -234,6 +234,7 @@ public class MainCanvas : MonoBehaviour
 		StageManager.instance.OnOffFastBossClear(false);
 		StageManager.instance.InitializeStageFloor(PlayerData.instance.selectedStage, false);
 		TeamManager.instance.HideForMoveMap(false);
+		SpellManager.instance.InitializeEquipSpellInfo();
 		FadeCanvas.instance.FadeIn(0.5f);
 
 		// 보스전에 
@@ -281,6 +282,9 @@ public class MainCanvas : MonoBehaviour
 
 		if (repeatMode)
 		{
+			if (EquipSkillSlotCanvas.instance != null && EquipSkillSlotCanvas.instance.gameObject.activeSelf)
+				EquipSkillSlotCanvas.instance.gameObject.SetActive(false);
+
 			// 반복모드로 돌아가는거라면 sleep모드 셋팅한 것도 풀어야한다.
 			Screen.sleepTimeout = SleepTimeout.SystemSetting;
 
@@ -290,6 +294,11 @@ public class MainCanvas : MonoBehaviour
 				// 최대 스테이지에 도달했음을 알린다.
 				OkCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("GameUI_MaxStageWaitUpdate"), null, -1, true);
 			}
+		}
+		else
+		{
+			// 다음 보스로 넘어갈때 쿨타임 초기화 해야한다.
+			SpellManager.instance.ApplyEquipSkillCooltime();
 		}
 	}
 	#endregion

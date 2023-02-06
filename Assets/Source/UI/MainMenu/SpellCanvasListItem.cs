@@ -33,7 +33,7 @@ public class SpellCanvasListItem : MonoBehaviour
 		_skillTableData = skillTableData;
 
 		// 안구해질리 없을거다.
-		SkillProcessor.SkillInfo skillInfo = BattleInstanceManager.instance.playerActor.skillProcessor.GetSpellInfo(_id);
+		SkillProcessor.SkillInfo skillInfo = SpellManager.instance.GetSpellInfo(_id);
 		SkillLevelTableData skillLevelTableData = TableDataManager.instance.FindSkillLevelTableData(_id, 1);
 		SpellGradeLevelTableData spellGradeLevelTableData = TableDataManager.instance.FindSpellGradeLevelTableData(skillTableData.grade, skillTableData.star, spellData.level);
 		if (skillInfo == null || skillLevelTableData == null || spellGradeLevelTableData == null)

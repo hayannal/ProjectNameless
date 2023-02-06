@@ -48,6 +48,11 @@ public class EquipData
 	{
 		_isLock = lockState;
 	}
+
+	public string GetUsableEquipSkillId()
+	{
+		return "Weapon0001";
+	}
 	
 
 

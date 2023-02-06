@@ -42,7 +42,6 @@ public class SkillProcessor : MonoBehaviour
 	}
 
 	List<SkillInfo> _listSkillInfo;
-	List<SkillInfo> _listSpellInfo;
 	public void InitializeSkill()
 	{
 		cooltimeProcessor = GetComponent<CooltimeProcessor>();
@@ -52,12 +51,11 @@ public class SkillProcessor : MonoBehaviour
 		if (affectorProcessor == null) affectorProcessor = gameObject.AddComponent<AffectorProcessor>();
 
 		_listSkillInfo = new List<SkillInfo>();
-		_listSpellInfo = new List<SkillInfo>();
 		for (int i = 0; i < TableDataManager.instance.skillTable.dataArray.Length; ++i)
 		{
 			SkillTableData skillTableData = TableDataManager.instance.skillTable.dataArray[i];
 			if (skillTableData.spell == false && skillTableData.actorId != actor.actorId) continue;
-			if (skillTableData.spell && actor.actorId != CharacterData.s_PlayerActorId) continue;
+			if (skillTableData.spell) continue;
 
 			int skillLevel = 1; // actor.GetSkillLevel(skillInfo.skillID);
 			if (skillTableData.spell)
@@ -73,30 +71,16 @@ public class SkillProcessor : MonoBehaviour
 			if (info.skillType == eSkillType.Passive)
 				InitializePassiveSkill(info);
 			#endregion
-
-			#region Auto Skill
-			if (skillTableData.spell)
-			{
-				if (info.skillType == eSkillType.NonAni)
-				{
-					for (int j = 0; j < skillTableData.effectAddress.Length; ++j)
-					{
-						AddressableAssetLoadManager.GetAddressableGameObject(skillTableData.effectAddress[j], "CommonEffect", (prefab) =>
-						{
-							BattleInstanceManager.instance.AddCommonPoolPreloadObjectList(prefab);
-						});
-					}
-				}
-				_listSpellInfo.Add(info);
-				continue;
-			}
-			#endregion
-
+			
 			_listSkillInfo.Add(info);
 		}
+
+		// 스킬 초기화 할때 
+		if (actor.actorId == CharacterData.s_PlayerActorId)
+			SpellManager.instance.InitializeActorForSpellProcessor(actor as PlayerActor);
 	}
 
-	SkillInfo CreateSkillInfo(SkillTableData skillTableData, int skillLevel)
+	public static SkillInfo CreateSkillInfo(SkillTableData skillTableData, int skillLevel)
 	{
 		SkillInfo info = new SkillInfo();
 		info.skillId = skillTableData.id;
@@ -137,45 +121,6 @@ public class SkillProcessor : MonoBehaviour
 				return _listSkillInfo[i];
 		}
 		return null;
-	}
-
-	public SkillInfo GetSpellInfo(string skillId)
-	{
-		for (int i = 0; i < _listSpellInfo.Count; ++i)
-		{
-			if (_listSpellInfo[i].skillId == skillId)
-				return _listSpellInfo[i];
-		}
-		return null;
-	}
-
-	// 플레이 중에 배울때 중간에 추가해야해서 만든 함수다.
-	public void AddSpell(SpellData spellData)
-	{
-		SkillTableData skillTableData = spellData.cachedSkillTableData;
-		if (skillTableData == null)
-			return;
-
-		SkillInfo info = CreateSkillInfo(skillTableData, spellData.level);
-
-		#region Passive Skill
-		if (info.skillType == eSkillType.Passive)
-			InitializePassiveSkill(info);
-		#endregion
-
-		#region Auto Skill
-		if (info.skillType == eSkillType.NonAni)
-		{
-			for (int j = 0; j < skillTableData.effectAddress.Length; ++j)
-			{
-				AddressableAssetLoadManager.GetAddressableGameObject(skillTableData.effectAddress[j], "CommonEffect", (prefab) =>
-				{
-					BattleInstanceManager.instance.AddCommonPoolPreloadObjectList(prefab);
-				});
-			}
-		}
-		_listSpellInfo.Add(info);
-		#endregion
 	}
 
 	#region Passive Skill
@@ -279,49 +224,7 @@ public class SkillProcessor : MonoBehaviour
 		}
 	}
 
-	#region Spell
-	public static string GlobalSpellCooltimeId = "_globalSpellCooltime";
-	public static float GlobalSpellCooltimeDuration = 1.0f;
-	List<SkillInfo> _listTempSpellInfoForSelect = new List<SkillInfo>();
-	public bool UseRandomAutoSpell()
-	{
-		_listTempSpellInfoForSelect.Clear();
-		for (int i = 0; i < _listSpellInfo.Count; ++i)
-		{
-			if (_listSpellInfo[i].skillType != eSkillType.NonAni)
-				continue;
-			if (cooltimeProcessor.CheckCooltime(_listSpellInfo[i].skillId))
-				continue;
-			_listTempSpellInfoForSelect.Add(_listSpellInfo[i]);
-		}
-		if (_listTempSpellInfoForSelect.Count == 0)
-			return false;
-
-		int index = Random.Range(0, _listTempSpellInfoForSelect.Count);
-		ApplyNonAniSkill(_listTempSpellInfoForSelect[index]);
-		cooltimeProcessor.ApplyCooltime(_listTempSpellInfoForSelect[index].skillId, _listTempSpellInfoForSelect[index].cooltime);
-		cooltimeProcessor.ApplyCooltime(GlobalSpellCooltimeId, GlobalSpellCooltimeDuration);
-		return true;
-	}
-
-	public bool LevelUpSpell(string id)
-	{
-		SkillInfo findSkillInfo = null;
-		for (int i = 0; i < _listSpellInfo.Count; ++i)
-		{
-			if (_listSpellInfo[i].skillId != id)
-				continue;
-			findSkillInfo = _listSpellInfo[i];
-			break;
-		}
-		if (findSkillInfo == null)
-			return false;
-
-
-
-		return false;
-	}
-	#endregion
+	
 
 
 
