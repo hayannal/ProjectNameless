@@ -51,7 +51,12 @@ public class EquipData
 
 	public string GetUsableEquipSkillId()
 	{
-		return "Weapon0001";
+		if (string.IsNullOrEmpty(cachedEquipTableData.skillId))
+			return "";
+
+		if (cachedEquipTableData.grade >= cachedEquipTableData.skillActive)
+			return cachedEquipTableData.skillId;
+		return "";
 	}
 	
 
