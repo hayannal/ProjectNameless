@@ -29,6 +29,8 @@ public class EquipTypeButton : MonoBehaviour
 			case 2: return new Color(0.18f, 0.678f, 0.98f, 0.784f);
 			case 3: return new Color(0.7f, 0.2f, 1.0f, 0.784f);
 			case 4: return new Color(0.972f, 0.631f, 0.188f, 0.784f);
+			case 5: return new Color(0.85f, 0.202f, 0.015f, 0.784f);
+			case 6: return new Color(0.898f, 0.942f, 0.084f, 0.784f);
 		}
 		return Color.white;
 	}

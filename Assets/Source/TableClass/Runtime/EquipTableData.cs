@@ -21,6 +21,10 @@ public class EquipTableData
   public int grade { get { return _grade; } set { _grade = value; } }
   
   [SerializeField]
+  int _rarity;
+  public int rarity { get { return _rarity; } set { _rarity = value; } }
+  
+  [SerializeField]
   int _atk;
   public int atk { get { return _atk; } set { _atk = value; } }
   

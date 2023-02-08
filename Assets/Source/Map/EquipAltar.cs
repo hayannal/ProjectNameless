@@ -11,8 +11,8 @@ public class EquipAltar : MonoBehaviour
 	public DOTweenAnimation rotateTweenAnimation;
 	public GameObject emptyIconObject;
 	public ParticleSystem gradeParticleSystem;
-	public Text enhanceText;
-	public GameObject[] optionObjectList;
+	public Text rarityText;
+	public Coffee.UIExtensions.UIGradient rarityGradient;
 	public RectTransform alarmRootTransform;
 
 	bool _started = false;
@@ -50,8 +50,6 @@ public class EquipAltar : MonoBehaviour
 	EquipPrefabInfo _currentEquipObject = null;
 	public void RefreshEquipObject()
 	{
-		RefreshEnhanceInfo();
-
 		// 비쥬얼용 오브젝트들은 우선 끄고 처리
 		DisableEquipObject();
 
@@ -62,9 +60,8 @@ public class EquipAltar : MonoBehaviour
 		if (equipData == null)
 		{
 			gradeParticleSystem.gameObject.SetActive(false);
+			rarityText.gameObject.SetActive(false);
 			emptyIconObject.SetActive(true);
-			for (int i = 0; i < optionObjectList.Length; ++i)
-				optionObjectList[i].SetActive(false);
 			return;
 		}
 
@@ -74,26 +71,37 @@ public class EquipAltar : MonoBehaviour
 		ParticleSystem.MainModule main = gradeParticleSystem.main;
 		main.startColor = GetGradeParticleColor(equipData.cachedEquipTableData.grade);
 		gradeParticleSystem.gameObject.SetActive(true);
-
+		RefreshRarity(equipData.cachedEquipTableData.rarity);
 		emptyIconObject.SetActive(false);
-		for (int i = 0; i < optionObjectList.Length; ++i)
-			optionObjectList[i].SetActive(false);
 		AddressableAssetLoadManager.GetAddressableGameObject(equipData.cachedEquipTableData.prefabAddress, "Equip", OnLoadedEquip);
 	}
 
-	public void RefreshEnhanceInfo()
+	public void RefreshRarity(int rarity)
 	{
-		/*
-		EquipData equipData = TimeSpaceData.instance.GetEquippedDataByType((TimeSpaceData.eEquipSlotType)positionIndex);
-		if (equipData == null)
+		// 여긴 이탤릭 하지 않는다.
+
+		switch (rarity)
 		{
-			enhanceText.text = "";
-			enhanceText.gameObject.SetActive(false);
-			return;
+			case 0:
+				rarityText.text = "A";
+				rarityGradient.color1 = new Color(0.215f, 0.666f, 1.0f);
+				rarityGradient.color2 = new Color(0.0f, 0.032f, 1.0f);
+				rarityGradient.offset = 0.25f;
+				break;
+			case 1:
+				rarityText.text = "S";
+				rarityGradient.color1 = new Color(1.0f, 0.539f, 0.215f);
+				rarityGradient.color2 = new Color(1.0f, 0.235f, 0.0f);
+				rarityGradient.offset = 0.0f;
+				break;
+			case 2:
+				rarityText.text = "SS";
+				rarityGradient.color1 = new Color(1.0f, 0.0f, 0.08f);
+				rarityGradient.color2 = new Color(1.0f, 1.0f, 0.0f);
+				rarityGradient.offset = -0.2f;
+				break;
 		}
-		enhanceText.text = string.Format("+{0}", equipData.enhanceLevel);
-		enhanceText.gameObject.SetActive(equipData.enhanceLevel > 0);
-		*/
+		rarityText.gameObject.SetActive(true);
 	}
 
 	void DisableEquipObject()
@@ -116,6 +124,8 @@ public class EquipAltar : MonoBehaviour
 			case 2: return new Color(0.2f, 0.51f, 1.0f);
 			case 3: return new Color(0.63f, 0.2f, 1.0f);
 			case 4: return new Color(1.0f, 0.5f, 0.2f);
+			case 5: return new Color(0.84f, 0.12f, 0.12f);
+			case 6: return new Color(0.91f, 0.82f, 0.15f);
 		}
 		return Color.white;
 	}
@@ -129,6 +139,8 @@ public class EquipAltar : MonoBehaviour
 			case 2: return new Color(0.0f, 0.51f, 1.0f);
 			case 3: return new Color(0.75f, 0.05f, 1.0f);
 			case 4: return new Color(1.0f, 0.5f, 0.0f);
+			case 5: return new Color(0.84f, 0.12f, 0.12f);
+			case 6: return new Color(0.92f, 0.8f, 0.12f);
 		}
 		return Color.white;
 	}

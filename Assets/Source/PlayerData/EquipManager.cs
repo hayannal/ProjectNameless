@@ -6,6 +6,7 @@ using PlayFab;
 using PlayFab.ClientModels;
 using CodeStage.AntiCheat.ObscuredTypes;
 using MEC;
+using ActorStatusDefine;
 
 public class EquipManager : MonoBehaviour
 {
@@ -42,6 +43,8 @@ public class EquipManager : MonoBehaviour
 	public const int InventoryRealMax = 249;
 
 	public ObscuredInt cachedValue { get; set; }
+	EquipStatusList _cachedEquipStatusList = new EquipStatusList();
+	public EquipStatusList cachedEquipStatusList { get { return _cachedEquipStatusList; } }
 
 	// 하나의 리스트로 관리하려고 하다가 아무리봐도 타입별 리스트로 관리하는게 이득이라 바꿔둔다.
 	//List<EquipData> _listEquipData = new List<EquipData>();
@@ -167,6 +170,8 @@ public class EquipManager : MonoBehaviour
 	void RefreshCachedStatus()
 	{
 		cachedValue = 0;
+		for (int i = 0; i < _cachedEquipStatusList.valueList.Length; ++i)
+			_cachedEquipStatusList.valueList[i] = 0.0f;
 
 		Dictionary<int, EquipData>.Enumerator e = _dicEquippedData.GetEnumerator();
 		while (e.MoveNext())
@@ -177,6 +182,10 @@ public class EquipManager : MonoBehaviour
 
 			// 이제 모든 템은 기본값이 Attack이다.
 			cachedValue += equipData.mainStatusValue;
+
+			// 서브옵으로 붙는 것도 다 한군데 모아놔야한다.
+			for (int i = 0; i < _cachedEquipStatusList.valueList.Length; ++i)
+				_cachedEquipStatusList.valueList[i] += equipData.equipStatusList.valueList[i];
 		}
 	}
 

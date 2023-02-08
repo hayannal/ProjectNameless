@@ -17,17 +17,22 @@ public class EquipListStatusInfo : MonoBehaviour
 	public Button unlockButton;
 
 	public Text mainStatusText;
-	public Image mainStatusFillImage;
+	public Image[] optionGradeCircleImageList;
+	public Image[] optionGradeCircleLineImageList;
 	public GameObject[] optionStatusObjectList;
 	public Text[] optionStatusTextList;
 	public Text[] optionStatusValueTextList;
-	public Image[] optionStatusFillImageList;
-	public GameObject noOptionTextObject;
+
+	public GameObject equipSkillRootObject;
+	public Image equipSkillIconImage;
+	public Coffee.UIExtensions.UIEffect iconGrayscaleEffect;
+	public Text equipSkillNameText;
+	public Image equipSkillGradeCircleImage;
+	public Image equipSkillGradeCircleLineImage;
+	public GameObject noSpecialOptionTextObject;
 
 	public GameObject equipButtonObject;
 	public GameObject unequipButtonObject;
-	public Image optionButtonImage;
-	public Text optionButtonText;
 
 	bool _equipped = false;
 	EquipData _equipData = null;
@@ -52,10 +57,6 @@ public class EquipListStatusInfo : MonoBehaviour
 
 		if (equipButtonObject != null) equipButtonObject.gameObject.SetActive(!equipped);
 		if (unequipButtonObject != null) unequipButtonObject.gameObject.SetActive(equipped);
-
-		bool usableEquipOption = false;
-		optionButtonImage.color = usableEquipOption ? Color.white : ColorUtil.halfGray;
-		optionButtonText.color = usableEquipOption ? Color.white : Color.gray;
 	}
 
 	void RefreshLockInfo()
@@ -73,6 +74,8 @@ public class EquipListStatusInfo : MonoBehaviour
 			case 2: return new Color(0.0f, 0.51f, 1.0f);
 			case 3: return new Color(0.63f, 0.0f, 1.0f);
 			case 4: return new Color(1.0f, 0.5f, 0.0f);
+			case 5: return new Color(0.87f, 0.2f, 0.04f);
+			case 6: return new Color(0.8f, 0.8f, 0.2f);
 		}
 		return Color.white;
 	}
@@ -101,12 +104,44 @@ public class EquipListStatusInfo : MonoBehaviour
 	public void RefreshStatus()
 	{
 		equipListItem.Initialize(_equipData, null);
-
-		//mainStatusFillImage.fillAmount = _equipData.GetMainStatusRatio();
-		mainStatusFillImage.fillAmount = 1.0f;
-		bool fullGauge = (mainStatusFillImage.fillAmount == 1.0f);
 		mainStatusText.text = _equipData.mainStatusValue.ToString("N0");
-		mainStatusFillImage.color = GetGaugeColor(fullGauge);
+
+		// option. 이젠 테이블에 있는거라 수량이 항상 동일하다.
+		for (int i = 0; i < EquipData.EquipOptionCountMax; ++i)
+		{
+			optionGradeCircleImageList[i].color = EquipAltar.GetGradeOutlineColor(i + 3);
+			optionGradeCircleLineImageList[i].gameObject.SetActive(_equipData.IsGetAvailable(i) == false);
+
+			eActorStatus statusType = _equipData.GetOption(i);
+			float value = _equipData.GetOptionValue(i);
+			optionStatusTextList[i].SetLocalizedText(UIString.instance.GetString(string.Format("Op_{0}", statusType.ToString())));
+			optionStatusTextList[i].color = _equipData.IsGetAvailable(i) ? Color.white : Color.gray;
+			optionStatusValueTextList[i].text = string.Format("{0:0.##}%", value * 100.0f);
+			optionStatusValueTextList[i].color = _equipData.IsGetAvailable(i) ? Color.white : Color.gray;
+		}
+
+		equipSkillRootObject.SetActive(false);
+		noSpecialOptionTextObject.SetActive(true);
+		if (string.IsNullOrEmpty(_equipData.cachedEquipTableData.skillId) == false)
+		{
+			SkillTableData skillTableData = TableDataManager.instance.FindSkillTableData(_equipData.cachedEquipTableData.skillId);
+			bool skillActived = (_equipData.cachedEquipTableData.grade >= _equipData.cachedEquipTableData.skillActive);
+			if (skillTableData != null)
+			{
+				AddressableAssetLoadManager.GetAddressableSprite(skillTableData.iconPrefab, "Icon", (sprite) =>
+				{
+					equipSkillIconImage.sprite = null;
+					equipSkillIconImage.sprite = sprite;
+				});
+				equipSkillNameText.SetLocalizedText(UIString.instance.GetString(skillTableData.nameId));
+				iconGrayscaleEffect.enabled = skillActived ? false : true;
+				equipSkillNameText.color = skillActived ? Color.white : Color.gray;
+				equipSkillRootObject.SetActive(true);
+				noSpecialOptionTextObject.SetActive(false);
+			}
+			equipSkillGradeCircleImage.color = EquipAltar.GetGradeOutlineColor(_equipData.cachedEquipTableData.skillActive);
+			equipSkillGradeCircleLineImage.gameObject.SetActive(skillActived == false);
+		}
 	}
 
 	public void OnClickDetailShowButton()
@@ -156,15 +191,7 @@ public class EquipListStatusInfo : MonoBehaviour
 			EquipListCanvas.instance.OnUnequip(_equipData);
 		});
 	}
-
-	public void OnClickEnhanceButton()
-	{
-	}
-
-	public void OnClickOptionButton()
-	{
-	}
-
+	
 	public void OnClickUnlockButton()
 	{
 		if (_equipData == null)
@@ -211,5 +238,28 @@ public class EquipListStatusInfo : MonoBehaviour
 				EquipListCanvas.instance.OnCloseDiffStatusInfo();
 		}
 		gameObject.SetActive(false);
+	}
+
+	public void OnClickSkillActiveInfoButton()
+	{
+		if (string.IsNullOrEmpty(_equipData.cachedEquipTableData.skillId))
+			return;
+
+		SkillTableData skillTableData = TableDataManager.instance.FindSkillTableData(_equipData.cachedEquipTableData.skillId);
+		if (skillTableData == null)
+			return;
+		SkillLevelTableData skillLevelTableData = TableDataManager.instance.FindSkillLevelTableData(_equipData.cachedEquipTableData.skillId, 1);
+		if (skillLevelTableData == null)
+			return;
+
+		string nameString = UIString.instance.GetString(skillTableData.useNameIdOverriding ? skillLevelTableData.nameId : skillTableData.nameId);
+		string descString = UIString.instance.GetString(skillTableData.useDescriptionIdOverriding ? skillLevelTableData.descriptionId : skillTableData.descriptionId, skillLevelTableData.parameter);
+		float cooltime = skillTableData.useCooltimeOverriding ? skillLevelTableData.cooltime : skillTableData.cooltime;
+
+		bool showGradeInfo = (_equipData.cachedEquipTableData.skillActive > _equipData.cachedEquipTableData.grade);
+		UIInstanceManager.instance.ShowCanvasAsync("EquipSkillInfoCanvas", () =>
+		{
+			EquipSkillInfoCanvas.instance.SetInfo(skillTableData, showGradeInfo, _equipData.cachedEquipTableData, nameString, descString, cooltime);
+		});
 	}
 }

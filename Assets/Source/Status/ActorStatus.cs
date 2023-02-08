@@ -83,6 +83,10 @@ public class ActorStatus : MonoBehaviour
 		_statusBase.valueList[(int)eActorStatus.MoveSpeed] = actorTableData.moveSpeed;
 		_statusBase.valueList[(int)eActorStatus.MaxSp] = 0.0f;
 
+		// 장비에 붙은 서브옵션들도 합산해줘야한다.
+		for (int i = 0; i < _statusBase.valueList.Length; ++i)
+			_statusBase.valueList[i] += EquipManager.instance.cachedEquipStatusList.valueList[i];
+
 		// actor multi
 		//_statusBase.valueList[(int)eActorStatus.MaxHp] *= actorTableData.multiHp;
 		//_statusBase.valueList[(int)eActorStatus.Attack] *= actorTableData.multiAtk;

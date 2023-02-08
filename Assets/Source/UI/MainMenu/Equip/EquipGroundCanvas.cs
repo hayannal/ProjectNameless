@@ -12,6 +12,7 @@ public class EquipGroundCanvas : MonoBehaviour
 
 	#region UI
 	public GameObject equipButtonObject;
+	public GameObject optionViewButtonObject;
 	#endregion
 
 	Vector3 _rootOffsetPosition = new Vector3(0.0f, 0.0f, -300.0f);
@@ -65,6 +66,7 @@ public class EquipGroundCanvas : MonoBehaviour
 		MainCanvas.instance.OnEnterCharacterMenu(true);
 
 		#region UI
+		optionViewButtonObject.SetActive(EquipManager.instance.cachedValue > 0);
 		#endregion
 	}
 
@@ -115,6 +117,11 @@ public class EquipGroundCanvas : MonoBehaviour
 		{
 			EquipListCanvas.instance.RefreshInfo(0);
 		});
+	}
+
+	public void OnClickViewOptionButton()
+	{
+		UIInstanceManager.instance.ShowCanvasAsync("EquipStatusDetailCanvas", null);
 	}
 	#endregion
 }

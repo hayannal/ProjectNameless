@@ -11,7 +11,10 @@ public class EquipCanvasListItem : MonoBehaviour
 	public Image blurImage;
 	public Coffee.UIExtensions.UIGradient gradient;
 	public Image lineColorImage;
+	public Text gradeText;
 	public Text enhanceLevelText;
+	public Text rarityText;
+	public Coffee.UIExtensions.UIGradient rarityGradient;
 	public GameObject[] optionObjectList;
 	public Image lockImage;
 	public Text equippedText;
@@ -30,6 +33,7 @@ public class EquipCanvasListItem : MonoBehaviour
 		});
 
 		InitializeGrade(equipData.cachedEquipTableData.grade, false);
+		RefreshRarity(equipData.cachedEquipTableData.rarity);
 		RefreshStatus();
 
 		for (int i = 0; i < optionObjectList.Length; ++i)
@@ -74,13 +78,26 @@ public class EquipCanvasListItem : MonoBehaviour
 				gradient.color2 = new Color(0.8f, 0.8f, 0.8f);
 				lineColorImage.color = new Color(1.0f, 0.5f, 0.0f);
 				break;
+			case 5:
+				blurImage.color = new Color(1.0f, 0.27f, 0.31f, 0.0f);
+				gradient.color1 = new Color(1.0f, 0.05f, 0.0f);
+				gradient.color2 = new Color(0.91f, 0.68f, 0.68f);
+				lineColorImage.color = new Color(0.85f, 0.15f, 0.06f);
+				break;
+			case 6:
+				blurImage.color = new Color(1.0f, 1.0f, 0.0f, 0.2f);
+				gradient.color1 = new Color(1.0f, 1.0f, 0.0f);
+				gradient.color2 = new Color(0.93f, 0.56f, 0.12f);
+				lineColorImage.color = new Color(0.93f, 0.93f, 0.29f);
+				break;
 		}
 
 		if (questionEquip == false)
 			return;
 
-		// 특별히 이름 자리에 등급을 표시한다.
-		//nameText.SetLocalizedText(string.Format("<size=30>{0}</size>", UIString.instance.GetString(string.Format("GameUI_CharGrade{0}", grade))));
+		// 등급을 표시
+		gradeText.SetLocalizedText(UIString.instance.GetString(string.Format("GameUI_EquipGrade{0}", grade)));
+		gradeText.gameObject.SetActive(true);
 		//levelObject.SetActive(false);
 		//recommandedText.gameObject.SetActive(false);
 
@@ -89,6 +106,34 @@ public class EquipCanvasListItem : MonoBehaviour
 			equipIconImage.sprite = null;
 			equipIconImage.sprite = sprite;
 		});
+	}
+
+	public void RefreshRarity(int rarity)
+	{
+		rarityText.font = UIString.instance.GetUnlocalizedFont();
+		rarityText.fontStyle = UIString.instance.useSystemUnlocalizedFont ? FontStyle.BoldAndItalic : FontStyle.Italic;
+
+		switch (rarity)
+		{
+			case 0:
+				rarityText.text = "A";
+				rarityGradient.color1 = new Color(0.215f, 0.666f, 1.0f);
+				rarityGradient.color2 = new Color(0.0f, 0.032f, 1.0f);
+				rarityGradient.offset = 0.25f;
+				break;
+			case 1:
+				rarityText.text = "S";
+				rarityGradient.color1 = new Color(1.0f, 0.539f, 0.215f);
+				rarityGradient.color2 = new Color(1.0f, 0.235f, 0.0f);
+				rarityGradient.offset = 0.0f;
+				break;
+			case 2:
+				rarityText.text = "SS";
+				rarityGradient.color1 = new Color(1.0f, 0.0f, 0.08f);
+				rarityGradient.color2 = new Color(1.0f, 1.0f, 0.0f);
+				rarityGradient.offset = -0.2f;
+				break;
+		}
 	}
 
 	// 변할 수 있는 정보들만 따로 빼둔다.

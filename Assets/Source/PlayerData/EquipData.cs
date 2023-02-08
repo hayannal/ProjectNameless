@@ -21,6 +21,7 @@ public class EquipData
 	public bool newEquip { get; set; }
 
 	public static string KeyLock = "lock";
+	public static int EquipOptionCountMax = 4;
 
 	public void Initialize(Dictionary<string, string> customData)
 	{
@@ -42,6 +43,13 @@ public class EquipData
 		// 서브 옵션들을 돌면서 equipStatusList에 모아야한다. 같은 옵은 같은 옵션끼리.
 		for (int i = 0; i < _equipStatusList.valueList.Length; ++i)
 			_equipStatusList.valueList[i] = 0.0f;
+
+		for (int i = 0; i < EquipOptionCountMax; ++i)
+		{
+			eActorStatus statusType = GetOption(i);
+			float value = GetOptionValue(i);
+			_equipStatusList.valueList[(int)statusType] += value;
+		}
 	}
 
 	public void SetLock(bool lockState)
@@ -57,6 +65,42 @@ public class EquipData
 		if (cachedEquipTableData.grade >= cachedEquipTableData.skillActive)
 			return cachedEquipTableData.skillId;
 		return "";
+	}
+
+	public bool IsGetAvailable(int index)
+	{
+		switch (index)
+		{
+			case 0: if (cachedEquipTableData.grade >= 3) return true; break;
+			case 1: if (cachedEquipTableData.grade >= 4) return true; break;
+			case 2: if (cachedEquipTableData.grade >= 5) return true; break;
+			case 3: if (cachedEquipTableData.grade >= 6) return true; break;
+		}
+		return false;
+	}
+
+	public eActorStatus GetOption(int index)
+	{
+		switch (index)
+		{
+			case 0: return (eActorStatus)cachedEquipTableData.option3;
+			case 1: return (eActorStatus)cachedEquipTableData.option4;
+			case 2: return (eActorStatus)cachedEquipTableData.option5;
+			case 3: return (eActorStatus)cachedEquipTableData.option6;
+		}
+		return eActorStatus.MaxHp;
+	}
+
+	public float GetOptionValue(int index)
+	{
+		switch (index)
+		{
+			case 0: return cachedEquipTableData.option3Value;
+			case 1: return cachedEquipTableData.option4Value;
+			case 2: return cachedEquipTableData.option5Value;
+			case 3: return cachedEquipTableData.option6Value;
+		}
+		return 0.0f;
 	}
 	
 
