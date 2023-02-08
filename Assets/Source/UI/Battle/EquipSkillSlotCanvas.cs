@@ -80,6 +80,7 @@ public class EquipSkillSlotCanvas : MonoBehaviour
 				equipSkillSlotIcon.gameObject.SetActive(true);
 				_listEquipSkillSlotIcon[count] = equipSkillSlotIcon;	
 			}
+			count += 1;
 		}
 	}
 }
