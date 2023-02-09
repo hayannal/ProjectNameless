@@ -13,12 +13,12 @@ public class EquipTableData
   public string equipId { get { return _equipId; } set { _equipId = value; } }
   
   [SerializeField]
-  int _equipType;
-  public int equipType { get { return _equipType; } set { _equipType = value; } }
-  
-  [SerializeField]
   int _grade;
   public int grade { get { return _grade; } set { _grade = value; } }
+  
+  [SerializeField]
+  int _equipType;
+  public int equipType { get { return _equipType; } set { _equipType = value; } }
   
   [SerializeField]
   int _rarity;
