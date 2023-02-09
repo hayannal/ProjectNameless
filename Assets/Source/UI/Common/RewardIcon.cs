@@ -21,7 +21,10 @@ public class RewardIcon : MonoBehaviour
 	public Text spellGachaStarText;
 	public GameObject characterGachaObject;
 	public GameObject equipGachaObject;
+	public GameObject equipRootObject;
 	public Image equipIconImage;
+	public Text equipRarityText;
+	public Coffee.UIExtensions.UIGradient equipRarityGradient;
 	public GameObject spellRootObject;
 	public Image spellImage;
 	public Text spellStarText;
@@ -68,7 +71,7 @@ public class RewardIcon : MonoBehaviour
 		if (spellGachaStarGroupRootObject != null) spellGachaStarGroupRootObject.SetActive(false);
 		if (characterGachaObject != null) characterGachaObject.SetActive(false);
 		if (equipGachaObject != null) equipGachaObject.SetActive(false);
-		if (equipIconImage != null) equipIconImage.gameObject.SetActive(false);
+		if (equipRootObject != null) equipRootObject.SetActive(false);
 		if (spellRootObject != null) spellRootObject.SetActive(false);
 		if (petRootObject != null) petRootObject.SetActive(false);
 		if (uncommonImage != null) uncommonImage.gameObject.SetActive(false);
@@ -156,7 +159,7 @@ public class RewardIcon : MonoBehaviour
 					if (skillTableData != null)
 					{
 						spellImage.sprite = SpellSpriteContainer.instance.FindSprite(skillTableData.iconPrefab);
-						InitializeGrade(5);
+						InitializeOtherGrade(7);
 						spellRootObject.SetActive(true);
 						spellStarText.text = skillTableData.star.ToString();
 					}
@@ -171,7 +174,7 @@ public class RewardIcon : MonoBehaviour
 					if (petTableData != null)
 					{
 						petImage.sprite = PetSpriteContainer.instance.FindSprite(petTableData.spriteName);
-						InitializeGrade(6);
+						InitializeOtherGrade(8);
 						petRootObject.SetActive(true);
 						petStarText.text = petTableData.star.ToString();
 					}
@@ -186,8 +189,9 @@ public class RewardIcon : MonoBehaviour
 							equipIconImage.sprite = null;
 							equipIconImage.sprite = sprite;
 						});
-						InitializeGrade(equipTableData.grade);
-						equipIconImage.gameObject.SetActive(true);
+						EquipCanvasListItem.RefreshGrade(equipTableData.grade, blurImage, gradient, lineColorImage);
+						EquipCanvasListItem.RefreshRarity(equipTableData.rarity, equipRarityText, equipRarityGradient);
+						equipRootObject.SetActive(true);
 					}
 				}
 				break;
@@ -220,50 +224,19 @@ public class RewardIcon : MonoBehaviour
 	}
 
 	// EquipCanvasListItem 에서 복사해서 쓴다.
-	public void InitializeGrade(int grade)
+	public void InitializeOtherGrade(int grade)
 	{
 		switch (grade)
 		{
-			case 0:
-				blurImage.color = new Color(0.5f, 0.5f, 0.5f, 0.0f);
-				gradient.color1 = Color.white;
-				gradient.color2 = Color.black;
-				lineColorImage.color = new Color(0.5f, 0.5f, 0.5f);
-				break;
-			case 1:
-				blurImage.color = new Color(0.28f, 1.0f, 0.53f, 0.0f);
-				gradient.color1 = new Color(0.0f, 1.0f, 0.3f);
-				gradient.color2 = new Color(0.8f, 0.8f, 0.8f);
-				lineColorImage.color = new Color(0.1f, 0.84f, 0.1f);
-				break;
-			case 2:
-				blurImage.color = new Color(0.28f, 0.78f, 1.0f, 0.0f);
-				gradient.color1 = new Color(0.0f, 0.7f, 1.0f);
-				gradient.color2 = new Color(0.8f, 0.8f, 0.8f);
-				lineColorImage.color = new Color(0.0f, 0.51f, 1.0f);
-				break;
-			case 3:
-				blurImage.color = new Color(0.73f, 0.31f, 1.0f, 0.0f);
-				gradient.color1 = new Color(0.66f, 0.0f, 1.0f);
-				gradient.color2 = new Color(0.8f, 0.8f, 0.8f);
-				lineColorImage.color = new Color(0.63f, 0.0f, 1.0f);
-				break;
-			case 4:
-				blurImage.color = new Color(1.0f, 0.78f, 0.31f, 0.0f);
-				gradient.color1 = new Color(1.0f, 0.5f, 0.0f);
-				gradient.color2 = new Color(0.8f, 0.8f, 0.8f);
-				lineColorImage.color = new Color(1.0f, 0.5f, 0.0f);
-				break;
-
-			case 5:
+			case 7:
 				// for spell
 				blurImage.color = new Color(0.5f, 0.5f, 0.5f, 0.0f);
 				gradient.color1 = Color.white;
 				gradient.color2 = Color.black;
 				lineColorImage.color = new Color(0.95f, 1.0f, 0.2f);
 				break;
-				
-			case 6:
+
+			case 8:
 				// for pet
 				blurImage.color = new Color(0.5f, 0.5f, 0.5f, 0.0f);
 				gradient.color1 = Color.white;

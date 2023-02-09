@@ -33,7 +33,7 @@ public class EquipCanvasListItem : MonoBehaviour
 		});
 
 		InitializeGrade(equipData.cachedEquipTableData.grade, false);
-		RefreshRarity(equipData.cachedEquipTableData.rarity);
+		RefreshRarity(equipData.cachedEquipTableData.rarity, rarityText, rarityGradient);
 		RefreshStatus();
 
 		for (int i = 0; i < optionObjectList.Length; ++i)
@@ -45,6 +45,26 @@ public class EquipCanvasListItem : MonoBehaviour
 	}
 
 	public void InitializeGrade(int grade, bool questionEquip = false)
+	{
+		RefreshGrade(grade, blurImage, gradient, lineColorImage);
+
+		if (questionEquip == false)
+			return;
+
+		// 등급을 표시
+		gradeText.SetLocalizedText(UIString.instance.GetString(string.Format("GameUI_EquipGrade{0}", grade)));
+		gradeText.gameObject.SetActive(true);
+		//levelObject.SetActive(false);
+		//recommandedText.gameObject.SetActive(false);
+
+		AddressableAssetLoadManager.GetAddressableSprite("Portrait_Nobody", "Icon", (sprite) =>
+		{
+			equipIconImage.sprite = null;
+			equipIconImage.sprite = sprite;
+		});
+	}
+
+	public static void RefreshGrade(int grade, Image blurImage, Coffee.UIExtensions.UIGradient gradient, Image lineColorImage)
 	{
 		switch (grade)
 		{
@@ -91,24 +111,9 @@ public class EquipCanvasListItem : MonoBehaviour
 				lineColorImage.color = new Color(0.93f, 0.93f, 0.29f);
 				break;
 		}
-
-		if (questionEquip == false)
-			return;
-
-		// 등급을 표시
-		gradeText.SetLocalizedText(UIString.instance.GetString(string.Format("GameUI_EquipGrade{0}", grade)));
-		gradeText.gameObject.SetActive(true);
-		//levelObject.SetActive(false);
-		//recommandedText.gameObject.SetActive(false);
-
-		AddressableAssetLoadManager.GetAddressableSprite("Portrait_Nobody", "Icon", (sprite) =>
-		{
-			equipIconImage.sprite = null;
-			equipIconImage.sprite = sprite;
-		});
 	}
 
-	public void RefreshRarity(int rarity)
+	public static void RefreshRarity(int rarity, Text rarityText, Coffee.UIExtensions.UIGradient rarityGradient)
 	{
 		rarityText.font = UIString.instance.GetUnlocalizedFont();
 		rarityText.fontStyle = UIString.instance.useSystemUnlocalizedFont ? FontStyle.BoldAndItalic : FontStyle.Italic;

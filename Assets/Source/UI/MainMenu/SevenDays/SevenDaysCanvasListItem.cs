@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class SevenDaysCanvasListItem : MonoBehaviour
 {
-	public Text sumPointRewardText;
+	public RewardIcon sevenDaysRewardIcon;
 	public RewardIcon rewardIcon;
 	public Text nameText;
 	public Slider proceedingCountSlider;
@@ -24,7 +24,7 @@ public class SevenDaysCanvasListItem : MonoBehaviour
 		_initialized = true;
 
 		// 리워드
-		sumPointRewardText.text = sevenDaysRewardTableData.sumPoint.ToString("N0");
+		sevenDaysRewardIcon.RefreshReward("it", "Cash_sSevenTotal", sevenDaysRewardTableData.sumPoint);
 		rewardIcon.RefreshReward(sevenDaysRewardTableData.rewardType, sevenDaysRewardTableData.rewardValue, sevenDaysRewardTableData.rewardCount);
 		nameText.SetLocalizedText(UIString.instance.GetString(sevenDaysRewardTableData.descriptionId, sevenDaysRewardTableData.needCount));
 
