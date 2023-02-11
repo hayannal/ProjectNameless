@@ -122,21 +122,27 @@ public class EquipCanvasListItem : MonoBehaviour
 		{
 			case 0:
 				rarityText.text = "A";
-				rarityGradient.color1 = new Color(0.215f, 0.666f, 1.0f);
-				rarityGradient.color2 = new Color(0.0f, 0.032f, 1.0f);
-				rarityGradient.offset = 0.25f;
+				rarityGradient.direction = Coffee.UIExtensions.UIGradient.Direction.Angle;
+				rarityGradient.color1 = new Color(0.81f, 0.92f, 1.0f);
+				rarityGradient.color2 = new Color(0.52f, 0.53f, 1.0f);
+				rarityGradient.rotation = 155.0f;
+				rarityGradient.offset = -0.19f;
 				break;
 			case 1:
 				rarityText.text = "S";
-				rarityGradient.color1 = new Color(1.0f, 0.539f, 0.215f);
-				rarityGradient.color2 = new Color(1.0f, 0.235f, 0.0f);
-				rarityGradient.offset = 0.0f;
+				rarityGradient.direction = Coffee.UIExtensions.UIGradient.Direction.Angle;
+				rarityGradient.color1 = new Color(1.0f, 0.45f, 0.5f);
+				rarityGradient.color2 = new Color(1.0f, 1.0f, 0.48f);
+				rarityGradient.rotation = 155.0f;
+				rarityGradient.offset = -0.19f;
 				break;
 			case 2:
 				rarityText.text = "SS";
-				rarityGradient.color1 = new Color(1.0f, 0.0f, 0.08f);
+				rarityGradient.direction = Coffee.UIExtensions.UIGradient.Direction.Angle;
+				rarityGradient.color1 = new Color(1.0f, 0.45f, 0.5f);
 				rarityGradient.color2 = new Color(1.0f, 1.0f, 0.0f);
-				rarityGradient.offset = -0.2f;
+				rarityGradient.rotation = 155.0f;
+				rarityGradient.offset = 0.22f;
 				break;
 		}
 	}
