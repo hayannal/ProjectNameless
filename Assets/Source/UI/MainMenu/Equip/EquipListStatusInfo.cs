@@ -167,6 +167,7 @@ public class EquipListStatusInfo : MonoBehaviour
 		if (_equipData == null)
 			return;
 
+		float prevValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
 		PlayFabApiManager.instance.RequestEquip(_equipData, () =>
 		{
 			/*
@@ -174,8 +175,16 @@ public class EquipListStatusInfo : MonoBehaviour
 				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.EquipType);
 			*/
 
+			float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
+
 			// 대부분 다 EquipList가 해야하는 것들이라 ListCanvas에게 알린다.
 			EquipListCanvas.instance.OnEquip(_equipData);
+
+			// 변경 완료를 알리고
+			UIInstanceManager.instance.ShowCanvasAsync("ChangePowerCanvas", () =>
+			{
+				ChangePowerCanvas.instance.ShowInfo(prevValue, nextValue);
+			});
 		});
 	}
 
@@ -186,9 +195,18 @@ public class EquipListStatusInfo : MonoBehaviour
 		if (_equipData == null)
 			return;
 
+		float prevValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
 		PlayFabApiManager.instance.RequestUnequip(_equipData, () =>
 		{
+			float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
+
 			EquipListCanvas.instance.OnUnequip(_equipData);
+
+			// 변경 완료를 알리고
+			UIInstanceManager.instance.ShowCanvasAsync("ChangePowerCanvas", () =>
+			{
+				ChangePowerCanvas.instance.ShowInfo(prevValue, nextValue);
+			});
 		});
 	}
 	

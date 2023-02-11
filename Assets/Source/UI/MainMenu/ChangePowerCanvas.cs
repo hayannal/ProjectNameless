@@ -11,6 +11,8 @@ public class ChangePowerCanvas : MonoBehaviour
 	public GameObject textRootObject;
 	public Text diffValueText;
 	public Text changeValueText;
+	public Image upImage;
+	public RectTransform upImageRectTransform;
 
 	void Awake()
 	{
@@ -49,6 +51,11 @@ public class ChangePowerCanvas : MonoBehaviour
 
 		diffValueText.text = prevString;
 		changeValueText.text = diff.ToString("N0");
+
+		_checkUnder = (diff < 0);
+		upImage.color = _checkUnder ? new Color(1.0f, 0.3f, 0.38f, 0.86f) : new Color(0.3f, 1.0f, 0.38f, 0.86f);
+		changeValueText.color = _checkUnder ? new Color(1.0f, 0.3f, 0.38f, 0.86f) : new Color(0.3f, 1.0f, 0.38f, 0.86f);
+		upImageRectTransform.eulerAngles = _checkUnder ? new Vector3(0.0f, 0.0f, 270.0f) : new Vector3(0.0f, 0.0f, 90.0f);
 	}
 
 	public void OnCompleteScaleAnimation()
@@ -67,6 +74,7 @@ public class ChangePowerCanvas : MonoBehaviour
 	int _targetValue;
 	int _baseValue;
 	bool _updateValueText;
+	bool _checkUnder = false;
 	void Update()
 	{
 		if (_updateValueText == false)
@@ -74,7 +82,13 @@ public class ChangePowerCanvas : MonoBehaviour
 
 		_currentValue += _valueChangeSpeed * Time.deltaTime;
 		int currentValueInt = (int)_currentValue;
-		if (currentValueInt >= _targetValue)
+		if (_checkUnder == false && currentValueInt >= _targetValue)
+		{
+			currentValueInt = _targetValue;
+			diffValueText.text = (_baseValue + _targetValue).ToString("N0");
+			_updateValueText = false;
+		}
+		if (_checkUnder && currentValueInt <= _targetValue)
 		{
 			currentValueInt = _targetValue;
 			diffValueText.text = (_baseValue + _targetValue).ToString("N0");
