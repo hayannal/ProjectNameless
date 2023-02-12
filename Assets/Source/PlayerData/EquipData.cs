@@ -10,10 +10,13 @@ public class EquipData
 	public ObscuredString equipId;
 
 	ObscuredBool _isLock;
+	ObscuredInt _enhanceLevel;
 	public bool isLock { get { return _isLock; } }
+	public int enhanceLevel { get { return _enhanceLevel; } }
 
 	// 메인 공격력 스탯 및 랜덤옵 합산
-	public int mainStatusValue { get { return cachedEquipTableData.atk; } }
+	ObscuredInt _mainStatusValue = 0;
+	public int mainStatusValue { get { return _mainStatusValue; } }
 	EquipStatusList _equipStatusList = new EquipStatusList();
 	public EquipStatusList equipStatusList { get { return _equipStatusList; } }
 
@@ -21,6 +24,7 @@ public class EquipData
 	public bool newEquip { get; set; }
 
 	public static string KeyLock = "lock";
+	public static string KeyEnhan = "enhan";
 	public static int EquipOptionCountMax = 4;
 
 	public void Initialize(Dictionary<string, string> customData)
@@ -34,12 +38,26 @@ public class EquipData
 		}
 		_isLock = lockState;
 
+		int enhan = 0;
+		if (customData.ContainsKey(KeyEnhan))
+		{
+			int intValue = 0;
+			if (int.TryParse(customData[KeyEnhan], out intValue))
+				enhan = intValue;
+		}
+		_enhanceLevel = enhan;
+
 		// 이후 Status 계산
 		RefreshCachedStatus();
 	}
 
 	void RefreshCachedStatus()
 	{
+		_mainStatusValue = cachedEquipTableData.atk;
+		if (_enhanceLevel > 0)
+		{
+		}
+
 		// 서브 옵션들을 돌면서 equipStatusList에 모아야한다. 같은 옵은 같은 옵션끼리.
 		for (int i = 0; i < _equipStatusList.valueList.Length; ++i)
 			_equipStatusList.valueList[i] = 0.0f;
@@ -55,6 +73,17 @@ public class EquipData
 	public void SetLock(bool lockState)
 	{
 		_isLock = lockState;
+	}
+
+	public void OnEnhance(int targetEnhanceLevel)
+	{
+		_enhanceLevel = targetEnhanceLevel;
+
+		RefreshCachedStatus();
+
+		// 장착된 장비였을 경우엔 TimeSpace에도 알려서 모든 캐릭터를 재계산해야하니 
+		if (EquipManager.instance.IsEquipped(this))
+			EquipManager.instance.OnChangedStatus();
 	}
 
 	public string GetUsableEquipSkillId()

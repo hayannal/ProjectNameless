@@ -12,6 +12,7 @@ public class EquipCanvasListItem : MonoBehaviour
 	public Coffee.UIExtensions.UIGradient gradient;
 	public Image lineColorImage;
 	public Text gradeText;
+	public Image enhanceBackgroundImage;
 	public Text enhanceLevelText;
 	public Text rarityText;
 	public Coffee.UIExtensions.UIGradient rarityGradient;
@@ -150,7 +151,9 @@ public class EquipCanvasListItem : MonoBehaviour
 	// 변할 수 있는 정보들만 따로 빼둔다.
 	public void RefreshStatus()
 	{
-		enhanceLevelText.text = "";
+		enhanceBackgroundImage.gameObject.SetActive(equipData.enhanceLevel > 0);
+		enhanceBackgroundImage.color = lineColorImage.color;
+		enhanceLevelText.text = equipData.enhanceLevel.ToString();
 
 		// isLock
 		lockImage.gameObject.SetActive(equipData.isLock);

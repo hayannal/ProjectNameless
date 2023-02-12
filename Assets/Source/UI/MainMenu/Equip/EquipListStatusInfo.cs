@@ -8,6 +8,7 @@ public class EquipListStatusInfo : MonoBehaviour
 {
 	public Image gradeBackImage;
 	public Text gradeText;
+	public Text enhanceText;
 	public Text nameText;
 	public Button detailShowButton;
 
@@ -43,6 +44,8 @@ public class EquipListStatusInfo : MonoBehaviour
 		_equipData = equipData;
 		gradeBackImage.color = GetGradeTitleBarColor(equipData.cachedEquipTableData.grade);
 		gradeText.SetLocalizedText(UIString.instance.GetString(string.Format("GameUI_EquipGrade{0}", equipData.cachedEquipTableData.grade)));
+		enhanceText.gameObject.SetActive(equipData.enhanceLevel > 0);
+		enhanceText.text = string.Format("+ {0}", equipData.enhanceLevel);
 		nameText.SetLocalizedText(UIString.instance.GetString(equipData.cachedEquipTableData.nameId));
 #if UNITY_EDITOR
 		if (Input.GetKey(KeyCode.LeftShift))
