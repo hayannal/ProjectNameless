@@ -82,13 +82,7 @@ public class ChangePowerCanvas : MonoBehaviour
 
 		_currentValue += _valueChangeSpeed * Time.deltaTime;
 		int currentValueInt = (int)_currentValue;
-		if (_checkUnder == false && currentValueInt >= _targetValue)
-		{
-			currentValueInt = _targetValue;
-			diffValueText.text = (_baseValue + _targetValue).ToString("N0");
-			_updateValueText = false;
-		}
-		if (_checkUnder && currentValueInt <= _targetValue)
+		if ((_checkUnder == false && currentValueInt >= _targetValue) || (_checkUnder && currentValueInt <= _targetValue))
 		{
 			currentValueInt = _targetValue;
 			diffValueText.text = (_baseValue + _targetValue).ToString("N0");
