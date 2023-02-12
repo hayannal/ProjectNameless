@@ -3798,6 +3798,36 @@ public class PlayFabApiManager : MonoBehaviour
 		});
 	}
 
+	public void RequestEquipList(List<EquipData> listEquipData, List<string> listUniqueId, List<int> listEquipPos, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}_{2}", (string)listEquipData[0].equipId, listEquipPos[0], "kerqplum");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "EquipPosLst",
+			FunctionParameter = new { IdLst = listUniqueId, PosLst = listEquipPos, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				for (int i = 0; i < listEquipData.Count; ++i)
+					EquipManager.instance.OnEquip(listEquipData[i]);
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
 	public void RequestEquip(EquipData equipData, Action successCallback)
 	{
 		WaitingNetworkCanvas.Show(true);

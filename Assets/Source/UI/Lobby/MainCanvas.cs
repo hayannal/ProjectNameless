@@ -44,6 +44,7 @@ public class MainCanvas : MonoBehaviour
 	public RectTransform spellAlarmRootTransform;
 	public RectTransform characterAlarmRootTransform;
 	public RectTransform petAlarmRootTransform;
+	public RectTransform equipAlarmRootTransform;
 	public RectTransform mailAlarmRootTransform;
 	public RectTransform analysisAlarmRootTransform;
 	public RectTransform gachaAlarmRootTransform;
@@ -442,6 +443,7 @@ public class MainCanvas : MonoBehaviour
 		RefreshSpellAlarmObject();
 		RefreshCharacterAlarmObject();
 		RefreshPetAlarmObject();
+		RefreshEquipAlarmObject();
 		RefreshMailAlarmObject();
 		RefreshAnalysisAlarmObject();
 		RefreshMissionAlarmObject();
@@ -526,6 +528,16 @@ public class MainCanvas : MonoBehaviour
 	public void RefreshSpellAlarmObject()
 	{
 		RefreshAlarmObject(IsAlarmSpell(), spellAlarmRootTransform);
+	}
+
+	public static bool IsAlarmEquip()
+	{
+		return EquipGroundCanvas.CheckAutoEquip();
+	}
+
+	public void RefreshEquipAlarmObject()
+	{
+		RefreshAlarmObject(IsAlarmEquip(), equipAlarmRootTransform);
 	}
 
 	public static bool IsAlarmMail()

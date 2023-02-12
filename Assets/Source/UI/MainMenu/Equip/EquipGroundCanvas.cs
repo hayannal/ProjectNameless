@@ -13,6 +13,9 @@ public class EquipGroundCanvas : MonoBehaviour
 	#region UI
 	public GameObject equipButtonObject;
 	public GameObject optionViewButtonObject;
+
+	public RectTransform autoEquipAlarmRootTransform;
+	public RectTransform compositeAlarmRootTransform;
 	#endregion
 
 	Vector3 _rootOffsetPosition = new Vector3(0.0f, 0.0f, -300.0f);
@@ -35,6 +38,10 @@ public class EquipGroundCanvas : MonoBehaviour
 
 	void OnEnable()
 	{
+		#region UI
+		RefreshAutoEquipAlarmObject();
+		#endregion
+
 		bool restore = StackCanvas.Push(gameObject, false, null, OnPopStack);
 		if (restore)
 			return;
@@ -66,7 +73,7 @@ public class EquipGroundCanvas : MonoBehaviour
 		MainCanvas.instance.OnEnterCharacterMenu(true);
 
 		#region UI
-		optionViewButtonObject.SetActive(EquipManager.instance.cachedValue > 0);
+		RefreshOptionViewButton();
 		#endregion
 	}
 
@@ -104,6 +111,16 @@ public class EquipGroundCanvas : MonoBehaviour
 	}
 
 	#region UI
+	public void RefreshOptionViewButton()
+	{
+		optionViewButtonObject.SetActive(EquipManager.instance.cachedValue > 0);
+	}
+
+	public void OnClickAutoEquipButton()
+	{
+		AutoEquip();
+	}
+
 	public void OnClickEquipButton()
 	{
 		if (EquipListCanvas.instance != null && EquipListCanvas.instance.gameObject.activeSelf == false)
@@ -122,6 +139,120 @@ public class EquipGroundCanvas : MonoBehaviour
 	public void OnClickViewOptionButton()
 	{
 		UIInstanceManager.instance.ShowCanvasAsync("EquipStatusDetailCanvas", null);
+	}
+
+	public void OnClickCompositeButton()
+	{
+
+	}
+	#endregion
+
+
+
+
+	#region Auto Equip
+	public void RefreshAutoEquipAlarmObject()
+	{
+		bool showAlarm = CheckAutoEquip();
+		if (showAlarm)
+			AlarmObject.Show(autoEquipAlarmRootTransform);
+		else
+			AlarmObject.Hide(autoEquipAlarmRootTransform);
+	}
+
+	public static bool CheckAutoEquip()
+	{
+		for (int i = 0; i < (int)EquipManager.eEquipSlotType.Amount; ++i)
+		{
+			List<EquipData> listEquipData = EquipManager.instance.GetEquipListByType((EquipManager.eEquipSlotType)i);
+			if (listEquipData.Count == 0)
+				continue;
+
+			EquipData equippedData = EquipManager.instance.GetEquippedDataByType((EquipManager.eEquipSlotType)i);
+			if (equippedData == null)
+				return true;
+		}
+		return false;
+	}
+
+	List<EquipData> _listAutoEquipData = new List<EquipData>();
+	List<string> _listUniqueId = new List<string>();
+	List<int> _listEquipPos = new List<int>();
+	void AutoEquip()
+	{
+		// 현재 장착된 장비보다 공격력이 높다면 auto리스트에 넣는다.
+		_listAutoEquipData.Clear();
+		int sumPrevValue = 0;
+		int sumNextValue = 0;
+		for (int i = 0; i < (int)EquipManager.eEquipSlotType.Amount; ++i)
+		{
+			List<EquipData> listEquipData = EquipManager.instance.GetEquipListByType((EquipManager.eEquipSlotType)i);
+			if (listEquipData.Count == 0)
+				continue;
+
+			EquipData selectedEquipData = null;
+			int maxValue = 0;
+			EquipData equippedData = EquipManager.instance.GetEquippedDataByType((EquipManager.eEquipSlotType)i);
+			if (equippedData != null)
+				maxValue = equippedData.mainStatusValue;
+			sumPrevValue += maxValue;
+
+			for (int j = 0; j < listEquipData.Count; ++j)
+			{
+				if (maxValue < listEquipData[j].mainStatusValue)
+				{
+					maxValue = listEquipData[j].mainStatusValue;
+					selectedEquipData = listEquipData[j];
+				}
+			}
+
+			if (selectedEquipData != null)
+				_listAutoEquipData.Add(selectedEquipData);
+
+			sumNextValue += maxValue;
+		}
+
+		// auto리스트가 하나도 없다면 변경할게 없는거니 안내 토스트를 출력한다.
+		if (_listAutoEquipData.Count == 0)
+		{
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_CompleteAuto"), 2.0f);
+			return;
+		}
+
+		// 변경할게 있다면
+		_listUniqueId.Clear();
+		_listEquipPos.Clear();
+		for (int i = 0; i < _listAutoEquipData.Count; ++i)
+		{
+			_listUniqueId.Add(_listAutoEquipData[i].uniqueId);
+			_listEquipPos.Add(_listAutoEquipData[i].cachedEquipTableData.equipType);
+		}
+		float prevValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
+		PlayFabApiManager.instance.RequestEquipList(_listAutoEquipData, _listUniqueId, _listEquipPos, () =>
+		{
+			float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
+
+			// 제단을 갱신한다.
+			for (int i = 0; i < _listAutoEquipData.Count; ++i)
+			{
+				int positionIndex = _listAutoEquipData[i].cachedEquipTableData.equipType;
+				EquipGround.instance.equipAltarList[positionIndex].RefreshEquipObject();
+			}
+			_listAutoEquipData.Clear();
+			_listUniqueId.Clear();
+			_listEquipPos.Clear();
+
+			// UI도 갱신
+			RefreshOptionViewButton();
+			RefreshAutoEquipAlarmObject();
+			MainCanvas.instance.RefreshEquipAlarmObject();
+
+			// 변경 완료를 알리고
+			UIInstanceManager.instance.ShowCanvasAsync("ChangePowerCanvas", () =>
+			{
+				ChangePowerCanvas.instance.ShowInfo(prevValue, nextValue);
+			});
+		});
 	}
 	#endregion
 }

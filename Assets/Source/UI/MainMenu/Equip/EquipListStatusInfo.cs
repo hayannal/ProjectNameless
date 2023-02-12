@@ -179,6 +179,9 @@ public class EquipListStatusInfo : MonoBehaviour
 
 			// 대부분 다 EquipList가 해야하는 것들이라 ListCanvas에게 알린다.
 			EquipListCanvas.instance.OnEquip(_equipData);
+			EquipGroundCanvas.instance.RefreshOptionViewButton();
+			EquipGroundCanvas.instance.RefreshAutoEquipAlarmObject();
+			MainCanvas.instance.RefreshEquipAlarmObject();
 
 			// 변경 완료를 알리고
 			UIInstanceManager.instance.ShowCanvasAsync("ChangePowerCanvas", () =>
@@ -201,6 +204,9 @@ public class EquipListStatusInfo : MonoBehaviour
 			float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
 
 			EquipListCanvas.instance.OnUnequip(_equipData);
+			EquipGroundCanvas.instance.RefreshOptionViewButton();
+			EquipGroundCanvas.instance.RefreshAutoEquipAlarmObject();
+			MainCanvas.instance.RefreshEquipAlarmObject();
 
 			// 변경 완료를 알리고
 			UIInstanceManager.instance.ShowCanvasAsync("ChangePowerCanvas", () =>
