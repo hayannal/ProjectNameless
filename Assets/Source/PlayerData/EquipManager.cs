@@ -419,11 +419,15 @@ public class EquipManager : MonoBehaviour
 			newEquipData.uniqueId = listItemInstance[i].ItemInstanceId;
 			newEquipData.equipId = listItemInstance[i].ItemId;
 			newEquipData.Initialize(listItemInstance[i].CustomData);
+			newEquipData.newEquip = true;
 			_listEquipData[newEquipData.cachedEquipTableData.equipType].Add(newEquipData);
 
 			// 보유 공격력이 없으니 호출할 필요가 없다.
 			//OnChangedStatus();
 		}
+
+		grantNewEquip = true;
+
 		return listItemInstance;
 	}
 
