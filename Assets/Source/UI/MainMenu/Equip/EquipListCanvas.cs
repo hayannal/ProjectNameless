@@ -210,7 +210,21 @@ public class EquipListCanvas : EquipShowCanvasBase
 		}
 		emptyEquipObject.SetActive(false);
 
-		//_listCurrentEquipData.Sort(equipSortButton.comparisonGrade);
+		_listCurrentEquipData.Sort(delegate (EquipData x, EquipData y)
+		{
+			if (x.newEquip && y.newEquip == false) return -1;
+			else if (x.newEquip == false && y.newEquip) return 1;
+			if (x.cachedEquipTableData != null && y.cachedEquipTableData != null)
+			{
+				if (x.cachedEquipTableData.grade > y.cachedEquipTableData.grade) return -1;
+				else if (x.cachedEquipTableData.grade < y.cachedEquipTableData.grade) return 1;
+				if (x.enhanceLevel > y.enhanceLevel) return -1;
+				else if (x.enhanceLevel < y.enhanceLevel) return 1;
+				if (x.mainStatusValue > y.mainStatusValue) return -1;
+				else if (x.mainStatusValue < y.mainStatusValue) return 1;
+			}
+			return 0;
+		});
 
 		for (int i = 0; i < _listCurrentEquipData.Count; ++i)
 		{
