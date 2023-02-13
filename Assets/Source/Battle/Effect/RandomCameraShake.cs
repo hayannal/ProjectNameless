@@ -71,6 +71,8 @@ public class RandomCameraShake : MonoBehaviour
 			return;
 		if (FindMonsterRoomCanvas.instance != null && FindMonsterRoomCanvas.instance.gameObject.activeSelf)
 			return;
+		if (DelayedLoadingCanvas.IsShow())
+			return;
 		if (MainCanvas.instance != null && MainCanvas.instance.IsHideState())
 			return;
 
