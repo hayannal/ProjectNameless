@@ -726,6 +726,8 @@ public class MainSceneBuilder : MonoBehaviour
 
 	IEnumerator LateInitialize()
 	{
+		EquipManager.instance.LateInitialize();
+
 		bool battleScene = (buildTutorialScene);// || s_buildReturnScrollUsedScene);
 		if (battleScene == false)
 		{
