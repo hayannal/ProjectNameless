@@ -141,6 +141,39 @@ public class CashShopData : MonoBehaviour
 	}
 	#endregion
 
+	#region PickUp Event
+	public class PickUpCharacterInfo
+	{
+		public int sy;
+		public int sm;
+		public int sd;
+		public int ey;
+		public int em;
+		public int ed;
+		public string id;
+
+		public int count;
+		public int price;
+	}
+	List<PickUpCharacterInfo> _listPickUpCharacterInfo;
+
+	public class PickUpEquipInfo
+	{
+		public int sy;
+		public int sm;
+		public int sd;
+		public int ey;
+		public int em;
+		public int ed;
+		public string id;
+
+		public int count;
+		public int price;
+		public float add;
+	}
+	List<PickUpEquipInfo> _listPickUpEquipInfo;
+	#endregion
+
 	public void OnRecvCashShopData(List<ItemInstance> userInventory, Dictionary<string, string> titleData, Dictionary<string, UserDataRecord> userReadOnlyData, List<StatisticValue> playerStatistics)
 	{
 		/*
@@ -431,6 +464,16 @@ public class CashShopData : MonoBehaviour
 				}
 			}
 		}
+
+		#region PickUp Event
+		_listPickUpCharacterInfo = null;
+		if (titleData.ContainsKey("pickUpChar"))
+			_listPickUpCharacterInfo = serializer.DeserializeObject<List<PickUpCharacterInfo>>(titleData["pickUpChar"]);
+
+		_listPickUpEquipInfo = null;
+		if (titleData.ContainsKey("pickUpEquip"))
+			_listPickUpEquipInfo = serializer.DeserializeObject<List<PickUpEquipInfo>>(titleData["pickUpEquip"]);
+		#endregion
 
 		/*
 		// 일일 무료 아이템 수령기록 데이터. 마지막 오픈 시간을 받는건 일퀘 때와 비슷한 구조다. 상점 슬롯과 별개로 처리된다.
@@ -1015,6 +1058,32 @@ public class CashShopData : MonoBehaviour
 		if (_listStageClearPackage.Contains(stage) == false)
 			_listStageClearPackage.Add(stage);
 		return _listStageClearPackage;
+	}
+	#endregion
+
+	#region PickUp Event
+	public PickUpCharacterInfo GetCurrentPickUpCharacterInfo()
+	{
+		for (int i = 0; i < _listPickUpCharacterInfo.Count; ++i)
+		{
+			DateTime startDateTime = new DateTime(_listPickUpCharacterInfo[i].sy, _listPickUpCharacterInfo[i].sm, _listPickUpCharacterInfo[i].sd);
+			DateTime endDateTime = new DateTime(_listPickUpCharacterInfo[i].ey, _listPickUpCharacterInfo[i].em, _listPickUpCharacterInfo[i].ed);
+			if (startDateTime <= ServerTime.UtcNow && ServerTime.UtcNow <= endDateTime)
+				return _listPickUpCharacterInfo[i];
+		}
+		return null;
+	}
+
+	public PickUpEquipInfo GetCurrentPickUpEquipInfo()
+	{
+		for (int i = 0; i < _listPickUpEquipInfo.Count; ++i)
+		{
+			DateTime startDateTime = new DateTime(_listPickUpEquipInfo[i].sy, _listPickUpEquipInfo[i].sm, _listPickUpEquipInfo[i].sd);
+			DateTime endDateTime = new DateTime(_listPickUpEquipInfo[i].ey, _listPickUpEquipInfo[i].em, _listPickUpEquipInfo[i].ed);
+			if (startDateTime <= ServerTime.UtcNow && ServerTime.UtcNow <= endDateTime)
+				return _listPickUpEquipInfo[i];
+		}
+		return null;
 	}
 	#endregion
 

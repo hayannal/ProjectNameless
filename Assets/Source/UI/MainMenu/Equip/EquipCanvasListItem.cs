@@ -26,15 +26,20 @@ public class EquipCanvasListItem : MonoBehaviour
 	public void Initialize(EquipData equipData, Action<EquipData> clickCallback)
 	{
 		this.equipData = equipData;
+		Initialize(equipData.cachedEquipTableData);
+		_clickAction = clickCallback;
+	}
 
-		AddressableAssetLoadManager.GetAddressableSprite(equipData.cachedEquipTableData.shotAddress, "Icon", (sprite) =>
+	public void Initialize(EquipTableData equipTableData)
+	{
+		AddressableAssetLoadManager.GetAddressableSprite(equipTableData.shotAddress, "Icon", (sprite) =>
 		{
 			equipIconImage.sprite = null;
 			equipIconImage.sprite = sprite;
 		});
 
-		InitializeGrade(equipData.cachedEquipTableData.grade, false);
-		RefreshRarity(equipData.cachedEquipTableData.rarity, rarityText, rarityGradient);
+		InitializeGrade(equipTableData.grade, false);
+		RefreshRarity(equipTableData.rarity, rarityText, rarityGradient);
 		RefreshStatus();
 
 		for (int i = 0; i < optionObjectList.Length; ++i)
@@ -42,7 +47,6 @@ public class EquipCanvasListItem : MonoBehaviour
 
 		equippedText.gameObject.SetActive(false);
 		selectObject.SetActive(false);
-		_clickAction = clickCallback;
 	}
 
 	public void InitializeGrade(int grade, bool questionEquip = false)
@@ -151,6 +155,13 @@ public class EquipCanvasListItem : MonoBehaviour
 	// 변할 수 있는 정보들만 따로 빼둔다.
 	public void RefreshStatus()
 	{
+		if (equipData == null)
+		{
+			enhanceBackgroundImage.gameObject.SetActive(false);
+			lockImage.gameObject.SetActive(false);
+			return;
+		}
+
 		enhanceBackgroundImage.gameObject.SetActive(equipData.enhanceLevel > 0);
 		enhanceBackgroundImage.color = lineColorImage.color;
 		enhanceLevelText.text = equipData.enhanceLevel.ToString();
@@ -162,8 +173,10 @@ public class EquipCanvasListItem : MonoBehaviour
 	Action<EquipData> _clickAction;
 	public void OnClickButton()
 	{
-		if (_clickAction != null)
-			_clickAction.Invoke(equipData);
+		if (_clickAction == null)
+			return;
+
+		_clickAction.Invoke(equipData);
 		SoundManager.instance.PlaySFX(selectObject.activeSelf ? "GridOff" : "GridOn");
 	}
 

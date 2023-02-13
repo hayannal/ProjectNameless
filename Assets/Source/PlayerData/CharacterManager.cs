@@ -266,7 +266,7 @@ public class CharacterManager : MonoBehaviour
 		public float sumWeight;
 	}
 	List<RandomGachaCharacterId> _listGachaCharacterId = null;
-	public string GetRandomNewCharacterGachaResult()
+	public string GetRandomNewCharacterGachaResult(bool applyPickUpCharacter)
 	{
 		int maxTrascendPoint = BattleInstanceManager.instance.GetCachedGlobalConstantInt("GachaActorMaxTrp");
 
@@ -351,6 +351,53 @@ public class CharacterManager : MonoBehaviour
 			_listGachaCharacterId = new List<RandomGachaCharacterId>();
 		_listGachaCharacterId.Clear();
 
+		#region PickUp Character
+		string pickUpCharacterId = "";
+		if (applyPickUpCharacter)
+		{
+			CashShopData.PickUpCharacterInfo info = CashShopData.instance.GetCurrentPickUpCharacterInfo();
+			if (info != null)
+			{
+				ActorTableData pickUpActorTableData = TableDataManager.instance.FindActorTableData(info.id);
+				if (pickUpActorTableData != null)
+				{
+					if (selectedGrade == pickUpActorTableData.grade)
+					{
+						// 픽업을 제외한 나머지의 합산값을 구해야한다.
+						pickUpCharacterId = pickUpActorTableData.actorId;
+					}
+				}
+			}
+		}
+
+		float pickUpCharacterForceWeight = 0.0f;
+		if (applyPickUpCharacter && string.IsNullOrEmpty(pickUpCharacterId) == false)
+		{
+			for (int i = 0; i < TableDataManager.instance.actorTable.dataArray.Length; ++i)
+			{
+				if (TableDataManager.instance.actorTable.dataArray[i].actorId == CharacterData.s_PlayerActorId)
+					continue;
+				if (TableDataManager.instance.actorTable.dataArray[i].actorId == pickUpCharacterId)
+					continue;
+				if (TableDataManager.instance.actorTable.dataArray[i].grade != selectedGrade)
+					continue;
+				CharacterData characterData = GetCharacterData(TableDataManager.instance.actorTable.dataArray[i].actorId);
+				if (characterData != null && characterData.transcendPoint >= maxTrascendPoint)
+					continue;
+
+				// 한가지 예외상황이 있는데 캐릭터 5명을 채울때까진 겹쳐지지 않게 해주기로 해본다.
+				if ((totalCharacterWithTranscendCount + _listTempNewCharacterId.Count) < 5)
+				{
+					if (characterData != null || _listTempNewCharacterId.Contains(TableDataManager.instance.actorTable.dataArray[i].actorId))
+						continue;
+				}
+
+				// 각각의 확률은 동일한 1.0
+				pickUpCharacterForceWeight += TableDataManager.instance.actorTable.dataArray[i].charGachaWeight;
+			}
+		}
+		#endregion
+
 		sumWeight = 0.0f;
 		for (int i = 0; i < TableDataManager.instance.actorTable.dataArray.Length; ++i)
 		{
@@ -370,7 +417,12 @@ public class CharacterManager : MonoBehaviour
 			}
 
 			// 각각의 확률은 동일한 1.0
-			sumWeight += TableDataManager.instance.actorTable.dataArray[i].charGachaWeight;
+			float weight = TableDataManager.instance.actorTable.dataArray[i].charGachaWeight;
+			#region PickUp Character
+			if (applyPickUpCharacter && TableDataManager.instance.actorTable.dataArray[i].actorId == pickUpCharacterId)
+				weight = pickUpCharacterForceWeight;
+			#endregion
+			sumWeight += weight;
 			RandomGachaCharacterId newInfo = new RandomGachaCharacterId();
 			newInfo.actorId = TableDataManager.instance.actorTable.dataArray[i].actorId;
 			newInfo.sumWeight = sumWeight;
@@ -437,14 +489,14 @@ public class CharacterManager : MonoBehaviour
 
 	List<ObscuredString> _listTempNewCharacterId = new List<ObscuredString>();
 	List<ObscuredString> _listRandomObscuredId = new List<ObscuredString>();
-	public List<ObscuredString> GetRandomIdList(int count)
+	public List<ObscuredString> GetRandomIdList(int count, bool applyPickUpCharacter = false)
 	{
 		_listTempNewCharacterId.Clear();
 		_listRandomObscuredId.Clear();
 		for (int i = 0; i < count; ++i)
 		{
 			// trp 포함 캐릭터 아이디를 1회 뽑아본다.
-			string newActorId = GetRandomNewCharacterGachaResult();
+			string newActorId = GetRandomNewCharacterGachaResult(applyPickUpCharacter);
 			if (string.IsNullOrEmpty(newActorId) == false)
 			{
 				_listTempNewCharacterId.Add(newActorId);

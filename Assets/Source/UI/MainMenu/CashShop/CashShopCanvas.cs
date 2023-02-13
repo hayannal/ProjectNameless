@@ -11,7 +11,10 @@ public class CashShopCanvas : MonoBehaviour
 	public CurrencySmallInfo currencySmallInfo;
 
 	public GameObject iapInitializeFailedRectObject;
-	
+
+	public PickUpCharacterListItem pickUpCharacterListItem;
+	public PickUpEquipListItem pickUpEquipListItem;
+
 	public GameObject equipBoxRectObject;
 	public Text equipBox1NameText;
 	public Text equipBox1PriceText;
@@ -115,5 +118,21 @@ public class CashShopCanvas : MonoBehaviour
 		iapInitializeFailedRectObject.SetActive(!CodelessIAPStoreListener.initializationComplete);
 		
 		diaRectObject.SetActive(CodelessIAPStoreListener.initializationComplete);
+
+		// 캐릭터의 경우엔 장비랑 달리 다 뽑았는지도 판단해야한다. 이런 상황에선 굴려봤자 의미없으니 하이드 시킨다.
+		CashShopData.PickUpCharacterInfo characterInfo = CashShopData.instance.GetCurrentPickUpCharacterInfo();
+		bool maxReached = false;
+		if (characterInfo != null)
+		{
+			CharacterData characterData = CharacterManager.instance.GetCharacterData(characterInfo.id);
+			if (characterData != null && characterData.transcendPoint >= TableDataManager.instance.GetGlobalConstantInt("GachaActorMaxTrp"))
+				maxReached = true;
+		}
+		pickUpCharacterListItem.gameObject.SetActive(PlayerData.instance.downloadConfirmed && characterInfo != null && maxReached == false);
+		pickUpCharacterListItem.RefreshInfo(characterInfo);
+
+		CashShopData.PickUpEquipInfo equipInfo = CashShopData.instance.GetCurrentPickUpEquipInfo();
+		pickUpEquipListItem.gameObject.SetActive(PlayerData.instance.downloadConfirmed && equipInfo != null);
+		pickUpEquipListItem.RefreshInfo(equipInfo);
 	}
 }
