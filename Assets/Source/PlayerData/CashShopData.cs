@@ -151,11 +151,14 @@ public class CashShopData : MonoBehaviour
 		public int em;
 		public int ed;
 		public string id;
+		public int bc;	// bonus count
 
 		public int count;
 		public int price;
 	}
 	List<PickUpCharacterInfo> _listPickUpCharacterInfo;
+	ObscuredInt _pickUpCharacterNotStreakCount;
+	DateTime _pickUpCharacterCountDateTime;
 
 	public class PickUpEquipInfo
 	{
@@ -473,6 +476,27 @@ public class CashShopData : MonoBehaviour
 		_listPickUpEquipInfo = null;
 		if (titleData.ContainsKey("pickUpEquip"))
 			_listPickUpEquipInfo = serializer.DeserializeObject<List<PickUpEquipInfo>>(titleData["pickUpEquip"]);
+
+		if (userReadOnlyData.ContainsKey("pickUpCharCntDat"))
+		{
+			if (string.IsNullOrEmpty(userReadOnlyData["pickUpCharCntDat"].Value) == false)
+			{
+				DateTime expireDateTime = new DateTime();
+				if (DateTime.TryParse(userReadOnlyData["pickUpCharCntDat"].Value, out expireDateTime))
+					_pickUpCharacterCountDateTime = expireDateTime.ToUniversalTime();
+			}
+		}
+
+		_pickUpCharacterNotStreakCount = 0;
+		if (userReadOnlyData.ContainsKey("pickUpCharCnt"))
+		{
+			if (string.IsNullOrEmpty(userReadOnlyData["pickUpCharCnt"].Value) == false)
+			{
+				int intValue = 0;
+				if (int.TryParse(userReadOnlyData["pickUpCharCnt"].Value, out intValue))
+					_pickUpCharacterNotStreakCount = intValue;
+			}
+		}
 		#endregion
 
 		/*
@@ -1084,6 +1108,28 @@ public class CashShopData : MonoBehaviour
 				return _listPickUpEquipInfo[i];
 		}
 		return null;
+	}
+
+	public int GetCurrentPickUpCharacterNotStreakCount()
+	{
+		PickUpCharacterInfo info = GetCurrentPickUpCharacterInfo();
+		if (info == null)
+			return 0;
+
+		DateTime startDateTime = new DateTime(info.sy, info.sm, info.sd);
+		DateTime endDateTime = new DateTime(info.ey, info.em, info.ed);
+		if (startDateTime <= _pickUpCharacterCountDateTime && _pickUpCharacterCountDateTime <= endDateTime)
+			return _pickUpCharacterNotStreakCount;
+		return 0;
+	}
+
+	public void OnRecvPickUpCharacterCount(string countDateTimeString, int notStreakCount)
+	{
+		DateTime countDateTime = new DateTime();
+		if (DateTime.TryParse(countDateTimeString, out countDateTime))
+			_pickUpCharacterCountDateTime = countDateTime.ToUniversalTime();
+
+		_pickUpCharacterNotStreakCount = notStreakCount;
 	}
 	#endregion
 

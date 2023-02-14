@@ -119,6 +119,12 @@ public class CashShopCanvas : MonoBehaviour
 		
 		diaRectObject.SetActive(CodelessIAPStoreListener.initializationComplete);
 
+		RefreshPickUpCharacterRect();
+		RefreshPickUpEquipRect();
+	}
+
+	public void RefreshPickUpCharacterRect()
+	{
 		// 캐릭터의 경우엔 장비랑 달리 다 뽑았는지도 판단해야한다. 이런 상황에선 굴려봤자 의미없으니 하이드 시킨다.
 		CashShopData.PickUpCharacterInfo characterInfo = CashShopData.instance.GetCurrentPickUpCharacterInfo();
 		bool maxReached = false;
@@ -130,7 +136,10 @@ public class CashShopCanvas : MonoBehaviour
 		}
 		pickUpCharacterListItem.gameObject.SetActive(PlayerData.instance.downloadConfirmed && characterInfo != null && maxReached == false);
 		pickUpCharacterListItem.RefreshInfo(characterInfo);
+	}
 
+	public void RefreshPickUpEquipRect()
+	{
 		CashShopData.PickUpEquipInfo equipInfo = CashShopData.instance.GetCurrentPickUpEquipInfo();
 		pickUpEquipListItem.gameObject.SetActive(PlayerData.instance.downloadConfirmed && equipInfo != null);
 		pickUpEquipListItem.RefreshInfo(equipInfo);

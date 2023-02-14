@@ -12,6 +12,7 @@ public class PickUpCharacterListItem : MonoBehaviour
 	public Text priceText;
 	public Image characterImage;
 	public Text remainTimeText;
+	public Text notStreakCountText;
 
 	CashShopData.PickUpCharacterInfo _info;
 	public void RefreshInfo(CashShopData.PickUpCharacterInfo info)
@@ -26,6 +27,9 @@ public class PickUpCharacterListItem : MonoBehaviour
 		});
 
 		priceText.text = info.price.ToString("N0");
+
+		string gradeString = UIString.instance.GetString("GameUI_CharGrade{0}", 2);
+		notStreakCountText.SetLocalizedText(UIString.instance.GetString("ShopUI_PickUpCharRemainCount", gradeString, info.bc - CashShopData.instance.GetCurrentPickUpCharacterNotStreakCount()));
 		_eventExpireDateTime = new DateTime(info.ey, info.em, info.ed);
 	}
 
@@ -110,7 +114,8 @@ public class PickUpCharacterListItem : MonoBehaviour
 			// 연출창 시작과 동시에 패킷을 보내고
 			List<ObscuredString> listActorId = CharacterManager.instance.GetRandomIdList(_info.count, true);
 			_count = listActorId.Count;
-			PlayFabApiManager.instance.RequestOpenCharacterBox(listActorId, _info.count, _info.price, OnRecvResult);
+			int notStreakCountResult = CharacterManager.instance.tempPickUpNotStreakCount;
+			PlayFabApiManager.instance.RequestOpenPickUpCharacterBox(listActorId, _info.count, _info.price, notStreakCountResult, OnRecvResult);
 		});
 	}
 
@@ -131,5 +136,8 @@ public class PickUpCharacterListItem : MonoBehaviour
 			RandomBoxScreenCanvas.instance.OnRecvResult(RandomBoxScreenCanvas.eBoxType.Character, listItemInstance);
 
 		MainCanvas.instance.RefreshMenuButton();
+
+		if (CashShopCanvas.instance != null)
+			CashShopCanvas.instance.RefreshPickUpCharacterRect();
 	}
 }

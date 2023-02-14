@@ -342,6 +342,24 @@ public class CharacterManager : MonoBehaviour
 				break;
 			}
 		}
+		#region PickUp Character
+		if (applyPickUpCharacter)
+		{
+			CashShopData.PickUpCharacterInfo info = CashShopData.instance.GetCurrentPickUpCharacterInfo();
+			if (info != null && tempPickUpNotStreakCount == info.bc - 1)
+			{
+				// 이번에 굴리는게 픽업의 최종 보너스 단계라면 강제로 grade를 전설로 고정해야한다.
+				for (int i = 0; i < TableDataManager.instance.gachaActorTable.dataArray.Length; ++i)
+				{
+					if (TableDataManager.instance.gachaActorTable.dataArray[i].grade == 2)
+					{
+						index = i;
+						break;
+					}
+				}
+			}
+		}
+		#endregion
 		if (index == -1)
 			return "";
 		int selectedGrade = _listGachaCharacterGrade[index].grade;
@@ -487,10 +505,18 @@ public class CharacterManager : MonoBehaviour
 		return _listGachaCharacterId[index].actorId;
 	}
 
+	#region PickUp Character
+	public int tempPickUpNotStreakCount { get; private set; }
+	#endregion
 	List<ObscuredString> _listTempNewCharacterId = new List<ObscuredString>();
 	List<ObscuredString> _listRandomObscuredId = new List<ObscuredString>();
 	public List<ObscuredString> GetRandomIdList(int count, bool applyPickUpCharacter = false)
 	{
+		#region PickUp Character
+		if (applyPickUpCharacter)
+			tempPickUpNotStreakCount = CashShopData.instance.GetCurrentPickUpCharacterNotStreakCount();
+		#endregion
+
 		_listTempNewCharacterId.Clear();
 		_listRandomObscuredId.Clear();
 		for (int i = 0; i < count; ++i)
@@ -502,6 +528,23 @@ public class CharacterManager : MonoBehaviour
 				_listTempNewCharacterId.Add(newActorId);
 				_listRandomObscuredId.Add(newActorId);
 			}
+
+			#region PickUp Character
+			if (applyPickUpCharacter)
+			{
+				bool getTargetPickUp = false;
+				if (string.IsNullOrEmpty(newActorId) == false)
+				{
+					ActorTableData actorTableData = TableDataManager.instance.FindActorTableData(newActorId);
+					if (actorTableData != null && actorTableData.grade == 2)
+						getTargetPickUp = true;
+				}
+				if (getTargetPickUp)
+					tempPickUpNotStreakCount = 0;
+				else
+					++tempPickUpNotStreakCount;
+			}
+			#endregion
 
 			// pp는 현재 가지고 있는 캐릭터들 안에서만 돌리면 끝이다.
 			for (int j = 0; j < TableDataManager.instance.GetGlobalConstantInt("GachaActorCount"); ++j)

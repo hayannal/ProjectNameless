@@ -3311,6 +3311,45 @@ public class PlayFabApiManager : MonoBehaviour
 		});
 	}
 
+	public void RequestOpenPickUpCharacterBox(List<ObscuredString> listActorId, int baseCount, int price, int notStreakCountResult, Action<string> successCallback)
+	{
+		// RandomBoxScreenCanvas에서 컨트롤할거니 여기서는 하지 않는다.
+		//WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}_{2}_{3}", baseCount, price, notStreakCountResult, "xvjwapqm");
+		string checkSum = CheckSum(input);
+		string checkSum2 = "";
+		List<ItemGrantRequest> listItemGrantRequest = GenerateGrantRequestInfo(listActorId, ref checkSum2, "character");
+		ExecuteCloudScriptRequest request = new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "OpenPickUpCharacterBox",
+			FunctionParameter = new { BasCnt = baseCount, Pr = price, StrCnt = notStreakCountResult, Cs = checkSum, Lst = listItemGrantRequest, LstCs = checkSum2 },
+			GeneratePlayStreamEvent = true,
+		};
+
+		PlayFabClientAPI.ExecuteCloudScript(request, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				//WaitingNetworkCanvas.Show(false);
+
+				CurrencyData.instance.dia -= price;
+
+				jsonResult.TryGetValue("date", out object date);
+				CashShopData.instance.OnRecvPickUpCharacterCount((string)date, notStreakCountResult);
+
+				jsonResult.TryGetValue("itmRet", out object itmRet);
+				if (successCallback != null) successCallback.Invoke((string)itmRet);
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
 	public void RequestConsumeCharacterGacha(List<ObscuredString> listActorId, Action<string> successCallback)
 	{
 		// RandomBoxScreenCanvas에서 컨트롤할거니 여기서는 하지 않는다.
