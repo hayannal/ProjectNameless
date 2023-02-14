@@ -136,12 +136,12 @@ public class CharacterListCanvas : CharacterShowCanvasBase
 		{
 			_listTempCharacterData.Sort(delegate (CharacterData x, CharacterData y)
 			{
-				if (x.level > y.level) return -1;
-				else if (x.level < y.level) return 1;
 				if (x.cachedActorTableData.grade > y.cachedActorTableData.grade) return -1;
 				else if (x.cachedActorTableData.grade < y.cachedActorTableData.grade) return 1;
 				if (x.transcend > y.transcend) return -1;
 				else if (x.transcend < y.transcend) return 1;
+				if (x.level > y.level) return -1;
+				else if (x.level < y.level) return 1;
 				if (x.cachedActorTableData.orderIndex > y.cachedActorTableData.orderIndex) return 1;
 				else if (x.cachedActorTableData.orderIndex < y.cachedActorTableData.orderIndex) return -1;
 				return 0;
