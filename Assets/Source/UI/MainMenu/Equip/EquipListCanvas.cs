@@ -218,6 +218,8 @@ public class EquipListCanvas : EquipShowCanvasBase
 			{
 				if (x.cachedEquipTableData.grade > y.cachedEquipTableData.grade) return -1;
 				else if (x.cachedEquipTableData.grade < y.cachedEquipTableData.grade) return 1;
+				if (x.cachedEquipTableData.rarity > y.cachedEquipTableData.rarity) return -1;
+				else if (x.cachedEquipTableData.rarity < y.cachedEquipTableData.rarity) return 1;
 				if (x.enhanceLevel > y.enhanceLevel) return -1;
 				else if (x.enhanceLevel < y.enhanceLevel) return 1;
 				if (x.mainStatusValue > y.mainStatusValue) return -1;
