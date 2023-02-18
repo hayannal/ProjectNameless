@@ -26,6 +26,7 @@ public class PickUpEquipListItem : MonoBehaviour
 			equipIconImage.sprite = sprite;
 		});
 
+		countText.text = string.Format("X {0:N0}", info.count);
 		priceText.text = info.price.ToString("N0");
 		_eventExpireDateTime = new DateTime(info.ey, info.em, info.ed);
 	}
@@ -78,6 +79,7 @@ public class PickUpEquipListItem : MonoBehaviour
 		// 이거로 막아둔다.
 		DelayedLoadingCanvas.Show(true);
 
+		CashShopCanvas.instance.ignoreStartEventFlag = true;
 		CashShopCanvas.instance.gameObject.SetActive(false);
 
 		while (CashShopCanvas.instance.gameObject.activeSelf)

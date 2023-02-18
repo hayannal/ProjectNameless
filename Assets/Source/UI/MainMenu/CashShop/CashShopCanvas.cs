@@ -101,6 +101,7 @@ public class CashShopCanvas : MonoBehaviour
 		OnPopStack();
 	}
 
+	public bool ignoreStartEventFlag { get; set; }
 	void OnPopStack()
 	{
 		if (StageManager.instance == null)
@@ -110,6 +111,12 @@ public class CashShopCanvas : MonoBehaviour
 		if (MainCanvas.instance == null)
 			return;
 
+		if (ignoreStartEventFlag)
+		{
+			ignoreStartEventFlag = false;
+			MainCanvas.instance.OnEnterCharacterMenu(false, true);
+			return;
+		}
 		MainCanvas.instance.OnEnterCharacterMenu(false);
 	}
 
