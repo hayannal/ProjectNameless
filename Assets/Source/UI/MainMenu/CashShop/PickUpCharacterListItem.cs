@@ -28,7 +28,7 @@ public class PickUpCharacterListItem : MonoBehaviour
 
 		priceText.text = info.price.ToString("N0");
 
-		string gradeString = UIString.instance.GetString("GameUI_CharGrade{0}", 2);
+		string gradeString = UIString.instance.GetString(string.Format("GameUI_CharGrade{0}", 2));
 		notStreakCountText.SetLocalizedText(UIString.instance.GetString("ShopUI_PickUpCharRemainCount", gradeString, info.bc - CashShopData.instance.GetCurrentPickUpCharacterNotStreakCount()));
 		_eventExpireDateTime = new DateTime(info.ey, info.em, info.ed);
 	}
