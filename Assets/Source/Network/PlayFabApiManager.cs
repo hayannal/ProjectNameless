@@ -26,6 +26,13 @@ public class GrantItemsToUsersResult
 }
 #endregion
 
+#region RevokeItem
+public class RevokeInventoryItemRequest
+{
+	public string ItemInstanceId;
+}
+#endregion
+
 public class PlayFabApiManager : MonoBehaviour
 {
 	public static PlayFabApiManager instance
@@ -891,6 +898,30 @@ public class PlayFabApiManager : MonoBehaviour
 		else if (rewardValue.StartsWith("Equip"))
 			return "equip";
 		return "";
+	}
+	#endregion
+
+	#region Revoke
+	List<RevokeInventoryItemRequest> _listRevokeInventoryItemRequest = new List<RevokeInventoryItemRequest>();
+	public List<RevokeInventoryItemRequest> GenerateRevokeInfo(List<EquipData> listRevokeEquipData, ref string checkSum)
+	{
+		_listRevokeInventoryItemRequest.Clear();
+
+		for (int i = 0; i < listRevokeEquipData.Count; ++i)
+		{
+			RevokeInventoryItemRequest info = new RevokeInventoryItemRequest();
+			info.ItemInstanceId = listRevokeEquipData[i].uniqueId;
+			_listRevokeInventoryItemRequest.Add(info);
+		}
+
+		if (_listRevokeInventoryItemRequest.Count > 0)
+		{
+			var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
+			string jsonRevokeInventory = serializer.SerializeObject(_listRevokeInventoryItemRequest);
+			checkSum = PlayFabApiManager.CheckSum(jsonRevokeInventory);
+		}
+
+		return _listRevokeInventoryItemRequest;
 	}
 	#endregion
 
@@ -3946,6 +3977,109 @@ public class PlayFabApiManager : MonoBehaviour
 			});
 		};
 		RetrySendManager.instance.RequestAction(action, true);
+	}
+
+	public void RequestAutoCompositeEquip(List<ObscuredString> listEquipId, List<EquipData> listMaterialEquipData, Action<string> successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string checkSum = "";
+		List<ItemGrantRequest> listItemGrantRequest = GenerateGrantRequestInfo(listEquipId, ref checkSum, "equip");
+		string checkSum2 = "";
+		List<RevokeInventoryItemRequest> listRevokeRequest = GenerateRevokeInfo(listMaterialEquipData, ref checkSum2);
+
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "AutoCompositeEquip",
+			FunctionParameter = new { Lst = listItemGrantRequest, LstCs = checkSum, RvLst = listRevokeRequest, RvLstCs = checkSum2 },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				EquipManager.instance.OnRevokeInventory(listMaterialEquipData);
+
+				jsonResult.TryGetValue("itmRet", out object itmRet);
+
+				if (successCallback != null) successCallback.Invoke((string)itmRet);
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
+	public void RequestCompositeEquip(EquipData enhanceEquipData, bool equipped, int equipType, List<ObscuredString> listEquipId, List<EquipData> listMaterialEquipData, Action<string> successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string enhanceUniqueId = "";
+		string enhanceEquipId = "";
+		int nextEnhanceLevel = 0;
+		if (enhanceEquipData != null)
+		{
+			enhanceUniqueId = enhanceEquipData.uniqueId;
+			enhanceEquipId = enhanceEquipData.equipId;
+			nextEnhanceLevel = enhanceEquipData.enhanceLevel + 1;
+		}
+
+		string input = string.Format("{0}_{1}_{2}_{3}_{4}_{5}_{6}", enhanceEquipId, listEquipId.Count, listMaterialEquipData.Count, nextEnhanceLevel, equipped ? 1 : 0, equipType, "mrqzlpas");
+		string checkSum = CheckSum(input);
+		string checkSum2 = "";
+		List<ItemGrantRequest> listItemGrantRequest = GenerateGrantRequestInfo(listEquipId, ref checkSum2, "equip");
+		string checkSum3 = "";
+		List<RevokeInventoryItemRequest> listRevokeRequest = GenerateRevokeInfo(listMaterialEquipData, ref checkSum3);
+
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "CompositeEquip",
+			FunctionParameter = new { EhId = enhanceUniqueId, Eq = equipped ? 1 : 0, Pos = equipType, T = nextEnhanceLevel, Cs = checkSum, Lst = listItemGrantRequest, LstCs = checkSum2, RvLst = listRevokeRequest, RvLstCs = checkSum3 },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				EquipManager.instance.OnRevokeInventory(listMaterialEquipData);
+
+				if (enhanceEquipData != null)
+					enhanceEquipData.OnEnhance(enhanceEquipData.enhanceLevel + 1);
+
+				jsonResult.TryGetValue("itmRet", out object itmRet);
+
+				string newEquipUniqueId = "";
+				if (listEquipId.Count == 1 && equipped && enhanceEquipData == null)
+				{
+					// 새로 얻은 아이템을 장착시켜야한다.
+					// 지금 함수 구조에서는 EquipData를 얻을 방법이 없기 때문에 instanceId를 기억해뒀다가 장착하는 형태로 해본다.
+					List<ItemInstance> listItemInstance = PlayFabApiManager.instance.DeserializeItemGrantResult((string)itmRet);
+					if (listItemInstance != null && listItemInstance.Count == 1)
+						newEquipUniqueId = listItemInstance[0].ItemInstanceId;
+				}
+
+				if (successCallback != null) successCallback.Invoke((string)itmRet);
+
+				// 위 콜백에서 인벤토리에 추가되어있을거다.
+				if (listEquipId.Count == 1 && equipped && enhanceEquipData == null && string.IsNullOrEmpty(newEquipUniqueId) == false)
+				{
+					EquipData newEquipData = EquipManager.instance.FindEquipData(newEquipUniqueId, (EquipManager.eEquipSlotType)equipType);
+					if (newEquipData != null)
+						EquipManager.instance.OnEquip(newEquipData);
+				}
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
 	}
 	#endregion
 

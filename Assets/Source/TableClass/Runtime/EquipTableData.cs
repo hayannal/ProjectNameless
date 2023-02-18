@@ -84,4 +84,8 @@ public class EquipTableData
   int _skillActive;
   public int skillActive { get { return _skillActive; } set { _skillActive = value; } }
   
+  [SerializeField]
+  string _group;
+  public string group { get { return _group; } set { _group = value; } }
+  
 }

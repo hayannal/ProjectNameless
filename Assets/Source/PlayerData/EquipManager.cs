@@ -42,6 +42,22 @@ public class EquipManager : MonoBehaviour
 	public const int InventoryVisualMax = 200;
 	public const int InventoryRealMax = 249;
 
+	public static int GetEnhanceLevelMaxByGrade(int grade)
+	{
+		EquipGradeTableData equipGradeTableData = TableDataManager.instance.FindEquipGradeTableData(grade);
+		if (equipGradeTableData == null)
+			return 0;
+		return equipGradeTableData.compositeLevelMax;
+	}
+
+	public static EquipTableData GetNextGradeEquipTableData(EquipTableData equipTableData)
+	{
+		EquipTableData nextGradeEquipTableData = TableDataManager.instance.FindEquipTableDataByGrade(equipTableData.grade + 1, equipTableData.equipType, equipTableData.group);
+		if (nextGradeEquipTableData == null)
+			return null;
+		return nextGradeEquipTableData;
+	}
+
 	public ObscuredInt cachedValue { get; set; }
 	EquipStatusList _cachedEquipStatusList = new EquipStatusList();
 	public EquipStatusList cachedEquipStatusList { get { return _cachedEquipStatusList; } }
@@ -51,7 +67,6 @@ public class EquipManager : MonoBehaviour
 	//public List<EquipData> listEquipData { get { return _listEquipData; } }
 	List<List<EquipData>> _listEquipData = new List<List<EquipData>>();
 	Dictionary<int, EquipData> _dicEquippedData = new Dictionary<int, EquipData>();
-
 
 	public void OnRecvEquipInventory(List<ItemInstance> userInventory, Dictionary<string, UserDataRecord> userData, Dictionary<string, UserDataRecord> userReadOnlyData)
 	{
@@ -289,8 +304,235 @@ public class EquipManager : MonoBehaviour
 
 		OnChangedStatus();
 	}
+
+	public void OnRevokeInventory(List<EquipData> listRevokeEquipData, bool checkEquipped = false)
+	{
+		bool unequip = false;
+		for (int i = 0; i < listRevokeEquipData.Count; ++i)
+		{
+			eEquipSlotType equipType = (eEquipSlotType)listRevokeEquipData[i].cachedEquipTableData.equipType;
+			if (checkEquipped && IsEquipped(listRevokeEquipData[i]))
+			{
+				_dicEquippedData.Remove((int)equipType);
+				unequip = true;
+			}
+
+			List<EquipData> listEquipData = GetEquipListByType(equipType);
+			if (listEquipData.Contains(listRevokeEquipData[i]))
+			{
+				listEquipData.Remove(listRevokeEquipData[i]);
+			}
+			else
+			{
+				Debug.LogErrorFormat("Revoke Inventory Error. Not found Equip : {0}", listRevokeEquipData[i].uniqueId);
+			}
+		}
+
+		// 장착된걸 지웠을땐 바로 스탯을 재계산한다.
+		if (unequip)
+			OnChangedStatus();
+	}
 	#endregion
 
+
+	#region Composite
+	List<EquipData> _listCurrentEquipData = new List<EquipData>();
+	public void CollectAutoComposite(List<ObscuredString> listNewEquipId, List<EquipData> listMaterialEquipData)
+	{
+		for (int i = 0; i < (int)eEquipSlotType.Amount; ++i)
+		{
+			_listCurrentEquipData.Clear();
+
+			List<EquipData> listEquipData = GetEquipListByType((eEquipSlotType)i);
+			for (int j = 0; j < listEquipData.Count; ++j)
+			{
+				// 락은 걸려있어도 융합의 주체로는 사용할 수 있다.
+				//if (listEquipData[j].isLock)
+				//	continue;
+				if (IsEquipped(listEquipData[j]))
+					continue;
+				if (listEquipData[j].cachedEquipTableData.grade > 2)
+					continue;
+
+				_listCurrentEquipData.Add(listEquipData[j]);
+			}
+
+			_listCurrentEquipData.Sort(delegate (EquipData x, EquipData y)
+			{
+				if (x.cachedEquipTableData != null && y.cachedEquipTableData != null)
+				{
+					if (x.cachedEquipTableData.grade > y.cachedEquipTableData.grade) return -1;
+					else if (x.cachedEquipTableData.grade < y.cachedEquipTableData.grade) return 1;
+					if (x.cachedEquipTableData.equipType < y.cachedEquipTableData.equipType) return -1;
+					else if (x.cachedEquipTableData.equipType > y.cachedEquipTableData.equipType) return 1;
+					if (x.mainStatusValue > y.mainStatusValue) return -1;
+					else if (x.mainStatusValue < y.mainStatusValue) return 1;
+				}
+				return 0;
+			});
+
+			// 위에서부터 하나씩 돌면서 결과를 수집한다.
+			for (int j = 0; j < _listCurrentEquipData.Count; ++j)
+			{
+				if (listMaterialEquipData.Contains(_listCurrentEquipData[j]))
+					continue;
+
+				FindMaterial(_listCurrentEquipData, j, listNewEquipId, listMaterialEquipData);
+			}
+		}
+	}
+
+	bool FindMaterial(List<EquipData> listEquipData, int selectIndex, List<ObscuredString> listNewEquipId, List<EquipData> listMaterialEquipData)
+	{
+		EquipCompositeTableData equipCompositeTableData = TableDataManager.instance.FindEquipCompositeTableData(listEquipData[selectIndex].cachedEquipTableData.rarity, listEquipData[selectIndex].cachedEquipTableData.grade, listEquipData[selectIndex].enhanceLevel);
+		if (equipCompositeTableData == null)
+			return false;
+
+		bool findResult = false;
+		int availableMaterialCount = 0;
+		for (int i = 0; i < listEquipData.Count; ++i)
+		{
+			// 본체는 당연히 제외
+			if (i == selectIndex)
+				continue;
+
+			// 이미 다른 곳의 재료로 등록된 아이템이면 패스
+			if (listMaterialEquipData.Contains(listEquipData[i]))
+				continue;
+
+			// 재료 확인
+			if (IsValidMaterial(listEquipData[selectIndex], listEquipData[i]) == false)
+				continue;
+
+			// 여기까지 오면 
+			++availableMaterialCount;
+			if (availableMaterialCount >= equipCompositeTableData.count)
+			{
+				findResult = true;
+				break;
+			}
+		}
+
+		// 만약 찾는데 실패했다면 굳이 아래로직은 실행할 필요 없다. 재료가 2개 필요한데 하나밖에 없을때도 이쪽으로 들어오게 된다.
+		if (findResult == false)
+			return false;
+
+		// 찾기만 하고 끝내는게 아니라 등록까지 해야하는거라면 다시 for루프 돌면서
+		int count = 0;
+		for (int i = 0; i < listEquipData.Count; ++i)
+		{
+			if (i == selectIndex)
+				continue;
+			if (listMaterialEquipData.Contains(listEquipData[i]))
+				continue;
+			if (IsValidMaterial(listEquipData[selectIndex], listEquipData[i]) == false)
+				continue;
+
+			// 재료 리스트에 추가.
+			listMaterialEquipData.Add(listEquipData[i]);
+			++count;
+			if (count >= equipCompositeTableData.count)
+				break;
+		}
+
+		// AutoComposite 에서는 파란색템 이하만 돌리기 때문에 enhance가 없다.
+		if (EquipManager.GetEnhanceLevelMaxByGrade(listEquipData[selectIndex].cachedEquipTableData.grade) == listEquipData[selectIndex].enhanceLevel)
+		{
+			// 본체도 재료와 함께 소멸되고
+			listMaterialEquipData.Add(listEquipData[selectIndex]);
+
+			// 새로운 아이템으로 융합될거다.
+			EquipTableData nextGradeEquipTableData = EquipManager.GetNextGradeEquipTableData(listEquipData[selectIndex].cachedEquipTableData);
+			if (nextGradeEquipTableData != null)
+				listNewEquipId.Add(nextGradeEquipTableData.equipId);
+		}
+		return findResult;
+	}
+	
+	public bool IsValidMaterial(EquipData selectedEquipData, EquipData materialEquipData)
+	{
+		//if (materialEquipData.equipId == "Equip030101")
+		//	Debug.Log("2222");
+
+		// 락걸린 재료와 장착중인 재료는 재료로 사용할 수 없다.
+		if (materialEquipData.isLock)
+			return false;
+		if (IsEquipped(materialEquipData))
+			return false;
+
+		EquipCompositeTableData equipCompositeTableData = TableDataManager.instance.FindEquipCompositeTableData(selectedEquipData.cachedEquipTableData.rarity, selectedEquipData.cachedEquipTableData.grade, selectedEquipData.enhanceLevel);
+		if (equipCompositeTableData == null)
+			return false;
+
+		switch ((EquipCompositeCanvas.eCompositeMaterialType)equipCompositeTableData.materialType)
+		{
+			case EquipCompositeCanvas.eCompositeMaterialType.SameEquip:
+				// 같은 장비인지 판단하는 컬럼인 group을 비교해야한다. 
+				if (selectedEquipData.cachedEquipTableData.group != materialEquipData.cachedEquipTableData.group)
+					return false;
+				break;
+			case EquipCompositeCanvas.eCompositeMaterialType.SameEquipType:
+				if (selectedEquipData.cachedEquipTableData.equipType != materialEquipData.cachedEquipTableData.equipType)
+					return false;
+				break;
+			case EquipCompositeCanvas.eCompositeMaterialType.AnyEquipType:
+				break;
+		}
+
+		// grade랑 rarity는 항상 검사
+		if (equipCompositeTableData.materialGrade != materialEquipData.cachedEquipTableData.grade)
+			return false;
+		if (equipCompositeTableData.materialRarity != materialEquipData.cachedEquipTableData.rarity)
+			return false;
+
+		return true;
+	}
+
+	public bool IsCompositeAvailable(EquipData selectedEquipData, List<EquipData> listEquipData)
+	{
+		//if (selectedEquipData.equipId == "Equip030101")
+		//	Debug.Log("1111");
+
+		// 먼저 최대치에 도달했는지부터 확인
+		if (IsMaxGradeEnhance(selectedEquipData))
+			return false;
+
+		// 융합 테이블에 없는건지 확인
+		EquipCompositeTableData equipCompositeTableData = TableDataManager.instance.FindEquipCompositeTableData(selectedEquipData.cachedEquipTableData.rarity, selectedEquipData.cachedEquipTableData.grade, selectedEquipData.enhanceLevel);
+		if (equipCompositeTableData == null)
+			return false;
+
+		// 이후 재료 확인
+		int availableMaterialCount = 0;
+		for (int i = 0; i < listEquipData.Count; ++i)
+		{
+			// 본체는 당연히 제외
+			if (listEquipData[i] == selectedEquipData)
+				continue;
+
+			// 재료 확인
+			if (IsValidMaterial(selectedEquipData, listEquipData[i]) == false)
+				continue;
+
+			// 여기까지 오면 
+			++availableMaterialCount;
+			if (availableMaterialCount >= equipCompositeTableData.count)
+				return true;
+		}
+
+		return false;
+	}
+
+	public bool IsMaxGradeEnhance(EquipData selectedEquipData)
+	{
+		EquipGradeTableData lastEquipGradeTableData = TableDataManager.instance.equipGradeTable.dataArray[TableDataManager.instance.equipGradeTable.dataArray.Length - 1];
+		if (lastEquipGradeTableData == null)
+			return false;
+		if (selectedEquipData.cachedEquipTableData.grade == lastEquipGradeTableData.grade && selectedEquipData.enhanceLevel >= lastEquipGradeTableData.compositeLevelMax)
+			return true;
+		return false;
+	}
+	#endregion
 
 
 

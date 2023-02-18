@@ -20,6 +20,7 @@ public class EquipCanvasListItem : MonoBehaviour
 	public Image lockImage;
 	public Text equippedText;
 	public GameObject selectObject;
+	public GameObject blackObject;
 	public RectTransform alarmRootTransform;
 
 	public EquipData equipData { get; set; }
@@ -27,10 +28,11 @@ public class EquipCanvasListItem : MonoBehaviour
 	{
 		this.equipData = equipData;
 		Initialize(equipData.cachedEquipTableData);
+		RefreshEnhanceLevel(equipData.enhanceLevel);
 		_clickAction = clickCallback;
 	}
 
-	public void Initialize(EquipTableData equipTableData)
+	public void Initialize(EquipTableData equipTableData, int enhanceLevel = 0)
 	{
 		AddressableAssetLoadManager.GetAddressableSprite(equipTableData.shotAddress, "Icon", (sprite) =>
 		{
@@ -40,6 +42,7 @@ public class EquipCanvasListItem : MonoBehaviour
 
 		InitializeGrade(equipTableData.grade, false);
 		RefreshRarity(equipTableData.rarity, rarityText, rarityGradient);
+		RefreshEnhanceLevel(enhanceLevel);
 		RefreshStatus();
 
 		for (int i = 0; i < optionObjectList.Length; ++i)
@@ -47,6 +50,7 @@ public class EquipCanvasListItem : MonoBehaviour
 
 		equippedText.gameObject.SetActive(false);
 		selectObject.SetActive(false);
+		blackObject.SetActive(false);
 	}
 
 	public void InitializeGrade(int grade, bool questionEquip = false)
@@ -157,17 +161,19 @@ public class EquipCanvasListItem : MonoBehaviour
 	{
 		if (equipData == null)
 		{
-			enhanceBackgroundImage.gameObject.SetActive(false);
 			lockImage.gameObject.SetActive(false);
 			return;
 		}
 
-		enhanceBackgroundImage.gameObject.SetActive(equipData.enhanceLevel > 0);
-		enhanceBackgroundImage.color = lineColorImage.color;
-		enhanceLevelText.text = equipData.enhanceLevel.ToString();
-
 		// isLock
 		lockImage.gameObject.SetActive(equipData.isLock);
+	}
+
+	public void RefreshEnhanceLevel(int enhanceLevel)
+	{
+		enhanceBackgroundImage.gameObject.SetActive(enhanceLevel > 0);
+		enhanceBackgroundImage.color = lineColorImage.color;
+		enhanceLevelText.text = enhanceLevel.ToString();
 	}
 
 	Action<EquipData> _clickAction;
@@ -221,7 +227,7 @@ public class EquipCanvasListItem : MonoBehaviour
 	{
 		if (show)
 		{
-			AlarmObject.Show(alarmRootTransform, false, true, false, false, lineColorImage.color);
+			AlarmObject.Show(alarmRootTransform, true, true, false, false, lineColorImage.color);
 		}
 		else
 		{

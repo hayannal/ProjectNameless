@@ -40,6 +40,7 @@ public class EquipGroundCanvas : MonoBehaviour
 	{
 		#region UI
 		RefreshAutoEquipAlarmObject();
+		RefreshAutoCompositeAlarmObject();
 		#endregion
 
 		bool restore = StackCanvas.Push(gameObject, false, null, OnPopStack);
@@ -143,7 +144,7 @@ public class EquipGroundCanvas : MonoBehaviour
 
 	public void OnClickCompositeButton()
 	{
-
+		UIInstanceManager.instance.ShowCanvasAsync("EquipCompositeCanvas", null);
 	}
 	#endregion
 
@@ -171,6 +172,32 @@ public class EquipGroundCanvas : MonoBehaviour
 			EquipData equippedData = EquipManager.instance.GetEquippedDataByType((EquipManager.eEquipSlotType)i);
 			if (equippedData == null)
 				return true;
+		}
+		return false;
+	}
+
+	public void RefreshAutoCompositeAlarmObject()
+	{
+		bool showAlarm = CheckAutoComposite();
+		if (showAlarm)
+			AlarmObject.Show(compositeAlarmRootTransform);
+		else
+			AlarmObject.Hide(compositeAlarmRootTransform);
+	}
+
+	public static bool CheckAutoComposite()
+	{
+		for (int i = 0; i < (int)EquipManager.eEquipSlotType.Amount; ++i)
+		{
+			List<EquipData> listEquipData = EquipManager.instance.GetEquipListByType((EquipManager.eEquipSlotType)i);
+			for (int j = 0; j < listEquipData.Count; ++j)
+			{
+				if (EquipManager.instance.IsCompositeAvailable(listEquipData[j], listEquipData))
+				{
+					if (listEquipData[j].cachedEquipTableData.grade <= 2)
+						return true;
+				}
+			}
 		}
 		return false;
 	}

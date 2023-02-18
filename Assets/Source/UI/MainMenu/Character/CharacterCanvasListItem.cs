@@ -171,7 +171,7 @@ public class CharacterCanvasListItem : MonoBehaviour
 		}
 		else
 		{
-			AlarmObject.Hide(alarmRootTransform, true);
+			AlarmObject.Hide(alarmRootTransform);
 		}
 	}
 	#endregion

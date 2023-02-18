@@ -78,7 +78,7 @@ public class EquipListCanvas : EquipShowCanvasBase
 
 		SetInfoCameraMode(false);
 
-		// 장비의 new표시를 전부 사라지게 하는 곳은 9탭 나갈때와 판매창 나갈때 두곳 뿐이다.
+		// 장비의 new표시를 전부 사라지게 하는 곳은 9탭 나갈때다.
 		for (int i = 0; i < _listEquipCanvasListItem.Count; ++i)
 			_listEquipCanvasListItem[i].ShowAlarm(false);
 		EquipManager.instance.ResetNewEquip();

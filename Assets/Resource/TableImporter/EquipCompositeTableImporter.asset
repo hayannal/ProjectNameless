@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 80e14a72067f1ad408ec8d661bc560ce, type: 3}
-  m_Name: EquipTableImporter
+  m_Name: EquipCompositeTableImporter
   m_EditorClassIdentifier: 
   templatePath: AssetStore/QuickSheet/ExcelPlugin/Templates
   scriptFilePath: Source/TableClass/Runtime
   editorScriptFilePath: Source/TableClass/Editor
   sheetName: Equip.xlsx
-  workSheetName: EquipTable
+  workSheetName: EquipCompositeTable
   columnHeaderList:
-  - type: 1
-    name: equipId
+  - type: 3
+    name: rarity
     isEnable: 0
     isArray: 0
   - type: 3
@@ -27,78 +27,40 @@ MonoBehaviour:
     isEnable: 0
     isArray: 0
   - type: 3
-    name: equipType
+    name: compositeLevel
+    isEnable: 0
+    isArray: 0
+  - type: 8
+    name: compositeDone
+    isEnable: 0
+    isArray: 0
+  - type: 8
+    name: last4digitSame
     isEnable: 0
     isArray: 0
   - type: 3
-    name: rarity
+    name: materialGrade
     isEnable: 0
     isArray: 0
   - type: 3
-    name: atk
+    name: materialRarity
     isEnable: 0
     isArray: 0
-  - type: 1
-    name: prefabAddress
-    isEnable: 0
-    isArray: 0
-  - type: 1
-    name: shotAddress
-    isEnable: 0
-    isArray: 0
-  - type: 1
-    name: nameId
-    isEnable: 0
-    isArray: 0
-  - type: 5
-    name: equipGachaWeight
+  - type: 8
+    name: anyPartsPossible
     isEnable: 0
     isArray: 0
   - type: 3
-    name: option3
-    isEnable: 0
-    isArray: 0
-  - type: 5
-    name: option3Value
+    name: count
     isEnable: 0
     isArray: 0
   - type: 3
-    name: option4
-    isEnable: 0
-    isArray: 0
-  - type: 5
-    name: option4Value
-    isEnable: 0
-    isArray: 0
-  - type: 3
-    name: option5
-    isEnable: 0
-    isArray: 0
-  - type: 5
-    name: option5Value
-    isEnable: 0
-    isArray: 0
-  - type: 3
-    name: option6
-    isEnable: 0
-    isArray: 0
-  - type: 5
-    name: option6Value
-    isEnable: 0
-    isArray: 0
-  - type: 1
-    name: skillId
-    isEnable: 0
-    isArray: 0
-  - type: 3
-    name: skillActive
-    isEnable: 0
-    isArray: 0
-  - type: 1
-    name: group
+    name: materialType
     isEnable: 0
     isArray: 0
   excelFilePath: ../Excel/Equip.xlsx
   SheetNames:
   - EquipTable
-  currentSelectedSheet: 0
+  - EquipCompositeTable
+  - EquipGradeTable
+  currentSelectedSheet: 1
