@@ -169,16 +169,22 @@ public class MainCanvas : MonoBehaviour
 			return;
 		}
 
+		if (_challengeProcessed)
+			return;
+
 		// 언제 어느때든 누를 수 있다.
 		OnPointerDown(null);
 		Timing.RunCoroutine(ChallengeProcess());
 	}
 
+	bool _challengeProcessed;
 	bool _waitServerResponse;
 	bool _enterGameServerFailure;
 	bool _networkFailure;
 	IEnumerator<float> ChallengeProcess()
 	{
+		_challengeProcessed = true;
+
 		// 누른거와 동시에 패킷은 몰래 보내놓고
 		PlayFabApiManager.instance.RequestEnterBoss((serverFailure) =>
 		{
@@ -240,6 +246,8 @@ public class MainCanvas : MonoBehaviour
 
 		// 보스전에 
 		Screen.sleepTimeout = SleepTimeout.NeverSleep;
+
+		_challengeProcessed = false;
 	}
 
 	public void OnClickCancelBossChallengeButton()
