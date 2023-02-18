@@ -210,12 +210,7 @@ public class EquipAltar : MonoBehaviour
 		// 알람은 두가지 조건이다. 제단이 비어있는데 장착할 수 있는 장비가 있거나 새로운 템을 얻었거나
 		bool show = false;
 		List<EquipData> listEquipData = EquipManager.instance.GetEquipListByType((EquipManager.eEquipSlotType)positionIndex);
-		for (int i = 0; i < listEquipData.Count; ++i)
-		{
-			show = listEquipData[i].newEquip;
-			if (show)
-				break;
-		}
+		show = (listEquipData.Count > 0);
 		if (show)
 			AlarmObject.Show(alarmRootTransform);
 	}
