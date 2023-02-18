@@ -13,6 +13,10 @@ public class EquipTableData
   public string equipId { get { return _equipId; } set { _equipId = value; } }
   
   [SerializeField]
+  string _group;
+  public string group { get { return _group; } set { _group = value; } }
+  
+  [SerializeField]
   int _grade;
   public int grade { get { return _grade; } set { _grade = value; } }
   
@@ -83,9 +87,5 @@ public class EquipTableData
   [SerializeField]
   int _skillActive;
   public int skillActive { get { return _skillActive; } set { _skillActive = value; } }
-  
-  [SerializeField]
-  string _group;
-  public string group { get { return _group; } set { _group = value; } }
   
 }
