@@ -108,14 +108,16 @@ public class PickUpCharacterListItem : MonoBehaviour
 			return;
 		}
 
-		// 연출 및 보상 처리. 100개씩 뽑으면 느릴 수 있으니 패킷 대기 없이 바로 시작한다.
-		UIInstanceManager.instance.ShowCanvasAsync("RandomBoxScreenCanvas", () =>
-		{
-			// 연출창 시작과 동시에 패킷을 보내고
-			List<ObscuredString> listActorId = CharacterManager.instance.GetRandomIdList(_info.count, true);
-			_count = listActorId.Count;
-			int notStreakCountResult = CharacterManager.instance.tempPickUpNotStreakCount;
-			PlayFabApiManager.instance.RequestOpenPickUpCharacterBox(listActorId, _info.count, _info.price, notStreakCountResult, OnRecvResult);
+		YesNoCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("ShopUI_ConfirmPurchase"), () => {
+
+			// 연출 및 보상 처리. 100개씩 뽑으면 느릴 수 있으니 패킷 대기 없이 바로 시작한다.
+			UIInstanceManager.instance.ShowCanvasAsync("RandomBoxScreenCanvas", () =>
+			{
+				// 연출창 시작과 동시에 패킷을 보내고
+				List<ObscuredString> listActorId = CharacterManager.instance.GetRandomIdList(_info.count, true);
+				_count = listActorId.Count;
+				PlayFabApiManager.instance.RequestOpenPickUpCharacterBox(listActorId, _info.count, _info.price, CharacterManager.instance.tempPickUpNotStreakCount, OnRecvResult);
+			});
 		});
 	}
 

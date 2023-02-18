@@ -108,13 +108,16 @@ public class CashShopSpellListItem : MonoBehaviour
 			});
 		}
 
-		// 연출 및 보상 처리. 100개씩 뽑으면 느릴 수 있으니 패킷 대기 없이 바로 시작한다.
-		UIInstanceManager.instance.ShowCanvasAsync("RandomBoxScreenCanvas", () =>
-		{
-			// 연출창 시작과 동시에 패킷을 보내고
-			List<ObscuredString> listSpellId = SpellManager.instance.GetRandomIdList(_resultCount);
-			_count = listSpellId.Count;
-			PlayFabApiManager.instance.RequestOpenSpellBox(listSpellId, _shopSpellTableData.count, _shopSpellTableData.price, moreTextObject.activeSelf, OnRecvResult);
+		YesNoCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("ShopUI_ConfirmPurchase"), () => {
+
+			// 연출 및 보상 처리. 100개씩 뽑으면 느릴 수 있으니 패킷 대기 없이 바로 시작한다.
+			UIInstanceManager.instance.ShowCanvasAsync("RandomBoxScreenCanvas", () =>
+			{
+				// 연출창 시작과 동시에 패킷을 보내고
+				List<ObscuredString> listSpellId = SpellManager.instance.GetRandomIdList(_resultCount);
+				_count = listSpellId.Count;
+				PlayFabApiManager.instance.RequestOpenSpellBox(listSpellId, _shopSpellTableData.count, _shopSpellTableData.price, moreTextObject.activeSelf, OnRecvResult);
+			});
 		});
 	}
 
