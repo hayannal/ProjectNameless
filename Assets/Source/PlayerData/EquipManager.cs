@@ -540,6 +540,7 @@ public class EquipManager : MonoBehaviour
 	class RandomGachaEquipGrade
 	{
 		public int grade;
+		public int rarity;
 		public float sumWeight;
 	}
 	List<RandomGachaEquipGrade> _listGachaEquipGrade = null;
@@ -559,7 +560,6 @@ public class EquipManager : MonoBehaviour
 		float sumWeight = 0.0f;
 		for (int i = 0; i < TableDataManager.instance.gachaEquipTable.dataArray.Length; ++i)
 		{
-			// 기본 prob로 돌리면 된다.
 			float weight = TableDataManager.instance.gachaEquipTable.dataArray[i].prob;
 			if (weight <= 0.0f)
 				continue;
@@ -567,6 +567,7 @@ public class EquipManager : MonoBehaviour
 			sumWeight += weight;
 			RandomGachaEquipGrade newInfo = new RandomGachaEquipGrade();
 			newInfo.grade = TableDataManager.instance.gachaEquipTable.dataArray[i].grade;
+			newInfo.rarity = TableDataManager.instance.gachaEquipTable.dataArray[i].rarity;
 			newInfo.sumWeight = sumWeight;
 			_listGachaEquipGrade.Add(newInfo);
 		}
@@ -586,6 +587,7 @@ public class EquipManager : MonoBehaviour
 		if (index == -1)
 			return "";
 		int selectedGrade = _listGachaEquipGrade[index].grade;
+		int selectedRarity = _listGachaEquipGrade[index].rarity;
 
 		// 등급이 결정되었으면 등급안에서 다시 굴려야한다.
 		if (_listGachaEquipId == null)
@@ -595,7 +597,7 @@ public class EquipManager : MonoBehaviour
 		sumWeight = 0.0f;
 		for (int i = 0; i < TableDataManager.instance.equipTable.dataArray.Length; ++i)
 		{
-			if (TableDataManager.instance.equipTable.dataArray[i].grade != selectedGrade)
+			if (TableDataManager.instance.equipTable.dataArray[i].grade != selectedGrade || TableDataManager.instance.equipTable.dataArray[i].rarity != selectedRarity)
 				continue;
 
 			sumWeight += TableDataManager.instance.equipTable.dataArray[i].equipGachaWeight;
