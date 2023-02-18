@@ -169,10 +169,12 @@ public class CashShopData : MonoBehaviour
 		public int em;
 		public int ed;
 		public string id;
+		public int sc;  // s rarity bonus count;
+		public int ssc;	// ss rarity bonus count;
 
 		public int count;
 		public int price;
-		public float add;
+		public float ov;	// override 0.02
 	}
 	List<PickUpEquipInfo> _listPickUpEquipInfo;
 	#endregion
