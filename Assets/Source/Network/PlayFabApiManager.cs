@@ -3687,7 +3687,7 @@ public class PlayFabApiManager : MonoBehaviour
 
 				PetManager.instance.dailyHeartCount += 1;
 
-				petData.SetHeart(targetHeart);
+				petData.OnHeartPlus(targetHeart);
 
 				if (successCallback != null) successCallback.Invoke();
 			}

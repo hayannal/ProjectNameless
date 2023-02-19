@@ -172,6 +172,9 @@ public class PetManager : MonoBehaviour
 	{
 		for (int i = 0; i < _listPetData.Count; ++i)
 			_listPetData[i].SetHeart(FindHeartValue(additional1PlayerStatistics, additional2PlayerStatistics, _listPetData[i].petId));
+
+		// status
+		RefreshCachedStatus();
 	}
 
 	int FindHeartValue(List<StatisticValue> additional1PlayerStatistics, List<StatisticValue> additional2PlayerStatistics, string petId)

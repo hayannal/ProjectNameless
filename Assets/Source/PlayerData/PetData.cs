@@ -66,6 +66,8 @@ public class PetData
 	public void SetHeart(int heart)
 	{
 		_heart = heart;
+
+		RefreshCachedStatus();
 	}
 
 	void RefreshCachedStatus()
@@ -85,12 +87,21 @@ public class PetData
 
 		// multiple
 		_mainStatusValue *= applyCount;
+
+		// heart
+		_mainStatusValue += _heart;
 	}
 
 	public void OnMaxLevelUp(int targetStep)
 	{
 		_step = targetStep;
 		RefreshCachedStatus();
+		PetManager.instance.OnChangedStatus();
+	}
+
+	public void OnHeartPlus(int targetHeart)
+	{
+		SetHeart(targetHeart);
 		PetManager.instance.OnChangedStatus();
 	}
 

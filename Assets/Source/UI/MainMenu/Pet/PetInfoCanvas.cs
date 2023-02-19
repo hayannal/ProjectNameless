@@ -282,10 +282,12 @@ public class PetInfoCanvas : MonoBehaviour
 
 			int count = 1;
 			int step = 0;
+			int heart = 0;
 			if (_petData != null)
 			{
 				count = _petData.count;
 				step = _petData.step;
+				heart = _petData.heart;
 			}
 			int maxCount = PetCanvasListItem.GetMaxCount(petTableData.star, step);
 			string countString = "";
@@ -296,6 +298,7 @@ public class PetInfoCanvas : MonoBehaviour
 
 			// limit
 			StatusDetailCanvas.instance.AddStatus("PetUI_Status", string.Format("{0} x {1}", baseAtk, countString));
+			StatusDetailCanvas.instance.AddStatus("PetUI_Heart", heart.ToString("N0"));
 		});
 	}
 
@@ -313,13 +316,24 @@ public class PetInfoCanvas : MonoBehaviour
 			message = string.Format("{0}\n{1}", message, UIString.instance.GetString("PetUI_UseTodayHeartThree"));
 		YesNoCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), message, () =>
 		{
+			float prevValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
 			PlayFabApiManager.instance.RequestHeartPet(_petData, _petData.heart + 1, () =>
 			{
+				float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
+
 				PetListCanvas.instance.currentCanvasPetActor.animator.Play("Heart");
 				heartImageEffectObject.SetActive(true);
 				BattleInstanceManager.instance.GetCachedObject(heartEffectPrefab, PetListCanvas.instance.currentCanvasPetActor.cachedTransform.position + new Vector3(0.0f, 0.0f, -0.5f), Quaternion.identity);
 				RefreshHeart();
+				if (_petData != null) atkText.text = _petData.mainStatusValue.ToString("N0");
+				PetListCanvas.instance.RefreshGrid();
 				MainCanvas.instance.RefreshPetAlarmObject();
+
+				// 변경 완료를 알리고
+				UIInstanceManager.instance.ShowCanvasAsync("ChangePowerCanvas", () =>
+				{
+					ChangePowerCanvas.instance.ShowInfo(prevValue, nextValue);
+				});
 			});
 		});
 	}
@@ -352,7 +366,7 @@ public class PetInfoCanvas : MonoBehaviour
 		{
 			PetCountTableData petCountTableData = TableDataManager.instance.FindPetCountTableData(_petData.cachedPetTableData.star, _petData.step);
 
-			string nextValue = string.Format("<color=#FF3300>{0}</color> -> {1}", petCountTableData.max, nextPetCountTableData.max);
+			string nextValue = string.Format("<color=#FF3300>{0}</color> => {1}", petCountTableData.max, nextPetCountTableData.max);
 			string message = string.Format("{0}\n\n{1}", UIString.instance.GetString("PetUI_ConfirmMaxCount"), nextValue);
 			ConfirmSpendCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), message, CurrencyData.eCurrencyType.Gold, nextPetCountTableData.cost, false, () =>
 			{

@@ -172,6 +172,8 @@ public class PetListCanvas : PetShowCanvasBase
 		{
 			_listTempPetData.Sort(delegate (PetData x, PetData y)
 			{
+				if (x.heart > y.heart) return -1;
+				else if (x.heart < y.heart) return 1;
 				if (x.cachedPetTableData.star > y.cachedPetTableData.star) return -1;
 				else if (x.cachedPetTableData.star < y.cachedPetTableData.star) return 1;
 				if (x.cachedPetTableData.orderIndex > y.cachedPetTableData.orderIndex) return 1;
@@ -182,7 +184,7 @@ public class PetListCanvas : PetShowCanvasBase
 			for (int i = 0; i < _listTempPetData.Count; ++i)
 			{
 				PetCanvasListItem petCanvasListItem = _container.GetCachedItem(contentItemPrefab, contentRootRectTransform);
-				petCanvasListItem.Initialize(_listTempPetData[i].cachedPetTableData, _listTempPetData[i].count, _listTempPetData[i].step, _listTempPetData[i].mainStatusValue, OnClickListItem);
+				petCanvasListItem.Initialize(_listTempPetData[i].cachedPetTableData, _listTempPetData[i].count, _listTempPetData[i].step, _listTempPetData[i].heart, _listTempPetData[i].mainStatusValue, OnClickListItem);
 				_listPetCanvasListItem.Add(petCanvasListItem);
 			}
 		}
@@ -209,7 +211,7 @@ public class PetListCanvas : PetShowCanvasBase
 		for (int i = 0; i < _listTempTableData.Count; ++i)
 		{
 			PetCanvasListItem petCanvasListItem = _noGainContainer.GetCachedItem(contentItemPrefab, noGainContentRootRectTransform);
-			petCanvasListItem.Initialize(_listTempTableData[i], 0, 0, _listTempTableData[i].accumulatedAtk, OnClickListItem);
+			petCanvasListItem.Initialize(_listTempTableData[i], 0, 0, 0, _listTempTableData[i].accumulatedAtk, OnClickListItem);
 			_listPetCanvasListItem.Add(petCanvasListItem);
 		}
 	}

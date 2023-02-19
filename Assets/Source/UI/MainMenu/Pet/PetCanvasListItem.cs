@@ -11,6 +11,8 @@ public class PetCanvasListItem : MonoBehaviour
 	public GameObject starGridRootObject;
 	public GameObject[] starObjectList;
 	public GameObject fiveStarObject;
+	public GameObject heartRootObject;
+	public Text heartText;
 
 	public GameObject equippedObject;
 	public GameObject blackObject;
@@ -23,7 +25,7 @@ public class PetCanvasListItem : MonoBehaviour
 
 	public string petId { get; set; }
 	public int count { get; set; }
-	public void Initialize(PetTableData petTableData, int count, int step, int mainStatusValue, Action<string, int> clickCallback)
+	public void Initialize(PetTableData petTableData, int count, int step, int heart, int mainStatusValue, Action<string, int> clickCallback)
 	{
 		petImage.sprite = PetSpriteContainer.instance.FindSprite(petTableData.spriteName);
 		nameText.SetLocalizedText(UIString.instance.GetString(petTableData.nameId));
@@ -46,6 +48,8 @@ public class PetCanvasListItem : MonoBehaviour
 			noGainGrayImageList[i].color = contains ? Color.white : Color.gray;
 
 		plusCountText.gameObject.SetActive(contains);
+		heartRootObject.SetActive(contains && heart > 0);
+		heartText.text = heart.ToString("N0");
 
 		int maxCount = GetMaxCount(petTableData.star, step);
 		if (count > maxCount)
