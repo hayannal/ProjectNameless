@@ -39,6 +39,12 @@ public class CashShopEquipListItem : MonoBehaviour
 		if (PlayerData.instance.CheckConfirmDownload() == false)
 			return;
 
+		//if (EquipManager.instance.IsInventoryVisualMax())
+		//{
+		//	ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_ManageInventory"), 2.0f);
+		//	return;
+		//}
+
 		if (CurrencyData.instance.dia < _shopEquipTableData.price)
 		{
 			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughDiamond"), 2.0f);
