@@ -550,12 +550,22 @@ public class EquipManager : MonoBehaviour
 		public float sumWeight;
 	}
 	List<RandomGachaEquipId> _listGachaEquipId = null;
-	public string GetRandomGachaResult()
+	public string GetRandomGachaResult(bool applyPickUpEquip)
 	{
 		// 등급별 확률을 구해야한다.
 		if (_listGachaEquipGrade == null)
 			_listGachaEquipGrade = new List<RandomGachaEquipGrade>();
 		_listGachaEquipGrade.Clear();
+
+		#region PickUp Equip
+		float pickUpEquipOverrideProb = 0.0f;
+		if (applyPickUpEquip)
+		{
+			CashShopData.PickUpEquipInfo info = CashShopData.instance.GetCurrentPickUpEquipInfo();
+			if (info != null && info.ov > 0.0f)
+				pickUpEquipOverrideProb = info.ov;
+		}
+		#endregion
 
 		float sumWeight = 0.0f;
 		for (int i = 0; i < TableDataManager.instance.gachaEquipTable.dataArray.Length; ++i)
@@ -563,6 +573,13 @@ public class EquipManager : MonoBehaviour
 			float weight = TableDataManager.instance.gachaEquipTable.dataArray[i].prob;
 			if (weight <= 0.0f)
 				continue;
+
+			#region PickUp Equip
+			if (TableDataManager.instance.gachaEquipTable.dataArray[i].rarity == 2 && TableDataManager.instance.gachaEquipTable.dataArray[i].grade == 3 && pickUpEquipOverrideProb > 0.0f)
+				weight = pickUpEquipOverrideProb;
+			if (TableDataManager.instance.gachaEquipTable.dataArray[i].rarity == 0 && TableDataManager.instance.gachaEquipTable.dataArray[i].grade == 0 && pickUpEquipOverrideProb > 0.0f)
+				weight = weight - pickUpEquipOverrideProb + TableDataManager.instance.gachaEquipTable.dataArray[0].prob;
+			#endregion
 
 			sumWeight += weight;
 			RandomGachaEquipGrade newInfo = new RandomGachaEquipGrade();
@@ -584,6 +601,39 @@ public class EquipManager : MonoBehaviour
 				break;
 			}
 		}
+		#region PickUp Equip
+		if (applyPickUpEquip)
+		{
+			CashShopData.PickUpEquipInfo info = CashShopData.instance.GetCurrentPickUpEquipInfo();
+			if (info != null)
+			{
+				if (tempPickUpNotStreakCount2 == (info.ssc - 1))
+				{
+					// 이번에 굴리는게 픽업의 최종 보너스 단계라면 강제로 rarity를 S나 SS로 고정해야한다.
+					for (int i = 0; i < TableDataManager.instance.gachaEquipTable.dataArray.Length; ++i)
+					{
+						if (TableDataManager.instance.gachaEquipTable.dataArray[i].rarity == 2)
+						{
+							index = i;
+							break;
+						}
+					}
+				}
+				else if (tempPickUpNotStreakCount1 >= (info.sc - 1))
+				{
+					// 이번에 굴리는게 픽업의 최종 보너스 단계라면 강제로 rarity를 S나 SS로 고정해야한다.
+					for (int i = 0; i < TableDataManager.instance.gachaEquipTable.dataArray.Length; ++i)
+					{
+						if (TableDataManager.instance.gachaEquipTable.dataArray[i].rarity == 1)
+						{
+							index = i;
+							break;
+						}
+					}
+				}
+			}
+		}
+		#endregion
 		if (index == -1)
 			return "";
 		int selectedGrade = _listGachaEquipGrade[index].grade;
@@ -594,13 +644,51 @@ public class EquipManager : MonoBehaviour
 			_listGachaEquipId = new List<RandomGachaEquipId>();
 		_listGachaEquipId.Clear();
 
+		#region PickUp Equip
+		string pickUpEquipId = "";
+		if (applyPickUpEquip)
+		{
+			CashShopData.PickUpEquipInfo info = CashShopData.instance.GetCurrentPickUpEquipInfo();
+			if (info != null)
+			{
+				EquipTableData pickUpEquipTableData = TableDataManager.instance.FindEquipTableData(info.id);
+				if (pickUpEquipTableData != null)
+				{
+					if (selectedGrade == pickUpEquipTableData.grade && selectedRarity == pickUpEquipTableData.rarity)
+					{
+						// 픽업을 제외한 나머지의 합산값을 구해야한다.
+						pickUpEquipId = pickUpEquipTableData.equipId;
+					}
+				}
+			}
+		}
+
+		float pickUpEquipForceWeight = 0.0f;
+		if (applyPickUpEquip && string.IsNullOrEmpty(pickUpEquipId) == false)
+		{
+			for (int i = 0; i < TableDataManager.instance.equipTable.dataArray.Length; ++i)
+			{
+				if (TableDataManager.instance.equipTable.dataArray[i].equipId == pickUpEquipId)
+					continue;
+				if (TableDataManager.instance.equipTable.dataArray[i].grade != selectedGrade || TableDataManager.instance.equipTable.dataArray[i].rarity != selectedRarity)
+					continue;
+				pickUpEquipForceWeight += TableDataManager.instance.equipTable.dataArray[i].equipGachaWeight;
+			}
+		}
+		#endregion
+
 		sumWeight = 0.0f;
 		for (int i = 0; i < TableDataManager.instance.equipTable.dataArray.Length; ++i)
 		{
 			if (TableDataManager.instance.equipTable.dataArray[i].grade != selectedGrade || TableDataManager.instance.equipTable.dataArray[i].rarity != selectedRarity)
 				continue;
 
-			sumWeight += TableDataManager.instance.equipTable.dataArray[i].equipGachaWeight;
+			float weight = TableDataManager.instance.equipTable.dataArray[i].equipGachaWeight;
+			#region PickUp Equip
+			if (applyPickUpEquip && TableDataManager.instance.equipTable.dataArray[i].equipId == pickUpEquipId)
+				weight = pickUpEquipForceWeight;
+			#endregion
+			sumWeight += weight;
 			RandomGachaEquipId newInfo = new RandomGachaEquipId();
 			newInfo.equipId = TableDataManager.instance.equipTable.dataArray[i].equipId;
 			newInfo.sumWeight = sumWeight;
@@ -624,13 +712,52 @@ public class EquipManager : MonoBehaviour
 		return _listGachaEquipId[index].equipId;
 	}
 
+	#region PickUp Equip
+	public int tempPickUpNotStreakCount1 { get; private set; }
+	public int tempPickUpNotStreakCount2 { get; private set; }
+	#endregion
 	List<ObscuredString> _listRandomObscuredId = new List<ObscuredString>();
-	public List<ObscuredString> GetRandomIdList(int count)
+	public List<ObscuredString> GetRandomIdList(int count, bool applyPickUpEquip = false)
 	{
+		#region PickUp Equip
+		if (applyPickUpEquip)
+		{
+			tempPickUpNotStreakCount1 = CashShopData.instance.GetCurrentPickUpEquipNotStreakCount1();
+			tempPickUpNotStreakCount2 = CashShopData.instance.GetCurrentPickUpEquipNotStreakCount2();
+		}
+		#endregion
+
 		_listRandomObscuredId.Clear();
 
 		for (int i = 0; i < count; ++i)
-			_listRandomObscuredId.Add(GetRandomGachaResult());
+		{
+			string randomEquipId = GetRandomGachaResult(applyPickUpEquip);
+			_listRandomObscuredId.Add(randomEquipId);
+
+			#region PickUp Equip
+			if (applyPickUpEquip)
+			{
+				bool getRarity1 = false;
+				bool getRarity2 = false;
+				if (string.IsNullOrEmpty(randomEquipId) == false)
+				{
+					EquipTableData equipTableData = TableDataManager.instance.FindEquipTableData(randomEquipId);
+					if (equipTableData != null && equipTableData.rarity == 1)
+						getRarity1 = true;
+					if (equipTableData != null && equipTableData.rarity == 2)
+						getRarity2 = true;
+				}
+				if (getRarity1)
+					tempPickUpNotStreakCount1 = 0;
+				else
+					++tempPickUpNotStreakCount1;
+				if (getRarity2)
+					tempPickUpNotStreakCount2 = 0;
+				else
+					++tempPickUpNotStreakCount2;
+			}
+			#endregion
+		}
 
 		return _listRandomObscuredId;
 	}

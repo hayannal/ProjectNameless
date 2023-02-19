@@ -177,6 +177,9 @@ public class CashShopData : MonoBehaviour
 		public float ov;	// override 0.02
 	}
 	List<PickUpEquipInfo> _listPickUpEquipInfo;
+	ObscuredInt _pickUpEquipNotStreakCount1;
+	ObscuredInt _pickUpEquipNotStreakCount2;
+	DateTime _pickUpEquipCountDateTime;
 	#endregion
 
 	public void OnRecvCashShopData(List<ItemInstance> userInventory, Dictionary<string, string> titleData, Dictionary<string, UserDataRecord> userReadOnlyData, List<StatisticValue> playerStatistics)
@@ -497,6 +500,38 @@ public class CashShopData : MonoBehaviour
 				int intValue = 0;
 				if (int.TryParse(userReadOnlyData["pickUpCharCnt"].Value, out intValue))
 					_pickUpCharacterNotStreakCount = intValue;
+			}
+		}
+
+		if (userReadOnlyData.ContainsKey("pickUpEquipCntDat"))
+		{
+			if (string.IsNullOrEmpty(userReadOnlyData["pickUpEquipCntDat"].Value) == false)
+			{
+				DateTime expireDateTime = new DateTime();
+				if (DateTime.TryParse(userReadOnlyData["pickUpEquipCntDat"].Value, out expireDateTime))
+					_pickUpEquipCountDateTime = expireDateTime.ToUniversalTime();
+			}
+		}
+
+		_pickUpEquipNotStreakCount1 = 0;
+		if (userReadOnlyData.ContainsKey("pickUpEquipCnt1"))
+		{
+			if (string.IsNullOrEmpty(userReadOnlyData["pickUpEquipCnt1"].Value) == false)
+			{
+				int intValue = 0;
+				if (int.TryParse(userReadOnlyData["pickUpEquipCnt1"].Value, out intValue))
+					_pickUpEquipNotStreakCount1 = intValue;
+			}
+		}
+
+		_pickUpEquipNotStreakCount2 = 0;
+		if (userReadOnlyData.ContainsKey("pickUpEquipCnt2"))
+		{
+			if (string.IsNullOrEmpty(userReadOnlyData["pickUpEquipCnt2"].Value) == false)
+			{
+				int intValue = 0;
+				if (int.TryParse(userReadOnlyData["pickUpEquipCnt2"].Value, out intValue))
+					_pickUpEquipNotStreakCount2 = intValue;
 			}
 		}
 		#endregion
@@ -1125,6 +1160,32 @@ public class CashShopData : MonoBehaviour
 		return 0;
 	}
 
+	public int GetCurrentPickUpEquipNotStreakCount1()
+	{
+		PickUpEquipInfo info = GetCurrentPickUpEquipInfo();
+		if (info == null)
+			return 0;
+
+		DateTime startDateTime = new DateTime(info.sy, info.sm, info.sd);
+		DateTime endDateTime = new DateTime(info.ey, info.em, info.ed);
+		if (startDateTime <= _pickUpEquipCountDateTime && _pickUpEquipCountDateTime <= endDateTime)
+			return _pickUpEquipNotStreakCount1;
+		return 0;
+	}
+
+	public int GetCurrentPickUpEquipNotStreakCount2()
+	{
+		PickUpEquipInfo info = GetCurrentPickUpEquipInfo();
+		if (info == null)
+			return 0;
+
+		DateTime startDateTime = new DateTime(info.sy, info.sm, info.sd);
+		DateTime endDateTime = new DateTime(info.ey, info.em, info.ed);
+		if (startDateTime <= _pickUpEquipCountDateTime && _pickUpEquipCountDateTime <= endDateTime)
+			return _pickUpEquipNotStreakCount2;
+		return 0;
+	}
+
 	public void OnRecvPickUpCharacterCount(string countDateTimeString, int notStreakCount)
 	{
 		DateTime countDateTime = new DateTime();
@@ -1132,6 +1193,16 @@ public class CashShopData : MonoBehaviour
 			_pickUpCharacterCountDateTime = countDateTime.ToUniversalTime();
 
 		_pickUpCharacterNotStreakCount = notStreakCount;
+	}
+
+	public void OnRecvPickUpEquipCount(string countDateTimeString, int notStreakCount1, int notStreakCount2)
+	{
+		DateTime countDateTime = new DateTime();
+		if (DateTime.TryParse(countDateTimeString, out countDateTime))
+			_pickUpEquipCountDateTime = countDateTime.ToUniversalTime();
+
+		_pickUpEquipNotStreakCount1 = notStreakCount1;
+		_pickUpEquipNotStreakCount2 = notStreakCount2;
 	}
 	#endregion
 

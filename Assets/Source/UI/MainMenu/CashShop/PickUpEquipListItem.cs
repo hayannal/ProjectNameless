@@ -13,6 +13,7 @@ public class PickUpEquipListItem : MonoBehaviour
 	public Text priceText;
 	public Image equipIconImage;
 	public Text remainTimeText;
+	public Text notStreakCountText;
 
 	CashShopData.PickUpEquipInfo _info;
 	public void RefreshInfo(CashShopData.PickUpEquipInfo info)
@@ -28,6 +29,12 @@ public class PickUpEquipListItem : MonoBehaviour
 
 		countText.text = string.Format("X {0:N0}", info.count);
 		priceText.text = info.price.ToString("N0");
+
+		// 만약 s남은 횟수도 1이고 ss남은 횟수도 1인 상태에서 ss가 나오게되면 s남은 횟수만 증가하면서 0회 남음이 되어버린다.
+		// 이걸 방지하기 위해서 S에 대해서만 예외처리 해둔다.
+		string topString = UIString.instance.GetString("ShopUI_PickUpEquipRemainCount", "S", Mathf.Max(1, info.sc - CashShopData.instance.GetCurrentPickUpEquipNotStreakCount1()));
+		string bottomString = UIString.instance.GetString("ShopUI_PickUpEquipRemainCount", "SS", info.ssc - CashShopData.instance.GetCurrentPickUpEquipNotStreakCount2());
+		notStreakCountText.SetLocalizedText(string.Format("{0}\n{1}", topString, bottomString));
 		_eventExpireDateTime = new DateTime(info.ey, info.em, info.ed);
 	}
 
@@ -104,13 +111,16 @@ public class PickUpEquipListItem : MonoBehaviour
 			return;
 		}
 
-		// 연출 및 보상 처리. 100개씩 뽑으면 느릴 수 있으니 패킷 대기 없이 바로 시작한다.
-		UIInstanceManager.instance.ShowCanvasAsync("RandomBoxScreenCanvas", () =>
-		{
-			// 연출창 시작과 동시에 패킷을 보내고
-			List<ObscuredString> listEquipId = EquipManager.instance.GetRandomIdList(_info.count);
-			_count = listEquipId.Count;
-			PlayFabApiManager.instance.RequestOpenEquipBox(listEquipId, _info.count, _info.price, OnRecvResult);
+		YesNoCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("ShopUI_ConfirmPurchase"), () => {
+
+			// 연출 및 보상 처리. 100개씩 뽑으면 느릴 수 있으니 패킷 대기 없이 바로 시작한다.
+			UIInstanceManager.instance.ShowCanvasAsync("RandomBoxScreenCanvas", () =>
+			{
+				// 연출창 시작과 동시에 패킷을 보내고
+				List<ObscuredString> listEquipId = EquipManager.instance.GetRandomIdList(_info.count, true);
+				_count = listEquipId.Count;
+				PlayFabApiManager.instance.RequestOpenPickUpEquipBox(listEquipId, _info.count, _info.price, EquipManager.instance.tempPickUpNotStreakCount1, EquipManager.instance.tempPickUpNotStreakCount2, OnRecvResult);
+			});
 		});
 	}
 
@@ -131,5 +141,8 @@ public class PickUpEquipListItem : MonoBehaviour
 			RandomBoxScreenCanvas.instance.OnRecvResult(RandomBoxScreenCanvas.eBoxType.Equip, listItemInstance);
 
 		MainCanvas.instance.RefreshMenuButton();
+
+		if (CashShopCanvas.instance != null)
+			CashShopCanvas.instance.RefreshPickUpEquipRect();
 	}
 }
