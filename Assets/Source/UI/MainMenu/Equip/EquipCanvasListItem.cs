@@ -66,7 +66,7 @@ public class EquipCanvasListItem : MonoBehaviour
 		//levelObject.SetActive(false);
 		//recommandedText.gameObject.SetActive(false);
 
-		AddressableAssetLoadManager.GetAddressableSprite("Portrait_Nobody", "Icon", (sprite) =>
+		AddressableAssetLoadManager.GetAddressableSprite("Shot_NoEquip", "Icon", (sprite) =>
 		{
 			equipIconImage.sprite = null;
 			equipIconImage.sprite = sprite;
