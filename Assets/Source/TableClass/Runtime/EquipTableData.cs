@@ -29,8 +29,8 @@ public class EquipTableData
   public int rarity { get { return _rarity; } set { _rarity = value; } }
   
   [SerializeField]
-  int _atk;
-  public int atk { get { return _atk; } set { _atk = value; } }
+  int[] _atk = new int[0];
+  public int[] atk { get { return _atk; } set { _atk = value; } }
   
   [SerializeField]
   string _prefabAddress;

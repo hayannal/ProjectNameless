@@ -53,10 +53,8 @@ public class EquipData
 
 	void RefreshCachedStatus()
 	{
-		_mainStatusValue = cachedEquipTableData.atk;
-		if (_enhanceLevel > 0)
-		{
-		}
+		int atkIndex = Mathf.Min(_enhanceLevel, cachedEquipTableData.atk.Length - 1);
+		_mainStatusValue = cachedEquipTableData.atk[atkIndex];
 
 		// 서브 옵션들을 돌면서 equipStatusList에 모아야한다. 같은 옵은 같은 옵션끼리.
 		for (int i = 0; i < _equipStatusList.valueList.Length; ++i)
