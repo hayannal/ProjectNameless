@@ -42,7 +42,7 @@ public class GachaEquipInfoCanvasListItem : MonoBehaviour
 		rateText.text = string.Format("{0:0.##}%", (prob * 100.0f));
 		nextObject.SetActive(false);
 
-		offsetRectTransform.anchoredPosition = new Vector2(leftPosition ? -60.0f : 0.0f, 20.0f);
+		offsetRectTransform.anchoredPosition = new Vector2(leftPosition ? -60.0f : 0.0f, 25.0f);
 		equipCanvasListItem.cachedRectTransform.localScale = new Vector3(1.2f, 1.2f, 1.2f);
 		rateText.transform.localScale = new Vector3(1.2f, 1.2f, 1.2f);
 		rateText.color = leftPosition ? Color.white : new Color(0.1f, 1.0f, 0.1f);
