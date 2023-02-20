@@ -62,22 +62,23 @@ public class CashShopData : MonoBehaviour
 		SevenSlot2 = 5,
 		SevenSlot3 = 6,
 		PetSale = 7,
-		FortuneWheel = 8,
-		FestivalSlot0 = 9,
-		FestivalSlot1 = 10,
-		FestivalSlot2 = 11,
-		FestivalSlot3 = 12,
-		UnacquiredSpell = 13,
-		AcquiredSpell = 14,
-		UnacquiredCompanion = 15,
-		AcquiredCompanion = 16,
-		AcquiredCompanionPp = 17,
+		PetPass = 8,
+		FortuneWheel = 9,
+		FestivalSlot0 = 10,
+		FestivalSlot1 = 11,
+		FestivalSlot2 = 12,
+		FestivalSlot3 = 13,
+		UnacquiredSpell = 14,
+		AcquiredSpell = 15,
+		UnacquiredCompanion = 16,
+		AcquiredCompanion = 17,
+		AcquiredCompanionPp = 18,
 
 		Amount,
 	}
 	List<ObscuredBool> _listCashConsumeFlag = new List<ObscuredBool>();
 	List<string> _listCashConsumeFlagKey = new List<string> { "Cash_sBrokenEnergy", "Cash_sEv4ContiNext", "Cash_sEv5OnePlTwoCash",
-		"Cash_sSevenSlot0", "Cash_sSevenSlot1", "Cash_sSevenSlot2", "Cash_sSevenSlot3", "Cash_sPetSale", "Cash_sFortuneWheel",
+		"Cash_sSevenSlot0", "Cash_sSevenSlot1", "Cash_sSevenSlot2", "Cash_sSevenSlot3", "Cash_sPetSale", "Cash_sPetPass", "Cash_sFortuneWheel",
 		"Cash_sFestivalSlot0", "Cash_sFestivalSlot1", "Cash_sFestivalSlot2", "Cash_sFestivalSlot3",
 		"Cash_sUnacquiredSpell", "Cash_sAcquiredSpell", "Cash_sUnacquiredCompanion", "Cash_sAcquiredCompanion", "Cash_sAcquiredCompanionPp",
 	};
@@ -1270,6 +1271,10 @@ public class CashShopData : MonoBehaviour
 		{
 			PetSaleCanvas.ExternalRetryPurchase(pendingProduct);
 		}
+		else if (pendingProduct.definition.id.Contains("petpass"))
+		{
+			PetPassCanvas.ExternalRetryPurchase(pendingProduct);
+		}
 		else if (pendingProduct.definition.id.Contains("roulette"))
 		{
 			FortuneWheelCanvas.ExternalRetryPurchase(pendingProduct);
@@ -1410,6 +1415,9 @@ public class CashShopData : MonoBehaviour
 					break;
 				case eCashConsumeFlagType.SevenSlot3:
 					PlayFabApiManager.instance.RequestConsumeSevenSlot(3, null);
+					break;
+				case eCashConsumeFlagType.PetPass:
+					PlayFabApiManager.instance.RequestConsumePetPass(null);
 					break;
 				case eCashConsumeFlagType.FestivalSlot0:
 					PlayFabApiManager.instance.RequestConsumeFestivalSlot(0, null);

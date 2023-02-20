@@ -35,6 +35,10 @@ public class PetManager : MonoBehaviour
 	public DateTime petSaleCoolTimeExpireTime { get; set; }
 	#endregion
 
+	#region Pet Pass
+	public DateTime petPassExpireTime { get; set; }
+	#endregion
+
 	public List<PetData> listPetData { get { return _listPetData; } }
 	List<PetData> _listPetData = new List<PetData>();
 	public void OnRecvPetInventory(List<ItemInstance> userInventory, Dictionary<string, UserDataRecord> userData, Dictionary<string, UserDataRecord> userReadOnlyData, List<StatisticValue> playerStatistics)
@@ -157,6 +161,14 @@ public class PetManager : MonoBehaviour
 				if (DateTime.TryParse(userReadOnlyData["petSaleCoolExpDat"].Value, out expireDateTime))
 					petSaleCoolTimeExpireTime = expireDateTime.ToUniversalTime();
 			}
+		}
+		#endregion
+
+		#region Pet Pass
+		if (userReadOnlyData.ContainsKey("petPassExpDat"))
+		{
+			if (string.IsNullOrEmpty(userReadOnlyData["petPassExpDat"].Value) == false)
+				OnRecvPetPessExpireInfo(userReadOnlyData["petPassExpDat"].Value);
 		}
 		#endregion
 
@@ -351,7 +363,19 @@ public class PetManager : MonoBehaviour
 	#region Pass
 	public bool IsPetPass()
 	{
+		if (ServerTime.UtcNow < petPassExpireTime)
+			return true;
 		return false;
+	}
+
+	public void OnRecvPetPessExpireInfo(string lastPetPassExpireTimeString)
+	{
+		DateTime lastPetPassExpireTime = new DateTime();
+		if (DateTime.TryParse(lastPetPassExpireTimeString, out lastPetPassExpireTime))
+		{
+			DateTime universalTime = lastPetPassExpireTime.ToUniversalTime();
+			petPassExpireTime = universalTime;
+		}
 	}
 	#endregion
 

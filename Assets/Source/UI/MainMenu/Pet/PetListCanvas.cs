@@ -13,6 +13,12 @@ public class PetListCanvas : PetShowCanvasBase
 {
 	public static PetListCanvas instance;
 
+	#region PetPass
+	public Text petPassPriceText;
+	public Text petPassPurchasedText;
+	public Text petPassRemainTimeText;
+	#endregion
+
 	public CurrencySmallInfo currencySmallInfo;
 	public GameObject todayHeartRootObject;
 	public Text todayHeartRemainText;
@@ -76,6 +82,9 @@ public class PetListCanvas : PetShowCanvasBase
 
 		MainCanvas.instance.OnEnterCharacterMenu(true);
 
+		// Pet Pass
+		RefreshPetPass();
+
 		// grid
 		RefreshGrid();
 	}
@@ -117,6 +126,7 @@ public class PetListCanvas : PetShowCanvasBase
 	{
 		UpdateAdditionalObject();
 		UpdateHeartResetRemainTime();
+		UpdatePetPassRemainTime();
 	}
 
 
@@ -251,4 +261,49 @@ public class PetListCanvas : PetShowCanvasBase
 			todayHeartResetRemainTimeText.text = "";
 		}
 	}
+
+
+
+	#region PetPass
+	public void RefreshPetPass()
+	{
+		bool actived = PetManager.instance.IsPetPass();
+		petPassPriceText.gameObject.SetActive(!actived);
+		petPassPurchasedText.gameObject.SetActive(actived);
+		petPassRemainTimeText.gameObject.SetActive(actived);
+	}
+
+	int _lastPassRemainTimeSecond;
+	void UpdatePetPassRemainTime()
+	{
+		if (petPassRemainTimeText.gameObject.activeSelf == false)
+			return;
+
+		if (ServerTime.UtcNow < PetManager.instance.petPassExpireTime)
+		{
+			System.TimeSpan remainTime = PetManager.instance.petPassExpireTime - ServerTime.UtcNow;
+			if (_lastPassRemainTimeSecond != (int)remainTime.TotalSeconds)
+			{
+				if (remainTime.Days > 0)
+					petPassRemainTimeText.text = string.Format("{0}d {1:00}:{2:00}:{3:00}", remainTime.Days, remainTime.Hours, remainTime.Minutes, remainTime.Seconds);
+				else
+					petPassRemainTimeText.text = string.Format("{0:00}:{1:00}:{2:00}", remainTime.Hours, remainTime.Minutes, remainTime.Seconds);
+				_lastPassRemainTimeSecond = (int)remainTime.TotalSeconds;
+			}
+		}
+		else
+		{
+			petPassRemainTimeText.text = "";
+			RefreshPetPass();
+
+			if (PetPassCanvas.instance != null && PetPassCanvas.instance.gameObject.activeSelf)
+				PetPassCanvas.instance.gameObject.SetActive(false);
+		}
+	}
+
+	public void OnClickPetPassButton()
+	{
+		UIInstanceManager.instance.ShowCanvasAsync("PetPassCanvas", null);
+	}
+	#endregion
 }

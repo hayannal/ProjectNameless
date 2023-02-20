@@ -3792,6 +3792,40 @@ public class PlayFabApiManager : MonoBehaviour
 			HandleCommonError(error);
 		});
 	}
+
+	public void RequestConsumePetPass(Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		int givenTime = BattleInstanceManager.instance.GetCachedGlobalConstantInt("PetPassGivenTime");
+		string input = string.Format("{0}_{1}", givenTime, "wopnzalx");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "ConsumePetPass",
+			FunctionParameter = new { GiTim = givenTime, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				CashShopData.instance.ConsumeFlag(CashShopData.eCashConsumeFlagType.PetPass);
+
+				jsonResult.TryGetValue("date", out object date);
+				PetManager.instance.OnRecvPetPessExpireInfo((string)date);
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
 	#endregion
 
 
