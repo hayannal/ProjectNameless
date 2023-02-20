@@ -200,6 +200,8 @@ public class EquipAltar : MonoBehaviour
 	#region AlarmObject
 	public void RefreshAlarmObject()
 	{
+		// 필요없다고 해서 주석처리
+		/*
 		AlarmObject.Hide(alarmRootTransform);
 
 		// 뭔가 장착중이면 월드캔버스가 사라지니 보여줄 수 없다.
@@ -213,6 +215,7 @@ public class EquipAltar : MonoBehaviour
 		show = (listEquipData.Count > 0);
 		if (show)
 			AlarmObject.Show(alarmRootTransform);
+		*/
 	}
 	#endregion
 }
