@@ -498,17 +498,7 @@ public class SpellManager : MonoBehaviour
 			//if (info.skillType == eSkillType.Passive)
 			//	InitializePassiveSkill(info);
 			#endregion
-			
-			if (info.skillType == eSkillType.NonAni)
-			{
-				for (int j = 0; j < skillTableData.effectAddress.Length; ++j)
-				{
-					AddressableAssetLoadManager.GetAddressableGameObject(skillTableData.effectAddress[j], "CommonEffect", (prefab) =>
-					{
-						BattleInstanceManager.instance.AddCommonPoolPreloadObjectList(prefab);
-					});
-				}
-			}
+
 			_listSpellInfo.Add(info);
 		}
 	}
@@ -516,6 +506,25 @@ public class SpellManager : MonoBehaviour
 	public void InitializeActorForSpellProcessor(PlayerActor playerActor)
 	{
 		_playerActorForSpellProcessor = playerActor;
+
+		// 프리로드는 이때 해야한다.
+		for (int i = 0; i < _listSpellInfo.Count; ++i)
+		{
+			if (_listSpellInfo[i].skillType != eSkillType.NonAni)
+				continue;
+
+			SkillTableData skillTableData = TableDataManager.instance.FindSkillTableData(_listSpellInfo[i].skillId);
+			if (skillTableData == null)
+				continue;
+
+			for (int j = 0; j < skillTableData.effectAddress.Length; ++j)
+			{
+				AddressableAssetLoadManager.GetAddressableGameObject(skillTableData.effectAddress[j], "CommonEffect", (prefab) =>
+				{
+					BattleInstanceManager.instance.AddCommonPoolPreloadObjectList(prefab);
+				});
+			}
+		}
 	}
 
 	public SkillProcessor.SkillInfo GetSpellInfo(string skillId)
