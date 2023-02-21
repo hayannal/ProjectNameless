@@ -38,6 +38,9 @@ public class PetSearchCanvas : MonoBehaviour
 
 	//public GameObject selectCaptureRootObject;
 
+	public GameObject petPassBonusCenterObject;
+	public GameObject petPassBonusResultObject;
+
 	public GameObject resultRootObject;
 	public Text resultText;
 	public GameObject exitButtonObject;
@@ -428,6 +431,8 @@ public class PetSearchCanvas : MonoBehaviour
 
 		exitButtonObject.SetActive(!extraChanceExit);
 		extraGetButtonObject.SetActive(extraChanceExit);
+		if (extraChanceExit && PetSearchGround.instance.extraGainByPetPass)
+			petPassBonusResultObject.SetActive(true);
 
 		confetiObject.SetActive(success && !extraChanceExit);
 
@@ -454,6 +459,7 @@ public class PetSearchCanvas : MonoBehaviour
 	public void OnClickResultExtraGetButton()
 	{
 		resultRootObject.SetActive(false);
+		petPassBonusResultObject.SetActive(false);
 		PetSearchGround.instance.RotateCameraToExtraGain();
 	}
 	#endregion

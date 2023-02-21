@@ -427,18 +427,30 @@ public class PetSearchGround : MonoBehaviour
 		PetSearchCanvas.instance.ShowResult(false, true);
 	}
 	
+	bool extraChanceByPetPass { get; set; }
 	bool CheckExtraChance()
 	{
+		extraChanceByPetPass = false;
+
 		float baseValue = BattleInstanceManager.instance.GetCachedGlobalConstantInt("PetExtraChance") * 0.01f;
+		if (Random.value < baseValue)
+			return true;
+
 		if (PetManager.instance.IsPetPass())
-			baseValue += (BattleInstanceManager.instance.GetCachedGlobalConstantInt("PetPassExtraChance") * 0.01f);
-		return (Random.value < baseValue);
+			baseValue = (BattleInstanceManager.instance.GetCachedGlobalConstantInt("PetPassExtraChance") * 0.01f);
+		if (Random.value < baseValue)
+		{
+			extraChanceByPetPass = true;
+			return true;
+		}
+		return false;
 	}
 
 	IEnumerator<float> UseExtraChanceProcess()
 	{
 		_usedExtraChance = true;
 		ToastZigzagCanvas.instance.ShowToast(UIString.instance.GetString("PetUI_UseExtraChanceToast"), 1.5f, 0.8f, true);
+		if (extraChanceByPetPass) PetSearchCanvas.instance.petPassBonusCenterObject.SetActive(true);
 		yield return Timing.WaitForSeconds(2.0f);
 
 		PetSearchCanvas.instance.StartAttackPhase(false, false, true);
@@ -560,12 +572,23 @@ public class PetSearchGround : MonoBehaviour
 		return 0.0f;	
 	}
 
+	public bool extraGainByPetPass { get; private set; }
 	bool CheckExtraGain()
 	{
+		extraGainByPetPass = false;
+
 		float baseValue = BattleInstanceManager.instance.GetCachedGlobalConstantInt("PetExtraGain") * 0.01f;
+		if (Random.value < baseValue)
+			return true;
+
 		if (PetManager.instance.IsPetPass())
-			baseValue += (BattleInstanceManager.instance.GetCachedGlobalConstantInt("PetPassExtraGain") * 0.01f);
-		return (Random.value < baseValue);
+			baseValue = (BattleInstanceManager.instance.GetCachedGlobalConstantInt("PetPassExtraGain") * 0.01f);
+		if (Random.value < baseValue)
+		{
+			extraGainByPetPass = true;
+			return true;
+		}
+		return false;
 	}
 
 	bool _success = false;
