@@ -8,7 +8,7 @@ public class ResearchShowCanvasBase : MonoBehaviour
 	public float infoCameraFov = 43.0f;
 
 	#region Info Camera
-	protected Vector3 _rootOffsetPosition = new Vector3(0.0f, 0.0f, 150.0f);
+	protected Vector3 _rootOffsetPosition = new Vector3(150.0f, 0.0f, 150.0f);
 	public Vector3 rootOffsetPosition { get { return _rootOffsetPosition; } }
 	bool _infoCameraMode = false;
 	float _lastRendererResolutionFactor;
