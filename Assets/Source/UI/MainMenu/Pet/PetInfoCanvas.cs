@@ -15,7 +15,8 @@ public class PetInfoCanvas : MonoBehaviour
 	public CurrencySmallInfo currencySmallInfo;
 	public GameObject todayHeartObject;
 	public GameObject todayHeartButtonObject;
-	public GameObject todayHeartPassBonusObject;
+	public GameObject todayHeartPassCountObject;
+	public Text todayHeartPassCountText;
 	public RectTransform alarmRootTransform;
 
 	public Text nameText;
@@ -50,6 +51,7 @@ public class PetInfoCanvas : MonoBehaviour
 
 		RefreshInfo();
 		RefreshHeart();
+		_petPassState = PetManager.instance.IsPetPass();
 	}
 
 	void OnDisable()
@@ -78,6 +80,10 @@ public class PetInfoCanvas : MonoBehaviour
 		UpdateStartPetSale();
 		UpdatePetSaleResetRemainTime();
 		UpdateAdditionalObject();
+		#endregion
+
+		#region Pet Pass
+		UpdatePetPassRemainTime();
 		#endregion
 	}
 
@@ -143,7 +149,8 @@ public class PetInfoCanvas : MonoBehaviour
 		bool showHeart = _contains && PetListCanvas.CheckTodayHeart();
 		todayHeartObject.SetActive(showHeart);
 		todayHeartButtonObject.SetActive(showHeart);
-		todayHeartPassBonusObject.SetActive(showHeart && PetManager.instance.IsPetPass());
+		todayHeartPassCountObject.SetActive(showHeart && PetManager.instance.IsPetPass());
+		todayHeartPassCountText.text = string.Format("{0} / {1}", PetListCanvas.GetTodayRemainHeart(), BattleInstanceManager.instance.GetCachedGlobalConstantInt("PetPassHeartCount"));
 		if (showHeart)
 			AlarmObject.Show(alarmRootTransform);
 		else
@@ -311,31 +318,21 @@ public class PetInfoCanvas : MonoBehaviour
 
 	public void OnClickHeartButton()
 	{
-		string message = UIString.instance.GetString("PetUI_UseTodayHeartConfirm");
-		if (PetManager.instance.IsPetPass())
-			message = string.Format("{0}\n{1}", message, UIString.instance.GetString("PetUI_UseTodayHeartThree"));
-		YesNoCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), message, () =>
+		UIInstanceManager.instance.ShowCanvasAsync("PetHeartConfirmCanvas", () =>
 		{
-			float prevValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
-			PlayFabApiManager.instance.RequestHeartPet(_petData, _petData.heart + 1, () =>
-			{
-				float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
-
-				PetListCanvas.instance.currentCanvasPetActor.animator.Play("Heart");
-				heartImageEffectObject.SetActive(true);
-				BattleInstanceManager.instance.GetCachedObject(heartEffectPrefab, PetListCanvas.instance.currentCanvasPetActor.cachedTransform.position + new Vector3(0.0f, 0.0f, -0.5f), Quaternion.identity);
-				RefreshHeart();
-				if (_petData != null) atkText.text = _petData.mainStatusValue.ToString("N0");
-				PetListCanvas.instance.RefreshGrid();
-				MainCanvas.instance.RefreshPetAlarmObject();
-
-				// 변경 완료를 알리고
-				UIInstanceManager.instance.ShowCanvasAsync("ChangePowerCanvas", () =>
-				{
-					ChangePowerCanvas.instance.ShowInfo(prevValue, nextValue);
-				});
-			});
+			PetHeartConfirmCanvas.instance.RefreshInfo(_petData, PetListCanvas.GetTodayRemainHeart());
 		});
+	}
+
+	public void OnRecvHeartPet()
+	{
+		PetListCanvas.instance.currentCanvasPetActor.animator.Play("Heart");
+		heartImageEffectObject.SetActive(true);
+		BattleInstanceManager.instance.GetCachedObject(heartEffectPrefab, PetListCanvas.instance.currentCanvasPetActor.cachedTransform.position + new Vector3(0.0f, 0.0f, -0.5f), Quaternion.identity);
+		RefreshHeart();
+		if (_petData != null) atkText.text = _petData.mainStatusValue.ToString("N0");
+		PetListCanvas.instance.RefreshGrid();
+		MainCanvas.instance.RefreshPetAlarmObject();
 	}
 
 	public void OnClickAbilityInfoButton()
@@ -463,6 +460,26 @@ public class PetInfoCanvas : MonoBehaviour
 		for (int i = 0; i < _listAdditionalObject.Count; ++i)
 			_listAdditionalObject[i].SetActive(false);
 		_listAdditionalObject.Clear();
+	}
+	#endregion
+
+
+	#region PetPass
+	bool _petPassState;
+	int _lastPassRemainTimeSecond;
+	void UpdatePetPassRemainTime()
+	{
+		if (_petPassState == false)
+			return;
+
+		if (ServerTime.UtcNow < PetManager.instance.petPassExpireTime)
+		{
+		}
+		else
+		{
+			_petPassState = false;
+			RefreshHeart();
+		}
 	}
 	#endregion
 }

@@ -133,6 +133,8 @@ public class PetListCanvas : PetShowCanvasBase
 	public static int GetTodayRemainHeart()
 	{
 		int maxCount = BattleInstanceManager.instance.GetCachedGlobalConstantInt("PetHeartCount");
+		if (PetManager.instance.IsPetPass())
+			maxCount = BattleInstanceManager.instance.GetCachedGlobalConstantInt("PetPassHeartCount");
 		int remainCount = maxCount - PetManager.instance.dailyHeartCount;
 		return remainCount;
 	}

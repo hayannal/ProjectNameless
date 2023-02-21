@@ -3670,7 +3670,7 @@ public class PlayFabApiManager : MonoBehaviour
 	{
 		WaitingNetworkCanvas.Show(true);
 
-		string input = string.Format("{0}_{1}_{2}_{3}", (string)petData.petId, petData.count, targetHeart, "xmrlpoqs");
+		string input = string.Format("{0}_{1}_{2}_{3}_{4}", (string)petData.petId, petData.count, petData.heart, targetHeart, "xmrlpoqs");
 		string checkSum = CheckSum(input);
 		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
 		{
@@ -3685,7 +3685,8 @@ public class PlayFabApiManager : MonoBehaviour
 			{
 				WaitingNetworkCanvas.Show(false);
 
-				PetManager.instance.dailyHeartCount += 1;
+				int diff = targetHeart - petData.heart;
+				PetManager.instance.dailyHeartCount += diff;
 
 				petData.OnHeartPlus(targetHeart);
 
