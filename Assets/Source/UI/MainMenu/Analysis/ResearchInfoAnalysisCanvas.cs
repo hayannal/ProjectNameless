@@ -130,6 +130,7 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 		UpdateRemainTime();
 		UpdatePercentText();
 		UpdateExpGauge();
+		UpdateChangeCombatPower();
 	}
 
 	int _currentLevel;
@@ -509,11 +510,18 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 		if (AnalysisData.instance.analysisExp + packetSecond > maxAnalysisExp)
 			packetSecond = maxAnalysisExp - AnalysisData.instance.analysisExp;
 		#endregion
+		_prevPowerValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
 		PlayFabApiManager.instance.RequestAnalysis(packetSecond, _cachedBoostUses, _cachedResultGold, _cachedResultDia, _cachedResultEnergy, _listResultEventItemIdForPacket, () =>
 		{
+			float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
+
 			GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.Analysis);
 			OnAnalysisResult();
 			Timing.RunCoroutine(AnalysisResultProcess());
+
+			// 결과창 연출이 있기 때문에 바로 보여주지 않고 플래그만 켜둔다.
+			if (nextValue > _prevPowerValue)
+				_changedCombatPower = true;
 		});
 	}
 
@@ -871,4 +879,39 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 			action.Invoke();
 		});
 	}
+
+	#region Combat Power
+	float _prevPowerValue = 0.0f;
+	bool _changedCombatPower = false;
+	public void CheckShowChangePower()
+	{
+		if (_changedCombatPower)
+		{
+			_changedCombatPower = false;
+			_updateChangeCombatPower = true;
+		}
+	}
+
+	bool _updateChangeCombatPower;
+	void UpdateChangeCombatPower()
+	{
+		if (_updateChangeCombatPower == false)
+			return;
+		if (DelayedLoadingCanvas.IsShow())
+			return;
+		if (WaitingNetworkCanvas.IsShow())
+			return;
+		if (RandomBoxScreenCanvas.instance != null && RandomBoxScreenCanvas.instance.gameObject.activeSelf)
+			return;
+
+		float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
+		// 변경 완료를 알리고
+		UIInstanceManager.instance.ShowCanvasAsync("ChangePowerCanvas", () =>
+		{
+			ChangePowerCanvas.instance.ShowInfo(_prevPowerValue, nextValue);
+		});
+
+		_updateChangeCombatPower = false;
+	}
+	#endregion
 }

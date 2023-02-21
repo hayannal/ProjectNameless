@@ -112,9 +112,17 @@ public class CostumeManager : MonoBehaviour
 
 	public void OnRecvPurchase(string costumeId)
 	{
+		float prevValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
+
 		if (_listCostumeId.Contains(costumeId) == false)
 			_listCostumeId.Add(costumeId);
 		OnChangedStatus();
+
+		float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
+		UIInstanceManager.instance.ShowCanvasAsync("ChangePowerCanvas", () =>
+		{
+			ChangePowerCanvas.instance.ShowInfo(prevValue, nextValue);
+		});
 	}
 
 	public string GetCurrentPlayerPrefabAddress()

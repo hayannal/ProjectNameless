@@ -409,6 +409,9 @@ public class PetSearchGround : MonoBehaviour
 		if (itemGrantString == "")
 			return;
 
+		// prev 저장해둔다.
+		PetSearchCanvas.instance.prevPowerValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
+
 		List<ItemInstance> listItemInstance = PetManager.instance.OnRecvItemGrantResult(itemGrantString, _expectCount);
 		if (listItemInstance == null)
 			return;

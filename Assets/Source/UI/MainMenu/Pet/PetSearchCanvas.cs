@@ -421,6 +421,7 @@ public class PetSearchCanvas : MonoBehaviour
 		});
 	}
 
+	public float prevPowerValue { get; set; }
 	public void ShowResult(bool success, bool extraChanceExit)
 	{
 		resultText.SetLocalizedText(UIString.instance.GetString(success ? "PetUI_ResultSuccess" : "PetUI_ResultFailure"));
@@ -429,6 +430,18 @@ public class PetSearchCanvas : MonoBehaviour
 		extraGetButtonObject.SetActive(extraChanceExit);
 
 		confetiObject.SetActive(success && !extraChanceExit);
+
+		if (confetiObject.activeSelf)
+		{
+			float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
+			if (nextValue > prevPowerValue)
+			{
+				UIInstanceManager.instance.ShowCanvasAsync("ChangePowerCanvas", () =>
+				{
+					ChangePowerCanvas.instance.ShowInfo(prevPowerValue, nextValue);
+				});
+			}
+		}
 
 		resultRootObject.SetActive(true);
 	}

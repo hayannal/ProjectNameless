@@ -259,6 +259,7 @@ public class AnalysisResultCanvas : MonoBehaviour
 			yield return Timing.WaitForSeconds(0.1f);
 		}
 
+		ResearchInfoAnalysisCanvas.instance.CheckShowChangePower();
 		yield return Timing.WaitForSeconds(0.8f);
 
 		exitObject.SetActive(true);
