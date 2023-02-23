@@ -13,6 +13,8 @@ public class EquipSkillSlotIcon : MonoBehaviour
 	public Image cooltimeImage;
 	public Text cooltimeText;
 
+	public Coffee.UIExtensions.UIEffect grayscaleEffect;
+
 	SkillProcessor.SkillInfo _skillInfo;
 	Cooltime _cooltimeInfo;
 	public void Initialize(SkillProcessor.SkillInfo skillInfo)
@@ -32,6 +34,7 @@ public class EquipSkillSlotIcon : MonoBehaviour
 		activeSkillOutlineImageObject.SetActive(false);
 		activeAlarmObject.SetActive(false);
 		blinkObject.SetActive(false);
+		grayscaleEffect.enabled = false;
 
 		Cooltime cooltimeInfo = SpellManager.instance.cooltimeProcessor.GetCooltime(skillInfo.skillId);
 		if (cooltimeInfo != null)
@@ -59,6 +62,11 @@ public class EquipSkillSlotIcon : MonoBehaviour
 	{
 		if (cooltimeImage.gameObject.activeSelf)
 			return;
+		if (grayscaleEffect.enabled)
+			return;
+
+		// 별다른 처리가 없다면 1회 사용시 바로 회색처리로 바꿔야한다.
+		grayscaleEffect.enabled = true;
 
 		SpellManager.instance.UseEquipSkill(_skillInfo);
 	}
@@ -67,6 +75,9 @@ public class EquipSkillSlotIcon : MonoBehaviour
 	#region Cooltime
 	void OnStartCooltime()
 	{
+		if (grayscaleEffect.enabled)
+			return;
+
 		cooltimeImage.gameObject.SetActive(true);
 	}
 

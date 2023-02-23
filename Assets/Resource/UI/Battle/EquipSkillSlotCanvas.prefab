@@ -410,6 +410,7 @@ GameObject:
   - component: {fileID: 621839256500396544}
   - component: {fileID: 621839256500396546}
   - component: {fileID: 621839256500396547}
+  - component: {fileID: 8237468368449211260}
   m_Layer: 5
   m_Name: IconImage
   m_TagString: Untagged
@@ -473,6 +474,35 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &8237468368449211260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 621839256500396545}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8b2ed11d675446c5a49da1ea296d490, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Version: 300
+  m_EffectMaterial: {fileID: 21512057394810148, guid: aee96bc531e6eba468ec405e536f515f,
+    type: 2}
+  m_EffectFactor: 1
+  m_ColorFactor: 1
+  m_BlurFactor: 1
+  m_EffectMode: 1
+  m_ColorMode: 0
+  m_BlurMode: 0
+  m_AdvancedBlur: 0
+  m_ShadowBlur: 1
+  m_ShadowStyle: 0
+  m_ShadowColor: {r: 0, g: 0, b: 0, a: 1}
+  m_EffectDistance: {x: 1, y: -1}
+  m_UseGraphicAlpha: 1
+  m_EffectColor: {r: 1, g: 1, b: 1, a: 1}
+  m_AdditionalShadows: []
 --- !u!1 &621839256886180884
 GameObject:
   m_ObjectHideFlags: 0
@@ -1696,6 +1726,7 @@ MonoBehaviour:
   blinkObject: {fileID: 6525704435510884926}
   cooltimeImage: {fileID: 4246602903204383028}
   cooltimeText: {fileID: 8882832184289938023}
+  grayscaleEffect: {fileID: 8237468368449211260}
 --- !u!114 &1218458069901964370
 MonoBehaviour:
   m_ObjectHideFlags: 0
