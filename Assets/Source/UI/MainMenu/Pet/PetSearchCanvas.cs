@@ -216,14 +216,14 @@ public class PetSearchCanvas : MonoBehaviour
 	bool _waitFirstInput = false;
 	bool _startFirstInputWithLeft = false;
 	int _inputStep = 0;
-	public void StartAttackPhase(bool useCountDown = true, bool initialize = true, bool extraChance = false)
+	public void StartAttackPhase(bool initialize = true, bool secondRound = false, bool extraChance = false)
 	{
-		Timing.RunCoroutine(StartEffectProcess(useCountDown, initialize, extraChance));
+		Timing.RunCoroutine(StartEffectProcess(initialize, secondRound, extraChance));
 	}
 
-	IEnumerator<float> StartEffectProcess(bool useCountDown = true, bool initialize = true, bool extraChance = false)
+	IEnumerator<float> StartEffectProcess(bool initialize = true, bool secondRound = false, bool extraChance = false)
 	{
-		if (useCountDown)
+		if (initialize)
 		{
 			ToastZigzagCanvas.instance.ShowToast(UIString.instance.GetString("PetUI_TouchLeftRight"), 1.5f, 0.8f, true);
 			yield return Timing.WaitForSeconds(1.5f);
@@ -246,6 +246,11 @@ public class PetSearchCanvas : MonoBehaviour
 			countDownText.color = Color.white;
 			countDownText.transform.localScale = localScale;
 			countDownText.gameObject.SetActive(false);
+
+			_attackPercent = 0;
+			attackPercentText.text = "0%";
+			attackPercentText.color = new Color(1.0f, 0.5f, 0.5f);
+			attackPercentText.gameObject.SetActive(true);
 		}
 
 		// 
@@ -254,27 +259,18 @@ public class PetSearchCanvas : MonoBehaviour
 		_inputRemainTime = HeartInputTime;
 		timerObject.SetActive(true);
 
-		ToastZigzagCanvas.instance.ShowToast(UIString.instance.GetString("PetUI_TouchLeftRight"), 5.0f);
-		if (initialize)
-		{
-			_attackPercent = 0;
-			attackPercentText.text = "0%";
-			attackPercentText.color = new Color(1.0f, 0.5f, 0.5f);
-			attackPercentText.gameObject.SetActive(true);
-		}
+		ToastZigzagCanvas.instance.ShowToast(UIString.instance.GetString("PetUI_TouchLeftRight"), HeartInputTime);
 
 		// 공격 버튼을 활성화시켜둔다.
 		attackLeftButtonObject.SetActive(true);
 		attackRighthButtonObject.SetActive(true);
 		_waitFirstInput = true;
 
-		
 
-
-		if (extraChance)
-		{
+		if (secondRound)
+			battleStartText.text = "ROUND 2";
+		else if (extraChance)
 			battleStartText.text = "EXTRA CHANCE";
-		}
 
 		yield return Timing.WaitForSeconds(1.0f);
 		battleStartCanvasGroup.DOFade(0.0f, 0.4f);

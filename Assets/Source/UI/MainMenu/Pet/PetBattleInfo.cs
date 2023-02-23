@@ -52,7 +52,7 @@ public class PetBattleInfo : MonoBehaviour
 
 	public void OnAttack(int attack)
 	{
-		float resultRatio = Random.Range(0.5f, 2.0f);
+		float resultRatio = Random.Range(0.3f, 0.8f);
 
 		_fillImageTargetValue += resultRatio;
 		if (_fillImageTargetValue > 1.0f)

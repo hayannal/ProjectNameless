@@ -357,7 +357,7 @@ public class PetSearchGround : MonoBehaviour
 	}
 
 	#region Turn Result
-	bool _usedExtraChance = false;
+	int _turnEndCount = 0;
 	public void TurnEnd()
 	{
 		Debug.Log("Turn End");
@@ -381,10 +381,22 @@ public class PetSearchGround : MonoBehaviour
 		}
 		else
 		{
-			if (_usedExtraChance == false && CheckExtraChance())
+			++_turnEndCount;
+
+			// 두번째 턴은 항상 제공하기로 한다.
+			if (_turnEndCount == 1)
 			{
-				Timing.RunCoroutine(UseExtraChanceProcess());
+				Timing.RunCoroutine(StartSecondProcess());
 				return;
+			}
+			else if (_turnEndCount == 2)
+			{
+				// 3턴에선 베이스와 펫 패스 둘다 검사해야한다.
+				if (CheckExtraChance())
+				{
+					Timing.RunCoroutine(UseExtraChanceProcess());
+					return;
+				}
 			}
 
 			if (enemy1PetBattleInfo.IsDie() || enemy2PetBattleInfo.IsDie())
@@ -432,7 +444,7 @@ public class PetSearchGround : MonoBehaviour
 	{
 		extraChanceByPetPass = false;
 
-		float baseValue = BattleInstanceManager.instance.GetCachedGlobalConstantInt("PetExtraChance") * 0.01f;
+		float baseValue = (BattleInstanceManager.instance.GetCachedGlobalConstantInt("PetExtraChance") * 0.01f);
 		if (Random.value < baseValue)
 			return true;
 
@@ -446,9 +458,14 @@ public class PetSearchGround : MonoBehaviour
 		return false;
 	}
 
+	IEnumerator<float> StartSecondProcess()
+	{
+		yield return Timing.WaitForSeconds(0.5f);
+		PetSearchCanvas.instance.StartAttackPhase(false, true, false);
+	}
+
 	IEnumerator<float> UseExtraChanceProcess()
 	{
-		_usedExtraChance = true;
 		ToastZigzagCanvas.instance.ShowToast(UIString.instance.GetString("PetUI_UseExtraChanceToast"), 1.5f, 0.8f, true);
 		if (extraChanceByPetPass) PetSearchCanvas.instance.petPassBonusCenterObject.SetActive(true);
 		yield return Timing.WaitForSeconds(2.0f);
