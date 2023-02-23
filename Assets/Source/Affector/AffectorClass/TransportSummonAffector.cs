@@ -82,6 +82,9 @@ public class TransportSummonAffector : AffectorBase
 			if (BattleInstanceManager.instance.currentGround != null)
 				desirePosition = BattleInstanceManager.instance.currentGround.GetRandomPositionInQuadBound(1.0f);
 
+			if (StageGround.instance != null && StageGround.instance.IsShowEndLineObject() && desirePosition.z < StageGround.instance.endLinePosition.z)
+				continue;
+
 			/*
 			if (ExperienceCanvas.instance != null && ExperienceCanvas.instance.gameObject.activeSelf)
 				return desirePosition;

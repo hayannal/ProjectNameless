@@ -114,6 +114,13 @@ public class StageGround : MonoBehaviour
 		Debug.LogWarning("8888");
 	}
 
+	public bool IsShowEndLineObject()
+	{
+		if (_endLineObject != null && _endLineObject.activeSelf)
+			return true;
+		return false;
+	}
+
 	bool _processing = false;
 	public bool processing { get { return _processing; } }
 	IEnumerator<float> LoadStageProcess(StageTableData stageTableData, bool repeat)
