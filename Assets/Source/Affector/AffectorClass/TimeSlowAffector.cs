@@ -5,6 +5,9 @@ using UnityEngine.AI;
 
 public class TimeSlowAffector : AffectorBase
 {
+	AffectorValueLevelTableData _teamTimeSlowAffectorValue;
+	bool _forTeamAffectorValue;
+
 	float _remainTime;
 	Cooltime _attackCooltime;
 
@@ -19,13 +22,35 @@ public class TimeSlowAffector : AffectorBase
 			finalized = true;
 			return;
 		}
-		Time.timeScale = affectorValueLevelTableData.fValue2;
+
+		// team
+		_forTeamAffectorValue = (affectorValueLevelTableData.sValue1 == "2");
+
+		if (_forTeamAffectorValue == false)
+			Time.timeScale = affectorValueLevelTableData.fValue2;
+
 		_actor.actionController.animator.updateMode = AnimatorUpdateMode.UnscaledTime;
 		_actor.baseCharacterController.angularSpeed = DefaultAngularSpeed * 2.0f;
 
 		// 다른 어펙터들과 달리 PauseCanvas를 열때 빼곤 UnscaledTime으로 처리해야해서 remainTime 형태로 구현한다.
 		// 이 어펙터 말고 나머지 어펙터들은 scaledTime 으로 처리된다. 
 		_remainTime = affectorValueLevelTableData.fValue1;
+
+		// 동료도 발동시켜야한다.
+		if (affectorValueLevelTableData.sValue1 == "1")
+		{
+			if (_teamTimeSlowAffectorValue == null)
+			{
+				_teamTimeSlowAffectorValue = new AffectorValueLevelTableData();
+				_teamTimeSlowAffectorValue.fValue1 = affectorValueLevelTableData.fValue1;
+				//_teamTimeSlowAffectorValue.fValue2 = affectorValueLevelTableData.fValue2;
+
+				// 동료꺼는 sValue에 2를 넣어서 구분시킨다.
+				_teamTimeSlowAffectorValue.sValue1 = "2";
+			}
+
+			TeamManager.instance.ExecuteAffectorValueTeamMember(eAffectorType.TimeSlow, _teamTimeSlowAffectorValue);
+		}
 	}
 
 	public override void OverrideAffector(AffectorValueLevelTableData affectorValueLevelTableData, HitParameter hitParameter)
@@ -62,7 +87,9 @@ public class TimeSlowAffector : AffectorBase
 
 	public override void FinalizeAffector()
 	{
-		Time.timeScale = 1.0f;
+		if (_forTeamAffectorValue == false)
+			Time.timeScale = 1.0f;
+
 		_actor.actionController.animator.updateMode = AnimatorUpdateMode.Normal;
 		_actor.baseCharacterController.angularSpeed = DefaultAngularSpeed;
 
