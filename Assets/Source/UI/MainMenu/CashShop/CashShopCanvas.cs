@@ -142,13 +142,15 @@ public class CashShopCanvas : MonoBehaviour
 				maxReached = true;
 		}
 		pickUpCharacterListItem.gameObject.SetActive(PlayerData.instance.downloadConfirmed && characterInfo != null && maxReached == false);
-		pickUpCharacterListItem.RefreshInfo(characterInfo);
+		if (pickUpCharacterListItem.gameObject.activeSelf)
+			pickUpCharacterListItem.RefreshInfo(characterInfo);
 	}
 
 	public void RefreshPickUpEquipRect()
 	{
 		CashShopData.PickUpEquipInfo equipInfo = CashShopData.instance.GetCurrentPickUpEquipInfo();
 		pickUpEquipListItem.gameObject.SetActive(PlayerData.instance.downloadConfirmed && equipInfo != null);
-		pickUpEquipListItem.RefreshInfo(equipInfo);
+		if (pickUpEquipListItem.gameObject.activeSelf)
+			pickUpEquipListItem.RefreshInfo(equipInfo);
 	}
 }
