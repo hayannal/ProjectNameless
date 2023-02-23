@@ -321,14 +321,7 @@ public class EquipCompositeCanvas : EquipShowCanvasBase
 		if (equipData == null)
 			return;
 
-		materialSmallStatusInfo.RefreshInfo(equipData, false);
-		materialSmallStatusInfo.detailShowButton.gameObject.SetActive(false);
-		materialSmallStatusInfo.lockButton.gameObject.SetActive(false);
-		materialSmallStatusInfo.unlockButton.gameObject.SetActive(false);
-		materialSmallStatusInfo.equipButtonObject.gameObject.SetActive(false);
-		materialSmallStatusInfo.unequipButtonObject.gameObject.SetActive(false);
-		materialSmallStatusInfo.gameObject.SetActive(false);
-		materialSmallStatusInfo.gameObject.SetActive(true);
+		EquipBoxResultCanvas.ShowSmallEquipInfo(materialSmallStatusInfo, equipData);
 		_materialSmallStatusInfoShowRemainTime = 2.0f;
 	}
 

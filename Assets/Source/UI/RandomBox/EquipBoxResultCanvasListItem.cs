@@ -14,6 +14,11 @@ public class EquipBoxResultCanvasListItem : MonoBehaviour
 		_equipTableData = equipTableData;
 
 		EquipData equipData = EquipManager.instance.FindEquipData(itemInstance.ItemInstanceId, (EquipManager.eEquipSlotType)equipTableData.equipType);
-		equipCanvasListItem.Initialize(equipData, null);
+		equipCanvasListItem.Initialize(equipData, OnClickListItem);
+	}
+
+	public void OnClickListItem(EquipData equipData)
+	{
+		EquipBoxResultCanvas.instance.ShowSmallEquipInfo(equipData);
 	}
 }
