@@ -52,7 +52,12 @@ public class EquipSkillSlotIcon : MonoBehaviour
 			_cooltimeInfo = cooltimeInfo;
 		}
 	}
-	
+
+	public void Reinitialize()
+	{
+		grayscaleEffect.enabled = false;
+	}
+
 	void Update()
 	{
 		UpdateCooltime();

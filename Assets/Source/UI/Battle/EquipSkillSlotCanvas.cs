@@ -83,4 +83,16 @@ public class EquipSkillSlotCanvas : MonoBehaviour
 			count += 1;
 		}
 	}
+
+	public void ReinitializeSkillSlot()
+	{
+		for (int i = 0; i < _listEquipSkillSlotIcon.Count; ++i)
+		{
+			if (_listEquipSkillSlotIcon[i] == null)
+				continue;
+			if (_listEquipSkillSlotIcon[i].gameObject.activeSelf == false)
+				continue;
+			_listEquipSkillSlotIcon[i].Reinitialize();
+		}
+	}
 }

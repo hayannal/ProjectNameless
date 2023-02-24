@@ -307,7 +307,7 @@ public class MainCanvas : MonoBehaviour
 		else
 		{
 			// 다음 보스로 넘어갈때 쿨타임 초기화 해야한다.
-			SpellManager.instance.ApplyEquipSkillCooltime();
+			SpellManager.instance.ReinitializeEquipSkill();
 		}
 	}
 	#endregion

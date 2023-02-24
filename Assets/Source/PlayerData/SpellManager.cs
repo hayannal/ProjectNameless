@@ -731,10 +731,13 @@ public class SpellManager : MonoBehaviour
 		cooltimeProcessor.ApplyCooltime(skillInfo.skillId, skillInfo.cooltime);
 	}
 
-	public void ApplyEquipSkillCooltime()
+	public void ReinitializeEquipSkill()
 	{
 		if (_listEquipSkillInfo == null)
 			return;
+
+		if (EquipSkillSlotCanvas.instance != null && EquipSkillSlotCanvas.instance.gameObject.activeSelf)
+			EquipSkillSlotCanvas.instance.ReinitializeSkillSlot();
 
 		for (int i = 0; i < _listEquipSkillInfo.Count; ++i)
 		{
