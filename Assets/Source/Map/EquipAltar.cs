@@ -69,7 +69,7 @@ public class EquipAltar : MonoBehaviour
 		// 그러니 등급 이펙트까지 다 미리 보여지게 한채 오브젝트를 로드한다.
 		// EquipInfoGround 로 가서는 하나의 오브젝트만 줌인해서 보는거라 로딩이 다 되서 오브젝트가 바뀔때 등급 이펙트도 같이 바꾼다.
 		ParticleSystem.MainModule main = gradeParticleSystem.main;
-		main.startColor = GetGradeParticleColor(equipData.cachedEquipTableData.grade);
+		main.startColor = GetGradeParticleColor(equipData.cachedEquipLevelTableData.grade);
 		gradeParticleSystem.gameObject.SetActive(true);
 		RefreshRarity(equipData.cachedEquipTableData.rarity);
 		emptyIconObject.SetActive(false);
@@ -167,7 +167,7 @@ public class EquipAltar : MonoBehaviour
 		EquipPrefabInfo newEquipPrefabInfo = BattleInstanceManager.instance.GetCachedEquipObject(prefab, equipRootTransform);
 		newEquipPrefabInfo.cachedTransform.localPosition = Vector3.zero;
 		newEquipPrefabInfo.cachedTransform.Translate(0.0f, newEquipPrefabInfo.pivotOffset, 0.0f, Space.World);
-		ShowOutline(true, newEquipPrefabInfo.gameObject, equipData.cachedEquipTableData.grade);
+		ShowOutline(true, newEquipPrefabInfo.gameObject, equipData.cachedEquipLevelTableData.grade);
 		_currentEquipObject = newEquipPrefabInfo;
 		if (_started)
 			rotateTweenAnimation.DORestart();

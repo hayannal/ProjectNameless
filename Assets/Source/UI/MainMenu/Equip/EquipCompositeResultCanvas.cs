@@ -40,10 +40,12 @@ public class EquipCompositeResultCanvas : MonoBehaviour
 		_listEquipData.Clear();
 		for (int i = 0; i < listItemInstance.Count; ++i)
 		{
-			EquipTableData equipTableData = TableDataManager.instance.FindEquipTableData(listItemInstance[i].ItemId);
+			EquipLevelTableData equipLevelTableData = TableDataManager.instance.FindEquipLevelTableData(listItemInstance[i].ItemId);
+			if (equipLevelTableData == null)
+				continue;
+			EquipTableData equipTableData = EquipManager.instance.GetCachedEquipTableData(equipLevelTableData.equipGroup);
 			if (equipTableData == null)
 				continue;
-
 			EquipData equipData = EquipManager.instance.FindEquipData(listItemInstance[i].ItemInstanceId, (EquipManager.eEquipSlotType)equipTableData.equipType);
 			if (equipData == null)
 				continue;

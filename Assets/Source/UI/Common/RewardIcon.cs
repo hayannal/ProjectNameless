@@ -181,17 +181,21 @@ public class RewardIcon : MonoBehaviour
 				}
 				else if (rewardValue.StartsWith("Equip"))
 				{
-					EquipTableData equipTableData = TableDataManager.instance.FindEquipTableData(rewardValue);
-					if (equipTableData != null)
+					EquipLevelTableData equipLevelTableData = TableDataManager.instance.FindEquipLevelTableData(rewardValue);
+					if (equipLevelTableData != null)
 					{
-						AddressableAssetLoadManager.GetAddressableSprite(equipTableData.shotAddress, "Icon", (sprite) =>
+						EquipTableData equipTableData = EquipManager.instance.GetCachedEquipTableData(equipLevelTableData.equipGroup);
+						if (equipTableData != null)
 						{
-							equipIconImage.sprite = null;
-							equipIconImage.sprite = sprite;
-						});
-						EquipCanvasListItem.RefreshGrade(equipTableData.grade, blurImage, gradient, lineColorImage);
-						EquipCanvasListItem.RefreshRarity(equipTableData.rarity, equipRarityText, equipRarityGradient);
-						equipRootObject.SetActive(true);
+							AddressableAssetLoadManager.GetAddressableSprite(equipTableData.shotAddress, "Icon", (sprite) =>
+							{
+								equipIconImage.sprite = null;
+								equipIconImage.sprite = sprite;
+							});
+							EquipCanvasListItem.RefreshGrade(equipLevelTableData.grade, blurImage, gradient, lineColorImage);
+							EquipCanvasListItem.RefreshRarity(equipTableData.rarity, equipRarityText, equipRarityGradient);
+							equipRootObject.SetActive(true);
+						}
 					}
 				}
 				break;

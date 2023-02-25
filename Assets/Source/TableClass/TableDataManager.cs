@@ -82,6 +82,7 @@ public class TableDataManager : MonoBehaviour
 	public AttendanceRewardTable attendanceRewardTable;
 
 	public EquipTable equipTable;
+	public EquipLevelTable equipLevelTable;
 	public EquipCompositeTable equipCompositeTable;
 	public EquipGradeTable equipGradeTable;
 
@@ -695,22 +696,32 @@ public class TableDataManager : MonoBehaviour
 		return null;
 	}
 
-	public EquipTableData FindEquipTableData(string equipId)
+	public EquipTableData FindEquipTableData(string equipGroup)
 	{
 		for (int i = 0; i < equipTable.dataArray.Length; ++i)
 		{
-			if (equipTable.dataArray[i].equipId == equipId)
+			if (equipTable.dataArray[i].equipGroup == equipGroup)
 				return equipTable.dataArray[i];
 		}
 		return null;
 	}
 
-	public EquipTableData FindEquipTableDataByGrade(int grade, int equipType, string group)
+	public EquipLevelTableData FindEquipLevelTableData(string equipId)
 	{
-		for (int i = 0; i < equipTable.dataArray.Length; ++i)
+		for (int i = 0; i < equipLevelTable.dataArray.Length; ++i)
 		{
-			if (equipTable.dataArray[i].grade == grade && equipTable.dataArray[i].equipType == equipType && equipTable.dataArray[i].group == group)
-				return equipTable.dataArray[i];
+			if (equipLevelTable.dataArray[i].equipId == equipId)
+				return equipLevelTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public EquipLevelTableData FindEquipLevelTableDataByGrade(int grade, string equipGroup)
+	{
+		for (int i = 0; i < equipLevelTable.dataArray.Length; ++i)
+		{
+			if (equipLevelTable.dataArray[i].grade == grade && equipLevelTable.dataArray[i].equipGroup == equipGroup)
+				return equipLevelTable.dataArray[i];
 		}
 		return null;
 	}

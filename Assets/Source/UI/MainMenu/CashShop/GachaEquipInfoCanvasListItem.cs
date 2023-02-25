@@ -36,8 +36,9 @@ public class GachaEquipInfoCanvasListItem : MonoBehaviour
 	{
 		bool leftPosition = (nextProb > 0.0f);
 
-		EquipTableData equipTableData = TableDataManager.instance.FindEquipTableData(equipId);
-		equipCanvasListItem.Initialize(equipTableData);
+		EquipLevelTableData equipLevelTableData = TableDataManager.instance.FindEquipLevelTableData(equipId);
+		EquipTableData equipTableData = EquipManager.instance.GetCachedEquipTableData(equipLevelTableData.equipGroup);
+		equipCanvasListItem.Initialize(equipTableData, equipLevelTableData);
 		EquipCanvasListItem.RefreshRarity(equipTableData.rarity, equipCanvasListItem.rarityText, equipCanvasListItem.rarityGradient);
 		rateText.text = string.Format("{0:0.##}%", (prob * 100.0f));
 		nextObject.SetActive(false);

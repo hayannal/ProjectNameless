@@ -54,11 +54,15 @@ public class PickUpEquipDetailCanvas : EquipShowCanvasBase
 		if (info == null)
 			return;
 
-		EquipTableData equipTableData = TableDataManager.instance.FindEquipTableData(info.id);
+		EquipLevelTableData equipLevelTableData = TableDataManager.instance.FindEquipLevelTableData(info.id);
+		if (equipLevelTableData == null)
+			return;
+
+		EquipTableData equipTableData = EquipManager.instance.GetCachedEquipTableData(equipLevelTableData.equipGroup);
 		if (equipTableData == null)
 			return;
 
-		EquipInfoGround.instance.ChangeDiffMode(equipTableData);
+		EquipInfoGround.instance.ChangeDiffMode(equipTableData, equipLevelTableData);
 
 		EquipData tempEquipData = new EquipData();
 		tempEquipData.equipId = info.id;

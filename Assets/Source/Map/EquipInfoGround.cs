@@ -92,7 +92,7 @@ public class EquipInfoGround : MonoBehaviour
 			return;
 
 
-		_currentEquipObject = RefreshInfo(prefab, _currentEquipData.cachedEquipTableData.grade);
+		_currentEquipObject = RefreshInfo(prefab, _currentEquipData.cachedEquipLevelTableData.grade);
 		rotateTweenAnimation.DORestart();
 
 		if (_playEquipAnimation)
@@ -188,9 +188,9 @@ public class EquipInfoGround : MonoBehaviour
 	public bool diffMode { get; set; }
 	public void ChangeDiffMode(EquipData equipData)
 	{
-		ChangeDiffMode(equipData.cachedEquipTableData);
+		ChangeDiffMode(equipData.cachedEquipTableData, equipData.cachedEquipLevelTableData);
 	}
-	public void ChangeDiffMode(EquipTableData equipTableData)
+	public void ChangeDiffMode(EquipTableData equipTableData, EquipLevelTableData equipLevelTableData)
 	{
 		if (diffMode)
 			return;
@@ -206,7 +206,7 @@ public class EquipInfoGround : MonoBehaviour
 			}
 
 			// 오브젝트 셋팅을 하고
-			_currentEquipObject = RefreshInfo(prefab, equipTableData.grade);
+			_currentEquipObject = RefreshInfo(prefab, equipLevelTableData.grade);
 
 			// 회전할때는 괜찮았는데 초기화 각도로 멈춰있으니 안예쁘게 나와서 45도 돌려두기로 한다.
 			// 이게 하필 start 되기도 전에 생성과 동시에 셋팅해버리면
@@ -252,7 +252,7 @@ public class EquipInfoGround : MonoBehaviour
 		{
 			AddressableAssetLoadManager.GetAddressableGameObject(_currentEquipData.cachedEquipTableData.prefabAddress, "Equip", (prefab) =>
 			{
-				_currentEquipObject = RefreshInfo(prefab, _currentEquipData.cachedEquipTableData.grade);
+				_currentEquipObject = RefreshInfo(prefab, _currentEquipData.cachedEquipLevelTableData.grade);
 			});
 		}
 

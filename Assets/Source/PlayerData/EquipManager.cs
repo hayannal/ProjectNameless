@@ -49,12 +49,26 @@ public class EquipManager : MonoBehaviour
 		return equipGradeTableData.compositeLevelMax;
 	}
 
-	public static EquipTableData GetNextGradeEquipTableData(EquipTableData equipTableData)
+	public static EquipLevelTableData GetNextGradeEquipLevelTableData(EquipLevelTableData equipLevelTableData)
 	{
-		EquipTableData nextGradeEquipTableData = TableDataManager.instance.FindEquipTableDataByGrade(equipTableData.grade + 1, equipTableData.equipType, equipTableData.group);
-		if (nextGradeEquipTableData == null)
+		EquipLevelTableData nextGradeEquipLevelTableData = TableDataManager.instance.FindEquipLevelTableDataByGrade(equipLevelTableData.grade + 1, equipLevelTableData.equipGroup);
+		if (nextGradeEquipLevelTableData == null)
 			return null;
-		return nextGradeEquipTableData;
+		return nextGradeEquipLevelTableData;
+	}
+
+	Dictionary<string, EquipTableData> _dicEquipTableData = new Dictionary<string, EquipTableData>();
+	public EquipTableData GetCachedEquipTableData(string equipGroup)
+	{
+		if (_dicEquipTableData.ContainsKey(equipGroup))
+			return _dicEquipTableData[equipGroup];
+
+		EquipTableData equipTableData = TableDataManager.instance.FindEquipTableData(equipGroup);
+		if (equipTableData == null)
+			return null;
+
+		_dicEquipTableData.Add(equipGroup, equipTableData);
+		return equipTableData;
 	}
 
 	public ObscuredInt cachedValue { get; set; }
@@ -77,8 +91,8 @@ public class EquipManager : MonoBehaviour
 			if (userInventory[i].ItemId.StartsWith("Equip") == false)
 				continue;
 
-			EquipTableData equipTableData = TableDataManager.instance.FindEquipTableData(userInventory[i].ItemId);
-			if (equipTableData == null)
+			EquipLevelTableData equipLevelTableData = TableDataManager.instance.FindEquipLevelTableData(userInventory[i].ItemId);
+			if (equipLevelTableData == null)
 				continue;
 
 			EquipData newEquipData = new EquipData();
@@ -350,7 +364,7 @@ public class EquipManager : MonoBehaviour
 				//	continue;
 				if (IsEquipped(listEquipData[j]))
 					continue;
-				if (listEquipData[j].cachedEquipTableData.grade > 2)
+				if (listEquipData[j].cachedEquipLevelTableData.grade > 2)
 					continue;
 
 				_listCurrentEquipData.Add(listEquipData[j]);
@@ -360,8 +374,8 @@ public class EquipManager : MonoBehaviour
 			{
 				if (x.cachedEquipTableData != null && y.cachedEquipTableData != null)
 				{
-					if (x.cachedEquipTableData.grade > y.cachedEquipTableData.grade) return -1;
-					else if (x.cachedEquipTableData.grade < y.cachedEquipTableData.grade) return 1;
+					if (x.cachedEquipLevelTableData.grade > y.cachedEquipLevelTableData.grade) return -1;
+					else if (x.cachedEquipLevelTableData.grade < y.cachedEquipLevelTableData.grade) return 1;
 					if (x.cachedEquipTableData.equipType < y.cachedEquipTableData.equipType) return -1;
 					else if (x.cachedEquipTableData.equipType > y.cachedEquipTableData.equipType) return 1;
 					if (x.mainStatusValue > y.mainStatusValue) return -1;
@@ -383,7 +397,7 @@ public class EquipManager : MonoBehaviour
 
 	bool FindMaterial(List<EquipData> listEquipData, int selectIndex, List<ObscuredString> listNewEquipId, List<EquipData> listMaterialEquipData)
 	{
-		EquipCompositeTableData equipCompositeTableData = TableDataManager.instance.FindEquipCompositeTableData(listEquipData[selectIndex].cachedEquipTableData.rarity, listEquipData[selectIndex].cachedEquipTableData.grade, listEquipData[selectIndex].enhanceLevel);
+		EquipCompositeTableData equipCompositeTableData = TableDataManager.instance.FindEquipCompositeTableData(listEquipData[selectIndex].cachedEquipTableData.rarity, listEquipData[selectIndex].cachedEquipLevelTableData.grade, listEquipData[selectIndex].enhanceLevel);
 		if (equipCompositeTableData == null)
 			return false;
 
@@ -435,15 +449,15 @@ public class EquipManager : MonoBehaviour
 		}
 
 		// AutoComposite 에서는 파란색템 이하만 돌리기 때문에 enhance가 없다.
-		if (EquipManager.GetEnhanceLevelMaxByGrade(listEquipData[selectIndex].cachedEquipTableData.grade) == listEquipData[selectIndex].enhanceLevel)
+		if (EquipManager.GetEnhanceLevelMaxByGrade(listEquipData[selectIndex].cachedEquipLevelTableData.grade) == listEquipData[selectIndex].enhanceLevel)
 		{
 			// 본체도 재료와 함께 소멸되고
 			listMaterialEquipData.Add(listEquipData[selectIndex]);
 
 			// 새로운 아이템으로 융합될거다.
-			EquipTableData nextGradeEquipTableData = EquipManager.GetNextGradeEquipTableData(listEquipData[selectIndex].cachedEquipTableData);
-			if (nextGradeEquipTableData != null)
-				listNewEquipId.Add(nextGradeEquipTableData.equipId);
+			EquipLevelTableData nextGradeEquipLevelTableData = EquipManager.GetNextGradeEquipLevelTableData(listEquipData[selectIndex].cachedEquipLevelTableData);
+			if (nextGradeEquipLevelTableData != null)
+				listNewEquipId.Add(nextGradeEquipLevelTableData.equipId);
 		}
 		return findResult;
 	}
@@ -459,7 +473,7 @@ public class EquipManager : MonoBehaviour
 		if (IsEquipped(materialEquipData))
 			return false;
 
-		EquipCompositeTableData equipCompositeTableData = TableDataManager.instance.FindEquipCompositeTableData(selectedEquipData.cachedEquipTableData.rarity, selectedEquipData.cachedEquipTableData.grade, selectedEquipData.enhanceLevel);
+		EquipCompositeTableData equipCompositeTableData = TableDataManager.instance.FindEquipCompositeTableData(selectedEquipData.cachedEquipTableData.rarity, selectedEquipData.cachedEquipLevelTableData.grade, selectedEquipData.enhanceLevel);
 		if (equipCompositeTableData == null)
 			return false;
 
@@ -467,7 +481,7 @@ public class EquipManager : MonoBehaviour
 		{
 			case EquipCompositeCanvas.eCompositeMaterialType.SameEquip:
 				// 같은 장비인지 판단하는 컬럼인 group을 비교해야한다. 
-				if (selectedEquipData.cachedEquipTableData.group != materialEquipData.cachedEquipTableData.group)
+				if (selectedEquipData.cachedEquipLevelTableData.equipGroup != materialEquipData.cachedEquipLevelTableData.equipGroup)
 					return false;
 				break;
 			case EquipCompositeCanvas.eCompositeMaterialType.SameEquipType:
@@ -479,7 +493,7 @@ public class EquipManager : MonoBehaviour
 		}
 
 		// grade랑 rarity는 항상 검사
-		if (equipCompositeTableData.materialGrade != materialEquipData.cachedEquipTableData.grade)
+		if (equipCompositeTableData.materialGrade != materialEquipData.cachedEquipLevelTableData.grade)
 			return false;
 		if (equipCompositeTableData.materialRarity != materialEquipData.cachedEquipTableData.rarity)
 			return false;
@@ -497,7 +511,7 @@ public class EquipManager : MonoBehaviour
 			return false;
 
 		// 융합 테이블에 없는건지 확인
-		EquipCompositeTableData equipCompositeTableData = TableDataManager.instance.FindEquipCompositeTableData(selectedEquipData.cachedEquipTableData.rarity, selectedEquipData.cachedEquipTableData.grade, selectedEquipData.enhanceLevel);
+		EquipCompositeTableData equipCompositeTableData = TableDataManager.instance.FindEquipCompositeTableData(selectedEquipData.cachedEquipTableData.rarity, selectedEquipData.cachedEquipLevelTableData.grade, selectedEquipData.enhanceLevel);
 		if (equipCompositeTableData == null)
 			return false;
 
@@ -518,7 +532,6 @@ public class EquipManager : MonoBehaviour
 			if (availableMaterialCount >= equipCompositeTableData.count)
 				return true;
 		}
-
 		return false;
 	}
 
@@ -527,7 +540,7 @@ public class EquipManager : MonoBehaviour
 		EquipGradeTableData lastEquipGradeTableData = TableDataManager.instance.equipGradeTable.dataArray[TableDataManager.instance.equipGradeTable.dataArray.Length - 1];
 		if (lastEquipGradeTableData == null)
 			return false;
-		if (selectedEquipData.cachedEquipTableData.grade == lastEquipGradeTableData.grade && selectedEquipData.enhanceLevel >= lastEquipGradeTableData.compositeLevelMax)
+		if (selectedEquipData.cachedEquipLevelTableData.grade == lastEquipGradeTableData.grade && selectedEquipData.enhanceLevel >= lastEquipGradeTableData.compositeLevelMax)
 			return true;
 		return false;
 	}
@@ -650,13 +663,17 @@ public class EquipManager : MonoBehaviour
 			CashShopData.PickUpEquipInfo info = CashShopData.instance.GetCurrentPickUpEquipInfo();
 			if (info != null)
 			{
-				EquipTableData pickUpEquipTableData = TableDataManager.instance.FindEquipTableData(info.id);
-				if (pickUpEquipTableData != null)
+				EquipLevelTableData pickUpEquipLevelTableData = TableDataManager.instance.FindEquipLevelTableData(info.id);
+				if (pickUpEquipLevelTableData != null)
 				{
-					if (selectedGrade == pickUpEquipTableData.grade && selectedRarity == pickUpEquipTableData.rarity)
+					EquipTableData pickUpEquipTableData = GetCachedEquipTableData(pickUpEquipLevelTableData.equipGroup);
+					if (pickUpEquipTableData != null)
 					{
-						// 픽업을 제외한 나머지의 합산값을 구해야한다.
-						pickUpEquipId = pickUpEquipTableData.equipId;
+						if (selectedGrade == pickUpEquipLevelTableData.grade && selectedRarity == pickUpEquipTableData.rarity)
+						{
+							// 픽업을 제외한 나머지의 합산값을 구해야한다.
+							pickUpEquipId = pickUpEquipLevelTableData.equipId;
+						}
 					}
 				}
 			}
@@ -665,31 +682,41 @@ public class EquipManager : MonoBehaviour
 		float pickUpEquipForceWeight = 0.0f;
 		if (applyPickUpEquip && string.IsNullOrEmpty(pickUpEquipId) == false)
 		{
-			for (int i = 0; i < TableDataManager.instance.equipTable.dataArray.Length; ++i)
+			for (int i = 0; i < TableDataManager.instance.equipLevelTable.dataArray.Length; ++i)
 			{
-				if (TableDataManager.instance.equipTable.dataArray[i].equipId == pickUpEquipId)
+				if (TableDataManager.instance.equipLevelTable.dataArray[i].grade != selectedGrade)
 					continue;
-				if (TableDataManager.instance.equipTable.dataArray[i].grade != selectedGrade || TableDataManager.instance.equipTable.dataArray[i].rarity != selectedRarity)
+				EquipTableData equipTableData = GetCachedEquipTableData(TableDataManager.instance.equipLevelTable.dataArray[i].equipGroup);
+				if (equipTableData == null)
 					continue;
-				pickUpEquipForceWeight += TableDataManager.instance.equipTable.dataArray[i].equipGachaWeight;
+				if (equipTableData.rarity != selectedRarity)
+					continue;
+				if (TableDataManager.instance.equipLevelTable.dataArray[i].equipId == pickUpEquipId)
+					continue;
+				pickUpEquipForceWeight += equipTableData.equipGachaWeight;
 			}
 		}
 		#endregion
 
 		sumWeight = 0.0f;
-		for (int i = 0; i < TableDataManager.instance.equipTable.dataArray.Length; ++i)
+		for (int i = 0; i < TableDataManager.instance.equipLevelTable.dataArray.Length; ++i)
 		{
-			if (TableDataManager.instance.equipTable.dataArray[i].grade != selectedGrade || TableDataManager.instance.equipTable.dataArray[i].rarity != selectedRarity)
+			if (TableDataManager.instance.equipLevelTable.dataArray[i].grade != selectedGrade)
+				continue;
+			EquipTableData equipTableData = GetCachedEquipTableData(TableDataManager.instance.equipLevelTable.dataArray[i].equipGroup);
+			if (equipTableData == null)
+				continue;
+			if (equipTableData.rarity != selectedRarity)
 				continue;
 
-			float weight = TableDataManager.instance.equipTable.dataArray[i].equipGachaWeight;
+			float weight = equipTableData.equipGachaWeight;
 			#region PickUp Equip
-			if (applyPickUpEquip && TableDataManager.instance.equipTable.dataArray[i].equipId == pickUpEquipId)
+			if (applyPickUpEquip && TableDataManager.instance.equipLevelTable.dataArray[i].equipId == pickUpEquipId)
 				weight = pickUpEquipForceWeight;
 			#endregion
 			sumWeight += weight;
 			RandomGachaEquipId newInfo = new RandomGachaEquipId();
-			newInfo.equipId = TableDataManager.instance.equipTable.dataArray[i].equipId;
+			newInfo.equipId = TableDataManager.instance.equipLevelTable.dataArray[i].equipId;
 			newInfo.sumWeight = sumWeight;
 			_listGachaEquipId.Add(newInfo);
 		}
@@ -740,11 +767,18 @@ public class EquipManager : MonoBehaviour
 				bool getRarity2 = false;
 				if (string.IsNullOrEmpty(randomEquipId) == false)
 				{
-					EquipTableData equipTableData = TableDataManager.instance.FindEquipTableData(randomEquipId);
-					if (equipTableData != null && equipTableData.rarity == 1)
-						getRarity1 = true;
-					if (equipTableData != null && equipTableData.rarity == 2)
-						getRarity2 = true;
+					EquipLevelTableData equipLevelTableData = TableDataManager.instance.FindEquipLevelTableData(randomEquipId);
+					if (equipLevelTableData != null)
+					{
+						EquipTableData equipTableData = GetCachedEquipTableData(equipLevelTableData.equipGroup);
+						if (equipTableData != null)
+						{
+							if (equipTableData != null && equipTableData.rarity == 1)
+								getRarity1 = true;
+							if (equipTableData != null && equipTableData.rarity == 2)
+								getRarity2 = true;
+						}
+					}
 				}
 				if (getRarity1)
 					tempPickUpNotStreakCount1 = 0;
@@ -770,8 +804,8 @@ public class EquipManager : MonoBehaviour
 		int totalCount = 0;
 		for (int i = 0; i < listItemInstance.Count; ++i)
 		{
-			EquipTableData equipTableData = TableDataManager.instance.FindEquipTableData(listItemInstance[i].ItemId);
-			if (equipTableData == null)
+			EquipLevelTableData equipLevelTableData = TableDataManager.instance.FindEquipLevelTableData(listItemInstance[i].ItemId);
+			if (equipLevelTableData == null)
 				continue;
 
 			++totalCount;
@@ -781,8 +815,8 @@ public class EquipManager : MonoBehaviour
 
 		for (int i = 0; i < listItemInstance.Count; ++i)
 		{
-			EquipTableData equipTableData = TableDataManager.instance.FindEquipTableData(listItemInstance[i].ItemId);
-			if (equipTableData == null)
+			EquipLevelTableData equipLevelTableData = TableDataManager.instance.FindEquipLevelTableData(listItemInstance[i].ItemId);
+			if (equipLevelTableData == null)
 				continue;
 
 			EquipData newEquipData = new EquipData();

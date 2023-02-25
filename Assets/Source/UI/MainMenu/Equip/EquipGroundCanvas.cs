@@ -193,7 +193,7 @@ public class EquipGroundCanvas : MonoBehaviour
 			for (int j = 0; j < listEquipData.Count; ++j)
 			{
 				if (EquipManager.instance.IsCompositeAvailable(listEquipData[j], listEquipData))
-						return true;
+					return true;
 			}
 		}
 		return false;

@@ -42,14 +42,14 @@ public class EquipListStatusInfo : MonoBehaviour
 	{
 		_equipped = equipped;
 		_equipData = equipData;
-		gradeBackImage.color = GetGradeTitleBarColor(equipData.cachedEquipTableData.grade);
-		gradeText.SetLocalizedText(UIString.instance.GetString(string.Format("GameUI_EquipGrade{0}", equipData.cachedEquipTableData.grade)));
+		gradeBackImage.color = GetGradeTitleBarColor(equipData.cachedEquipLevelTableData.grade);
+		gradeText.SetLocalizedText(UIString.instance.GetString(string.Format("GameUI_EquipGrade{0}", equipData.cachedEquipLevelTableData.grade)));
 		enhanceText.gameObject.SetActive(equipData.enhanceLevel > 0);
 		enhanceText.text = string.Format("+ {0}", equipData.enhanceLevel);
 		nameText.SetLocalizedText(UIString.instance.GetString(equipData.cachedEquipTableData.nameId));
 #if UNITY_EDITOR
 		if (Input.GetKey(KeyCode.LeftShift))
-			Debug.LogFormat("equipId : {0}", equipData.cachedEquipTableData.equipId);
+			Debug.LogFormat("equipId : {0}", equipData.cachedEquipLevelTableData.equipId);
 		if (Input.GetKey(KeyCode.LeftControl))
 			Debug.LogFormat("uniqueId : {0}", equipData.uniqueId);
 #endif
@@ -128,7 +128,7 @@ public class EquipListStatusInfo : MonoBehaviour
 		if (string.IsNullOrEmpty(_equipData.cachedEquipTableData.skillId) == false)
 		{
 			SkillTableData skillTableData = TableDataManager.instance.FindSkillTableData(_equipData.cachedEquipTableData.skillId);
-			bool skillActived = (_equipData.cachedEquipTableData.grade >= _equipData.cachedEquipTableData.skillActive);
+			bool skillActived = (_equipData.cachedEquipLevelTableData.grade >= _equipData.cachedEquipTableData.skillActive);
 			if (skillTableData != null)
 			{
 				AddressableAssetLoadManager.GetAddressableSprite(skillTableData.iconPrefab, "Icon", (sprite) =>
@@ -283,7 +283,7 @@ public class EquipListStatusInfo : MonoBehaviour
 		string descString = UIString.instance.GetString(skillTableData.useDescriptionIdOverriding ? skillLevelTableData.descriptionId : skillTableData.descriptionId, skillLevelTableData.parameter);
 		float cooltime = skillTableData.useCooltimeOverriding ? skillLevelTableData.cooltime : skillTableData.cooltime;
 
-		bool showGradeInfo = (_equipData.cachedEquipTableData.skillActive > _equipData.cachedEquipTableData.grade);
+		bool showGradeInfo = (_equipData.cachedEquipTableData.skillActive > _equipData.cachedEquipLevelTableData.grade);
 		UIInstanceManager.instance.ShowCanvasAsync("EquipSkillInfoCanvas", () =>
 		{
 			EquipSkillInfoCanvas.instance.SetInfo(skillTableData, showGradeInfo, _equipData.cachedEquipTableData, nameString, descString, cooltime);

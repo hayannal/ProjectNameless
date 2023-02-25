@@ -27,12 +27,21 @@ public class EquipCanvasListItem : MonoBehaviour
 	public void Initialize(EquipData equipData, Action<EquipData> clickCallback)
 	{
 		this.equipData = equipData;
-		Initialize(equipData.cachedEquipTableData);
+		Initialize(equipData.cachedEquipTableData, equipData.cachedEquipLevelTableData);
 		RefreshEnhanceLevel(equipData.enhanceLevel);
 		_clickAction = clickCallback;
 	}
 
-	public void Initialize(EquipTableData equipTableData, int enhanceLevel = 0)
+	public void Initialize(EquipLevelTableData equipLevelTableData, int enhanceLevel = 0)
+	{
+		EquipTableData equipTableData = EquipManager.instance.GetCachedEquipTableData(equipLevelTableData.equipGroup);
+		if (equipTableData == null)
+			return;
+
+		Initialize(equipTableData, equipLevelTableData, enhanceLevel);
+	}
+
+	public void Initialize(EquipTableData equipTableData, EquipLevelTableData equipLevelTableData, int enhanceLevel = 0)
 	{
 		AddressableAssetLoadManager.GetAddressableSprite(equipTableData.shotAddress, "Icon", (sprite) =>
 		{
@@ -40,7 +49,7 @@ public class EquipCanvasListItem : MonoBehaviour
 			equipIconImage.sprite = sprite;
 		});
 
-		InitializeGrade(equipTableData.grade, false);
+		InitializeGrade(equipLevelTableData.grade, false);
 		RefreshRarity(equipTableData.rarity, rarityText, rarityGradient);
 		RefreshEnhanceLevel(enhanceLevel);
 		RefreshStatus();

@@ -65,7 +65,10 @@ public class EquipBoxResultCanvas : MonoBehaviour
 
 		for (int i = 0; i < listItemInstance.Count; ++i)
 		{
-			EquipTableData equipTableData = TableDataManager.instance.FindEquipTableData(listItemInstance[i].ItemId);
+			EquipLevelTableData equipLevelTableData = TableDataManager.instance.FindEquipLevelTableData(listItemInstance[i].ItemId);
+			if (equipLevelTableData == null)
+				continue;
+			EquipTableData equipTableData = EquipManager.instance.GetCachedEquipTableData(equipLevelTableData.equipGroup);
 			if (equipTableData == null)
 				continue;
 

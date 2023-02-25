@@ -9,16 +9,8 @@ using System.Collections;
 public class EquipTableData
 {
   [SerializeField]
-  string _equipId;
-  public string equipId { get { return _equipId; } set { _equipId = value; } }
-  
-  [SerializeField]
-  string _group;
-  public string group { get { return _group; } set { _group = value; } }
-  
-  [SerializeField]
-  int _grade;
-  public int grade { get { return _grade; } set { _grade = value; } }
+  string _equipGroup;
+  public string equipGroup { get { return _equipGroup; } set { _equipGroup = value; } }
   
   [SerializeField]
   int _equipType;
@@ -27,10 +19,6 @@ public class EquipTableData
   [SerializeField]
   int _rarity;
   public int rarity { get { return _rarity; } set { _rarity = value; } }
-  
-  [SerializeField]
-  int[] _atk = new int[0];
-  public int[] atk { get { return _atk; } set { _atk = value; } }
   
   [SerializeField]
   string _prefabAddress;

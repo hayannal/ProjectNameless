@@ -42,6 +42,7 @@ public class EquipCompositeCanvas : EquipShowCanvasBase
 	public Image compositeButtonImage;
 	public Text compositeButtonText;
 	public RectTransform autoAlarmRootTransform;
+	public GameObject skipButtonObject;
 
 	public GameObject emptyEquipObject;
 	public GameObject contentItemPrefab;
@@ -74,7 +75,7 @@ public class EquipCompositeCanvas : EquipShowCanvasBase
 
 		SetInfoCameraMode(true);
 
-		ResetSelect();
+		ResetSelect(true);
 		EquipInfoGround.instance.ResetEquipObject();
 	}
 
@@ -115,6 +116,8 @@ public class EquipCompositeCanvas : EquipShowCanvasBase
 				materialSmallStatusInfo.gameObject.SetActive(false);
 			}
 		}
+
+		UpdateSkipProcess();
 	}
 
 
@@ -152,8 +155,8 @@ public class EquipCompositeCanvas : EquipShowCanvasBase
 			//else if (x.newEquip == false && y.newEquip) return 1;
 			if (x.cachedEquipTableData != null && y.cachedEquipTableData != null)
 			{
-				if (x.cachedEquipTableData.grade > y.cachedEquipTableData.grade) return -1;
-				else if (x.cachedEquipTableData.grade < y.cachedEquipTableData.grade) return 1;
+				if (x.cachedEquipLevelTableData.grade > y.cachedEquipLevelTableData.grade) return -1;
+				else if (x.cachedEquipLevelTableData.grade < y.cachedEquipLevelTableData.grade) return 1;
 				if (x.cachedEquipTableData.rarity > y.cachedEquipTableData.rarity) return -1;
 				else if (x.cachedEquipTableData.rarity < y.cachedEquipTableData.rarity) return 1;
 				if (x.cachedEquipTableData.equipType < y.cachedEquipTableData.equipType) return -1;
@@ -177,7 +180,7 @@ public class EquipCompositeCanvas : EquipShowCanvasBase
 			if (EquipManager.instance.IsCompositeAvailable(_listCurrentEquipData[i], _listCurrentEquipData))
 			{
 				equipCanvasListItem.ShowAlarm(true);
-				if (_listCurrentEquipData[i].cachedEquipTableData.grade <= 2)
+				if (_listCurrentEquipData[i].cachedEquipLevelTableData.grade <= 2)
 					_availableAutoComposite = true;
 			}
 			#endregion
@@ -209,7 +212,7 @@ public class EquipCompositeCanvas : EquipShowCanvasBase
 		// 선택한 메인을 다시 눌렀을땐 취소
 		if (_selectedEquipData != null && _selectedEquipData == equipData)
 		{
-			ResetSelect();
+			ResetSelect(false);
 			return;
 		}
 
@@ -249,14 +252,14 @@ public class EquipCompositeCanvas : EquipShowCanvasBase
 
 		messageText.SetLocalizedText(UIString.instance.GetString("EquipUI_SelectMaterial"));
 
-		if (EquipManager.GetEnhanceLevelMaxByGrade(equipData.cachedEquipTableData.grade) == equipData.enhanceLevel)
+		if (EquipManager.GetEnhanceLevelMaxByGrade(equipData.cachedEquipLevelTableData.grade) == equipData.enhanceLevel)
 		{
-			EquipTableData nextGradeEquipTableData = EquipManager.GetNextGradeEquipTableData(equipData.cachedEquipTableData);
-			if (nextGradeEquipTableData != null)
-				resultEquipCanvasListItem.Initialize(nextGradeEquipTableData);
+			EquipLevelTableData nextGradeEquipLevelTableData = EquipManager.GetNextGradeEquipLevelTableData(equipData.cachedEquipLevelTableData);
+			if (nextGradeEquipLevelTableData != null)
+				resultEquipCanvasListItem.Initialize(nextGradeEquipLevelTableData);
 		}
 		else
-			resultEquipCanvasListItem.Initialize(equipData.cachedEquipTableData, equipData.enhanceLevel + 1);
+			resultEquipCanvasListItem.Initialize(equipData.cachedEquipLevelTableData, equipData.enhanceLevel + 1);
 		resultEquipCanvasListItem.lockImage.gameObject.SetActive(selectedEquipCanvasListItem.lockImage.gameObject.activeSelf);
 		resultRootObject.SetActive(true);
 
@@ -264,7 +267,7 @@ public class EquipCompositeCanvas : EquipShowCanvasBase
 		_selectMaterialMode = true;
 		RefreshMaterialGrid();
 
-		EquipCompositeTableData equipCompositeTableData = TableDataManager.instance.FindEquipCompositeTableData(_selectedEquipData.cachedEquipTableData.rarity, _selectedEquipData.cachedEquipTableData.grade, _selectedEquipData.enhanceLevel);
+		EquipCompositeTableData equipCompositeTableData = TableDataManager.instance.FindEquipCompositeTableData(_selectedEquipData.cachedEquipTableData.rarity, _selectedEquipData.cachedEquipLevelTableData.grade, _selectedEquipData.enhanceLevel);
 		if (equipCompositeTableData == null)
 			return;
 
@@ -280,14 +283,14 @@ public class EquipCompositeCanvas : EquipShowCanvasBase
 		switch ((eCompositeMaterialType)equipCompositeTableData.materialType)
 		{
 			case eCompositeMaterialType.SameEquip:
-				equipCanvasListItem.Initialize(selectedEquipData.cachedEquipTableData);
+				equipCanvasListItem.Initialize(selectedEquipData.cachedEquipTableData, selectedEquipData.cachedEquipLevelTableData);
 				break;
 			case eCompositeMaterialType.SameEquipType:
-				equipCanvasListItem.Initialize(selectedEquipData.cachedEquipTableData);
+				equipCanvasListItem.Initialize(selectedEquipData.cachedEquipTableData, selectedEquipData.cachedEquipLevelTableData);
 				equipCanvasListItem.equipIconImage.sprite = equipTypeSpriteList[selectedEquipData.cachedEquipTableData.equipType];
 				break;
 			case eCompositeMaterialType.AnyEquipType:
-				equipCanvasListItem.Initialize(selectedEquipData.cachedEquipTableData);
+				equipCanvasListItem.Initialize(selectedEquipData.cachedEquipTableData, selectedEquipData.cachedEquipLevelTableData);
 				equipCanvasListItem.equipIconImage.sprite = equipIconSprite;
 				break;
 		}
@@ -297,7 +300,7 @@ public class EquipCompositeCanvas : EquipShowCanvasBase
 		equipCanvasListItem.blackObject.SetActive(true);
 	}
 
-	void ResetSelect()
+	void ResetSelect(bool refreshGrid)
 	{
 		messageText.SetLocalizedText(UIString.instance.GetString("EquipUI_SelectComposite"));
 		selectedEquipCanvasListItem.gameObject.SetActive(false);
@@ -309,7 +312,13 @@ public class EquipCompositeCanvas : EquipShowCanvasBase
 		_selectMaterialMode = false;
 		_listMultiSelectUniqueId.Clear();
 		_listMultiSelectEquipData.Clear();
-		RefreshGrid();
+		if (refreshGrid)
+			RefreshGrid();
+		else
+		{
+			for (int i = 0; i < _listEquipCanvasListItem.Count; ++i)
+				_listEquipCanvasListItem[i].blackObject.SetActive(false);
+		}
 
 		bool disablePrice = true;
 		compositeButtonImage.color = !disablePrice ? Color.white : ColorUtil.halfGray;
@@ -370,7 +379,7 @@ public class EquipCompositeCanvas : EquipShowCanvasBase
 		compositeButtonImage.color = !disablePrice ? Color.white : ColorUtil.halfGray;
 		compositeButtonText.color = !disablePrice ? Color.white : ColorUtil.halfGray;
 
-		EquipCompositeTableData equipCompositeTableData = TableDataManager.instance.FindEquipCompositeTableData(_selectedEquipData.cachedEquipTableData.rarity, _selectedEquipData.cachedEquipTableData.grade, _selectedEquipData.enhanceLevel);
+		EquipCompositeTableData equipCompositeTableData = TableDataManager.instance.FindEquipCompositeTableData(_selectedEquipData.cachedEquipTableData.rarity, _selectedEquipData.cachedEquipLevelTableData.grade, _selectedEquipData.enhanceLevel);
 		if (equipCompositeTableData == null)
 			return;
 
@@ -389,7 +398,7 @@ public class EquipCompositeCanvas : EquipShowCanvasBase
 	{
 		if (selectedEquipCanvasListItem.gameObject.activeSelf)
 		{
-			ResetSelect();
+			ResetSelect(false);
 			return;
 		}
 	}
@@ -453,13 +462,13 @@ public class EquipCompositeCanvas : EquipShowCanvasBase
 		// 그리고 장착된 아이템이냐 아니냐에 따라서도 인자가 달라져야한다.
 		EquipData enhanceEquipData = null;
 		_listNewEquipId.Clear();
-		if (EquipManager.GetEnhanceLevelMaxByGrade(_selectedEquipData.cachedEquipTableData.grade) == _selectedEquipData.enhanceLevel)
+		if (EquipManager.GetEnhanceLevelMaxByGrade(_selectedEquipData.cachedEquipLevelTableData.grade) == _selectedEquipData.enhanceLevel)
 		{
 			_listMultiSelectEquipData.Add(_selectedEquipData);
 
-			EquipTableData nextGradeEquipTableData = EquipManager.GetNextGradeEquipTableData(_selectedEquipData.cachedEquipTableData);
-			if (nextGradeEquipTableData != null)
-				_listNewEquipId.Add(nextGradeEquipTableData.equipId);
+			EquipLevelTableData nextGradeEquipLevelTableData = EquipManager.GetNextGradeEquipLevelTableData(_selectedEquipData.cachedEquipLevelTableData);
+			if (nextGradeEquipLevelTableData != null)
+				_listNewEquipId.Add(nextGradeEquipLevelTableData.equipId);
 		}
 		else
 			enhanceEquipData = _selectedEquipData;
@@ -495,6 +504,7 @@ public class EquipCompositeCanvas : EquipShowCanvasBase
 
 		inputLockObject.SetActive(true);
 		backKeyButton.interactable = false;
+		skipButtonObject.SetActive(true);
 
 		// 새로운 아이템으로 변환인지 아니면 그냥 enhanceLevel증가인지 확인
 		bool enhanceLevel = false;
@@ -507,17 +517,30 @@ public class EquipCompositeCanvas : EquipShowCanvasBase
 			EquipInfoGround.instance.CreateEquipObject(_selectedEquipData, true);
 			while (EquipInfoGround.instance.IsShowEquippedObject() == false)
 				yield return Timing.WaitForOneFrame;
-			yield return Timing.WaitForSeconds(0.5f);
+			yield return Timing.WaitForSeconds(0.4f);
 		}
 
 		EquipInfoGround.instance.ScaleDownGradeParticle(true);
 
-		// 선이펙트
-		BattleInstanceManager.instance.GetCachedObject(standbyEffectPrefab, rootOffsetPosition, Quaternion.identity, null);
-		yield return Timing.WaitForSeconds(1.75f);
+		if (_skipOn == false)
+		{
+			// 선이펙트
+			_standbyEffectObject = BattleInstanceManager.instance.GetCachedObject(standbyEffectPrefab, rootOffsetPosition, Quaternion.identity, null);
+			_effectWaitRemainTime = 1.4f;
+		}
+		while (_effectWaitRemainTime > 0.0f)
+			yield return Timing.WaitForOneFrame;
 
-		BattleInstanceManager.instance.GetCachedObject(successEffectPrefab, rootOffsetPosition, Quaternion.identity, null);
-		yield return Timing.WaitForSeconds(1.5f);
+		if (_skipOn == false)
+		{
+			_successEffectObject = BattleInstanceManager.instance.GetCachedObject(successEffectPrefab, rootOffsetPosition, Quaternion.identity, null);
+			_effectWaitRemainTime = 1.5f;
+		}
+		while (_effectWaitRemainTime > 0.0f)
+			yield return Timing.WaitForOneFrame;
+
+		_skipOn = false;
+		skipButtonObject.SetActive(false);
 
 		EquipInfoGround.instance.ScaleDownGradeParticle(false);
 
@@ -555,8 +578,37 @@ public class EquipCompositeCanvas : EquipShowCanvasBase
 	void OnCloseResultCanvas()
 	{
 		// 3D 오브젝트는 이때 비활성화 시켜본다.
-		ResetSelect();
+		ResetSelect(false);
 		EquipInfoGround.instance.ResetEquipObject();
 		_equippedComposite = false;
+	}
+
+	bool _skipOn;
+	GameObject _standbyEffectObject;
+	GameObject _successEffectObject;
+	public void OnClickSkipButton()
+	{
+		_skipOn = true;
+		_effectWaitRemainTime = 0.0f;
+		skipButtonObject.SetActive(false);
+
+		// 언제 눌렀냐에 따라 다르지 않도록 최대한 셋팅형태로 간다.
+		EquipInfoGround.instance.ScaleDownGradeParticle(false);
+
+		if (_standbyEffectObject != null && _standbyEffectObject.activeSelf)
+			_standbyEffectObject.SetActive(false);
+		if (_successEffectObject != null && _successEffectObject.activeSelf)
+			_successEffectObject.SetActive(false);
+	}
+
+	float _effectWaitRemainTime;
+	void UpdateSkipProcess()
+	{
+		if (_effectWaitRemainTime > 0.0f)
+		{
+			_effectWaitRemainTime -= Time.deltaTime;
+			if (_effectWaitRemainTime <= 0.0f)
+				_effectWaitRemainTime = 0.0f;
+		}
 	}
 }

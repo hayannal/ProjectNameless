@@ -18,9 +18,14 @@ public class PickUpEquipListItem : MonoBehaviour
 	CashShopData.PickUpEquipInfo _info;
 	public void RefreshInfo(CashShopData.PickUpEquipInfo info)
 	{
-		_info = info;
+		EquipLevelTableData equipLevelTableData = TableDataManager.instance.FindEquipLevelTableData(info.id);
+		if (equipLevelTableData == null)
+			return;
+		EquipTableData equipTableData = EquipManager.instance.GetCachedEquipTableData(equipLevelTableData.equipGroup);
+		if (equipTableData == null)
+			return;
 
-		EquipTableData equipTableData = TableDataManager.instance.FindEquipTableData(info.id);
+		_info = info;
 		AddressableAssetLoadManager.GetAddressableSprite(equipTableData.shotAddress, "Icon", (sprite) =>
 		{
 			equipIconImage.sprite = null;

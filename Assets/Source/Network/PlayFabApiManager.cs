@@ -3896,7 +3896,7 @@ public class PlayFabApiManager : MonoBehaviour
 				CurrencyData.instance.dia -= price;
 
 				jsonResult.TryGetValue("date", out object date);
-				CashShopData.instance.OnRecvPickUpEquipCount((string)date, notStreakCount1Result, notStreakCount1Result);
+				CashShopData.instance.OnRecvPickUpEquipCount((string)date, notStreakCount1Result, notStreakCount2Result);
 
 				jsonResult.TryGetValue("itmRet", out object itmRet);
 				if (successCallback != null) successCallback.Invoke((string)itmRet);

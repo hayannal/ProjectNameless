@@ -53,8 +53,8 @@ public class EquipData
 
 	void RefreshCachedStatus()
 	{
-		int atkIndex = Mathf.Min(_enhanceLevel, cachedEquipTableData.atk.Length - 1);
-		_mainStatusValue = cachedEquipTableData.atk[atkIndex];
+		int atkIndex = Mathf.Min(_enhanceLevel, cachedEquipLevelTableData.atk.Length - 1);
+		_mainStatusValue = cachedEquipLevelTableData.atk[atkIndex];
 
 		// 서브 옵션들을 돌면서 equipStatusList에 모아야한다. 같은 옵은 같은 옵션끼리.
 		for (int i = 0; i < _equipStatusList.valueList.Length; ++i)
@@ -89,7 +89,7 @@ public class EquipData
 		if (string.IsNullOrEmpty(cachedEquipTableData.skillId))
 			return "";
 
-		if (cachedEquipTableData.grade >= cachedEquipTableData.skillActive)
+		if (cachedEquipLevelTableData.grade >= cachedEquipTableData.skillActive)
 			return cachedEquipTableData.skillId;
 		return "";
 	}
@@ -98,10 +98,10 @@ public class EquipData
 	{
 		switch (index)
 		{
-			case 0: if (cachedEquipTableData.grade >= 3) return true; break;
-			case 1: if (cachedEquipTableData.grade >= 4) return true; break;
-			case 2: if (cachedEquipTableData.grade >= 5) return true; break;
-			case 3: if (cachedEquipTableData.grade >= 6) return true; break;
+			case 0: if (cachedEquipLevelTableData.grade >= 3) return true; break;
+			case 1: if (cachedEquipLevelTableData.grade >= 4) return true; break;
+			case 2: if (cachedEquipLevelTableData.grade >= 5) return true; break;
+			case 3: if (cachedEquipLevelTableData.grade >= 6) return true; break;
 		}
 		return false;
 	}
@@ -129,8 +129,19 @@ public class EquipData
 		}
 		return 0.0f;
 	}
-	
 
+
+
+	EquipLevelTableData _cachedEquipLevelTableData = null;
+	public EquipLevelTableData cachedEquipLevelTableData
+	{
+		get
+		{
+			if (_cachedEquipLevelTableData == null)
+				_cachedEquipLevelTableData = TableDataManager.instance.FindEquipLevelTableData(equipId);
+			return _cachedEquipLevelTableData;
+		}
+	}
 
 	EquipTableData _cachedEquipTableData = null;
 	public EquipTableData cachedEquipTableData
@@ -138,7 +149,10 @@ public class EquipData
 		get
 		{
 			if (_cachedEquipTableData == null)
-				_cachedEquipTableData = TableDataManager.instance.FindEquipTableData(equipId);
+			{
+				if (cachedEquipLevelTableData != null)
+					_cachedEquipTableData = EquipManager.instance.GetCachedEquipTableData(cachedEquipLevelTableData.equipGroup);
+			}
 			return _cachedEquipTableData;
 		}
 	}

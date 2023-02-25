@@ -44,7 +44,7 @@ public class EquipTypeButton : MonoBehaviour
 			return;
 		}
 
-		equipGradeImage.color = GetGradeBarColor(equipData.cachedEquipTableData.grade);
+		equipGradeImage.color = GetGradeBarColor(equipData.cachedEquipLevelTableData.grade);
 		equipGradeImage.gameObject.SetActive(true);
 	}
 
