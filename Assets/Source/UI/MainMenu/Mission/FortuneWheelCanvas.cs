@@ -127,7 +127,7 @@ public class FortuneWheelCanvas : SimpleCashCanvas
 			priceTextRectTransform.anchoredPosition = new Vector2(0.0f, priceTextRectTransform.anchoredPosition.y);
 
 			//iapButton.productId = costumeTableData.serverItemId;
-			ShopProductTableData shopProductTableData = TableDataManager.instance.FindShopProductTableData("roulette");
+			ShopProductTableData shopProductTableData = TableDataManager.instance.FindShopProductTableData("fortunewheel");
 			if (shopProductTableData != null)
 				RefreshPrice(shopProductTableData.serverItemId, shopProductTableData.kor, shopProductTableData.eng);
 		}
