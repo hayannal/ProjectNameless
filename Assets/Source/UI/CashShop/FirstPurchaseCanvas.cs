@@ -8,6 +8,8 @@ public class FirstPurchaseCanvas : MonoBehaviour
 	public GameObject shopButtonObject;
 	public GameObject rewardButtonObject;
 
+	public RectTransform alarmRootTransform;
+
 	ShopProductTableData _shopProductTableData;
 	void OnEnable()
 	{
@@ -15,6 +17,10 @@ public class FirstPurchaseCanvas : MonoBehaviour
 		rewardButtonObject.SetActive(PlayerData.instance.vtd > 0);
 
 		_shopProductTableData = TableDataManager.instance.FindShopProductTableData("firstpurchase");
+
+		AlarmObject.Hide(alarmRootTransform);
+		if (PlayerData.instance.vtd > 0)
+			AlarmObject.Show(alarmRootTransform);
 	}
 
 	public void OnClickShopButton()
