@@ -93,7 +93,10 @@ public class PetPassCanvas : SimpleCashCanvas
 			if (instance != null && instance.gameObject.activeSelf)
 				instance.RefreshPriceButton();
 			if (PetListCanvas.instance != null && PetListCanvas.instance.gameObject.activeSelf)
+			{
 				PetListCanvas.instance.RefreshPetPass();
+				PetListCanvas.instance.RefreshHeart();
+			}
 			ToastCanvas.instance.ShowToast(UIString.instance.GetString("PetUI_ResultSuccess"), 2.0f);
 		});
 	}

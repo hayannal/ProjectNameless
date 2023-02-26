@@ -146,7 +146,7 @@ public class PetListCanvas : PetShowCanvasBase
 		return false;
 	}
 
-	void RefreshHeart()
+	public void RefreshHeart()
 	{
 		int remainCount = GetTodayRemainHeart();
 		todayHeartRemainCountText.text = remainCount.ToString();
