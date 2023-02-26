@@ -88,6 +88,13 @@ public class BossStageNumberCanvas : MonoBehaviour
 		yield return Timing.WaitForOneFrame;
 		yield return Timing.WaitForOneFrame;
 
+		// 이렇게까지 했는데 설마 왼쪽에 있진 않겠지. 간혹 버그 나는 경우가 있는거 같아서 예외처리 한번 더 넣어둔다.
+		if (nodeTransform.anchoredPosition.x < 0.0f)
+		{
+			nodeTransform.anchoredPosition = new Vector2(nodeRightValue, nodeTransform.anchoredPosition.y);
+			yield return Timing.WaitForOneFrame;
+		}
+
 		// 마지막은 중앙으로 되돌아오기.
 		nodeTransform.DOAnchorPosX(0.0f, duration).SetEase(Ease.Linear);
 		yield return Timing.WaitForSeconds(duration);
