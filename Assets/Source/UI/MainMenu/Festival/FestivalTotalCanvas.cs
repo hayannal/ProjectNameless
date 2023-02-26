@@ -195,7 +195,7 @@ public class FestivalTotalCanvas : SimpleCashCanvas
 					int.TryParse(split[1], out buttonIndex);
 				}
 			}
-			CashShopData.instance.PurchaseFlag(CashShopData.eCashConsumeFlagType.FestivalSlot0 + buttonIndex);
+			CashShopData.instance.PurchaseFlag(CashShopData.eCashConsumeFlagType.FestivalSlot1 + buttonIndex);
 			PlayFabApiManager.instance.RequestConsumeFestivalSlot(buttonIndex, () =>
 			{
 				if (instance != null)

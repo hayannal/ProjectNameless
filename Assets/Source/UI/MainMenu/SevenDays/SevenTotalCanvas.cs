@@ -195,7 +195,7 @@ public class SevenTotalCanvas : SimpleCashCanvas
 					int.TryParse(split[1], out buttonIndex);
 				}
 			}
-			CashShopData.instance.PurchaseFlag(CashShopData.eCashConsumeFlagType.SevenSlot0 + buttonIndex);
+			CashShopData.instance.PurchaseFlag(CashShopData.eCashConsumeFlagType.SevenSlot1 + buttonIndex);
 			PlayFabApiManager.instance.RequestConsumeSevenSlot(buttonIndex, () =>
 			{
 				if (instance != null)

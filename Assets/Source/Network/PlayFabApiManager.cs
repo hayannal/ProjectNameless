@@ -2167,7 +2167,7 @@ public class PlayFabApiManager : MonoBehaviour
 			{
 				WaitingNetworkCanvas.Show(false);
 
-				CashShopData.instance.ConsumeFlag(CashShopData.eCashConsumeFlagType.SevenSlot0 + buttonIndex);
+				CashShopData.instance.ConsumeFlag(CashShopData.eCashConsumeFlagType.SevenSlot1 + buttonIndex);
 				MissionData.instance.OnRecvPurchasedCashSlot(buttonIndex);
 				
 				if (successCallback != null) successCallback.Invoke();
@@ -2226,7 +2226,7 @@ public class PlayFabApiManager : MonoBehaviour
 			{
 				WaitingNetworkCanvas.Show(false);
 
-				CashShopData.instance.ConsumeFlag(CashShopData.eCashConsumeFlagType.FestivalSlot0 + buttonIndex);
+				CashShopData.instance.ConsumeFlag(CashShopData.eCashConsumeFlagType.FestivalSlot1 + buttonIndex);
 				FestivalData.instance.OnRecvPurchasedCashSlot(buttonIndex);
 
 				if (successCallback != null) successCallback.Invoke();
