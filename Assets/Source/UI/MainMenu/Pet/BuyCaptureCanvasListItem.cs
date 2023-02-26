@@ -99,6 +99,8 @@ public class BuyCaptureCanvasListItem : SimpleCashCanvas
 				SelectCaptureCanvas.instance.gameObject.SetActive(false);
 				SelectCaptureCanvas.instance.gameObject.SetActive(true);
 			}
+			if (PetSearchCanvas.instance != null)
+				PetSearchCanvas.instance.RefreshCaptureCount();
 
 			CodelessIAPStoreListener.Instance.StoreController.ConfirmPendingPurchase(product);
 			IAPListenerWrapper.instance.CheckConfirmPendingPurchase(product);

@@ -162,10 +162,7 @@ public class PetSearchCanvas : MonoBehaviour
 			return;
 		}
 
-		int count = CashShopData.instance.GetCashItemCount(CashShopData.eCashItemCountType.CaptureBetter);
-		captureBetterCountText.text = count.ToString("N0");
-		count = CashShopData.instance.GetCashItemCount(CashShopData.eCashItemCountType.CaptureBest);
-		captureBestCountText.text = count.ToString("N0");
+		RefreshCaptureCount();
 		captureButtonObject.SetActive(true);
 		if (PetManager.instance.IsCachedInProgressGame())
 		{
@@ -174,6 +171,14 @@ public class PetSearchCanvas : MonoBehaviour
 			return;
 		}
 		searchButtonObject.SetActive(true);
+	}
+
+	public void RefreshCaptureCount()
+	{
+		int count = CashShopData.instance.GetCashItemCount(CashShopData.eCashItemCountType.CaptureBetter);
+		captureBetterCountText.text = count.ToString("N0");
+		count = CashShopData.instance.GetCashItemCount(CashShopData.eCashItemCountType.CaptureBest);
+		captureBestCountText.text = count.ToString("N0");
 	}
 
 	public void OnClickBackButton()
