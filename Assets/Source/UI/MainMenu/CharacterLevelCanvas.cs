@@ -416,6 +416,7 @@ public class CharacterLevelCanvas : MonoBehaviour
 		else
 		{
 			int subLevelUpImageEffectIndex = PlayerData.instance.subLevel % subLevelUpImagEffectList.Length;
+			subLevelUpImagEffectList[subLevelUpImageEffectIndex].gameObject.SetActive(false);
 			subLevelUpImagEffectList[subLevelUpImageEffectIndex].gameObject.SetActive(true);
 			_subLevelUpCount += 1;
 			CurrencyData.instance.gold -= _price;
