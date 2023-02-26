@@ -577,7 +577,7 @@ public class MainCanvas : MonoBehaviour
 
 	public void RefreshMissionAlarmObject()
 	{
-		RefreshAlarmObject(IsAlarmMission(), missionAlarmRootTransform);
+		RefreshAlarmObject(PlayerData.instance.downloadConfirmed && IsAlarmMission(), missionAlarmRootTransform);
 	}
 
 	public static bool IsAlarmDownloadReward()
