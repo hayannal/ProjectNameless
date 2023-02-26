@@ -141,7 +141,7 @@ public class AnalysisResultCanvas : MonoBehaviour
 		yield return Timing.WaitForSeconds(expChangeTime);
 
 		// 경험치 부스터 영역은 항상 나온다.
-		int remainBoost = CashShopData.instance.GetCashItemCount(CashShopData.eCashItemCountType.AnalysisBoost);
+		int remainBoost = AnalysisData.instance.boostRemainTime;
 		remainBoost += ResearchInfoAnalysisCanvas.instance.cachedBoostUses;
 		boostValueText.text = GetTimeString(remainBoost);
 		boostValueText.color = (remainBoost == 0) ? new Color(0.8f, 0.0f, 0.0f) : new Color(0.0f, 0.895f, 0.895f);
@@ -161,7 +161,7 @@ public class AnalysisResultCanvas : MonoBehaviour
 			_expChangeSpeed = (_addExp - _currentExp) / _expChangeRemainTime;
 			_updateExpText = true;
 
-			_targetBoost = CashShopData.instance.GetCashItemCount(CashShopData.eCashItemCountType.AnalysisBoost);
+			_targetBoost = AnalysisData.instance.boostRemainTime;
 			_boostChangeSpeed = ResearchInfoAnalysisCanvas.instance.cachedBoostUses / _expChangeRemainTime;
 			_currentBoost = remainBoost;
 			_updateBoostText = true;

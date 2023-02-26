@@ -315,6 +315,7 @@ public class CurrencyData : MonoBehaviour
 				{
 					case "Cash_sSevenTotal":
 					case "Cash_sFestivalTotal":
+					case "Cash_sAnalysisBoost":
 						// 캐시샵쪽에서 Consume은 전부 처리하고 있으니 넘기면 된다. SevenTotalCanvas에서 상품 구매시 이쪽으로 넘어와서 처리될거다.
 						CashShopData.instance.OnRecvConsumeItem(value, count);
 						break;

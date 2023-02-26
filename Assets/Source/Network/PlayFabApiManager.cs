@@ -1703,7 +1703,7 @@ public class PlayFabApiManager : MonoBehaviour
 
 				// 부스트 삭제
 				if (useBoost > 0)
-					CashShopData.instance.ConsumeCount(CashShopData.eCashItemCountType.AnalysisBoost, useBoost);
+					AnalysisData.instance.boostRemainTime -= useBoost;
 
 				// 재화
 				CurrencyData.instance.gold += resultGold;
@@ -2259,6 +2259,37 @@ public class PlayFabApiManager : MonoBehaviour
 
 				CashShopData.instance.ConsumeCount(CashShopData.eCashConsumeCountType.FestivalTotal, count);
 				FestivalData.instance.festivalSumPoint += count;
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
+	public void RequestConsumeAnalysisBoost(Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		int count = CashShopData.instance.GetConsumeCount(CashShopData.eCashConsumeCountType.AnalysisBoost);
+		string input = string.Format("{0}_{1}", count, "orzwamlp");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "ConsumeAnalysisBoost",
+			FunctionParameter = new { Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				CashShopData.instance.ConsumeCount(CashShopData.eCashConsumeCountType.AnalysisBoost, count);
+				AnalysisData.instance.boostRemainTime += count * 24 * 3600;
 
 				if (successCallback != null) successCallback.Invoke();
 			}

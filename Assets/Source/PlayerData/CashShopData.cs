@@ -93,12 +93,13 @@ public class CashShopData : MonoBehaviour
 		Spell3Gacha = 5,
 		Spell4Gacha = 6,
 		Spell5Gacha = 7,
+		AnalysisBoost = 8,
 
 		Amount,
 	}
 	List<ObscuredInt> _listCashConsumeCount = new List<ObscuredInt>();
 	List<string> _listCashConsumeCountKey = new List<string> { "Cash_sSpellGacha", "Cash_sCharacterGacha", "Cash_sEquipGacha", "Cash_sSevenTotal", "Cash_sFestivalTotal",
-		"Cash_sSpell3Gacha", "Cash_sSpell4Gacha", "Cash_sSpell5Gacha"
+		"Cash_sSpell3Gacha", "Cash_sSpell4Gacha", "Cash_sSpell5Gacha", "Cash_sAnalysisBoost"
 	};
 
 	public enum eCashItemCountType
@@ -106,12 +107,11 @@ public class CashShopData : MonoBehaviour
 		DailyDiamond = 0,
 		CaptureBetter = 1,
 		CaptureBest = 2,
-		AnalysisBoost = 3,
 
 		Amount,
 	}
 	List<ObscuredInt> _listCashItemCount = new List<ObscuredInt>();
-	List<string> _listCashItemCountKey = new List<string> { "Item_cDailyGem", "Item_cCaptureBetter", "Item_cCaptureBest", "Item_cAnalysisBoost" };
+	List<string> _listCashItemCountKey = new List<string> { "Item_cDailyGem", "Item_cCaptureBetter", "Item_cCaptureBest" };
 
 	// 레벨패스에서 받았음을 기억해두는 변수인데 어차피 받을때마다 서버검증 하기때문에 Obscured 안쓰고 그냥 사용하기로 한다.
 	List<int> _listLevelPassReward;
@@ -695,6 +695,10 @@ public class CashShopData : MonoBehaviour
 				break;
 			case "Cash_sSpell5Gacha":
 				PurchaseCount(eCashConsumeCountType.Spell5Gacha, count);
+				break;
+			case "Cash_sAnalysisBoost":
+				PurchaseCount(eCashConsumeCountType.AnalysisBoost, count);
+				PlayFabApiManager.instance.RequestConsumeAnalysisBoost(null);
 				break;
 		}
 	}
@@ -1485,6 +1489,9 @@ public class CashShopData : MonoBehaviour
 					break;
 				case eCashConsumeCountType.FestivalTotal:
 					PlayFabApiManager.instance.RequestConsumeFestivalTotal(null);
+					break;
+				case eCashConsumeCountType.AnalysisBoost:
+					PlayFabApiManager.instance.RequestConsumeAnalysisBoost(null);
 					break;
 			}
 

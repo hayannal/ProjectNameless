@@ -227,6 +227,7 @@ public class AuthManager : MonoBehaviour
 		playerStatisticNames.Add("goldBoxTurn");
 		playerStatisticNames.Add("goldBoxValue");
 		playerStatisticNames.Add("analysisExp");
+		playerStatisticNames.Add("analysisBoost");
 		playerStatisticNames.Add("guideQuestIndex");
 		playerStatisticNames.Add("energyUseForPayback");
 		playerStatisticNames.Add("sevenDaysSumPoint");

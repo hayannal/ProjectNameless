@@ -36,6 +36,9 @@ public class AnalysisData : MonoBehaviour
 	public DateTime analysisStartedTime { get; private set; }
 	public DateTime analysisCompleteTime { get; private set; }
 
+	// boost
+	public ObscuredInt boostRemainTime { get; set; }
+
 
 	void Update()
 	{
@@ -81,12 +84,13 @@ public class AnalysisData : MonoBehaviour
 	public void OnRecvAnalysisData(Dictionary<string, UserDataRecord> userReadOnlyData, List<StatisticValue> playerStatistics)
 	{
 		analysisExp = 0;
+		boostRemainTime = 0;
 		for (int i = 0; i < playerStatistics.Count; ++i)
 		{
-			if (playerStatistics[i].StatisticName == "analysisExp")
+			switch (playerStatistics[i].StatisticName)
 			{
-				analysisExp = playerStatistics[i].Value;
-				break;
+				case "analysisExp": analysisExp = playerStatistics[i].Value; break;
+				case "analysisBoost": boostRemainTime = playerStatistics[i].Value; break;
 			}
 		}
 

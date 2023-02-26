@@ -285,7 +285,7 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 
 	public void RefreshBoostInfo()
 	{
-		int remainBoost = CashShopData.instance.GetCashItemCount(CashShopData.eCashItemCountType.AnalysisBoost);
+		int remainBoost = AnalysisData.instance.boostRemainTime;
 		if (remainBoost == 0)
 		{
 			boostRemainTimeText.text = string.Format("0h 0m 0s");
@@ -583,9 +583,9 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 		Debug.LogFormat("Analysis Time = {0}", totalSeconds);
 
 		// 부스트 적용 여부
-		if (CashShopData.instance.GetCashItemCount(CashShopData.eCashItemCountType.AnalysisBoost) > 0)
+		if (AnalysisData.instance.boostRemainTime > 0)
 		{
-			int appliedAmount = CashShopData.instance.GetCashItemCount(CashShopData.eCashItemCountType.AnalysisBoost);
+			int appliedAmount = AnalysisData.instance.boostRemainTime;
 			if (appliedAmount > totalSeconds)
 				appliedAmount = totalSeconds;
 

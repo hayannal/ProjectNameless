@@ -61,14 +61,9 @@ public class AnalysisBoostCanvasListItem : SimpleCashCanvas
 				if (shopProductTableData != null)
 					analysisBoostTableData = TableDataManager.instance.FindAnalysisBoostTableDataByShopProductId(shopProductTableData.productId);
 			}
-			if (shopProductTableData != null && analysisBoostTableData != null)
-				CashShopData.instance.PurchaseCount(CashShopData.eCashItemCountType.AnalysisBoost, analysisBoostTableData.count);
 			if (shopProductTableData != null)
 			{
-				// 1번 리워드가 아이템일거라 이렇게 호출해도 아무일 없이 호출이 무시될거다.
 				CurrencyData.instance.OnRecvProductReward(shopProductTableData.rewardType1, shopProductTableData.rewardValue1, shopProductTableData.rewardCount1);
-
-				// 나머지 아이템들은 재화라 인벤에 들어오게 될거다.
 				CurrencyData.instance.OnRecvProductReward(shopProductTableData.rewardType2, shopProductTableData.rewardValue2, shopProductTableData.rewardCount2);
 				CurrencyData.instance.OnRecvProductReward(shopProductTableData.rewardType3, shopProductTableData.rewardValue3, shopProductTableData.rewardCount3);
 				CurrencyData.instance.OnRecvProductReward(shopProductTableData.rewardType4, shopProductTableData.rewardValue4, shopProductTableData.rewardCount4);
