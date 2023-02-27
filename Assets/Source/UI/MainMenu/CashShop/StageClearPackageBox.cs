@@ -92,6 +92,9 @@ public class StageClearPackageBox : SimpleCashCanvas
 
 	public void OnClickCustomButton()
 	{
+		if (PlayerData.instance.CheckConfirmDownload() == false)
+			return;
+
 		if (CurrencyData.instance.CheckMaxGold())
 			return;
 
