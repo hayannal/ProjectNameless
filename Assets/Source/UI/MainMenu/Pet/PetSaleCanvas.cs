@@ -180,10 +180,23 @@ public class PetSaleCanvas : SimpleCashCanvas
 			if (itemGrantString == "")
 				return;
 
+			float prevPowerValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
+
 			PetManager.instance.OnRecvItemGrantResult(itemGrantString);
 
 			if (instance != null && instance.gameObject.activeSelf)
+			{
 				instance.resultRootObject.SetActive(true);
+
+				float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
+				if (nextValue > prevPowerValue)
+				{
+					UIInstanceManager.instance.ShowCanvasAsync("ChangePowerCanvas", () =>
+					{
+						ChangePowerCanvas.instance.ShowInfo(prevPowerValue, nextValue);
+					});
+				}
+			}
 			else
 				ToastCanvas.instance.ShowToast(UIString.instance.GetString("PetUI_ResultSuccess"), 2.0f);
 		});
