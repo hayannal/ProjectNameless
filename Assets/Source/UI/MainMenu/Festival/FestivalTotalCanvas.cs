@@ -199,7 +199,12 @@ public class FestivalTotalCanvas : SimpleCashCanvas
 			PlayFabApiManager.instance.RequestConsumeFestivalSlot(buttonIndex, () =>
 			{
 				if (instance != null)
+				{
 					instance.RefreshButtonState();
+
+					if (FestivalTabCanvas.instance != null)
+						FestivalTabCanvas.instance.currencySmallInfo.RefreshInfo();
+				}
 			});
 
 			CodelessIAPStoreListener.Instance.StoreController.ConfirmPendingPurchase(product);

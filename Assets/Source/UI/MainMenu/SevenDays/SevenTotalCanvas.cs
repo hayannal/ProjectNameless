@@ -199,7 +199,12 @@ public class SevenTotalCanvas : SimpleCashCanvas
 			PlayFabApiManager.instance.RequestConsumeSevenSlot(buttonIndex, () =>
 			{
 				if (instance != null)
+				{
 					instance.RefreshButtonState();
+
+					if (SevenDaysTabCanvas.instance != null)
+						SevenDaysTabCanvas.instance.currencySmallInfo.RefreshInfo();
+				}
 			});
 
 			CodelessIAPStoreListener.Instance.StoreController.ConfirmPendingPurchase(product);
