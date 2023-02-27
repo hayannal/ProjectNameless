@@ -108,6 +108,9 @@ public class CashShopEnergyListItem : SimpleCashCanvas
 				});
 			}
 
+			if (CashShopCanvas.instance != null && CashShopCanvas.instance.gameObject.activeSelf)
+				CashShopCanvas.instance.currencySmallInfo.RefreshInfo();
+
 			CodelessIAPStoreListener.Instance.StoreController.ConfirmPendingPurchase(product);
 			IAPListenerWrapper.instance.CheckConfirmPendingPurchase(product);
 
