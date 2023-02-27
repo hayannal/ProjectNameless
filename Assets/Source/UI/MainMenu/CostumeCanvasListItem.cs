@@ -198,6 +198,8 @@ public class CostumeCanvasListItem : SimpleCashCanvas
 				if (product != null)
 					costumeTableData = TableDataManager.instance.FindCostumeTableData(product.definition.id);
 			}
+
+			WaitingNetworkCanvas.Show(false);
 			CostumeManager.instance.OnRecvPurchase(costumeTableData.costumeId);
 			ToastCanvas.instance.ShowToast(UIString.instance.GetString("CostumeUI_PurchaseComplete"), 2.0f);
 			if (CostumeListCanvas.instance != null)
