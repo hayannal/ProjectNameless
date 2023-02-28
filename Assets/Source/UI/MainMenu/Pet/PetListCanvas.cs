@@ -3,11 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-#if UNITY_EDITOR
-using UnityEditor.AddressableAssets;
-using UnityEditor.AddressableAssets.Settings;
-#endif
-using MEC;
+using UnityEngine.Purchasing;
 
 public class PetListCanvas : PetShowCanvasBase
 {
@@ -273,6 +269,30 @@ public class PetListCanvas : PetShowCanvasBase
 		petPassPriceText.gameObject.SetActive(!actived);
 		petPassPurchasedText.gameObject.SetActive(actived);
 		petPassRemainTimeText.gameObject.SetActive(actived);
+
+		if (actived)
+			return;
+		ShopProductTableData shopProductTableData = TableDataManager.instance.FindShopProductTableData("petpass");
+		if (shopProductTableData == null)
+			return;
+		RefreshPassPrice(shopProductTableData.serverItemId, shopProductTableData.kor, shopProductTableData.eng);
+	}
+
+	void RefreshPassPrice(string serverItemId, int kor, float eng)
+	{
+		if (petPassPriceText == null)
+			return;
+
+		Product product = CodelessIAPStoreListener.Instance.GetProduct(serverItemId);
+		if (product != null && product.metadata != null && product.metadata.localizedPrice > 0)
+			petPassPriceText.text = product.metadata.localizedPriceString;
+		else
+		{
+			if (Application.systemLanguage == SystemLanguage.Korean)
+				petPassPriceText.text = string.Format("{0}{1:N0}", BattleInstanceManager.instance.GetCachedGlobalConstantString("KoreaWon"), kor);
+			else
+				petPassPriceText.text = string.Format("$ {0:0.##}", eng);
+		}
 	}
 
 	int _lastPassRemainTimeSecond;
