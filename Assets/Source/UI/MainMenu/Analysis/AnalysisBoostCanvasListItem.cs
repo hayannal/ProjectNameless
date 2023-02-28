@@ -24,7 +24,7 @@ public class AnalysisBoostCanvasListItem : SimpleCashCanvas
 		if (analysisBoostTableData == null)
 			return;
 		_analysisBoostTableData = analysisBoostTableData;
-		timeText.text = AnalysisResultCanvas.GetTimeString(analysisBoostTableData.count, true);
+		timeText.text = AnalysisResultCanvas.GetTimeString(analysisBoostTableData.count * 24 * 3600, true);
 
 		ShopProductTableData shopProductTableData = TableDataManager.instance.FindShopProductTableData(analysisBoostTableData.shopProductId);
 		if (shopProductTableData != null)
