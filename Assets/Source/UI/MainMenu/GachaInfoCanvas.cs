@@ -289,7 +289,19 @@ public class GachaInfoCanvas : MonoBehaviour
 
 	public void OnClickBetMaxButton()
 	{
-		_currentBetRateIndex = _listBetValue.Count - 1;
+		bool find = false;
+		for (int i = _listBetValue.Count - 1; i >= 0; --i)
+		{
+			int useEnergy = _listBetValue[i];
+			if (CurrencyData.instance.energy >= useEnergy)
+			{
+				_currentBetRateIndex = i;
+				find = true;
+				break;
+			}
+		}
+		if (find == false)
+			_currentBetRateIndex = 0;
 
 		RefreshBetText();
 
