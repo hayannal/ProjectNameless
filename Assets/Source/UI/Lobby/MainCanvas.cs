@@ -829,7 +829,7 @@ public class MainCanvas : MonoBehaviour
 		bool showBrokenEnergy = (CurrencyData.instance.brokenEnergy > 0);
 		brokenEnergyButtonObject.SetActive(showBrokenEnergy);
 
-		bool showFirstPurchase = (CashShopData.instance.firstPurchaseRewarded == false);
+		bool showFirstPurchase = (PlayerData.instance.downloadConfirmed && CashShopData.instance.firstPurchaseRewarded == false);
 		firstPurchaseButtonObject.SetActive(showFirstPurchase);
 
 		bool showAttendance = (AttendanceData.instance.attendanceId != "");
