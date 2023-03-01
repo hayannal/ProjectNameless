@@ -636,6 +636,10 @@ namespace PlayFab.MultiplayerModels
         /// </summary>
         public List<BuildRegionParams> RegionConfigurations;
         /// <summary>
+        /// The resource constraints to apply to each server on the VM (EXPERIMENTAL API)
+        /// </summary>
+        public ServerResourceConstraintParams ServerResourceConstraints;
+        /// <summary>
         /// When true, assets will be downloaded and uncompressed in memory, without the compressedversion being written first to
         /// disc.
         /// </summary>
@@ -644,6 +648,10 @@ namespace PlayFab.MultiplayerModels
         /// The VM size to create the build on.
         /// </summary>
         public AzureVmSize? VmSize;
+        /// <summary>
+        /// The configuration for the VmStartupScript for the build
+        /// </summary>
+        public VmStartupScriptParams VmStartupScriptConfiguration;
     }
 
     [Serializable]
@@ -715,6 +723,10 @@ namespace PlayFab.MultiplayerModels
         /// </summary>
         public List<BuildRegion> RegionConfigurations;
         /// <summary>
+        /// The resource constraints to apply to each server on the VM (EXPERIMENTAL API)
+        /// </summary>
+        public ServerResourceConstraintParams ServerResourceConstraints;
+        /// <summary>
         /// The type of game server being hosted.
         /// </summary>
         public string ServerType;
@@ -727,6 +739,10 @@ namespace PlayFab.MultiplayerModels
         /// The VM size the build was created on.
         /// </summary>
         public AzureVmSize? VmSize;
+        /// <summary>
+        /// The configuration for the VmStartupScript feature for the build
+        /// </summary>
+        public VmStartupScriptConfiguration VmStartupScriptConfiguration;
     }
 
     /// <summary>
@@ -791,6 +807,10 @@ namespace PlayFab.MultiplayerModels
         /// </summary>
         public List<BuildRegionParams> RegionConfigurations;
         /// <summary>
+        /// The resource constraints to apply to each server on the VM (EXPERIMENTAL API)
+        /// </summary>
+        public ServerResourceConstraintParams ServerResourceConstraints;
+        /// <summary>
         /// The command to run when the multiplayer server is started, including any arguments.
         /// </summary>
         public string StartMultiplayerServerCommand;
@@ -803,6 +823,10 @@ namespace PlayFab.MultiplayerModels
         /// The VM size to create the build on.
         /// </summary>
         public AzureVmSize? VmSize;
+        /// <summary>
+        /// The configuration for the VmStartupScript for the build
+        /// </summary>
+        public VmStartupScriptParams VmStartupScriptConfiguration;
         /// <summary>
         /// The crash dump configuration for the build.
         /// </summary>
@@ -875,6 +899,10 @@ namespace PlayFab.MultiplayerModels
         /// </summary>
         public List<BuildRegion> RegionConfigurations;
         /// <summary>
+        /// The resource constraints to apply to each server on the VM (EXPERIMENTAL API)
+        /// </summary>
+        public ServerResourceConstraintParams ServerResourceConstraints;
+        /// <summary>
         /// The type of game server being hosted.
         /// </summary>
         public string ServerType;
@@ -891,6 +919,10 @@ namespace PlayFab.MultiplayerModels
         /// The VM size the build was created on.
         /// </summary>
         public AzureVmSize? VmSize;
+        /// <summary>
+        /// The configuration for the VmStartupScript feature for the build
+        /// </summary>
+        public VmStartupScriptConfiguration VmStartupScriptConfiguration;
     }
 
     /// <summary>
@@ -974,6 +1006,10 @@ namespace PlayFab.MultiplayerModels
         /// The VM size to create the build on.
         /// </summary>
         public AzureVmSize? VmSize;
+        /// <summary>
+        /// The configuration for the VmStartupScript for the build
+        /// </summary>
+        public VmStartupScriptParams VmStartupScriptConfiguration;
     }
 
     [Serializable]
@@ -1064,6 +1100,10 @@ namespace PlayFab.MultiplayerModels
         /// The VM size the build was created on.
         /// </summary>
         public AzureVmSize? VmSize;
+        /// <summary>
+        /// The configuration for the VmStartupScript feature for the build
+        /// </summary>
+        public VmStartupScriptConfiguration VmStartupScriptConfiguration;
     }
 
     /// <summary>
@@ -1692,6 +1732,16 @@ namespace PlayFab.MultiplayerModels
         public string Type;
     }
 
+    public enum ExternalFriendSources
+    {
+        None,
+        Steam,
+        Facebook,
+        Xbox,
+        Psn,
+        All
+    }
+
     /// <summary>
     /// Request to find friends lobbies. Only a client can find friend lobbies.
     /// </summary>
@@ -1705,19 +1755,32 @@ namespace PlayFab.MultiplayerModels
         /// <summary>
         /// Controls whether this query should link to friends made on the Facebook network. Defaults to false
         /// </summary>
-        public bool ExcludeFacebookFriends;
+        [Obsolete("Use 'ExternalPlatformFriends' instead", true)]
+        public bool? ExcludeFacebookFriends;
         /// <summary>
         /// Controls whether this query should link to friends made on the Steam network. Defaults to false
         /// </summary>
-        public bool ExcludeSteamFriends;
+        [Obsolete("Use 'ExternalPlatformFriends' instead", true)]
+        public bool? ExcludeSteamFriends;
         /// <summary>
-        /// OData style string that contains one or more filters. The OR and grouping operators are not allowed.
+        /// Indicates which other platforms' friends this query should link to.
+        /// </summary>
+        public ExternalFriendSources? ExternalPlatformFriends;
+        /// <summary>
+        /// OData style string that contains one or more filters. Only the following operators are supported: "and" (logical and),
+        /// "eq" (equal), "ne" (not equals), "ge" (greater than or equal), "gt" (greater than), "le" (less than or equal), and "lt"
+        /// (less than). The left-hand side of each OData logical expression should be either a search property key (e.g.
+        /// string_key1, number_key3, etc) or one of the pre-defined search keys all of which must be prefixed by "lobby/":
+        /// lobby/memberCount (number of players in a lobby), lobby/maxMemberCount (maximum number of players allowed in a lobby),
+        /// lobby/membershipLock (must equal 'Unlocked' or 'Locked'), lobby/amOwner (required to equal "true"), lobby/amMember
+        /// (required to equal "true").
         /// </summary>
         public string Filter;
         /// <summary>
-        /// OData style string that contains sorting for this query. To sort by closest, a moniker `distance{number_key1 = 5}` can
-        /// be used to sort by distance from the given number. This field only supports either one sort clause or one distance
-        /// clause.
+        /// OData style string that contains sorting for this query in either ascending ("asc") or descending ("desc") order.
+        /// OrderBy clauses are of the form "number_key1 asc" or the pre-defined search key "lobby/memberCount asc" and
+        /// "lobby/maxMemberCount desc". To sort by closest, a moniker `distance{number_key1 = 5}` can be used to sort by distance
+        /// from the given number. This field only supports either one sort clause or one distance clause.
         /// </summary>
         public string OrderBy;
         /// <summary>
@@ -1754,13 +1817,20 @@ namespace PlayFab.MultiplayerModels
         /// </summary>
         public Dictionary<string,string> CustomTags;
         /// <summary>
-        /// OData style string that contains one or more filters. The OR and grouping operators are not allowed.
+        /// OData style string that contains one or more filters. Only the following operators are supported: "and" (logical and),
+        /// "eq" (equal), "ne" (not equals), "ge" (greater than or equal), "gt" (greater than), "le" (less than or equal), and "lt"
+        /// (less than). The left-hand side of each OData logical expression should be either a search property key (e.g.
+        /// string_key1, number_key3, etc) or one of the pre-defined search keys all of which must be prefixed by "lobby/":
+        /// lobby/memberCount (number of players in a lobby), lobby/maxMemberCount (maximum number of players allowed in a lobby),
+        /// lobby/membershipLock (must equal 'Unlocked' or 'Locked'), lobby/amOwner (required to equal "true"), lobby/amMember
+        /// (required to equal "true").
         /// </summary>
         public string Filter;
         /// <summary>
-        /// OData style string that contains sorting for this query. To sort by closest, a moniker `distance{number_key1 = 5}` can
-        /// be used to sort by distance from the given number. This field only supports either one sort clause or one distance
-        /// clause.
+        /// OData style string that contains sorting for this query in either ascending ("asc") or descending ("desc") order.
+        /// OrderBy clauses are of the form "number_key1 asc" or the pre-defined search key "lobby/memberCount asc" and
+        /// "lobby/maxMemberCount desc". To sort by closest, a moniker `distance{number_key1 = 5}` can be used to sort by distance
+        /// from the given number. This field only supports either one sort clause or one distance clause.
         /// </summary>
         public string OrderBy;
         /// <summary>
@@ -1806,6 +1876,10 @@ namespace PlayFab.MultiplayerModels
         /// The maximum number of players allowed in the lobby.
         /// </summary>
         public uint MaxPlayers;
+        /// <summary>
+        /// A setting indicating whether members are allowed to join this lobby. When Locked new members are prevented from joining.
+        /// </summary>
+        public MembershipLock? MembershipLock;
         /// <summary>
         /// The client or server entity which owns this lobby.
         /// </summary>
@@ -2008,6 +2082,10 @@ namespace PlayFab.MultiplayerModels
         /// The region configuration for the build.
         /// </summary>
         public List<BuildRegion> RegionConfigurations;
+        /// <summary>
+        /// The resource constraints to apply to each server on the VM.
+        /// </summary>
+        public ServerResourceConstraintParams ServerResourceConstraints;
         /// <summary>
         /// The type of game server being hosted.
         /// </summary>
@@ -2243,17 +2321,9 @@ namespace PlayFab.MultiplayerModels
     public class GetMultiplayerServerDetailsRequest : PlayFabRequestCommon
     {
         /// <summary>
-        /// The guid string build ID of the multiplayer server to get details for.
-        /// </summary>
-        public string BuildId;
-        /// <summary>
         /// The optional custom tags associated with the request (e.g. build number, external trace identifiers, etc.).
         /// </summary>
         public Dictionary<string,string> CustomTags;
-        /// <summary>
-        /// The region the multiplayer server is located in to get details for.
-        /// </summary>
-        public string Region;
         /// <summary>
         /// The title generated guid string session ID of the multiplayer server to get details for. This is to keep track of
         /// multiplayer server sessions.
@@ -3381,6 +3451,10 @@ namespace PlayFab.MultiplayerModels
         /// </summary>
         public uint MaxPlayers;
         /// <summary>
+        /// A setting indicating whether members are allowed to join this lobby. When Locked new members are prevented from joining.
+        /// </summary>
+        public MembershipLock? MembershipLock;
+        /// <summary>
         /// The client or server entity which owns this lobby.
         /// </summary>
         public EntityKey Owner;
@@ -3446,6 +3520,10 @@ namespace PlayFab.MultiplayerModels
     [Serializable]
     public class MatchmakingQueueConfig : PlayFabBaseModel
     {
+        /// <summary>
+        /// This is the buildAlias that will be used to allocate the multiplayer server for the match.
+        /// </summary>
+        public BuildAliasParams BuildAliasParams;
         /// <summary>
         /// This is the buildId that will be used to allocate the multiplayer server for the match.
         /// </summary>
@@ -4082,6 +4160,20 @@ namespace PlayFab.MultiplayerModels
         public string Region;
     }
 
+    [Serializable]
+    public class ServerResourceConstraintParams : PlayFabBaseModel
+    {
+        /// <summary>
+        /// The maximum number of cores that each server is allowed to use.
+        /// </summary>
+        public double CpuLimit;
+        /// <summary>
+        /// The maximum number of GiB of memory that each server is allowed to use. WARNING: After exceeding this limit, the server
+        /// will be killed
+        /// </summary>
+        public double MemoryLimitGB;
+    }
+
     public enum ServerType
     {
         Container,
@@ -4319,7 +4411,8 @@ namespace PlayFab.MultiplayerModels
         /// </summary>
         public string PubSubConnectionHandle;
         /// <summary>
-        /// The name of the resource to subscribe to.
+        /// The name of the resource to subscribe to. It follows the format {queueName}|{ticketId} for MatchTicketStatusChange. For
+        /// MatchInvite, ResourceId is @me.
         /// </summary>
         public string ResourceId;
         /// <summary>
@@ -4442,7 +4535,7 @@ namespace PlayFab.MultiplayerModels
     }
 
     /// <summary>
-    /// Request to unsubscribe from lobby notifications. Only a client can unsubscribe from notifications.
+    /// Request to unsubscribe from lobby notifications.
     /// </summary>
     [Serializable]
     public class UnsubscribeFromLobbyResourceRequest : PlayFabRequestCommon
@@ -4494,7 +4587,8 @@ namespace PlayFab.MultiplayerModels
         /// </summary>
         public string PubSubConnectionHandle;
         /// <summary>
-        /// The resource to unsubscribe from.
+        /// The name of the resource to unsubscribe from. It follows the format {queueName}|{ticketId} for MatchTicketStatusChange.
+        /// For MatchInvite, ResourceId is @me.
         /// </summary>
         public string ResourceId;
         /// <summary>
@@ -4739,6 +4833,24 @@ namespace PlayFab.MultiplayerModels
         /// The virtual machine ID.
         /// </summary>
         public string VmId;
+    }
+
+    [Serializable]
+    public class VmStartupScriptConfiguration : PlayFabBaseModel
+    {
+        /// <summary>
+        /// Asset which contains the VmStartupScript script and any other required files.
+        /// </summary>
+        public AssetReference VmStartupScriptAssetReference;
+    }
+
+    [Serializable]
+    public class VmStartupScriptParams : PlayFabBaseModel
+    {
+        /// <summary>
+        /// Asset which contains the VmStartupScript script and any other required files.
+        /// </summary>
+        public AssetReferenceParams VmStartupScriptAssetReference;
     }
 
     [Serializable]

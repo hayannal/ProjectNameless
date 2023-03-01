@@ -93,12 +93,16 @@ namespace PlayFab.Events
         public event PlayFabResultEvent<GetPlayFabIDsFromFacebookInstantGamesIdsResult> OnServerGetPlayFabIDsFromFacebookInstantGamesIdsResultEvent;
         public event PlayFabRequestEvent<GetPlayFabIDsFromGenericIDsRequest> OnServerGetPlayFabIDsFromGenericIDsRequestEvent;
         public event PlayFabResultEvent<GetPlayFabIDsFromGenericIDsResult> OnServerGetPlayFabIDsFromGenericIDsResultEvent;
+        public event PlayFabRequestEvent<GetPlayFabIDsFromNintendoServiceAccountIdsRequest> OnServerGetPlayFabIDsFromNintendoServiceAccountIdsRequestEvent;
+        public event PlayFabResultEvent<GetPlayFabIDsFromNintendoServiceAccountIdsResult> OnServerGetPlayFabIDsFromNintendoServiceAccountIdsResultEvent;
         public event PlayFabRequestEvent<GetPlayFabIDsFromNintendoSwitchDeviceIdsRequest> OnServerGetPlayFabIDsFromNintendoSwitchDeviceIdsRequestEvent;
         public event PlayFabResultEvent<GetPlayFabIDsFromNintendoSwitchDeviceIdsResult> OnServerGetPlayFabIDsFromNintendoSwitchDeviceIdsResultEvent;
         public event PlayFabRequestEvent<GetPlayFabIDsFromPSNAccountIDsRequest> OnServerGetPlayFabIDsFromPSNAccountIDsRequestEvent;
         public event PlayFabResultEvent<GetPlayFabIDsFromPSNAccountIDsResult> OnServerGetPlayFabIDsFromPSNAccountIDsResultEvent;
         public event PlayFabRequestEvent<GetPlayFabIDsFromSteamIDsRequest> OnServerGetPlayFabIDsFromSteamIDsRequestEvent;
         public event PlayFabResultEvent<GetPlayFabIDsFromSteamIDsResult> OnServerGetPlayFabIDsFromSteamIDsResultEvent;
+        public event PlayFabRequestEvent<GetPlayFabIDsFromTwitchIDsRequest> OnServerGetPlayFabIDsFromTwitchIDsRequestEvent;
+        public event PlayFabResultEvent<GetPlayFabIDsFromTwitchIDsResult> OnServerGetPlayFabIDsFromTwitchIDsResultEvent;
         public event PlayFabRequestEvent<GetPlayFabIDsFromXboxLiveIDsRequest> OnServerGetPlayFabIDsFromXboxLiveIDsRequestEvent;
         public event PlayFabResultEvent<GetPlayFabIDsFromXboxLiveIDsResult> OnServerGetPlayFabIDsFromXboxLiveIDsResultEvent;
         public event PlayFabRequestEvent<GetPublisherDataRequest> OnServerGetPublisherDataRequestEvent;
@@ -145,6 +149,10 @@ namespace PlayFab.Events
         public event PlayFabResultEvent<GrantItemsToUserResult> OnServerGrantItemsToUserResultEvent;
         public event PlayFabRequestEvent<GrantItemsToUsersRequest> OnServerGrantItemsToUsersRequestEvent;
         public event PlayFabResultEvent<GrantItemsToUsersResult> OnServerGrantItemsToUsersResultEvent;
+        public event PlayFabRequestEvent<LinkNintendoServiceAccountRequest> OnServerLinkNintendoServiceAccountRequestEvent;
+        public event PlayFabResultEvent<EmptyResult> OnServerLinkNintendoServiceAccountResultEvent;
+        public event PlayFabRequestEvent<LinkNintendoSwitchDeviceIdRequest> OnServerLinkNintendoSwitchDeviceIdRequestEvent;
+        public event PlayFabResultEvent<LinkNintendoSwitchDeviceIdResult> OnServerLinkNintendoSwitchDeviceIdResultEvent;
         public event PlayFabRequestEvent<LinkPSNAccountRequest> OnServerLinkPSNAccountRequestEvent;
         public event PlayFabResultEvent<LinkPSNAccountResult> OnServerLinkPSNAccountResultEvent;
         public event PlayFabRequestEvent<LinkServerCustomIdRequest> OnServerLinkServerCustomIdRequestEvent;
@@ -225,6 +233,10 @@ namespace PlayFab.Events
         public event PlayFabResultEvent<ModifyCharacterVirtualCurrencyResult> OnServerSubtractCharacterVirtualCurrencyResultEvent;
         public event PlayFabRequestEvent<SubtractUserVirtualCurrencyRequest> OnServerSubtractUserVirtualCurrencyRequestEvent;
         public event PlayFabResultEvent<ModifyUserVirtualCurrencyResult> OnServerSubtractUserVirtualCurrencyResultEvent;
+        public event PlayFabRequestEvent<UnlinkNintendoServiceAccountRequest> OnServerUnlinkNintendoServiceAccountRequestEvent;
+        public event PlayFabResultEvent<EmptyResponse> OnServerUnlinkNintendoServiceAccountResultEvent;
+        public event PlayFabRequestEvent<UnlinkNintendoSwitchDeviceIdRequest> OnServerUnlinkNintendoSwitchDeviceIdRequestEvent;
+        public event PlayFabResultEvent<UnlinkNintendoSwitchDeviceIdResult> OnServerUnlinkNintendoSwitchDeviceIdResultEvent;
         public event PlayFabRequestEvent<UnlinkPSNAccountRequest> OnServerUnlinkPSNAccountRequestEvent;
         public event PlayFabResultEvent<UnlinkPSNAccountResult> OnServerUnlinkPSNAccountResultEvent;
         public event PlayFabRequestEvent<UnlinkServerCustomIdRequest> OnServerUnlinkServerCustomIdRequestEvent;
