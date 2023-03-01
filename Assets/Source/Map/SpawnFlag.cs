@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
-using UnityEditor.Experimental.SceneManagement;
+
 #endif
 using SubjectNerd.Utilities;
 
@@ -34,7 +34,7 @@ public class SpawnFlag : MonoBehaviour
 	void Awake()
 	{
 #if UNITY_EDITOR
-		if (PrefabStageUtility.GetCurrentPrefabStage() != null)
+		if (UnityEditor.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage() != null)
 			return;
 
 		if (Application.isPlaying == false)
@@ -49,7 +49,7 @@ public class SpawnFlag : MonoBehaviour
 	void Start()
     {
 #if UNITY_EDITOR
-		if (PrefabStageUtility.GetCurrentPrefabStage() != null)
+		if (UnityEditor.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage() != null)
 			return;
 
 		if (_editorSpawned)

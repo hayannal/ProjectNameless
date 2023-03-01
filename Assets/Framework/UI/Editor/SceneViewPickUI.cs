@@ -6,7 +6,7 @@ using UnityEditor;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System.Linq;
-using UnityEditor.Experimental.SceneManagement;
+
 
 [InitializeOnLoad]
 [ExecuteInEditMode]
@@ -177,7 +177,7 @@ public static class SceneViewPickUI
 
         Graphic[] graphics = null;
 
-        var targetPrefabStage = PrefabStageUtility.GetCurrentPrefabStage();
+        var targetPrefabStage = UnityEditor.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage();
 
         if (targetPrefabStage != null && targetPrefabStage.prefabContentsRoot)
         {
