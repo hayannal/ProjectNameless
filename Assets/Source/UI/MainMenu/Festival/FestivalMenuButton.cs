@@ -23,7 +23,7 @@ public class FestivalMenuButton : MonoBehaviour
 		{
 			_festivalExpireDateTime = FestivalData.instance.festivalExpire2Time;
 		}
-		ShowButton(ServerTime.UtcNow < _festivalExpireDateTime);
+		ShowButton(FestivalData.instance.festivalId != 0 && ServerTime.UtcNow < _festivalExpireDateTime);
 	}
 
 	void Update()

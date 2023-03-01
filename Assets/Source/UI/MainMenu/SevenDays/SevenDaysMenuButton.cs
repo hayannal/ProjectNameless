@@ -13,7 +13,7 @@ public class SevenDaysMenuButton : MonoBehaviour
 	void OnEnable()
 	{
 		_sevenDaysExpireDateTime = MissionData.instance.sevenDaysExpireTime;
-		ShowButton(ServerTime.UtcNow < _sevenDaysExpireDateTime);
+		ShowButton(MissionData.instance.sevenDaysId != 0 && ServerTime.UtcNow < _sevenDaysExpireDateTime);
 	}
 
 	void Update()
