@@ -56,7 +56,7 @@ public class PressHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
 	{
 		_pointerDown = true;
 
-		Debug.Log("Pointer Down!");
+		//Debug.Log("Pointer Down!");
 
 		if (_sumCount == 0)
 		{
@@ -69,7 +69,7 @@ public class PressHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
 
 	public void OnPointerUp(PointerEventData eventData)
 	{
-		Debug.Log("Pointer Up!");
+		//Debug.Log("Pointer Up!");
 
 		if (_sumCount == 0)
 		{
