@@ -24,6 +24,9 @@ public class TeamManager : MonoBehaviour
 
 	public enum ePosition
 	{
+		Top,
+		Mid,
+		Bottom,
 		Left,
 		Right,
 
@@ -49,16 +52,11 @@ public class TeamManager : MonoBehaviour
 		}
 
 		// 서버에 저장되어있는거 보유했는지 확인 후
-		string actorId = CharacterManager.instance.leftCharacterId;
-		if (string.IsNullOrEmpty(actorId) == false && CharacterManager.instance.ContainsActor(actorId))
+		for (int i = 0; i < (int)ePosition.Amount; ++i)
 		{
-			SpawnTeamMember(ePosition.Left, actorId);
-		}
-
-		actorId = CharacterManager.instance.rightCharacterId;
-		if (string.IsNullOrEmpty(actorId) == false && CharacterManager.instance.ContainsActor(actorId))
-		{
-			SpawnTeamMember(ePosition.Right, actorId);
+			string actorId = CharacterManager.instance.listTeamPositionId[i];
+			if (string.IsNullOrEmpty(actorId) == false && CharacterManager.instance.ContainsActor(actorId))
+				SpawnTeamMember((ePosition)i, actorId);
 		}
 
 		#region Pet
@@ -138,6 +136,9 @@ public class TeamManager : MonoBehaviour
 		Vector3 offset = Vector3.zero;
 		switch  (positionType)
 		{
+			case ePosition.Top: offset = new Vector3(1.7f, 0.0f, 7.75f); break;
+			case ePosition.Mid: offset = new Vector3(-1.7f, 0.0f, 4.9f); break;
+			case ePosition.Bottom: offset = new Vector3(1.7f, 0.0f, 2.22f); break;
 			case ePosition.Left: offset = new Vector3(-1.5f, 0.0f, 0.3f); break;
 			case ePosition.Right: offset = new Vector3(1.5f, 0.0f, 0.3f); break;
 		}

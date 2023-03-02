@@ -45,46 +45,27 @@ public class CharacterManager : MonoBehaviour
 			_listCharacterData.Add(newCharacterData);
 		}
 
-		leftCharacterId = rightCharacterId = "";
-		if (userReadOnlyData.ContainsKey("leftCharacterId"))
-		{
-			string actorId = userReadOnlyData["leftCharacterId"].Value;
-			bool find = false;
-			for (int i = 0; i < _listCharacterData.Count; ++i)
-			{
-				if (_listCharacterData[i].actorId == actorId)
-				{
-					find = true;
-					break;
-				}
-			}
-			if (find)
-				leftCharacterId = actorId;
-			else
-			{
-				leftCharacterId = "";
-				//PlayFabApiManager.instance.RequestIncCliSus(ClientSuspect.eClientSuspectCode.InvalidMainCharacter);
-			}
-		}
+		_listTeamPositionId.Clear();
+		for (int i = 0; i < (int)TeamManager.ePosition.Amount; ++i)
+			_listTeamPositionId.Add("");
 
-		if (userReadOnlyData.ContainsKey("rightCharacterId"))
+		for (int i = 0; i < (int)TeamManager.ePosition.Amount; ++i)
 		{
-			string actorId = userReadOnlyData["rightCharacterId"].Value;
-			bool find = false;
-			for (int i = 0; i < _listCharacterData.Count; ++i)
+			string key = string.Format("teamPosition{0}Id", i);
+			if (userReadOnlyData.ContainsKey(key))
 			{
-				if (_listCharacterData[i].actorId == actorId)
+				string actorId = userReadOnlyData[key].Value;
+				bool find = false;
+				for (int j = 0; j < _listCharacterData.Count; ++j)
 				{
-					find = true;
-					break;
+					if (_listCharacterData[j].actorId == actorId)
+					{
+						find = true;
+						break;
+					}
 				}
-			}
-			if (find)
-				rightCharacterId = actorId;
-			else
-			{
-				rightCharacterId = "";
-				//PlayFabApiManager.instance.RequestIncCliSus(ClientSuspect.eClientSuspectCode.InvalidMainCharacter);
+				if (find)
+					_listTeamPositionId[i] = actorId;
 			}
 		}
 
@@ -132,8 +113,10 @@ public class CharacterManager : MonoBehaviour
 	List<CharacterData> _listCharacterData = new List<CharacterData>();
 	public List<CharacterData> listCharacterData { get { return _listCharacterData; } }
 
-	public string leftCharacterId { get; set; }
-	public string rightCharacterId { get; set; }
+	//public string leftCharacterId { get; set; }
+	//public string rightCharacterId { get; set; }
+	List<string> _listTeamPositionId = new List<string>();
+	public List<string> listTeamPositionId { get { return _listTeamPositionId; } }
 
 	public CharacterData GetCharacterData(string actorId)
 	{

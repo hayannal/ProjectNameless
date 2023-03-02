@@ -51,9 +51,13 @@ public class CharacterListCanvas : CharacterShowCanvasBase
 
 		// leftCharacter rightCharacter 있는지 확인 후 없으면
 		// 인벤에 있는 캐릭터라도 가져와서 기본값으로 설정한다.
-		string baseActorId = CharacterManager.instance.leftCharacterId;
-		if (string.IsNullOrEmpty(baseActorId))
-			baseActorId = CharacterManager.instance.rightCharacterId;
+		string baseActorId = "";
+		for (int i = (int)TeamManager.ePosition.Amount - 1; i >= 0; --i)
+		{
+			baseActorId = CharacterManager.instance.listTeamPositionId[i];
+			if (string.IsNullOrEmpty(baseActorId) == false)
+				break;
+		}
 		if (string.IsNullOrEmpty(baseActorId) && CharacterManager.instance.listCharacterData.Count > 0)
 			baseActorId = CharacterManager.instance.listCharacterData[0].actorId;
 

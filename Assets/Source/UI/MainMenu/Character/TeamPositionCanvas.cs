@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class TeamPositionCanvas : MonoBehaviour
 {
-	public CharacterCanvasListItem leftCharacterCanvasListItem;
-	public CharacterCanvasListItem rightCharacterCanvasListItem;
+	public CharacterCanvasListItem[] characterCanvasListItemList;
+	public GameObject[] over100StagePositionArrowObjectList;
 
 	void OnEnable()
 	{
@@ -14,77 +14,48 @@ public class TeamPositionCanvas : MonoBehaviour
 
 	void RefreshSlot()
 	{
-		leftCharacterCanvasListItem.gameObject.SetActive(false);
-		if (string.IsNullOrEmpty(CharacterManager.instance.leftCharacterId) == false)
+		for (int i = 0; i < characterCanvasListItemList.Length; ++i)
 		{
-			CharacterData characterData = CharacterManager.instance.GetCharacterData(CharacterManager.instance.leftCharacterId);
-			if (characterData != null)
-			{
-				leftCharacterCanvasListItem.Initialize(characterData.actorId, characterData.level, characterData.transcend, false, 0, null, null, null);
-				leftCharacterCanvasListItem.equippedObject.SetActive(false);
-				leftCharacterCanvasListItem.gameObject.SetActive(true);
-			}
-		}
+			characterCanvasListItemList[i].gameObject.SetActive(false);
 
-		rightCharacterCanvasListItem.gameObject.SetActive(false);
-		if (string.IsNullOrEmpty(CharacterManager.instance.rightCharacterId) == false)
-		{
-			CharacterData characterData = CharacterManager.instance.GetCharacterData(CharacterManager.instance.rightCharacterId);
-			if (characterData != null)
+			if (string.IsNullOrEmpty(CharacterManager.instance.listTeamPositionId[i]) == false)
 			{
-				rightCharacterCanvasListItem.Initialize(characterData.actorId, characterData.level, characterData.transcend, false, 0, null, null, null);
-				rightCharacterCanvasListItem.equippedObject.SetActive(false);
-				rightCharacterCanvasListItem.gameObject.SetActive(true);
+				CharacterData characterData = CharacterManager.instance.GetCharacterData(CharacterManager.instance.listTeamPositionId[i]);
+				if (characterData != null)
+				{
+					characterCanvasListItemList[i].Initialize(characterData.actorId, characterData.level, characterData.transcend, false, 0, null, null, null);
+					characterCanvasListItemList[i].equippedObject.SetActive(false);
+					characterCanvasListItemList[i].gameObject.SetActive(true);
+				}
 			}
 		}
 	}
 
-	public void OnClickLeftButton()
+	public void OnClickButton(int index)
 	{
-		if (string.IsNullOrEmpty(CharacterManager.instance.leftCharacterId) == false)
+		if (string.IsNullOrEmpty(CharacterManager.instance.listTeamPositionId[index]) == false)
 		{
-			if (CharacterListCanvas.instance.selectedActorId == CharacterManager.instance.leftCharacterId)
+			if (CharacterListCanvas.instance.selectedActorId == CharacterManager.instance.listTeamPositionId[index])
 			{
 				ToastCanvas.instance.ShowToast(UIString.instance.GetString("CharacterUI_AlreadyPosition"), 2.0f);
 				return;
 			}
 		}
 
-		bool swap = false;
-		if (string.IsNullOrEmpty(CharacterManager.instance.rightCharacterId) == false)
+		int prevSwapIndex = -1;
+		for (int i = 0; i < (int)TeamManager.ePosition.Amount; ++i)
 		{
-			if (CharacterListCanvas.instance.selectedActorId == CharacterManager.instance.rightCharacterId)
-				swap = true;
-		}
+			if (i == index)
+				continue;
 
-		PlayFabApiManager.instance.RequestSelectTeamPosition(CharacterListCanvas.instance.selectedActorId, true, swap, () =>
-		{
-			ToastCanvas.instance.ShowToast(UIString.instance.GetString("CharacterUI_SelectedToast"), 2.0f);
-			CharacterListCanvas.instance.RefreshGrid();
-			TeamManager.instance.InitializeTeamMember();
-			gameObject.SetActive(false);
-		});
-	}
-
-	public void OnClickRightButton()
-	{
-		if (string.IsNullOrEmpty(CharacterManager.instance.rightCharacterId) == false)
-		{
-			if (CharacterListCanvas.instance.selectedActorId == CharacterManager.instance.rightCharacterId)
+			if (string.IsNullOrEmpty(CharacterManager.instance.listTeamPositionId[i]) == false)
 			{
-				ToastCanvas.instance.ShowToast(UIString.instance.GetString("CharacterUI_AlreadyPosition"), 2.0f);
-				return;
+				if (CharacterListCanvas.instance.selectedActorId == CharacterManager.instance.listTeamPositionId[i])
+					prevSwapIndex = i;
 			}
 		}
-
-		bool swap = false;
-		if (string.IsNullOrEmpty(CharacterManager.instance.leftCharacterId) == false)
-		{
-			if (CharacterListCanvas.instance.selectedActorId == CharacterManager.instance.leftCharacterId)
-				swap = true;
-		}
-
-		PlayFabApiManager.instance.RequestSelectTeamPosition(CharacterListCanvas.instance.selectedActorId, false, swap, () =>
+		
+		PlayFabApiManager.instance.RequestSelectTeamPosition(CharacterListCanvas.instance.selectedActorId, index, prevSwapIndex, () =>
 		{
 			ToastCanvas.instance.ShowToast(UIString.instance.GetString("CharacterUI_SelectedToast"), 2.0f);
 			CharacterListCanvas.instance.RefreshGrid();

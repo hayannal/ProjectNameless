@@ -3447,16 +3447,16 @@ public class PlayFabApiManager : MonoBehaviour
 		});
 	}
 
-	public void RequestSelectTeamPosition(string actorId, bool left, bool swap, Action successCallback)
+	public void RequestSelectTeamPosition(string actorId, int positionIndex, int prevSwapIndex, Action successCallback)
 	{
 		WaitingNetworkCanvas.Show(true);
 
-		string input = string.Format("{0}_{1}_{2}_{3}", actorId, left ? 1 : 0, swap ? 1: 0, "redsmnap");
+		string input = string.Format("{0}_{1}_{2}_{3}", actorId, positionIndex, prevSwapIndex, "redsmnap");
 		string checkSum = CheckSum(input);
 		ExecuteCloudScriptRequest request = new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "SelectTeamPosition",
-			FunctionParameter = new { ItmId = actorId, Left = left ? 1 : 0, Swap = swap ? 1 : 0, Cs = checkSum },
+			FunctionParameter = new { ItmId = actorId, Pos = positionIndex, PrevSwap = prevSwapIndex, Cs = checkSum },
 			GeneratePlayStreamEvent = true,
 		};
 
@@ -3468,18 +3468,9 @@ public class PlayFabApiManager : MonoBehaviour
 			{
 				WaitingNetworkCanvas.Show(false);
 
-				if (swap)
-				{
-					if (left)
-						CharacterManager.instance.rightCharacterId = CharacterManager.instance.leftCharacterId;
-					else
-						CharacterManager.instance.leftCharacterId = CharacterManager.instance.rightCharacterId;
-				}
-
-				if (left)
-					CharacterManager.instance.leftCharacterId = actorId;
-				else
-					CharacterManager.instance.rightCharacterId = actorId;
+				if (prevSwapIndex != -1)
+					CharacterManager.instance.listTeamPositionId[prevSwapIndex] = CharacterManager.instance.listTeamPositionId[positionIndex];
+				CharacterManager.instance.listTeamPositionId[positionIndex] = actorId;
 
 				if (successCallback != null) successCallback.Invoke();
 			}
