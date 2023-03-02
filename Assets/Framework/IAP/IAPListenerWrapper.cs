@@ -53,6 +53,8 @@ public class IAPListenerWrapper : MonoBehaviour
 	// 저 옵션값이랑 상관없이 무조건 5분되면 청구됨으로 바뀐다.
 	public void EnableListener(bool enable)
 	{
+		if (enable) Debug.Log("IAP Listener enabled");
+
 		cachedIAPListener.enabled = enable;
 	}
 
@@ -62,7 +64,10 @@ public class IAPListenerWrapper : MonoBehaviour
 
 	public void OnPurchaseComplete(Product product)
 	{
-		//Debug.Log("IAP Listener OnPurchaseComplete");
+		if (product != null)
+			Debug.LogWarningFormat("IAP Listener OnPurchaseComplete {0}", product.definition.id);
+		else
+			Debug.LogWarning("IAP Listener OnPurchaseComplete");
 
 		// 여기에 상품이 들어온다는거 자체가 이전에 인앱결제를 성공했는데 OnPurchaseComplete를 받기도 전에 앱이 종료되서
 		// 다음번 구동 후 IAP Initialize때 호출되었다는걸 의미한다.
@@ -75,7 +80,7 @@ public class IAPListenerWrapper : MonoBehaviour
 	// 그러니 사실 Listener에서는 이걸 처리할 필요가 없긴 한데 혹시 몰라서 그냥 두기로 한다. 아마 이쪽으로 호출되진 않을거다.
 	public void OnPurchaseFailed(Product product, PurchaseFailureReason reason)
 	{
-		//Debug.Log("IAP Listener OnPurchaseFailed");
+		Debug.LogWarningFormat("IAP Listener OnPurchaseFailed {0}", reason);
 
 		if (reason == PurchaseFailureReason.UserCancelled)
 		{

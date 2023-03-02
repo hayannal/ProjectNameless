@@ -1215,12 +1215,20 @@ public class CashShopData : MonoBehaviour
 	#region Pending Product
 	public bool CheckPendingProduct()
 	{
+		Debug.Log("CheckPendingProduct");
+
 		// 초기화가 안되어도 캐시샵이 열리는 구조로 바꾸면서 체크
 		if (CodelessIAPStoreListener.initializationComplete == false)
-			return false;
+		{
+			Debug.Log("not initializationComplete");
+			//return false;
+		}
 
 		if (IAPListenerWrapper.instance.pendingProduct == null)
+		{
+			Debug.Log("no pendingProduct.");
 			return false;
+		}
 
 		Product pendingProduct = IAPListenerWrapper.instance.pendingProduct;
 		Debug.LogFormat("Check IAPListener pending product id : {0}", pendingProduct.definition.id);
@@ -1235,7 +1243,7 @@ public class CashShopData : MonoBehaviour
 		{
 			LevelPassCanvas.ExternalRetryPurchase(pendingProduct);
 		}
-		else if (pendingProduct.definition.id == "brokenenergy")
+		else if (pendingProduct.definition.id.Contains("brokenenergy"))
 		{
 			BrokenEnergyCanvas.ExternalRetryPurchase(pendingProduct);
 		}
@@ -1263,6 +1271,10 @@ public class CashShopData : MonoBehaviour
 		{
 			CashShopEnergyListItem.ExternalRetryPurchase(pendingProduct);
 		}
+		else if (pendingProduct.definition.id.Contains("cashshopgem"))
+		{
+			CashShopEnergyListItem.ExternalRetryPurchase(pendingProduct);
+		}
 		else if (pendingProduct.definition.id.Contains("costume_"))
 		{
 			CostumeCanvasListItem.ExternalRetryPurchase(pendingProduct);
@@ -1275,11 +1287,11 @@ public class CashShopData : MonoBehaviour
 		{
 			PetSaleCanvas.ExternalRetryPurchase(pendingProduct);
 		}
-		else if (pendingProduct.definition.id.Contains("petpass"))
+		else if (pendingProduct.definition.id == "petpass")
 		{
 			PetPassCanvas.ExternalRetryPurchase(pendingProduct);
 		}
-		else if (pendingProduct.definition.id.Contains("roulette"))
+		else if (pendingProduct.definition.id == "fortunewheel")
 		{
 			FortuneWheelCanvas.ExternalRetryPurchase(pendingProduct);
 		}
