@@ -359,9 +359,9 @@ public class EquipManager : MonoBehaviour
 			List<EquipData> listEquipData = GetEquipListByType((eEquipSlotType)i);
 			for (int j = 0; j < listEquipData.Count; ++j)
 			{
-				// 락은 걸려있어도 융합의 주체로는 사용할 수 있다.
-				//if (listEquipData[j].isLock)
-				//	continue;
+				// 자동 융합에서는 락 걸려있으면 템이 바뀌는거니까 락을 유지시켜줄 수가 없다. 그러니 융합 대상에서 제외하기로 한다.
+				if (listEquipData[j].isLock)
+					continue;
 				if (IsEquipped(listEquipData[j]))
 					continue;
 				if (listEquipData[j].cachedEquipLevelTableData.grade > 2)
