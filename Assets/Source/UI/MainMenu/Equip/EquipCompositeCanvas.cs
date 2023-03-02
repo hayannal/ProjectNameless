@@ -180,7 +180,7 @@ public class EquipCompositeCanvas : EquipShowCanvasBase
 			if (EquipManager.instance.IsCompositeAvailable(_listCurrentEquipData[i], _listCurrentEquipData))
 			{
 				equipCanvasListItem.ShowAlarm(true);
-				if (_listCurrentEquipData[i].cachedEquipLevelTableData.grade <= 2)
+				if (_listCurrentEquipData[i].cachedEquipLevelTableData.grade <= 2 && EquipManager.instance.IsEquipped(_listCurrentEquipData[i]) == false && _listCurrentEquipData[i].isLock == false)
 					_availableAutoComposite = true;
 			}
 			#endregion
