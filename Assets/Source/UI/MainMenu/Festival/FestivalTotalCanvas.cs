@@ -193,6 +193,7 @@ public class FestivalTotalCanvas : SimpleCashCanvas
 				if (split.Length == 2 && split[0].Contains("festivalgroup"))
 				{
 					int.TryParse(split[1], out buttonIndex);
+					buttonIndex -= 1;
 				}
 			}
 			CashShopData.instance.PurchaseFlag(CashShopData.eCashConsumeFlagType.FestivalSlot1 + buttonIndex);
