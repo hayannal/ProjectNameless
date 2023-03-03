@@ -88,11 +88,12 @@ public class PickUpCharacterListItem : MonoBehaviour
 			yield return Timing.WaitForOneFrame;
 		yield return Timing.WaitForOneFrame;
 
-		UIInstanceManager.instance.ShowCanvasAsync("CharacterListCanvas", () =>
-		{
-			CharacterListCanvas.instance.OnClickListItem(_info.id);
-		});
+		MainCanvas.instance.OnClickTeamButton();
+		while ((CharacterListCanvas.instance != null && CharacterListCanvas.instance.gameObject.activeSelf) == false)
+			yield return Timing.WaitForOneFrame;
+		yield return Timing.WaitForOneFrame;
 
+		CharacterListCanvas.instance.OnClickListItem(_info.id);
 		while ((CharacterInfoCanvas.instance != null && CharacterInfoCanvas.instance.gameObject.activeSelf) == false)
 			yield return Timing.WaitForOneFrame;
 
