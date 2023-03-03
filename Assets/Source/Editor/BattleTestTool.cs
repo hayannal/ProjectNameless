@@ -46,7 +46,7 @@ public class BattleTestTool : EditorWindow
 		OnGUI_Player();
 		OnGUI_Stage();
 		OnGUI_Monster();
-		OnGUI_Day();
+		//OnGUI_Day();
 		OnGUI_Map();
 		OnGUI_Capture();
 	}
@@ -54,6 +54,7 @@ public class BattleTestTool : EditorWindow
 	bool _foldoutAffectorGroup = false;
 	PlayerAI _playerAI = null;
 	bool usePlayerAI = true;
+	bool useSpell = true;
 	PlayerActor _playerActor = null;
 	bool spFull = false;
 	bool hpFull = false;
@@ -83,7 +84,10 @@ public class BattleTestTool : EditorWindow
 				_playerAI = GameObject.FindObjectOfType<PlayerAI>();
 			if (_playerAI != null)
 				_playerAI.enabled = usePlayerAI;
+			useSpell = EditorGUILayout.Toggle("Toggle Spell :", useSpell);
+			SpellManager.instance.enabled = useSpell;
 
+			/*
 			spFull = EditorGUILayout.Toggle("SP Full :", spFull);
 			if (spFull && _playerActor != null && _playerActor.actorStatus.GetSPRatio() != 1.0f)
 				_playerActor.actorStatus.AddSP(_playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.MaxSp));
@@ -91,7 +95,6 @@ public class BattleTestTool : EditorWindow
 			if (hpFull && _playerActor != null && _playerActor.actorStatus.GetHPRatio() != 1.0f && _playerActor.actorStatus.IsDie() == false)
 				_playerActor.actorStatus.AddHP(_playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.MaxHp));
 
-			/*
 			if (GUILayout.Button("Get Player Stat"))
 			{
 				PlayerActor playerActor = null;
