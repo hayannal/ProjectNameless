@@ -22,8 +22,6 @@ public class PickUpEquipDetailCanvas : EquipShowCanvasBase
 
 		SetInfoCameraMode(true);
 		MainCanvas.instance.OnEnterCharacterMenu(true);
-
-		RefreshInfo();
 	}
 
 	void OnDisable()
@@ -48,13 +46,18 @@ public class PickUpEquipDetailCanvas : EquipShowCanvasBase
 		MainCanvas.instance.OnEnterCharacterMenu(false);
 	}
 
-	void RefreshInfo()
+	public void RefreshInfo()
 	{
 		CashShopData.PickUpEquipInfo info = CashShopData.instance.GetCurrentPickUpEquipInfo();
 		if (info == null)
 			return;
 
-		EquipLevelTableData equipLevelTableData = TableDataManager.instance.FindEquipLevelTableData(info.id);
+		RefreshInfo(info.id);
+	}
+
+	public void RefreshInfo(string equipId)
+	{
+		EquipLevelTableData equipLevelTableData = TableDataManager.instance.FindEquipLevelTableData(equipId);
 		if (equipLevelTableData == null)
 			return;
 
@@ -65,13 +68,19 @@ public class PickUpEquipDetailCanvas : EquipShowCanvasBase
 		EquipInfoGround.instance.ChangeDiffMode(equipTableData, equipLevelTableData);
 
 		EquipData tempEquipData = new EquipData();
-		tempEquipData.equipId = info.id;
+		tempEquipData.equipId = equipLevelTableData.equipId;
 		tempEquipData.OnEnhance(0);
 
 		diffStatusInfo.RefreshInfo(tempEquipData, false);
 		diffStatusInfo.equipButtonObject.SetActive(false);
 		diffStatusInfo.unlockButton.gameObject.SetActive(false);
 		diffStatusInfo.detailShowButton.gameObject.SetActive(false);
+	}
+
+	string _restoreType;
+	public void SetRestoreCanvas(string type)
+	{
+		_restoreType = type;
 	}
 
 	public void OnClickBackButton()
@@ -93,10 +102,35 @@ public class PickUpEquipDetailCanvas : EquipShowCanvasBase
 			yield return Timing.WaitForOneFrame;
 		yield return Timing.WaitForOneFrame;
 
-		MainCanvas.instance.OnClickCashShopButton();
+		if (_restoreType == "sevendays")
+		{
+			_restoreType = "";
+			if (MissionData.instance.sevenDaysId != 0 && ServerTime.UtcNow < MissionData.instance.sevenDaysExpireTime)
+			{
+				UIInstanceManager.instance.ShowCanvasAsync("SevenDaysTabCanvas", null);
 
-		while ((CashShopCanvas.instance != null && CashShopCanvas.instance.gameObject.activeSelf) == false)
-			yield return Timing.WaitForOneFrame;
+				while ((SevenDaysTabCanvas.instance != null && SevenDaysTabCanvas.instance.gameObject.activeSelf) == false)
+					yield return Timing.WaitForOneFrame;
+			}
+		}
+		else if (_restoreType == "festival")
+		{
+			_restoreType = "";
+			if (FestivalData.instance.festivalId != 0 && ServerTime.UtcNow < FestivalData.instance.festivalExpire2Time)
+			{
+				UIInstanceManager.instance.ShowCanvasAsync("FestivalTabCanvas", null);
+
+				while ((FestivalTabCanvas.instance != null && FestivalTabCanvas.instance.gameObject.activeSelf) == false)
+					yield return Timing.WaitForOneFrame;
+			}
+		}
+		else
+		{
+			MainCanvas.instance.OnClickCashShopButton();
+
+			while ((CashShopCanvas.instance != null && CashShopCanvas.instance.gameObject.activeSelf) == false)
+				yield return Timing.WaitForOneFrame;
+		}
 
 		DelayedLoadingCanvas.Show(false);
 		FadeCanvas.instance.FadeIn(0.4f);

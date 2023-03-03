@@ -202,6 +202,57 @@ public class RewardIcon : MonoBehaviour
 		}
 	}
 
+	public static void ShowDetailInfo(string rewardType, string rewardValue)
+	{
+		// 타입에 따라 상세정보창으로 가기로 한다.
+		switch (rewardType)
+		{
+			case "it":
+				if (rewardValue.StartsWith("Spell_"))
+				{
+					// unacquiredSpellSelectedId
+					string selectedSpellId = rewardValue;
+					if (string.IsNullOrEmpty(selectedSpellId))
+						return;
+					SkillTableData skillTableData = TableDataManager.instance.FindSkillTableData(selectedSpellId);
+					if (skillTableData == null)
+						return;
+					SkillLevelTableData skillLevelTableData = TableDataManager.instance.FindSkillLevelTableData(selectedSpellId, 1);
+					if (skillLevelTableData == null)
+						return;
+					SpellGradeLevelTableData spellGradeLevelTableData = TableDataManager.instance.FindSpellGradeLevelTableData(skillTableData.grade, skillTableData.star, 1);
+					if (spellGradeLevelTableData == null)
+						return;
+
+					UIInstanceManager.instance.ShowCanvasAsync("SpellInfoCanvas", () =>
+					{
+						SpellInfoCanvas.instance.SetInfo(skillTableData, "", UIString.instance.GetString(skillTableData.useNameIdOverriding ? skillLevelTableData.nameId : skillTableData.nameId),
+							UIString.instance.GetString(skillTableData.useDescriptionIdOverriding ? skillLevelTableData.descriptionId : skillTableData.descriptionId, skillLevelTableData.parameter),
+							skillTableData.useCooltimeOverriding ? skillLevelTableData.cooltime : skillTableData.cooltime);
+					});
+				}
+				else if (rewardValue.StartsWith("Actor"))
+				{
+					// 액터는 현재 패스
+				}
+				else if (rewardValue.StartsWith("Pet_"))
+				{
+					if (SevenDaysTabCanvas.instance != null && SevenDaysTabCanvas.instance.gameObject.activeSelf)
+						SevenDaysCanvas.instance.OnClickPetDetailButton(rewardValue);
+					if (FestivalTabCanvas.instance != null && FestivalTabCanvas.instance.gameObject.activeSelf)
+						FestivalRewardCanvas.instance.OnClickPetDetailButton(rewardValue);
+				}
+				else if (rewardValue.StartsWith("Equip"))
+				{
+					if (SevenDaysTabCanvas.instance != null && SevenDaysTabCanvas.instance.gameObject.activeSelf)
+						SevenDaysCanvas.instance.OnClickEquipDetailButton(rewardValue);
+					if (FestivalTabCanvas.instance != null && FestivalTabCanvas.instance.gameObject.activeSelf)
+						FestivalRewardCanvas.instance.OnClickEquipDetailButton(rewardValue);
+				}
+				break;
+		}
+	}
+
 	bool _showOnlyIcon = false;
 	public void ShowOnlyIcon(bool onlyIcon, float onlyIconScale = 1.5f, int adjustCountTextWidth = 70)
 	{

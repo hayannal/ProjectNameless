@@ -59,6 +59,19 @@ public class FestivalRewardCanvasListItem : MonoBehaviour
 		}
 	}
 
+	public void OnClickRewardButton()
+	{
+		// 여긴 토탈 점수 관여 없으니 it에 대해서만 자세히 보기만 처리해주면 된다.
+		switch (_festivalExchangeTableData.rewardType)
+		{
+			case "it":
+				RewardIcon.ShowDetailInfo(_festivalExchangeTableData.rewardType, _festivalExchangeTableData.rewardValue);
+				break;
+		}
+	}
+
+
+
 	public void OnClickButton()
 	{
 		if (blackObject.activeSelf)

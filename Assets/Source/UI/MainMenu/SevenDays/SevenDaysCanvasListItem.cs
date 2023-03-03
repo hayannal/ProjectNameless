@@ -52,6 +52,19 @@ public class SevenDaysCanvasListItem : MonoBehaviour
 		}
 	}
 
+	public void OnClickSecondRewardButton()
+	{
+		// 여긴 토탈 점수 관여 없으니 it에 대해서만 자세히 보기만 처리해주면 된다.
+		switch (_sevenDaysRewardTableData.rewardType)
+		{
+			case "it":
+				RewardIcon.ShowDetailInfo(_sevenDaysRewardTableData.rewardType, _sevenDaysRewardTableData.rewardValue);
+				break;
+		}
+	}
+
+	
+
 	public void OnClickButton()
 	{
 		if (MissionData.instance.IsOpenDay(_sevenDaysRewardTableData.day) == false)

@@ -102,6 +102,7 @@ public class PickUpEquipListItem : MonoBehaviour
 
 		while ((PickUpEquipDetailCanvas.instance != null && PickUpEquipDetailCanvas.instance.gameObject.activeSelf) == false)
 			yield return Timing.WaitForOneFrame;
+		PickUpEquipDetailCanvas.instance.RefreshInfo();
 
 		DelayedLoadingCanvas.Show(false);
 		FadeCanvas.instance.FadeIn(0.4f);

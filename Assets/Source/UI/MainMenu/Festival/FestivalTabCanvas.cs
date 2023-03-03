@@ -42,11 +42,18 @@ public class FestivalTabCanvas : MonoBehaviour
 			DragThresholdController.instance.ApplyUIDragThreshold();
 	}
 
+	public bool ignoreStartEventFlag { get; set; }
 	void OnDisable()
 	{
 		if (DragThresholdController.instance != null)
 			DragThresholdController.instance.ResetUIDragThreshold();
 
+		if (ignoreStartEventFlag)
+		{
+			ignoreStartEventFlag = false;
+			MainCanvas.instance.OnEnterCharacterMenu(false, true);
+			return;
+		}
 		MainCanvas.instance.OnEnterCharacterMenu(false);
 	}
 
