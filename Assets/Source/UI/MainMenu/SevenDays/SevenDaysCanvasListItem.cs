@@ -90,6 +90,8 @@ public class SevenDaysCanvasListItem : MonoBehaviour
 
 	void OnRecvResult(string itemGrantString)
 	{
+		float prevPowerValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
+
 		// 직접 수령이 있는 곳이라서 별도로 처리한다.
 		if (_sevenDaysRewardTableData.rewardType == "it" && string.IsNullOrEmpty(itemGrantString) == false)
 		{
@@ -104,5 +106,14 @@ public class SevenDaysCanvasListItem : MonoBehaviour
 		MainCanvas.instance.RefreshMenuButton();
 		MainCanvas.instance.RefreshSevenDaysAlarmObject();
 		ToastCanvas.instance.ShowToast(UIString.instance.GetString("ShopUI_GotFreeItem"), 2.0f);
+
+		float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
+		if (nextValue > prevPowerValue)
+		{
+			UIInstanceManager.instance.ShowCanvasAsync("ChangePowerCanvas", () =>
+			{
+				ChangePowerCanvas.instance.ShowInfo(prevPowerValue, nextValue);
+			});
+		}
 	}
 }

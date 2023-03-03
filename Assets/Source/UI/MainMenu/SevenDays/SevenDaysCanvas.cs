@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using MEC;
 
 public class SevenDaysCanvas : MonoBehaviour
 {
@@ -216,7 +217,19 @@ public class SevenDaysCanvas : MonoBehaviour
 
 		if (MissionData.instance.sevenDaysSumPoint < point)
 		{
-			ToastCanvas.instance.ShowToast(UIString.instance.GetString("SevenDaysUI_NotEnoughtTotal"), 2.0f);
+			//ToastCanvas.instance.ShowToast(UIString.instance.GetString("SevenDaysUI_NotEnoughtTotal"), 2.0f);
+			// 부족하다는 메시지 대신 타입에 따라 상세정보창으로 가기로 한다.
+			#region Detail Info
+			switch (sevenSumTableData.rewardType)
+			{
+				case "cu":
+					ToastCanvas.instance.ShowToast(UIString.instance.GetString("SevenDaysUI_NotEnoughtTotal"), 2.0f);
+					break;
+				case "it":
+					RewardIcon.ShowDetailInfo(sevenSumTableData.rewardType, sevenSumTableData.rewardValue);
+					break;
+			}
+			#endregion
 			return;
 		}
 

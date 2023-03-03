@@ -157,9 +157,18 @@ public class UnacquiredSpellSaleCanvas : SimpleCashEventCanvas
 		if (pickOneSpellTableData == null)
 			return;
 
+		float prevValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
 		PlayFabApiManager.instance.RequestConsumeUnacquiredSpell(selectedId, pickOneSpellTableData.count, () =>
 		{
 			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_CompletePurchase"), 2.0f);
+
+			float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
+
+			// 변경 완료를 알리고
+			UIInstanceManager.instance.ShowCanvasAsync("ChangePowerCanvas", () =>
+			{
+				ChangePowerCanvas.instance.ShowInfo(prevValue, nextValue);
+			});
 		});
 	}
 }
