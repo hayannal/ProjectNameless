@@ -101,6 +101,7 @@ public class SevenDaysCanvasListItem : MonoBehaviour
 		SevenDaysCanvas.instance.RefreshSumReward();
 		SevenDaysCanvas.instance.RefreshDayAlarmObject();
 		SevenDaysTabCanvas.instance.RefreshAlarmObject();
+		MainCanvas.instance.RefreshMenuButton();
 		MainCanvas.instance.RefreshSevenDaysAlarmObject();
 		ToastCanvas.instance.ShowToast(UIString.instance.GetString("ShopUI_GotFreeItem"), 2.0f);
 	}

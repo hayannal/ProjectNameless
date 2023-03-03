@@ -100,12 +100,13 @@ public class FestivalExchangeConfirmCanvas : MonoBehaviour
 			GetItReward(_festivalExchangeTableData.rewardValue, itemGrantString, _baseCount * _festivalExchangeTableData.rewardCount);
 		}
 
-		ToastCanvas.instance.ShowToast(UIString.instance.GetString("ShopUI_GotFreeItem"), 2.0f);
 		FestivalTabCanvas.instance.currencySmallInfo.RefreshInfo();
 		FestivalRewardCanvas.instance.RefreshCount();
 		FestivalRewardCanvas.instance.RefreshGrid();
 		MainCanvas.instance.RefreshMenuButton();
+		MainCanvas.instance.RefreshFestivalAlarmObject();
 		gameObject.SetActive(false);
+		ToastCanvas.instance.ShowToast(UIString.instance.GetString("ShopUI_GotFreeItem"), 2.0f);
 	}
 
 	public static void GetItReward(string rewardValue, string itemGrantString, int expectCount)
