@@ -858,7 +858,18 @@ public class MainCanvas : MonoBehaviour
 
 	public void OnClickFirstPurchaseButton()
 	{
-		UIInstanceManager.instance.ShowCanvasAsync("FirstPurchaseCanvas", null);
+		if (SpellSpriteContainer.instance == null)
+		{
+			DelayedLoadingCanvas.Show(true);
+			AddressableAssetLoadManager.GetAddressableGameObject("SpellSpriteContainer", "", (prefab) =>
+			{
+				BattleInstanceManager.instance.GetCachedObject(prefab, null);
+				DelayedLoadingCanvas.Show(false);
+				UIInstanceManager.instance.ShowCanvasAsync("FirstPurchaseCanvas", null);
+			});
+		}
+		else
+			UIInstanceManager.instance.ShowCanvasAsync("FirstPurchaseCanvas", null);
 	}
 
 	public void OnClickAttendanceButton()
