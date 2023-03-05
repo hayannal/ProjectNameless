@@ -73,6 +73,7 @@ public class CashShopData : MonoBehaviour
 		UnacquiredCompanion = 16,
 		AcquiredCompanion = 17,
 		AcquiredCompanionPp = 18,
+		TeamPass = 19,
 
 		Amount,
 	}
@@ -81,6 +82,7 @@ public class CashShopData : MonoBehaviour
 		"Cash_sSevenSlot1", "Cash_sSevenSlot2", "Cash_sSevenSlot3", "Cash_sSevenSlot4", "Cash_sPetSale", "Cash_sPetPass", "Cash_sFortuneWheel",
 		"Cash_sFestivalSlot1", "Cash_sFestivalSlot2", "Cash_sFestivalSlot3", "Cash_sFestivalSlot4",
 		"Cash_sUnacquiredSpell", "Cash_sAcquiredSpell", "Cash_sUnacquiredCompanion", "Cash_sAcquiredCompanion", "Cash_sAcquiredCompanionPp",
+		"Cash_sTeamPass"
 	};
 
 	public enum eCashConsumeCountType
@@ -1339,6 +1341,10 @@ public class CashShopData : MonoBehaviour
 		{
 			AcquiredCharacterSaleCanvas.ExternalRetryPurchase(pendingProduct);
 		}
+		else if (pendingProduct.definition.id == "teampass")
+		{
+			TeamPassCanvas.ExternalRetryPurchase(pendingProduct);
+		}
 
 		return true;
 	}
@@ -1446,6 +1452,9 @@ public class CashShopData : MonoBehaviour
 					break;
 				case eCashConsumeFlagType.FestivalSlot4:
 					PlayFabApiManager.instance.RequestConsumeFestivalSlot(3, null);
+					break;
+				case eCashConsumeFlagType.TeamPass:
+					PlayFabApiManager.instance.RequestConsumeTeamPass(null);
 					break;
 			}
 

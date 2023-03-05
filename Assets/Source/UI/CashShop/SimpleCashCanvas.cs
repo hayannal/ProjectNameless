@@ -12,6 +12,11 @@ public class SimpleCashCanvas : MonoBehaviour
 
 	public void RefreshPrice(string serverItemId, int kor, float eng)
 	{
+		RefreshCashPrice(priceText, serverItemId, kor, eng);
+	}
+
+	public static void RefreshCashPrice(Text priceText, string serverItemId, int kor, float eng)
+	{
 		if (priceText == null)
 			return;
 

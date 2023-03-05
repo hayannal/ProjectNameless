@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using PlayFab.ClientModels;
@@ -19,6 +20,10 @@ public class CharacterManager : MonoBehaviour
 		}
 	}
 	static CharacterManager _instance = null;
+
+	#region Team Pass
+	public DateTime teamPassExpireTime { get; set; }
+	#endregion
 
 	public ObscuredInt cachedValue { get; set; }
 
@@ -68,6 +73,15 @@ public class CharacterManager : MonoBehaviour
 					_listTeamPositionId[i] = actorId;
 			}
 		}
+
+		#region Team Pass
+		teamPassExpireTime = new DateTime();
+		if (userReadOnlyData.ContainsKey("teamPassExpDat"))
+		{
+			if (string.IsNullOrEmpty(userReadOnlyData["teamPassExpDat"].Value) == false)
+				OnRecvTeamPessExpireInfo(userReadOnlyData["teamPassExpDat"].Value);
+		}
+		#endregion
 
 		// status
 		RefreshCachedStatus();
@@ -235,6 +249,25 @@ public class CharacterManager : MonoBehaviour
 	}
 	#endregion
 
+	#region Pass
+	public bool IsTeamPass()
+	{
+		if (ServerTime.UtcNow < teamPassExpireTime)
+			return true;
+		return false;
+	}
+
+	public void OnRecvTeamPessExpireInfo(string lastTeamPassExpireTimeString)
+	{
+		DateTime lastTeamPassExpireTime = new DateTime();
+		if (DateTime.TryParse(lastTeamPassExpireTimeString, out lastTeamPassExpireTime))
+		{
+			DateTime universalTime = lastTeamPassExpireTime.ToUniversalTime();
+			teamPassExpireTime = universalTime;
+		}
+	}
+	#endregion
+
 
 	#region Grant
 	class RandomGachaCharacterGrade
@@ -316,7 +349,7 @@ public class CharacterManager : MonoBehaviour
 		// 해당되지 않으면 캐릭이 나오지 않은거다.
 		int index = -1;
 		//float random = UnityEngine.Random.Range(0.0f, _listGachaCharacterGrade[_listGachaCharacterGrade.Count - 1].sumWeight);
-		float random = Random.value;
+		float random = UnityEngine.Random.value;
 		for (int i = 0; i < _listGachaCharacterGrade.Count; ++i)
 		{
 			if (random <= _listGachaCharacterGrade[i].sumWeight)
@@ -533,7 +566,7 @@ public class CharacterManager : MonoBehaviour
 			for (int j = 0; j < TableDataManager.instance.GetGlobalConstantInt("GachaActorCount"); ++j)
 			{
 				string ppActorId = GetRandomCharacterPpGachaResult();
-				int ppCount = Random.Range(TableDataManager.instance.GetGlobalConstantInt("GachaActorPowerPointMin"), TableDataManager.instance.GetGlobalConstantInt("GachaActorPowerPointMax") + 1);
+				int ppCount = UnityEngine.Random.Range(TableDataManager.instance.GetGlobalConstantInt("GachaActorPowerPointMin"), TableDataManager.instance.GetGlobalConstantInt("GachaActorPowerPointMax") + 1);
 				for (int k = 0; k < ppCount; ++k)
 					_listRandomObscuredId.Add(string.Format("{0}pp", ppActorId));
 			}

@@ -56,7 +56,14 @@ public class TeamManager : MonoBehaviour
 		{
 			string actorId = CharacterManager.instance.listTeamPositionId[i];
 			if (string.IsNullOrEmpty(actorId) == false && CharacterManager.instance.ContainsActor(actorId))
+			{
+				#region TeamPass
+				if (TeamPositionCanvas.IsApplySlotByPass(i) && CharacterManager.instance.IsTeamPass() == false)
+					continue;
+				#endregion
+
 				SpawnTeamMember((ePosition)i, actorId);
+			}
 		}
 
 		#region Pet
@@ -159,6 +166,11 @@ public class TeamManager : MonoBehaviour
 				if (_listPlayerActor[i] == null)
 					continue;
 				_listPlayerActor[i].gameObject.SetActive(false);
+
+				#region TeamPass
+				if (TeamPositionCanvas.IsApplySlotByPass(i) && CharacterManager.instance.IsTeamPass() == false)
+					_listPlayerActor[i] = null;
+				#endregion
 			}
 
 			#region Pet

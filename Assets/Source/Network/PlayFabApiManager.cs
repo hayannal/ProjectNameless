@@ -3849,6 +3849,40 @@ public class PlayFabApiManager : MonoBehaviour
 			HandleCommonError(error);
 		});
 	}
+
+	public void RequestConsumeTeamPass(Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		int givenTime = BattleInstanceManager.instance.GetCachedGlobalConstantInt("TeamPassGivenTime");
+		string input = string.Format("{0}_{1}", givenTime, "xpvzqkjs");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "ConsumeTeamPass",
+			FunctionParameter = new { GiTim = givenTime, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				CashShopData.instance.ConsumeFlag(CashShopData.eCashConsumeFlagType.TeamPass);
+
+				jsonResult.TryGetValue("date", out object date);
+				CharacterManager.instance.OnRecvTeamPessExpireInfo((string)date);
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
 	#endregion
 
 
