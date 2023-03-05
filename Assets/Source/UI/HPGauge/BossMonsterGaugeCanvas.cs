@@ -346,15 +346,42 @@ public class BossMonsterGaugeCanvas : MonoBehaviour
 			gameObject.SetActive(false);
 			if (StageManager.instance.fastBossClear)
 			{
-				if (Time.time - _bossGaugeAppearTime > (BattleInstanceManager.instance.GetCachedGlobalConstantInt("FastBossClearEndBase") * 0.1f))
+				if (Time.time - _bossGaugeAppearTime > (BattleInstanceManager.instance.GetCachedGlobalConstantInt("FastBossClearEndBase") * 0.1f) || CheckFastClearStageDefense() == false)
 					StageManager.instance.OnOffFastBossClear(false);
 			}
 			else
 			{
-				if (Time.time - _bossGaugeAppearTime < (BattleInstanceManager.instance.GetCachedGlobalConstantInt("FastBossClearStartBase") * 0.1f))
+				if (Time.time - _bossGaugeAppearTime < (BattleInstanceManager.instance.GetCachedGlobalConstantInt("FastBossClearStartBase") * 0.1f) && CheckFastClearStageDefense() == true)
 					StageManager.instance.OnOffFastBossClear(true);
 			}
 		}
+	}
+
+	bool CheckFastClearStageDefense()
+	{
+		// 시간을 빨리 깨고나면 건너뛰기 할때는 해당 스테이지의 방어력을 계산해보고 건너뛰기로 한다.
+		//
+		int changeStage = PlayerData.instance.selectedStage;
+		changeStage += (BattleInstanceManager.instance.GetCachedGlobalConstantInt("FastClearJumpStep") - 1);
+
+		// 클리어는 MaxStage - 1까지 가능하다.
+		if (changeStage > (BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxStage") - 1))
+			changeStage = (BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxStage") - 1);
+
+		StageIdTableData stageIdTableData = TableDataManager.instance.FindStageIdTableData(changeStage);
+		if (stageIdTableData != null)
+		{
+			StageTableData challengeStageTableData = TableDataManager.instance.FindStageTableData(stageIdTableData.challenge);
+			if (challengeStageTableData != null)
+			{
+				float diff = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.Attack) - challengeStageTableData.standardDef;
+				if (diff < challengeStageTableData.standardHp * BattleInstanceManager.instance.GetCachedGlobalConstantInt("FastBossClearRateLimit10000") * 0.0001f)
+					return false;
+				//else
+				//	Debug.Log("FastBossClearRateLimit Available");
+			}
+		}
+		return true;
 	}
 
 	public bool InternalIsLastAliveMonster(MonsterActor monsterActor)
