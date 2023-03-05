@@ -165,6 +165,7 @@ public class PetManager : MonoBehaviour
 		#endregion
 
 		#region Pet Pass
+		petPassExpireTime = new DateTime();
 		if (userReadOnlyData.ContainsKey("petPassExpDat"))
 		{
 			if (string.IsNullOrEmpty(userReadOnlyData["petPassExpDat"].Value) == false)
