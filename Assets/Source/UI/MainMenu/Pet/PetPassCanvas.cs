@@ -88,6 +88,8 @@ public class PetPassCanvas : SimpleCashCanvas
 
 	public static void ConsumeProduct()
 	{
+		float prevPowerValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
+
 		PlayFabApiManager.instance.RequestConsumePetPass(() =>
 		{
 			if (instance != null && instance.gameObject.activeSelf)
@@ -97,7 +99,16 @@ public class PetPassCanvas : SimpleCashCanvas
 				PetListCanvas.instance.RefreshPetPass();
 				PetListCanvas.instance.RefreshHeart();
 			}
-			ToastCanvas.instance.ShowToast(UIString.instance.GetString("PetUI_ResultSuccess"), 2.0f);
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_CompletePurchase"), 2.0f);
+
+			float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
+			if (nextValue > prevPowerValue)
+			{
+				UIInstanceManager.instance.ShowCanvasAsync("ChangePowerCanvas", () =>
+				{
+					ChangePowerCanvas.instance.ShowInfo(prevPowerValue, nextValue);
+				});
+			}
 		});
 	}
 }

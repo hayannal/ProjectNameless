@@ -76,6 +76,9 @@ public class ActorStatus : MonoBehaviour
 		// equip
 		_statusBase.valueList[(int)eActorStatus.Attack] += EquipManager.instance.cachedValue;
 
+		// pass
+		_statusBase.valueList[(int)eActorStatus.Attack] += PassManager.instance.cachedValue;
+
 		_statusBase.valueList[(int)eActorStatus.CombatPower] = _statusBase.valueList[(int)eActorStatus.Attack];
 		_statusBase.valueList[(int)eActorStatus.AttackMulti] = actorTableData.multiAtk;
 

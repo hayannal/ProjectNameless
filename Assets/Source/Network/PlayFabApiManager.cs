@@ -290,6 +290,7 @@ public class PlayFabApiManager : MonoBehaviour
 		CharacterManager.instance.OnRecvCharacterInventory(loginResult.InfoResultPayload.UserInventory, loginResult.InfoResultPayload.UserData, loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 		PetManager.instance.OnRecvPetInventory(loginResult.InfoResultPayload.UserInventory, loginResult.InfoResultPayload.UserData, loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 		EquipManager.instance.OnRecvEquipInventory(loginResult.InfoResultPayload.UserInventory, loginResult.InfoResultPayload.UserData, loginResult.InfoResultPayload.UserReadOnlyData);
+		PassManager.instance.OnRecvPassData(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 
 		/*
 		DailyShopData.instance.OnRecvShopData(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData);		
@@ -3841,6 +3842,7 @@ public class PlayFabApiManager : MonoBehaviour
 
 				jsonResult.TryGetValue("date", out object date);
 				PetManager.instance.OnRecvPetPessExpireInfo((string)date);
+				PassManager.instance.OnChangedStatus();
 
 				if (successCallback != null) successCallback.Invoke();
 			}
@@ -3875,6 +3877,7 @@ public class PlayFabApiManager : MonoBehaviour
 
 				jsonResult.TryGetValue("date", out object date);
 				CharacterManager.instance.OnRecvTeamPessExpireInfo((string)date);
+				PassManager.instance.OnChangedStatus();
 
 				if (successCallback != null) successCallback.Invoke();
 			}
