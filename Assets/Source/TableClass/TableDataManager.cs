@@ -86,6 +86,8 @@ public class TableDataManager : MonoBehaviour
 	public EquipCompositeTable equipCompositeTable;
 	public EquipGradeTable equipGradeTable;
 
+	public MissionModeTable missionModeTable;
+
 	void Awake()
 	{
 		instance = this;
@@ -742,6 +744,16 @@ public class TableDataManager : MonoBehaviour
 		{
 			if (equipGradeTable.dataArray[i].grade == grade)
 				return equipGradeTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public MissionModeTableData FindMissionModeTableData(int hard)
+	{
+		for (int i = 0; i < missionModeTable.dataArray.Length; ++i)
+		{
+			if (missionModeTable.dataArray[i].hard == hard)
+				return missionModeTable.dataArray[i];
 		}
 		return null;
 	}
