@@ -12,6 +12,8 @@ public class EquipCompositeResultCanvas : MonoBehaviour
 	public GameObject titleLineObject;
 	public GameObject exitObject;
 
+	public EquipListStatusInfo materialSmallStatusInfo;
+
 	public GameObject contentItemPrefab;
 	public RectTransform contentRootRectTransform;
 
@@ -30,6 +32,25 @@ public class EquipCompositeResultCanvas : MonoBehaviour
 	void Start()
 	{
 		contentItemPrefab.SetActive(false);
+	}
+
+	void OnDisable()
+	{
+		materialSmallStatusInfo.gameObject.SetActive(false);
+	}
+
+	float _materialSmallStatusInfoShowRemainTime;
+	void Update()
+	{
+		if (_materialSmallStatusInfoShowRemainTime > 0.0f)
+		{
+			_materialSmallStatusInfoShowRemainTime -= Time.deltaTime;
+			if (_materialSmallStatusInfoShowRemainTime <= 0.0f)
+			{
+				_materialSmallStatusInfoShowRemainTime = 0.0f;
+				materialSmallStatusInfo.gameObject.SetActive(false);
+			}
+		}
 	}
 
 	List<EquipData> _listEquipData = new List<EquipData>();
@@ -98,7 +119,7 @@ public class EquipCompositeResultCanvas : MonoBehaviour
 		for (int i = 0; i < _listEquipData.Count; ++i)
 		{
 			EquipCanvasListItem equipCanvasListItem = _container.GetCachedItem(contentItemPrefab, contentRootRectTransform);
-			equipCanvasListItem.Initialize(_listEquipData[i], null);
+			equipCanvasListItem.Initialize(_listEquipData[i], OnClickListItem);
 			_listEquipCanvasListItem.Add(equipCanvasListItem);
 			yield return Timing.WaitForSeconds(0.2f);
 		}
@@ -126,5 +147,20 @@ public class EquipCompositeResultCanvas : MonoBehaviour
 		gameObject.SetActive(false);
 		if (_okAction != null)
 			_okAction();
+	}
+
+
+	void OnClickListItem(EquipData equipData)
+	{
+		ShowSmallEquipInfo(equipData);
+	}
+
+	void ShowSmallEquipInfo(EquipData equipData)
+	{
+		if (equipData == null)
+			return;
+
+		EquipBoxResultCanvas.ShowSmallEquipInfo(materialSmallStatusInfo, equipData);
+		_materialSmallStatusInfoShowRemainTime = 2.0f;
 	}
 }
