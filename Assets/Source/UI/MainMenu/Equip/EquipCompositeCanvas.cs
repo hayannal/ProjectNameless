@@ -349,7 +349,10 @@ public class EquipCompositeCanvas : EquipShowCanvasBase
 
 		// 재료조건에 안맞으면 어두운 색으로 되어있을테니 그냥 리턴해도 된다.
 		if (EquipManager.instance.IsValidMaterial(_selectedEquipData, equipData) == false)
+		{
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("EquipUI_CannotSelectMaterial"), 1.5f);
 			return;
+		}
 
 		for (int i = 0; i < _listEquipCanvasListItem.Count; ++i)
 		{
