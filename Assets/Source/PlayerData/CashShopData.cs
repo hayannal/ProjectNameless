@@ -700,7 +700,6 @@ public class CashShopData : MonoBehaviour
 				break;
 			case "Cash_sAnalysisBoost":
 				PurchaseCount(eCashConsumeCountType.AnalysisBoost, count);
-				PlayFabApiManager.instance.RequestConsumeAnalysisBoost(null);
 				break;
 		}
 	}

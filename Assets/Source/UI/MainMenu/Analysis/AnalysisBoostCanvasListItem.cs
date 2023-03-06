@@ -69,13 +69,7 @@ public class AnalysisBoostCanvasListItem : SimpleCashCanvas
 				CurrencyData.instance.OnRecvProductReward(shopProductTableData.rewardType4, shopProductTableData.rewardValue4, shopProductTableData.rewardCount4);
 				CurrencyData.instance.OnRecvProductReward(shopProductTableData.rewardType5, shopProductTableData.rewardValue5, shopProductTableData.rewardCount5);
 			}
-
-			WaitingNetworkCanvas.Show(false);
-			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_CompletePurchase"), 2.0f);
-
-			// 창 열려있었다면 닫으면서 자동으로 분석창이 다시 열리면서 리프레쉬 될거다.
-			if (AnalysisBoostCanvas.instance != null && AnalysisBoostCanvas.instance.gameObject.activeSelf)
-				AnalysisBoostCanvas.instance.gameObject.SetActive(false);
+			ConsumeProduct();
 
 			CodelessIAPStoreListener.Instance.StoreController.ConfirmPendingPurchase(product);
 			IAPListenerWrapper.instance.CheckConfirmPendingPurchase(product);
@@ -99,5 +93,17 @@ public class AnalysisBoostCanvasListItem : SimpleCashCanvas
 		}, () =>
 		{
 		}, true);
+	}
+
+	public static void ConsumeProduct()
+	{
+		PlayFabApiManager.instance.RequestConsumeAnalysisBoost(() =>
+		{
+			// 창 열려있었다면 닫으면서 자동으로 분석창이 다시 열리면서 리프레쉬 될거다.
+			if (AnalysisBoostCanvas.instance != null && AnalysisBoostCanvas.instance.gameObject.activeSelf)
+				AnalysisBoostCanvas.instance.gameObject.SetActive(false);
+
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_CompletePurchase"), 2.0f);
+		});
 	}
 }
