@@ -540,7 +540,7 @@ public class MainCanvas : MonoBehaviour
 
 	public static bool IsAlarmEquip()
 	{
-		return EquipGroundCanvas.CheckAutoEquip();
+		return EquipGroundCanvas.CheckComposite() || EquipGroundCanvas.CheckAutoEquip();
 	}
 
 	public void RefreshEquipAlarmObject()
