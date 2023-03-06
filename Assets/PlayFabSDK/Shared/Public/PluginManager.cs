@@ -90,8 +90,14 @@ namespace PlayFab
                 transport = new PlayFabWebRequest();
 #endif
 #if UNITY_IOS
-			if (transport == null)
-				transport = new PlayFabWebRequest();
+			// 유니티 2019 + 플레이팹 예전버전 쓸때 아이폰에서 메모리 누수 버그가 있어서 추가했던 코드다.
+			// 그런데 유니티 2021 + 플레이팹 2023년 초반 최신버전으로 바꾸고나니
+			// 오히려 WebRequest를 사용할 경우 대용량 뽑기에서 WebException이 떠서 패킷이 제대로 오지 않게 되었다.
+			// 그래서 이 코드 주석걸고 원래의 PlayFabUnityHttp 방식으로 돌려놓으니 대용량 뽑기부터 메모리누수까지 없이 잘 플레이 되길래
+			// 다시 주석처리해놓기로 한다.
+			// 되돌려놓긴 했지만 히스토리를 기억하기 위해 주석으로 남겨둔다. 하면 된다는거다.
+			//if (transport == null)
+			//	transport = new PlayFabWebRequest();
 #endif
 
 #if UNITY_2018_2_OR_NEWER // PlayFabWww will throw warnings as Unity has deprecated Www
