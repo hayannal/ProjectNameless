@@ -61,7 +61,7 @@ public class PassManager : MonoBehaviour
 			cachedValue += GetPassAttackValue("teampass");
 	}
 
-	int GetPassAttackValue(string key)
+	public int GetPassAttackValue(string key)
 	{
 		if (_dicPassAttackInfo.ContainsKey(key))
 			return _dicPassAttackInfo[key];
