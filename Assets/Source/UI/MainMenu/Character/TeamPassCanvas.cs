@@ -8,6 +8,8 @@ public class TeamPassCanvas : SimpleCashCanvas
 {
 	public static TeamPassCanvas instance;
 
+	public Text passAttackText;
+
 	public GameObject priceButtonObject;
 	public GameObject purchasedButtonObject;
 	public Image purchasedButtonImage;
@@ -20,6 +22,8 @@ public class TeamPassCanvas : SimpleCashCanvas
 
 	void OnEnable()
 	{
+		passAttackText.text = PassManager.instance.GetPassAttackValue("teampass").ToString("N0");
+
 		RefreshPriceButton();
 
 		ShopProductTableData shopProductTableData = TableDataManager.instance.FindShopProductTableData("teampass");

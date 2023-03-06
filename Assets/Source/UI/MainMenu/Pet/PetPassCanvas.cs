@@ -8,6 +8,8 @@ public class PetPassCanvas : SimpleCashCanvas
 {
 	public static PetPassCanvas instance;
 
+	public Text passAttackText;
+
 	public GameObject priceButtonObject;
 	public GameObject purchasedButtonObject;
 	public Image purchasedButtonImage;
@@ -20,6 +22,8 @@ public class PetPassCanvas : SimpleCashCanvas
 
 	void OnEnable()
 	{
+		passAttackText.text = PassManager.instance.GetPassAttackValue("petpass").ToString("N0");
+
 		RefreshPriceButton();
 
 		ShopProductTableData shopProductTableData = TableDataManager.instance.FindShopProductTableData("petpass");
