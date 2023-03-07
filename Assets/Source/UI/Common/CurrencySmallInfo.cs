@@ -7,8 +7,10 @@ public class CurrencySmallInfo : MonoBehaviour
 {
 	public Text diamondText;
 	public Text goldText;
+	public Text energyText;
 	public Transform diamondIconTransform;
 	public Transform goldIconTransform;
+	public Transform energyIconTransform;
 	public Canvas[] backImageCanvasList;
 
 	void Awake()
@@ -32,6 +34,7 @@ public class CurrencySmallInfo : MonoBehaviour
 	{
 		diamondText.text = CurrencyData.instance.dia.ToString("N0");
 		goldText.text = CurrencyData.instance.gold.ToString("N0");
+		energyText.text = CurrencyData.instance.energy.ToString("N0");
 
 		bool max = (CurrencyData.instance.gold >= CurrencyData.s_MaxGold);
 		goldText.color = max ? new Color(1.0f, 0.1f, 0.0f) : Color.white;
@@ -45,5 +48,10 @@ public class CurrencySmallInfo : MonoBehaviour
 	public void OnClickGoldButton()
 	{
 		TooltipCanvas.Show(true, TooltipCanvas.eDirection.LeftBottom, UIString.instance.GetString("GameUI_GoldDesc"), 200, goldIconTransform, new Vector2(-40.0f, 7.0f));
+	}
+
+	public void OnClickEnergyButton()
+	{
+		TooltipCanvas.Show(true, TooltipCanvas.eDirection.LeftBottom, UIString.instance.GetString("GameUI_EnergyDesc"), 200, energyIconTransform, new Vector2(-40.0f, 7.0f));
 	}
 }
