@@ -17,7 +17,7 @@ public class CharacterCanvasListItem : MonoBehaviour
 	public Text nameText;
 	public Text powerSourceText;
 	public Text recommandedText;
-	//public GameObject selectObject;
+	public GameObject selectObject;
 	public GameObject equippedObject;
 	public GameObject blackObject;
 	public RectTransform alarmRootTransform;
@@ -108,7 +108,7 @@ public class CharacterCanvasListItem : MonoBehaviour
 		*/
 		blackObject.SetActive(showBlackObject);
 
-		//selectObject.SetActive(false);
+		selectObject.SetActive(false);
 		_clickAction = clickCallback;
 	}
 

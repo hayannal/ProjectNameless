@@ -9,6 +9,10 @@ using System.Collections;
 public class MissionModeTableData
 {
   [SerializeField]
+  int _missionType;
+  public int missionType { get { return _missionType; } set { _missionType = value; } }
+  
+  [SerializeField]
   int _hard;
   public int hard { get { return _hard; } set { _hard = value; } }
   

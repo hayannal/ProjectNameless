@@ -235,6 +235,8 @@ public class AuthManager : MonoBehaviour
 		playerStatisticNames.Add("chtRnkSus");
 		playerStatisticNames.Add("spellLevel");
 		playerStatisticNames.Add("highestBattlePower");
+		playerStatisticNames.Add("rushDefenseClearLevel");
+		playerStatisticNames.Add("bossDefenseClearLevel");
 		/*
 		playerStatisticNames.Add("highestValue");
 		playerStatisticNames.Add("nodClLv");

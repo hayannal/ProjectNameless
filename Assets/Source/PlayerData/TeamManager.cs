@@ -223,6 +223,21 @@ public class TeamManager : MonoBehaviour
 		}
 	}
 
+	#region Mission
+	public void ClearTeamPlayerActorForMission()
+	{
+		_listPlayerActor.Clear();
+	}
+
+	public void AddTeamPlayerActorForMission(PlayerActor playerActor)
+	{
+		// 미션에서도 스펠을 사용해야하는데 ExecuteAffectorValueTeamMember 함수가 제대로 동작하려면
+		// 현재 미션에서 사용하는 캐릭터들이 _listPlayerActor 리스트안에 들어있어야한다.
+		// 그래서 이렇게 전용함수로 만들어서 클리어하고 외부에서 Add할 수 있게 임시 처리 해둔다.
+		_listPlayerActor.Add(playerActor);
+	}
+	#endregion
+
 	#region Pet
 	PetActor _petActor;
 	public void SpawnActivePet()

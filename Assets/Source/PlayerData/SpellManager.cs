@@ -610,6 +610,11 @@ public class SpellManager : MonoBehaviour
 			_globalSpellCooltime = cooltimeProcessor.GetCooltime(GlobalSpellCooltimeId);
 	}
 
+	public void ApplyGlobalSpellCooltime(float duration)
+	{
+		cooltimeProcessor.ApplyCooltime(GlobalSpellCooltimeId, duration);
+	}
+
 
 	public static string GlobalSpellCooltimeId = "_globalSpellCooltime";
 	public static float GlobalSpellCooltimeDuration = 1.0f;

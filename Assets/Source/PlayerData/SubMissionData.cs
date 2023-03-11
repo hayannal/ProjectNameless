@@ -26,6 +26,23 @@ public class SubMissionData : MonoBehaviour
 	public ObscuredInt fortuneWheelDailyCount { get; set; }
 	#endregion
 
+	public enum eSubMissionType
+	{
+		RushDefense = 1,
+		BossDefense = 2
+	}
+
+	#region Rush Defense
+	public ObscuredInt rushDefenseClearLevel { get; set; }
+	public ObscuredInt rushDefenseSelectedLevel { get; set; }
+	public ObscuredInt rushDefenseDailyCount { get; set; }
+	#endregion
+
+	#region Boss Defense
+	public ObscuredInt bossDefenseClearLevel { get; set; }
+	public ObscuredInt bossDefenseDailyCount { get; set; }
+	#endregion
+
 	public void OnRecvSubMissionData(Dictionary<string, UserDataRecord> userReadOnlyData, List<StatisticValue> playerStatistics)
 	{
 		#region Fortune Wheel
@@ -45,6 +62,42 @@ public class SubMissionData : MonoBehaviour
 		}
 		else
 			fortuneWheelDailyCount = 0;
+		#endregion
+
+		#region Rush Defense
+		rushDefenseDailyCount = 0;
+		if (userReadOnlyData.ContainsKey("rushDefenseCount"))
+		{
+			int intValue = 0;
+			if (int.TryParse(userReadOnlyData["rushDefenseCount"].Value, out intValue))
+				rushDefenseDailyCount = intValue;
+		}
+
+		if (userReadOnlyData.ContainsKey("lasRusDefDat"))
+		{
+			if (string.IsNullOrEmpty(userReadOnlyData["lasRusDefDat"].Value) == false)
+				OnRecvDailyWheelInfo(userReadOnlyData["lasRusDefDat"].Value);
+		}
+		else
+			rushDefenseDailyCount = 0;
+
+		rushDefenseSelectedLevel = 0;
+		if (userReadOnlyData.ContainsKey("rushDefenseSelectedLevel"))
+		{
+			int intValue = 0;
+			if (int.TryParse(userReadOnlyData["rushDefenseSelectedLevel"].Value, out intValue))
+				rushDefenseSelectedLevel = intValue;
+		}
+
+		rushDefenseClearLevel = 0;
+		for (int i = 0; i < playerStatistics.Count; ++i)
+		{
+			if (playerStatistics[i].StatisticName == "rushDefenseClearLevel")
+			{
+				rushDefenseClearLevel = playerStatistics[i].Value;
+				break;
+			}
+		}
 		#endregion
 	}
 

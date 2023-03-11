@@ -88,19 +88,33 @@ public class StageManager : MonoBehaviour
 			return;
 
 		// StageGround가 심리스 형태의 로드를 관리하기 때문에 지형 로딩에 대해서는 일임한다.
-		StageGround.instance.InitializeGround(stageTableData, repeat);
+		StageGround.instance.InitializeGround(stageTableData, repeat, false);
 	}
 
-	public void OnInstantiateMap(StageTableData stageTableData)
+	#region Mission
+	public void InitializeMissionStage(int stage)
+	{
+		StageTableData stageTableData = TableDataManager.instance.FindStageTableData(stage);
+		if (stageTableData == null)
+			return;
+
+		repeatMode = false;
+
+		// StageGround가 심리스 형태의 로드를 관리하기 때문에 지형 로딩에 대해서는 일임한다.
+		StageGround.instance.InitializeGround(stageTableData, false, true);
+	}
+	#endregion
+
+	public void OnInstantiateMap(StageTableData stageTableData, bool missionMode)
 	{
 		// 해당 맵의 몬스터들을 프리로드 해야한다.
 		// 로드가 끝나면 스폰을 시작
-		Timing.RunCoroutine(LoadMonsterProcess(stageTableData));
+		Timing.RunCoroutine(LoadMonsterProcess(stageTableData, missionMode));
 	}
 
 	bool _processing = false;
 	public bool processing { get { return _processing; } }
-	IEnumerator<float> LoadMonsterProcess(StageTableData stageTableData)
+	IEnumerator<float> LoadMonsterProcess(StageTableData stageTableData, bool missionMode)
 	{
 		if (_processing)
 			yield break;
@@ -121,18 +135,35 @@ public class StageManager : MonoBehaviour
 		while (BattleInstanceManager.instance.playerActor == null)
 			yield return Timing.WaitForOneFrame;
 		BattleInstanceManager.instance.playerActor.cachedTransform.position = new Vector3(stageTableData.playerSpawnx, 0.0f, stageTableData.playerSpawnz) + GetSafeWorldOffset();
-		if (BattleInstanceManager.instance.playerActor.gameObject.activeSelf == false)
-			BattleInstanceManager.instance.playerActor.gameObject.SetActive(true);
+
+		#region Mission
+		// 미션 전투에선 플레이어도 항상 사용하는게 아니다보니 켜두진 않는다. 이럴땐 위치만 옮겨둔다.
+		if (missionMode == false)
+		{
+			if (BattleInstanceManager.instance.playerActor.gameObject.activeSelf == false)
+				BattleInstanceManager.instance.playerActor.gameObject.SetActive(true);
+		}
+		#endregion
+
 		CustomFollowCamera.instance.immediatelyUpdate = true;
 
 		// 몬스터 로딩이 완료되면
 		while (IsDoneLoadedMonsterList() == false)
 			yield return Timing.WaitForOneFrame;
 
-		// 스폰 준비완료를 켜둔다.
-		_waitLoadedComplete = false;
+		// 미션 전투에서는 몬스터 스폰을 전투 컨트롤러가 제어한다. 그래서 몬스터의 스폰을 바로 시키지 않고 대기하게 한다.
+		if (missionMode == false)
+		{
+			// 스폰 준비완료를 켜둔다.
+			_waitLoadedComplete = false;
+		}
 
 		_processing = false;
+	}
+
+	public void SetCompleteWaitLoaded(bool complete)
+	{
+		_waitLoadedComplete = complete;
 	}
 
 	public class MonsterSpawnInfoBase
@@ -362,7 +393,12 @@ public class StageManager : MonoBehaviour
 				}
 				else
 				{
-					GameObject newObject = BattleInstanceManager.instance.GetCachedObject(monsterSpawnInfo.monsterPrefab, _monsterSpawnPosition + new Vector3(Random.value * 0.01f, 0.0f, Random.value * 0.01f), Quaternion.LookRotation(Vector3.back), cachedTransform);
+					Vector3 spawnPosition = _monsterSpawnPosition + new Vector3(Random.value * 0.01f, 0.0f, Random.value * 0.01f);
+					#region Mission
+					if (RushDefenseMissionGround.instance != null && RushDefenseMissionGround.instance.gameObject.activeSelf)
+						spawnPosition.x += RushDefenseMissionGround.instance.GetMonsterRandomSpawnOffsetX();
+					#endregion
+					GameObject newObject = BattleInstanceManager.instance.GetCachedObject(monsterSpawnInfo.monsterPrefab, spawnPosition, Quaternion.LookRotation(Vector3.back), cachedTransform);
 					MonsterActor monsterActor = newObject.GetComponent<MonsterActor>();
 					if (monsterActor != null)
 						monsterActor.checkOverlapPositionFrameCount = 100;
@@ -598,6 +634,13 @@ public class StageManager : MonoBehaviour
 			if (deltaZ < 1.0f)
 				continue;
 
+			#region Mission
+			if (RushDefenseMissionGround.instance != null && RushDefenseMissionGround.instance.gameObject.activeSelf)
+			{
+				StartCoroutine(MissionFailureProcess());
+				return;
+			}
+			#endregion
 			StartCoroutine(FailureProcess());
 			return;
 		}
@@ -657,6 +700,27 @@ public class StageManager : MonoBehaviour
 				MainCanvas.instance.fastBossClearCurrentStageValueText.text = PlayerData.instance.selectedStage.ToString("N0");
 		}
 	}
+
+	#region Mission
+	IEnumerator MissionFailureProcess()
+	{
+		_failureProcessed = true;
+		Time.timeScale = 0.01f;
+
+		ToastCanvas.instance.ShowToast(UIString.instance.GetString("MiisionUI_BossFailure"), 2.0f);
+		yield return new WaitForSecondsRealtime(1.7f);
+
+		FadeCanvas.instance.FadeOut(0.2f, 1.0f, true, true);
+		yield return new WaitForSecondsRealtime(0.2f);
+
+		// restore
+		Screen.sleepTimeout = SleepTimeout.SystemSetting;
+		Time.timeScale = 1.0f;
+		_failureProcessed = false;
+
+		SceneManager.LoadScene(0);
+	}
+	#endregion
 
 	/*
 

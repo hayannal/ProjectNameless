@@ -10,8 +10,6 @@ public class MissionListCanvas : MonoBehaviour
 
 	#region Energy
 	public Text energyText;
-	public Transform energyIconTransform;
-	public Canvas[] backImageCanvasList;
 	#endregion
 
 	public Text petMenuRemainCount;
@@ -25,6 +23,19 @@ public class MissionListCanvas : MonoBehaviour
 	public GameObject wheelEnergyObject;
 	public GameObject wheelEnterObject;
 	public RectTransform wheelAlarmRootTransform;
+
+	public Text rushDefenseMenuRemainCount;
+	public Text rushDefenseTodayResetRemainTimeText;
+	public Text rushDefenseEnergyText;
+	public RectTransform rushDefenseAlarmRootTransform;
+
+	public Text bossDefenseMenuRemainCount;
+	public Text bossDefenseTodayResetRemainTimeText;
+	public Text bossDefenseEnergyText;
+	public RectTransform bossDefenseAlarmRootTransform;
+
+	public Text bossBattleEnergyText;
+	public Image bossBattleImage;
 
 	void Awake()
 	{
@@ -42,14 +53,6 @@ public class MissionListCanvas : MonoBehaviour
 		RefreshEnergy();
 		#endregion
 		RefreshInfo();
-
-		#region Energy
-		if (_canvas != null)
-		{
-			for (int i = 0; i < backImageCanvasList.Length; ++i)
-				backImageCanvasList[i].sortingOrder = _canvas.sortingOrder - 1;
-		}
-		#endregion
 
 		bool restore = StackCanvas.Push(gameObject, false, null, OnPopStack);
 
@@ -94,11 +97,6 @@ public class MissionListCanvas : MonoBehaviour
 	{
 		energyText.text = CurrencyData.instance.energy.ToString("N0");
 	}
-
-	public void OnClickEnergyButton()
-	{
-		TooltipCanvas.Show(true, TooltipCanvas.eDirection.LeftBottom, UIString.instance.GetString("GameUI_EnergyDesc"), 200, energyIconTransform, new Vector2(-40.0f, 9.0f));
-	}
 	#endregion
 
 	public static bool IsAlarmPetSearch()
@@ -111,6 +109,20 @@ public class MissionListCanvas : MonoBehaviour
 	public static bool IsAlarmFortuneWheel()
 	{
 		if (SubMissionData.instance.fortuneWheelDailyCount < BattleInstanceManager.instance.GetCachedGlobalConstantInt("FortuneWheelDailyCount"))
+			return true;
+		return false;
+	}
+
+	public static bool IsAlarmRushDefense()
+	{
+		if (SubMissionData.instance.rushDefenseDailyCount < BattleInstanceManager.instance.GetCachedGlobalConstantInt("RushDefenseDailyCount"))
+			return true;
+		return false;
+	}
+
+	public static bool IsAlarmBossDefense()
+	{
+		if (SubMissionData.instance.bossDefenseDailyCount < BattleInstanceManager.instance.GetCachedGlobalConstantInt("BossDefenseDailyCount"))
 			return true;
 		return false;
 	}
@@ -134,6 +146,32 @@ public class MissionListCanvas : MonoBehaviour
 		AlarmObject.Hide(wheelAlarmRootTransform);
 		if (IsAlarmFortuneWheel())
 			AlarmObject.Show(wheelAlarmRootTransform);
+
+		cost = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MissionEnergyRushDefense");
+		rushDefenseEnergyText.text = cost.ToString("N0");
+		rushDefenseMenuRemainCount.text = (BattleInstanceManager.instance.GetCachedGlobalConstantInt("RushDefenseDailyCount") - SubMissionData.instance.rushDefenseDailyCount).ToString();
+		AlarmObject.Hide(rushDefenseAlarmRootTransform);
+		if (IsAlarmRushDefense())
+			AlarmObject.Show(rushDefenseAlarmRootTransform);
+
+		cost = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MissionEnergyBossDefense");
+		bossDefenseEnergyText.text = cost.ToString("N0");
+		bossDefenseMenuRemainCount.text = (BattleInstanceManager.instance.GetCachedGlobalConstantInt("BossDefenseDailyCount") - SubMissionData.instance.bossDefenseDailyCount).ToString();
+		AlarmObject.Hide(bossDefenseAlarmRootTransform);
+		if (IsAlarmBossDefense())
+			AlarmObject.Show(bossDefenseAlarmRootTransform);
+
+		if (bossBattleImage.sprite == null)
+		{
+			AddressableAssetLoadManager.GetAddressableSprite("Portrait_SpiritKing", "Icon", (sprite) =>
+			{
+				bossBattleImage.sprite = null;
+				bossBattleImage.sprite = sprite;
+				bossBattleImage.gameObject.SetActive(true);
+			});
+		}
+		cost = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MissionEnergyBossBattle");
+		bossBattleEnergyText.text = cost.ToString("N0");
 	}
 
 	public void OnClickButton(int index)
@@ -167,6 +205,39 @@ public class MissionListCanvas : MonoBehaviour
 				}
 
 				UIInstanceManager.instance.ShowCanvasAsync("FortuneWheelCanvas", null);
+				break;
+
+			case 2:
+
+				if (IsAlarmRushDefense() == false)
+				{
+					ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_TodayCountComplete"), 2.0f);
+					return;
+				}
+
+				if (CurrencyData.instance.energy < BattleInstanceManager.instance.GetCachedGlobalConstantInt("MissionEnergyRushDefense"))
+				{
+					ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughEnergy"), 2.0f);
+					return;
+				}
+
+				UIInstanceManager.instance.ShowCanvasAsync("RushDefenseEnterCanvas", null);
+				break;
+			case 3:
+
+				if (IsAlarmBossDefense() == false)
+				{
+					ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_TodayCountComplete"), 2.0f);
+					return;
+				}
+
+				if (CurrencyData.instance.energy < BattleInstanceManager.instance.GetCachedGlobalConstantInt("MissionEnergyBossDefense"))
+				{
+					ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughEnergy"), 2.0f);
+					return;
+				}
+
+				UIInstanceManager.instance.ShowCanvasAsync("BossDefenseEnterCanvas", null);
 				break;
 		}
 	}
@@ -235,7 +306,23 @@ public class MissionListCanvas : MonoBehaviour
 			wheelProcess = true;
 		#endregion
 
-		if (petProcess == false && wheelProcess == false)
+		#region Rush Defense
+		bool rushDefenseProcess = false;
+		if (SubMissionData.instance.rushDefenseDailyCount == 0)
+			rushDefenseTodayResetRemainTimeText.text = "";
+		else
+			rushDefenseProcess = true;
+		#endregion
+
+		#region Boss Defense
+		bool bossDefenseProcess = false;
+		if (SubMissionData.instance.bossDefenseDailyCount == 0)
+			bossDefenseTodayResetRemainTimeText.text = "";
+		else
+			bossDefenseProcess = true;
+		#endregion
+
+		if (petProcess == false && wheelProcess == false && rushDefenseProcess == false && bossDefenseProcess == false)
 		{
 			_lastRemainTimeSecond = -1;
 			return;
@@ -248,6 +335,8 @@ public class MissionListCanvas : MonoBehaviour
 			{
 				if (petProcess) petTodayResetRemainTimeText.text = string.Format("{0:00}:{1:00}:{2:00}", remainTime.Hours, remainTime.Minutes, remainTime.Seconds);
 				if (wheelProcess) wheelTodayResetRemainTimeText.text = string.Format("{0:00}:{1:00}:{2:00}", remainTime.Hours, remainTime.Minutes, remainTime.Seconds);
+				if (rushDefenseProcess) rushDefenseTodayResetRemainTimeText.text = string.Format("{0:00}:{1:00}:{2:00}", remainTime.Hours, remainTime.Minutes, remainTime.Seconds);
+				if (bossDefenseProcess) bossDefenseTodayResetRemainTimeText.text = string.Format("{0:00}:{1:00}:{2:00}", remainTime.Hours, remainTime.Minutes, remainTime.Seconds);
 				_lastRemainTimeSecond = (int)remainTime.TotalSeconds;
 			}
 		}
@@ -255,6 +344,8 @@ public class MissionListCanvas : MonoBehaviour
 		{
 			if (petProcess) petTodayResetRemainTimeText.text = "";
 			if (wheelProcess) wheelTodayResetRemainTimeText.text = "";
+			if (rushDefenseProcess) rushDefenseTodayResetRemainTimeText.text = "";
+			if (bossDefenseProcess) bossDefenseTodayResetRemainTimeText.text = "";
 		}
 	}
 

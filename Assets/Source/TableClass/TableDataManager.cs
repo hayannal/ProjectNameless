@@ -748,11 +748,11 @@ public class TableDataManager : MonoBehaviour
 		return null;
 	}
 
-	public MissionModeTableData FindMissionModeTableData(int hard)
+	public MissionModeTableData FindMissionModeTableData(int missionType, int hard)
 	{
 		for (int i = 0; i < missionModeTable.dataArray.Length; ++i)
 		{
-			if (missionModeTable.dataArray[i].hard == hard)
+			if (missionModeTable.dataArray[i].missionType == missionType && missionModeTable.dataArray[i].hard == hard)
 				return missionModeTable.dataArray[i];
 		}
 		return null;

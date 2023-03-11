@@ -22,9 +22,9 @@ public class StageGround : MonoBehaviour
 	public GameObject endLinePrefab;
 	public GameObject stageFloorInfoCanvasPrefab;
 
-	public void InitializeGround(StageTableData stageTableData, bool repeat)
+	public void InitializeGround(StageTableData stageTableData, bool repeat, bool missionMode)
 	{
-		Timing.RunCoroutine(LoadStageProcess(stageTableData, repeat));
+		Timing.RunCoroutine(LoadStageProcess(stageTableData, repeat, missionMode));
 	}
 
 	GameObject _stagePlanePrefab = null;
@@ -62,7 +62,7 @@ public class StageGround : MonoBehaviour
 	GameObject _monsterSpawnPortalObject;
 	GameObject _endLineObject;
 	public Vector3 endLinePosition { get; set; }
-	void InstantiateMap(StageTableData stageTableData, bool repeat)
+	void InstantiateMap(StageTableData stageTableData, bool repeat, bool missionMode)
 	{
 		Debug.LogWarning("1111");
 
@@ -107,7 +107,7 @@ public class StageGround : MonoBehaviour
 
 		// create callback
 		if (StageManager.instance != null)
-			StageManager.instance.OnInstantiateMap(stageTableData);
+			StageManager.instance.OnInstantiateMap(stageTableData, missionMode);
 		if (MainSceneBuilder.instance != null && MainSceneBuilder.instance.mainSceneBuilding)
 			MainSceneBuilder.instance.waitSpawnFlag = true;
 
@@ -123,7 +123,7 @@ public class StageGround : MonoBehaviour
 
 	bool _processing = false;
 	public bool processing { get { return _processing; } }
-	IEnumerator<float> LoadStageProcess(StageTableData stageTableData, bool repeat)
+	IEnumerator<float> LoadStageProcess(StageTableData stageTableData, bool repeat, bool missionMode)
 	{
 		if (_processing)
 			yield break;
@@ -138,8 +138,11 @@ public class StageGround : MonoBehaviour
 		while (_stagePlanePrefab == null || _stageGroundPrefab == null || _stageWallPrefab == null || _stageEnvPrefab == null)
 			yield return Timing.WaitForOneFrame;
 
-		InstantiateMap(stageTableData, repeat);
-		ShowStageFloorInfoCanvas(true);
+		InstantiateMap(stageTableData, repeat, missionMode);
+
+		// 미션에선 할필요 없다.
+		if (missionMode == false)
+			ShowStageFloorInfoCanvas(true);
 
 		_processing = false;
 	}
