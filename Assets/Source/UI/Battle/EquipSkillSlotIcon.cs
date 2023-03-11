@@ -58,6 +58,15 @@ public class EquipSkillSlotIcon : MonoBehaviour
 		grayscaleEffect.enabled = false;
 	}
 
+	void OnDisable()
+	{
+		if (_cooltimeInfo != null)
+		{
+			_cooltimeInfo.cooltimeStartAction = null;
+			_cooltimeInfo.cooltimeEndAction = null;
+		}
+	}
+
 	void Update()
 	{
 		UpdateCooltime();
