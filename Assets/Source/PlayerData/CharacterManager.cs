@@ -443,8 +443,8 @@ public class CharacterManager : MonoBehaviour
 			if (characterData != null && characterData.transcendPoint >= maxTrascendPoint)
 				continue;
 
-			// 한가지 예외상황이 있는데 캐릭터 5명을 채울때까진 겹쳐지지 않게 해주기로 해본다.
-			if ((totalCharacterWithTranscendCount + _listTempNewCharacterId.Count) < 5)
+			// 한가지 예외상황이 있는데 캐릭터 11명을 채울때까진 겹쳐지지 않게 해주기로 해본다.
+			if ((totalCharacterWithTranscendCount + _listTempNewCharacterId.Count) < 11)
 			{
 				if (characterData != null || _listTempNewCharacterId.Contains(TableDataManager.instance.actorTable.dataArray[i].actorId))
 					continue;
