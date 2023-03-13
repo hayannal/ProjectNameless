@@ -4285,6 +4285,51 @@ public class PlayFabApiManager : MonoBehaviour
 			HandleCommonError(error);
 		});
 	}
+
+	public void RequestEndRushDefenseMission(bool firstClear, int selectedDifficulty, int reward, int useTicket, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}_{2}_{3}_{4}_{5}", (int)SubMissionData.instance.rushDefenseDailyCount, reward, useTicket, selectedDifficulty, firstClear ? 1 : 0, "ormzajpw");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "EndRushDefense",
+			FunctionParameter = new { Sel = selectedDifficulty, Fir = firstClear ? 1 : 0, AddDi = reward, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				SubMissionData.instance.rushDefenseDailyCount += 1;
+				CurrencyData.instance.dia += reward;
+				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.ClearRushDefense);
+				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.UseTicket, useTicket);
+				CurrencyData.instance.UseTicket(useTicket);
+
+				if (firstClear)
+				{
+					SubMissionData.instance.rushDefenseClearLevel = selectedDifficulty;
+
+					int nextLevel = selectedDifficulty + 1;
+					if (nextLevel > BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxRushDefense"))
+						nextLevel = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxRushDefense");
+					SubMissionData.instance.rushDefenseSelectedLevel = nextLevel;
+				}
+				else
+					SubMissionData.instance.rushDefenseSelectedLevel = selectedDifficulty;
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
 	#endregion
 
 

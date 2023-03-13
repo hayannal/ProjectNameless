@@ -31,7 +31,11 @@ public class CharacterToggleButton : MonoBehaviour
 	public void OnClickButton()
 	{
 		if (RushDefenseMissionCanvas.instance != null && RushDefenseMissionCanvas.instance.gameObject.activeSelf)
+		{
+			if (RushDefenseMissionCanvas.instance.autoPositionProcessed)
+				return;
 			RushDefenseMissionCanvas.instance.OnValueChangedToggle(actorId);
+		}
 
 		//if (RushDefenseMissionCanvas.instance != null && RushDefenseMissionCanvas.instance.gameObject.activeSelf)
 		//	RushDefenseMissionCanvas.instance.OnValueChangedToggle(actorId);

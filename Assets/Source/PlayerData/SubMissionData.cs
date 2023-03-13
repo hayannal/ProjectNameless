@@ -76,7 +76,7 @@ public class SubMissionData : MonoBehaviour
 		if (userReadOnlyData.ContainsKey("lasRusDefDat"))
 		{
 			if (string.IsNullOrEmpty(userReadOnlyData["lasRusDefDat"].Value) == false)
-				OnRecvDailyWheelInfo(userReadOnlyData["lasRusDefDat"].Value);
+				OnRecvDailyRushDefenseInfo(userReadOnlyData["lasRusDefDat"].Value);
 		}
 		else
 			rushDefenseDailyCount = 0;
@@ -124,9 +124,32 @@ public class SubMissionData : MonoBehaviour
 	}
 	#endregion
 
+	#region Rush Defense
+	void OnRecvDailyRushDefenseInfo(DateTime lastRushDefenseTime)
+	{
+		if (ServerTime.UtcNow.Year == lastRushDefenseTime.Year && ServerTime.UtcNow.Month == lastRushDefenseTime.Month && ServerTime.UtcNow.Day == lastRushDefenseTime.Day)
+		{
+			// 유효하면 읽어놨던 count값을 유지하고
+		}
+		else
+			rushDefenseDailyCount = 0;
+	}
+
+	public void OnRecvDailyRushDefenseInfo(string lastRushDefenseTimeString)
+	{
+		DateTime lastRushDefenseTime = new DateTime();
+		if (DateTime.TryParse(lastRushDefenseTimeString, out lastRushDefenseTime))
+		{
+			DateTime universalTime = lastRushDefenseTime.ToUniversalTime();
+			OnRecvDailyRushDefenseInfo(universalTime);
+		}
+	}
+	#endregion
+
 	public void OnRefreshDay()
 	{
 		fortuneWheelDailyCount = 0;
+		rushDefenseDailyCount = 0;
 
 		if (MainCanvas.instance != null)
 			MainCanvas.instance.RefreshMissionAlarmObject();

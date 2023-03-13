@@ -61,7 +61,7 @@ public class RushDefenseMissionGround : MonoBehaviour
 		OnClickBox(3);
 	}
 
-	void OnClickBox(int index)
+	public void OnClickBox(int index)
 	{
 		if (_waitSpawn)
 			return;
@@ -70,10 +70,19 @@ public class RushDefenseMissionGround : MonoBehaviour
 
 		_waitSpawn = true;
 		SpawnTeamMember(index, RushDefenseMissionCanvas.instance.currentSelectedActorId);
-		RushDefenseMissionCanvas.instance.OnSpawnActor();
+		RushDefenseMissionCanvas.instance.OnSpawnActor(index);
 		worldButtonTransformList[index].gameObject.SetActive(false);
 	}
 
+	public int GetEmptyWorldButtonIndex()
+	{
+		for (int i = 0; i < worldButtonTransformList.Length; ++i)
+		{
+			if (worldButtonTransformList[i].gameObject.activeSelf)
+				return i;
+		}
+		return -1;
+	}
 
 	bool _waitSpawn = false;
 	int _selectedIndex = -1;
@@ -138,8 +147,6 @@ public class RushDefenseMissionGround : MonoBehaviour
 	{
 		for (int i = 0; i < _listSpawnPointEffectObject.Count; ++i)
 			_listSpawnPointEffectObject[i].SetActive(false);
-
-		RushDefenseMissionCanvas.instance.selectPositionTextObject.SetActive(false);
 
 		// 시작하자마자 보이지도 않는 곳에서 스폰된 몬스터에게 마법 쓰는게 이상해서 3초 딜레이를 주기로 해본다.
 		SpellManager.instance.ApplyGlobalSpellCooltime(3.0f);

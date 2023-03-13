@@ -533,6 +533,14 @@ public class StageManager : MonoBehaviour
 			if (CheatingListener.detectedCheatTable)
 				return;
 
+			#region Mission
+			if (RushDefenseMissionCanvas.instance != null && RushDefenseMissionCanvas.instance.gameObject.activeSelf)
+			{
+				RushDefenseMissionCanvas.instance.ClearMission();
+				return;
+			}
+			#endregion
+
 			int prevHighestClearStage = PlayerData.instance.highestClearStage;
 			PlayFabApiManager.instance.RequestEndBoss(PlayerData.instance.selectedStage, currentFloor, () =>
 			{
@@ -635,7 +643,7 @@ public class StageManager : MonoBehaviour
 				continue;
 
 			#region Mission
-			if (RushDefenseMissionGround.instance != null && RushDefenseMissionGround.instance.gameObject.activeSelf)
+			if (RushDefenseMissionCanvas.instance != null && RushDefenseMissionCanvas.instance.gameObject.activeSelf)
 			{
 				StartCoroutine(MissionFailureProcess());
 				return;
@@ -702,12 +710,13 @@ public class StageManager : MonoBehaviour
 	}
 
 	#region Mission
+	// Fail쪽은 간단하니 여기 모아두기로 한다.
 	IEnumerator MissionFailureProcess()
 	{
 		_failureProcessed = true;
 		Time.timeScale = 0.01f;
 
-		ToastCanvas.instance.ShowToast(UIString.instance.GetString("MiisionUI_BossFailure"), 2.0f);
+		ToastCanvas.instance.ShowToast(UIString.instance.GetString("MissionUI_BossFailure"), 2.0f);
 		yield return new WaitForSecondsRealtime(1.7f);
 
 		FadeCanvas.instance.FadeOut(0.2f, 1.0f, true, true);
@@ -718,6 +727,7 @@ public class StageManager : MonoBehaviour
 		Time.timeScale = 1.0f;
 		_failureProcessed = false;
 
+		SubMissionData.instance.readyToReopenMissionListCanvas = true;
 		SceneManager.LoadScene(0);
 	}
 	#endregion

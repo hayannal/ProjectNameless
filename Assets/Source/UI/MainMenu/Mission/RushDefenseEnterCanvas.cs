@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using CodeStage.AntiCheat.ObscuredTypes;
+using PlayFab;
 using DG.Tweening;
 using MEC;
 
@@ -91,20 +92,23 @@ public class RushDefenseEnterCanvas : MonoBehaviour
 		StackCanvas.Pop(gameObject);
 	}
 	
+	public int selectedDifficulty { get { return _selectedDifficulty; } }
+	public int selectableMaxDifficulty { get { return _selectableMaxDifficulty; } }
 	StageTableData _rushDefenseStageTableData;
 	ObscuredInt _selectedDifficulty;
 	ObscuredInt _selectableMaxDifficulty;
 	void RefreshInfo()
 	{
 		int clearLevel = SubMissionData.instance.rushDefenseClearLevel;
-		//clearLevel = 5;
-		if (clearLevel > BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxRushDefense"))
-			clearLevel = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxRushDefense");
 
 		// 최대 가능 레벨은 클리어 한거보다 하나 더 위다.
 		_selectableMaxDifficulty = clearLevel + 1;
 
-		// 라스트가 있으면 라스트를 부르고 없으면 
+		// 그래도 Max를 넘을 순 없다.
+		if (_selectableMaxDifficulty > BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxRushDefense"))
+			_selectableMaxDifficulty = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxRushDefense");
+
+		// 라스트가 있으면 라스트를 부르고 없으면 첫번째인 1로 설정.
 		_selectedDifficulty = SubMissionData.instance.rushDefenseSelectedLevel;
 		if (_selectedDifficulty == 0)
 			_selectedDifficulty = 1;
@@ -247,17 +251,16 @@ public class RushDefenseEnterCanvas : MonoBehaviour
 		if (_listSelectedActorId != null)
 			_listSelectedActorId.Clear();
 
-		selectStartText.gameObject.SetActive(true);
+		selectStartText.gameObject.SetActive(_listMissionCanvasCharacterListItem.Count > 0);
 		selectResultText.text = "";
 
 		if (onEnable)
 		{
-			string cachedLastCharacter = GetCachedLastCharacterList();
-			if (string.IsNullOrEmpty(cachedLastCharacter) == false)
+			List<string> listLastCharacterId = GetCachedLastCharacterList();
+			if (listLastCharacterId != null)
 			{
-				_listSelectedActorId = JsonUtility.FromJson<List<string>>(cachedLastCharacter);
-				for (int i = 0; i < _listSelectedActorId.Count; ++i)
-					OnClickListItem(_listSelectedActorId[i]);
+				for (int i = 0; i < listLastCharacterId.Count; ++i)
+					OnClickListItem(listLastCharacterId[i]);
 			}
 		}
 		//else
@@ -275,10 +278,9 @@ public class RushDefenseEnterCanvas : MonoBehaviour
 		{
 			if (_listSelectedActorId.Count == SELECT_MAX)
 			{
-
+				ToastCanvas.instance.ShowToast(UIString.instance.GetString("EquipUI_CannotSelectMore"), 2.0f);
 				return;
 			}
-
 			_listSelectedActorId.Add(actorId);
 		}
 
@@ -364,7 +366,7 @@ public class RushDefenseEnterCanvas : MonoBehaviour
 
 		leftButtonImage.color = (_selectedDifficulty == 1) ? Color.gray : Color.white;
 		rightButtonImage.color = (_selectedDifficulty == _selectableMaxDifficulty) ? Color.gray : Color.white;
-		newObject.SetActive(_selectedDifficulty == _selectableMaxDifficulty);
+		newObject.SetActive(_selectedDifficulty == _selectableMaxDifficulty && _selectedDifficulty > SubMissionData.instance.rushDefenseClearLevel);
 
 		// 현재 선택된 난이도에 따른 보상을 보여준다.
 		MissionModeTableData missionModeTableData = TableDataManager.instance.FindMissionModeTableData((int)SubMissionData.eSubMissionType.RushDefense, _selectedDifficulty);
@@ -426,13 +428,14 @@ public class RushDefenseEnterCanvas : MonoBehaviour
 	public List<string> listSelectedActorId { get { return _listSelectedActorId; } }
 	public void OnClickYesButton()
 	{
-		if (_listSelectedActorId == null || _listSelectedActorId.Count == 0)
-		{
-			ToastCanvas.instance.ShowToast(UIString.instance.GetString("MissionUI_SelectMember"), 2.0f);
+		if (_moveProcessed)
 			return;
-		}
 
-		if (_listSelectedActorId.Count < SELECT_MAX && _listSelectedActorId.Count < _listMissionCanvasCharacterListItem.Count)
+		int selectedActorCount = 0;
+		if (_listSelectedActorId != null)
+			selectedActorCount = _listSelectedActorId.Count;
+
+		if (selectedActorCount < SELECT_MAX && selectedActorCount < _listMissionCanvasCharacterListItem.Count)
 		{
 			YesNoCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("MissionUI_SelectMoreConfirm"), () =>
 			{
@@ -444,8 +447,11 @@ public class RushDefenseEnterCanvas : MonoBehaviour
 		Timing.RunCoroutine(BattleMoveProcess());
 	}
 
+	bool _moveProcessed;
 	IEnumerator<float> BattleMoveProcess()
 	{
+		_moveProcessed = true;
+
 		FadeCanvas.instance.FadeOut(0.2f, 1.0f, true);
 		yield return Timing.WaitForSeconds(0.2f);
 
@@ -470,23 +476,34 @@ public class RushDefenseEnterCanvas : MonoBehaviour
 
 		yield return Timing.WaitForSeconds(0.2f);
 
+		// 보스전처럼
+		Screen.sleepTimeout = SleepTimeout.NeverSleep;
+
 		UIInstanceManager.instance.ShowCanvasAsync("RushDefenseMissionCanvas", () =>
 		{
 			DelayedLoadingCanvas.Show(false);
 			FadeCanvas.instance.FadeIn(0.5f);
 		});
+
+		_moveProcessed = false;
 	}
 
 	#region Record Last Character
 	void RecordLastCharacterList()
 	{
-		string value = JsonUtility.ToJson(_listSelectedActorId);
+		var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
+		string value = serializer.SerializeObject(_listSelectedActorId);
 		ObscuredPrefs.SetString(string.Format("_rdEnterCanvas_{0}", PlayFabApiManager.instance.playFabId), value);
 	}
 
-	string GetCachedLastCharacterList()
+	List<string> GetCachedLastCharacterList()
 	{
-		return ObscuredPrefs.GetString(string.Format("_rdEnterCanvas_{0}", PlayFabApiManager.instance.playFabId));
+		string cachedLastCharacterList = ObscuredPrefs.GetString(string.Format("_rdEnterCanvas_{0}", PlayFabApiManager.instance.playFabId));
+		if (string.IsNullOrEmpty(cachedLastCharacterList))
+			return null;
+
+		var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
+		return serializer.DeserializeObject<List<string>>(cachedLastCharacterList);
 	}
 	#endregion
 }
