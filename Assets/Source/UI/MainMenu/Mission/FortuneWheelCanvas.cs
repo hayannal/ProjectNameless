@@ -119,7 +119,7 @@ public class FortuneWheelCanvas : SimpleCashCanvas
 			int cost = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MissionEnergyRoulette");
 			priceText.text = cost.ToString("N0");
 			goldIconObject.SetActive(true);
-			priceTextRectTransform.anchoredPosition = new Vector2(16.0f, priceTextRectTransform.anchoredPosition.y);
+			priceTextRectTransform.anchoredPosition = new Vector2(18.0f, priceTextRectTransform.anchoredPosition.y);
 		}
 		else
 		{
@@ -167,22 +167,16 @@ public class FortuneWheelCanvas : SimpleCashCanvas
 		//Debug.LogFormat("reward = {0:N0}", _listReward[_currentIndex]);
 		AlarmObject.Hide(alarmRootTransform);
 
-		int useEnergy = 0;
+		int useTicket = 0;
 		bool consume = false;
 		if (SubMissionData.instance.fortuneWheelDailyCount == 0)
-			useEnergy = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MissionEnergyRoulette");
+			useTicket = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MissionEnergyRoulette");
 		else if (SubMissionData.instance.fortuneWheelDailyCount == 1)
 			consume = true;
 
-		PlayFabApiManager.instance.RequestFortuneWheel(_listReward[_currentIndex], useEnergy, consume, () =>
+		PlayFabApiManager.instance.RequestFortuneWheel(_listReward[_currentIndex], useTicket, consume, () =>
 		{
-			if (useEnergy > 0)
-			{
-				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.FreeFortuneWheel);
-				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.UseEnergy, useEnergy);
-			}
 			MainCanvas.instance.RefreshMissionAlarmObject();
-
 			Timing.RunCoroutine(SpinProcess());
 		});
 	}
