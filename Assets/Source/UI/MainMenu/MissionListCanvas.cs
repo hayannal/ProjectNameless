@@ -8,6 +8,11 @@ public class MissionListCanvas : MonoBehaviour
 {
 	public static MissionListCanvas instance;
 
+	#region Ticket
+	public Text ticketText;
+	public Text fillRemainTimeText;
+	#endregion
+
 	#region Energy
 	public Text energyText;
 	#endregion
@@ -52,6 +57,9 @@ public class MissionListCanvas : MonoBehaviour
 		#region Energy
 		RefreshEnergy();
 		#endregion
+		#region Ticket
+		RefreshTicket();
+		#endregion
 		RefreshInfo();
 
 		bool restore = StackCanvas.Push(gameObject, false, null, OnPopStack);
@@ -90,6 +98,11 @@ public class MissionListCanvas : MonoBehaviour
 	{
 		UpdateResetRemainTime();
 		UpdateEnergy();
+
+		#region Ticket
+		UpdateFillRemainTime();
+		UpdateRefresh();
+		#endregion
 	}
 
 	#region Energy
@@ -187,9 +200,9 @@ public class MissionListCanvas : MonoBehaviour
 					return;
 				}
 
-				if (CurrencyData.instance.energy < BattleInstanceManager.instance.GetCachedGlobalConstantInt("MissionEnergyPet"))
+				if (CurrencyData.instance.ticket < BattleInstanceManager.instance.GetCachedGlobalConstantInt("MissionEnergyPet"))
 				{
-					ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughEnergy"), 2.0f);
+					ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughTicket"), 2.0f);
 					return;
 				}
 
@@ -198,7 +211,7 @@ public class MissionListCanvas : MonoBehaviour
 
 			case 1:
 
-				if (SubMissionData.instance.fortuneWheelDailyCount == 0 && CurrencyData.instance.energy < BattleInstanceManager.instance.GetCachedGlobalConstantInt("MissionEnergyRoulette"))
+				if (SubMissionData.instance.fortuneWheelDailyCount == 0 && CurrencyData.instance.ticket < BattleInstanceManager.instance.GetCachedGlobalConstantInt("MissionEnergyRoulette"))
 				{
 					ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughEnergy"), 2.0f);
 					return;
@@ -215,9 +228,9 @@ public class MissionListCanvas : MonoBehaviour
 					return;
 				}
 
-				if (CurrencyData.instance.energy < BattleInstanceManager.instance.GetCachedGlobalConstantInt("MissionEnergyRushDefense"))
+				if (CurrencyData.instance.ticket < BattleInstanceManager.instance.GetCachedGlobalConstantInt("MissionEnergyRushDefense"))
 				{
-					ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughEnergy"), 2.0f);
+					ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughTicket"), 2.0f);
 					return;
 				}
 
@@ -225,19 +238,41 @@ public class MissionListCanvas : MonoBehaviour
 				break;
 			case 3:
 
+				if (CharacterManager.instance.listCharacterData.Count < 5)
+				{
+					ToastCanvas.instance.ShowToast(UIString.instance.GetString("MissionUI_BossDefenseMemberLimit"), 2.0f);
+					return;
+				}
+
 				if (IsAlarmBossDefense() == false)
 				{
 					ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_TodayCountComplete"), 2.0f);
 					return;
 				}
 
-				if (CurrencyData.instance.energy < BattleInstanceManager.instance.GetCachedGlobalConstantInt("MissionEnergyBossDefense"))
+				if (CurrencyData.instance.ticket < BattleInstanceManager.instance.GetCachedGlobalConstantInt("MissionEnergyBossDefense"))
 				{
-					ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughEnergy"), 2.0f);
+					ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughTicket"), 2.0f);
 					return;
 				}
 
 				UIInstanceManager.instance.ShowCanvasAsync("BossDefenseEnterCanvas", null);
+				break;
+			case 4:
+
+				if (CharacterManager.instance.listCharacterData.Count == 0)
+				{
+					ToastCanvas.instance.ShowToast(UIString.instance.GetString("MissionUI_BossBattleMemberLimit"), 2.0f);
+					return;
+				}
+
+				if (CurrencyData.instance.ticket < BattleInstanceManager.instance.GetCachedGlobalConstantInt("MissionEnergyBossBattle"))
+				{
+					ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughTicket"), 2.0f);
+					return;
+				}
+
+				UIInstanceManager.instance.ShowCanvasAsync("BossBattleEnterCanvas", null);
 				break;
 		}
 	}
@@ -287,7 +322,7 @@ public class MissionListCanvas : MonoBehaviour
 
 
 
-	int _lastRemainTimeSecond = -1;
+	int _lastRefreshRemainTimeSecond = -1;
 	void UpdateResetRemainTime()
 	{
 		#region Pet
@@ -324,20 +359,20 @@ public class MissionListCanvas : MonoBehaviour
 
 		if (petProcess == false && wheelProcess == false && rushDefenseProcess == false && bossDefenseProcess == false)
 		{
-			_lastRemainTimeSecond = -1;
+			_lastRefreshRemainTimeSecond = -1;
 			return;
 		}
 
 		if (ServerTime.UtcNow < PlayerData.instance.dayRefreshTime)
 		{
 			System.TimeSpan remainTime = PlayerData.instance.dayRefreshTime - ServerTime.UtcNow;
-			if (_lastRemainTimeSecond != (int)remainTime.TotalSeconds)
+			if (_lastRefreshRemainTimeSecond != (int)remainTime.TotalSeconds)
 			{
 				if (petProcess) petTodayResetRemainTimeText.text = string.Format("{0:00}:{1:00}:{2:00}", remainTime.Hours, remainTime.Minutes, remainTime.Seconds);
 				if (wheelProcess) wheelTodayResetRemainTimeText.text = string.Format("{0:00}:{1:00}:{2:00}", remainTime.Hours, remainTime.Minutes, remainTime.Seconds);
 				if (rushDefenseProcess) rushDefenseTodayResetRemainTimeText.text = string.Format("{0:00}:{1:00}:{2:00}", remainTime.Hours, remainTime.Minutes, remainTime.Seconds);
 				if (bossDefenseProcess) bossDefenseTodayResetRemainTimeText.text = string.Format("{0:00}:{1:00}:{2:00}", remainTime.Hours, remainTime.Minutes, remainTime.Seconds);
-				_lastRemainTimeSecond = (int)remainTime.TotalSeconds;
+				_lastRefreshRemainTimeSecond = (int)remainTime.TotalSeconds;
 			}
 		}
 		else
@@ -362,4 +397,67 @@ public class MissionListCanvas : MonoBehaviour
 			_lastEnergySecond = (int)Time.time;
 		}
 	}
+
+
+	#region Ticket
+	public void RefreshTicket()
+	{
+		int current = CurrencyData.instance.ticket;
+		int max = CurrencyData.instance.ticketMax;
+		ticketText.text = string.Format("{0} / {1}", current, max);
+		_lastCurrent = current;
+		if (current >= max)
+		{
+			fillRemainTimeText.text = "";
+			_needUpdate = false;
+		}
+		else
+		{
+			_nextFillDateTime = CurrencyData.instance.ticketRechargeTime;
+			_needUpdate = true;
+			_lastRemainTimeSecond = -1;
+		}
+	}
+
+	bool _needUpdate = false;
+	System.DateTime _nextFillDateTime;
+	int _lastRemainTimeSecond = -1;
+	void UpdateFillRemainTime()
+	{
+		if (_needUpdate == false)
+			return;
+
+		if (ServerTime.UtcNow < _nextFillDateTime)
+		{
+			System.TimeSpan remainTime = _nextFillDateTime - ServerTime.UtcNow;
+			if (_lastRemainTimeSecond != (int)remainTime.TotalSeconds)
+			{
+				fillRemainTimeText.text = string.Format("{0}:{1:00}", remainTime.Minutes, remainTime.Seconds);
+				_lastRemainTimeSecond = (int)remainTime.TotalSeconds;
+			}
+		}
+		else
+		{
+			// 우선 클라단에서 하기로 했으니 서버랑 통신해서 바꾸진 않는다.
+			// 대신 CurrencyData의 값과 비교하면서 바뀌는지 확인한다.
+			_needUpdate = false;
+			fillRemainTimeText.text = "0:00";
+			_needRefresh = true;
+		}
+	}
+
+	bool _needRefresh = false;
+	int _lastCurrent;
+	void UpdateRefresh()
+	{
+		if (_needRefresh == false)
+			return;
+
+		if (_lastCurrent != CurrencyData.instance.ticket)
+		{
+			RefreshTicket();
+			_needRefresh = false;
+		}
+	}
+	#endregion
 }

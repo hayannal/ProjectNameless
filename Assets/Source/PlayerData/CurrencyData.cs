@@ -26,7 +26,6 @@ public class CurrencyData : MonoBehaviour
 	{
 		Gold,
 		Diamond,
-		Spin,
 	}
 
 	public static int s_MaxGold = 999999999;
@@ -34,15 +33,14 @@ public class CurrencyData : MonoBehaviour
 	public static string GoldCode() { return "GO"; }
 	public static string DiamondCode() { return "DI"; }
 	public static string EnergyCode() { return "EN"; }
+	public static string TicketCode() { return "TI"; }
 
 	public ObscuredInt gold { get; set; }
 	public ObscuredInt energy { get; set; }
 	public ObscuredInt energyMax { get; set; }
 	public ObscuredInt dia { get; set; }			// 서버 상점에서 모아서 처리하는 기능이 없어서 free와 구매 다 합쳐서 처리하기로 한다.
-
-	// 과금 요소. 클라이언트에 존재하면 무조건 굴려서 없애야하는거다. 인앱결제 결과를 받아놓는 저장소로 쓰인다.
-	public ObscuredInt equipBoxKey { get; set; }
-	public ObscuredInt legendEquipKey { get; set; }
+	public ObscuredInt ticket { get; set; }
+	public ObscuredInt ticketMax { get; set; }
 
 	#region Betting
 	public ObscuredInt bettingCount { get; set; }
@@ -50,7 +48,6 @@ public class CurrencyData : MonoBehaviour
 	public ObscuredInt goldBoxTargetReward { get; set; }
 	public ObscuredInt currentGoldBoxRoomReward { get; set; }
 	public ObscuredInt goldBoxRemainTurn { get; set; }
-	public ObscuredInt ticket { get; set; }
 	public List<ObscuredInt> listBetInfo { get; set; }
 	#endregion
 
@@ -69,6 +66,8 @@ public class CurrencyData : MonoBehaviour
 			dia = userVirtualCurrency["DI"];
 		if (userVirtualCurrency.ContainsKey("EN"))
 			energy = userVirtualCurrency["EN"];
+		if (userVirtualCurrency.ContainsKey("TI"))
+			ticket = userVirtualCurrency["TI"];
 		/*
 		if (userVirtualCurrency.ContainsKey("LE"))	// 충전쿨이 길어서 현재수량만 기억해둔다.
 			legendKey = userVirtualCurrency["LE"];
@@ -96,10 +95,19 @@ public class CurrencyData : MonoBehaviour
 			//int totalSeconds = (int)timeSpan.TotalSeconds;
 		}
 
+		if (userVirtualCurrencyRechargeTimes != null && userVirtualCurrencyRechargeTimes.ContainsKey("TI"))
+		{
+			ticketMax = userVirtualCurrencyRechargeTimes["TI"].RechargeMax;
+			if (userVirtualCurrencyRechargeTimes["TI"].SecondsToRecharge > 0 && ticket < ticketMax)
+			{
+				_rechargingTicket = true;
+				_ticketRechargeTime = userVirtualCurrencyRechargeTimes["TI"].RechargeTime;
+			}
+		}
+
 		// 재화는 한정적인 자원이라 재화 안써도 되는건 통계써서 가져오기로 한다.
 		bettingCount = 0;
 		brokenEnergy = 0;
-		ticket = 0;
 		eventPoint = 0;
 		goldBoxRemainTurn = 0;
 		goldBoxTargetReward = 0;
@@ -109,7 +117,6 @@ public class CurrencyData : MonoBehaviour
 			{
 				case "betCnt": bettingCount = playerStatistics[i].Value; break;
 				case "brokenEnergy": brokenEnergy = playerStatistics[i].Value; break;
-				case "ticket": ticket = playerStatistics[i].Value; break;
 				case "eventPoint": eventPoint = playerStatistics[i].Value; break;
 				case "goldBoxTurn": goldBoxRemainTurn = playerStatistics[i].Value; break;
 				case "goldBoxValue": goldBoxTargetReward = playerStatistics[i].Value; break;
@@ -175,6 +182,7 @@ public class CurrencyData : MonoBehaviour
 	void Update()
 	{
 		UpdateRechargeEnergy();
+		UpdateRechargeTicket();
 	}
 
 	bool _rechargingEnergy = false;
@@ -295,6 +303,109 @@ public class CurrencyData : MonoBehaviour
 			MainCanvas.instance.RefreshGachaAlarmObject();
 	}
 
+	#region Ticket
+	bool _rechargingTicket = false;
+	DateTime _ticketRechargeTime;
+	public DateTime ticketRechargeTime { get { return _ticketRechargeTime; } }
+	void UpdateRechargeTicket()
+	{
+		// MEC쓰려다가 홈키 눌러서 내릴거 대비해서 DateTime검사로 처리한다.
+		if (_rechargingTicket == false)
+			return;
+
+		// 한번만 계산하고 넘기니 한번에 여러번 해야하는 상황에서 프레임 단위로 조금씩 밀리게 된다.
+		// 어차피 싱크는 맞출테지만 그래도 이왕이면 여러번 체크하게 해둔다. 120회 정도면 24시간도 버틸만할거다.
+		int loopCount = 0;
+		for (int i = 0; i < 120; ++i)
+		{
+			if (DateTime.Compare(ServerTime.UtcNow, _ticketRechargeTime) < 0)
+				break;
+
+			loopCount += 1;
+			ticket += 1;
+			if (ticket == ticketMax)
+			{
+				_rechargingTicket = false;
+				break;
+			}
+			else
+				_ticketRechargeTime += TimeSpan.FromSeconds(BattleInstanceManager.instance.GetCachedGlobalConstantInt("TimeSecToGetOneEnergy"));
+		}
+
+		// 여러번 건너뛰었단건 홈키 같은거 눌러서 한동안 업데이트 안되다가 몰아서 업데이트 되었단 얘기다. 이럴땐 강제 UI 업데이트
+		if (loopCount > 5)
+		{
+			//if (MissionListCanvas.instance != null)
+			//	MissionListCanvas.instance.RefreshTicket();
+		}
+	}
+
+	public bool UseTicket(int amount)
+	{
+		if (ticket < amount)
+			return false;
+
+		bool full = (ticket >= ticketMax);
+		ticket -= amount;
+		if (ticket < ticketMax)
+		{
+			if (full)
+			{
+				_ticketRechargeTime = ServerTime.UtcNow + TimeSpan.FromSeconds(BattleInstanceManager.instance.GetCachedGlobalConstantInt("TimeSecToGetOneTicket"));
+				_rechargingTicket = true;
+			}
+			else
+			{
+				/*
+				if (OptionManager.instance.energyAlarm == 1)
+				{
+					// full이 아니었다면 이전에 등록되어있던 Noti를 먼저 삭제해야한다.
+					// 만약 energyAlarm을 꺼둔채로 에너지를 소모했다면 취소시킬 Noti가 없을텐데 그걸 판단할 방법은 귀찮으므로 그냥 Cancel 호출하는거로 해둔다.
+					CancelEnergyNotification();
+				}
+				*/
+			}
+
+			/*
+			if (OptionManager.instance.energyAlarm == 1)
+			{
+				ReserveEnergyNotification();
+			}
+			*/
+		}
+		return true;
+	}
+
+	public void OnRecvRefillTicket(int refillAmount, bool ignoreCanvas = false)
+	{
+		bool full = (ticket >= ticketMax);
+		ticket += refillAmount;
+
+		/*
+		if (full == false && OptionManager.instance.energyAlarm == 1)
+			CancelEnergyNotification();
+		*/
+
+		if (ticket >= ticketMax)
+			_rechargingEnergy = false;
+		else
+		{
+			/*
+			if (OptionManager.instance.energyAlarm == 1)
+			{
+				ReserveEnergyNotification();
+			}
+			*/
+		}
+
+		if (ignoreCanvas)
+			return;
+
+		if (MissionListCanvas.instance != null && MissionListCanvas.instance.gameObject.activeSelf)
+			MissionListCanvas.instance.RefreshTicket();
+	}
+	#endregion
+
 	// 공용 보상 처리때문에 추가하는 함수
 	public void OnRecvProductReward(string type, string value, int count)
 	{
@@ -306,6 +417,7 @@ public class CurrencyData : MonoBehaviour
 					case "GO": gold += count; break;
 					case "DI": dia += count; break;
 					case "EN": OnRecvRefillEnergy(count); break;
+					case "TI": OnRecvRefillTicket(count); break;
 				}
 				break;
 			case "it":

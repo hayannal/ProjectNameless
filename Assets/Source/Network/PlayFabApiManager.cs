@@ -3667,9 +3667,9 @@ public class PlayFabApiManager : MonoBehaviour
 			{
 				WaitingNetworkCanvas.Show(false);
 
-				int useEnergy = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MissionEnergyPet");
-				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.UseEnergy, useEnergy);
-				CurrencyData.instance.UseEnergy(useEnergy);
+				int useTicket = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MissionEnergyPet");
+				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.UseTicket, useTicket);
+				CurrencyData.instance.UseTicket(useTicket);
 				PetManager.instance.dailySearchCount += 1;
 				PetManager.instance.GetInProgressSearchIdList().Clear();
 
@@ -4218,11 +4218,11 @@ public class PlayFabApiManager : MonoBehaviour
 
 
 	#region Sub Mission
-	public void RequestFortuneWheel(int reward, int useEnergy, bool consume, Action successCallback)
+	public void RequestFortuneWheel(int reward, int useTicket, bool consume, Action successCallback)
 	{
 		WaitingNetworkCanvas.Show(true);
 
-		string input = string.Format("{0}_{1}_{2}_{3}_{4}", (int)SubMissionData.instance.fortuneWheelDailyCount, reward, useEnergy, consume ? 1 : 0, "rqoiurzs");
+		string input = string.Format("{0}_{1}_{2}_{3}_{4}", (int)SubMissionData.instance.fortuneWheelDailyCount, reward, useTicket, consume ? 1 : 0, "rqoiurzs");
 		string checkSum = CheckSum(input);
 		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
 		{
@@ -4239,8 +4239,12 @@ public class PlayFabApiManager : MonoBehaviour
 
 				SubMissionData.instance.fortuneWheelDailyCount += 1;
 				CurrencyData.instance.gold += reward;
-				if (useEnergy > 0)
-					CurrencyData.instance.UseEnergy(useEnergy);
+				if (useTicket > 0)
+				{
+					GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.FreeFortuneWheel);
+					GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.UseTicket, useTicket);
+					CurrencyData.instance.UseTicket(useTicket);
+				}
 				if (consume)
 					CashShopData.instance.ConsumeFlag(CashShopData.eCashConsumeFlagType.FortuneWheel);
 
