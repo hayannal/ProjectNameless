@@ -648,8 +648,16 @@ public class MonsterAI : MonoBehaviour
 
 		if (pathFinderController.agent.destination.x != StageManager.instance.monsterTargetPosition.x || pathFinderController.agent.destination.z != StageManager.instance.monsterTargetPosition.z)
 		{
-			if (pathFinderController.agent.isOnNavMesh)
-				pathFinderController.agent.destination = StageManager.instance.monsterTargetPosition;
+			if (StageManager.instance != null && StageManager.instance.noNavStage)
+			{
+				nodeWarDestinationState = true;
+				nodeWarDestinationPosition = DefenseWarGround.s_groundOffset;
+			}
+			else
+			{
+				if (pathFinderController.agent.isOnNavMesh)
+					pathFinderController.agent.destination = StageManager.instance.monsterTargetPosition;
+			}
 		}
 
 		/*
