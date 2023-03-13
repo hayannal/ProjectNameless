@@ -131,8 +131,9 @@ public class GachaInfoCanvas : MonoBehaviour
 			_listBetValue.Add(1);
 			_listBetValue.Add(2);
 			_listBetValue.Add(3);
-			_listBetValue.Add(4);
-			_defaultBetCount = 4;
+			_listBetValue.Add(5);
+			_listBetValue.Add(10);
+			_defaultBetCount = 5;
 			_currentBetRateIndex = 0;
 		}
 		RefreshBetText();
