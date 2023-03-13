@@ -426,6 +426,12 @@ public class MainCanvas : MonoBehaviour
 
 	public void OnClickRankingButton()
 	{
+		if (BattleInstanceManager.instance.GetCachedGlobalConstantInt("RankingOn") == 0)
+		{
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("SystemUI_WaitUpdate"), 2.0f);
+			return;
+		}
+		
 		if (PlayerData.instance.CheckConfirmDownload() == false)
 			return;
 
