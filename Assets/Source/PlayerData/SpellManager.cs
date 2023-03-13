@@ -572,6 +572,7 @@ public class SpellManager : MonoBehaviour
 	
 
 	Cooltime _globalSpellCooltime;
+	const float SpellDistance = 11.0f;
 	void UpdateSpellInfo()
 	{
 		if (_playerActorForSpellProcessor == null)
@@ -604,6 +605,13 @@ public class SpellManager : MonoBehaviour
 			autoSkillUsable = false;
 
 		if (!autoSkillUsable)
+			return;
+
+		// 타겟이 너무 멀면 스펠이 나가지 않게 해보자.
+		Transform targetTransform = BattleInstanceManager.instance.GetTransformFromCollider(actor.playerAI.targetCollider);
+		Vector3 diff = targetTransform.position - actor.cachedTransform.position;
+		diff.y = 0.0f;
+		if (diff.sqrMagnitude > SpellDistance * SpellDistance)
 			return;
 
 		if (UseRandomAutoSpell())
