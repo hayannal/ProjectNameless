@@ -233,6 +233,7 @@ public class MainCanvas : MonoBehaviour
 			FadeCanvas.instance.FadeIn(0.5f);
 			_enterGameServerFailure = false;
 			_networkFailure = false;
+			_challengeProcessed = false;
 			yield break;
 		}
 
