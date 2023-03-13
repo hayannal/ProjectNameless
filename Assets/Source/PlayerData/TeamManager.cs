@@ -76,7 +76,7 @@ public class TeamManager : MonoBehaviour
 	}
 
 	Dictionary<string, int> _dicPositionInfo = new Dictionary<string, int>();
-	public void SpawnTeamMember(ePosition positionType, string memberActorId)
+	void SpawnTeamMember(ePosition positionType, string memberActorId)
 	{
 		// 캐릭터 교체는 이 캔버스 담당이다.
 		// 액터가 혹시나 미리 만들어져있다면 등록되어있을거니 가져다쓴다.
@@ -154,6 +154,7 @@ public class TeamManager : MonoBehaviour
 			case ePosition.Right: offset = new Vector3(1.5f, 0.0f, 0.3f); break;
 		}
 		playerActor.cachedTransform.position = basePosition + offset;
+		TailAnimatorUpdater.UpdateAnimator(playerActor.cachedTransform, 15);
 	}
 
 	// 위 루틴을 다 따르는게 괜히 무거워서 이미 로딩이 되어있고 씬 이동을 할때는 그냥 껐다가 켜는 형태로만 캐릭터를 옮기기로 한다.
