@@ -376,10 +376,10 @@ public class PetSearchCanvas : MonoBehaviour
 	void AddPercent()
 	{
 		_attackPercent += Random.Range(1, 10);
-		if (_attackPercent >= 100) attackPercentText.color = new Color(0.5f, 1.0f, 1.0f);
-		else if (_attackPercent >= 200) attackPercentText.color = new Color(1.0f, 1.0f, 0.5f);
+		if (_attackPercent >= 600) attackPercentText.color = new Color(0.5f, 1.0f, 0.5f);
 		else if (_attackPercent >= 400) attackPercentText.color = new Color(0.5f, 0.5f, 1.0f);
-		else if (_attackPercent >= 600) attackPercentText.color = new Color(0.5f, 1.0f, 0.5f);
+		else if (_attackPercent >= 200) attackPercentText.color = new Color(1.0f, 1.0f, 0.5f);
+		else if (_attackPercent >= 100) attackPercentText.color = new Color(0.5f, 1.0f, 1.0f);
 		attackPercentText.text = string.Format("{0:N0}%", _attackPercent);
 	}
 
