@@ -258,9 +258,7 @@ public class RushDefenseMissionCanvas : MonoBehaviour
 		int selectedDifficulty = RushDefenseEnterCanvas.instance.selectedDifficulty;
 		int selectableMaxDifficulty = RushDefenseEnterCanvas.instance.selectableMaxDifficulty;
 		bool firstClear = (selectedDifficulty == selectableMaxDifficulty && selectedDifficulty > SubMissionData.instance.rushDefenseClearLevel);
-
-		int addDia = 0;
-
+		int addDia = RushDefenseEnterCanvas.instance.expectedReward;
 		PlayFabApiManager.instance.RequestEndRushDefenseMission(firstClear, selectedDifficulty, addDia, price, () =>
 		{
 			// 패킷 통과하면 다음 처리로 넘어간다.

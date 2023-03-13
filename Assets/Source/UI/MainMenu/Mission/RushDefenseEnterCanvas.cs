@@ -357,6 +357,8 @@ public class RushDefenseEnterCanvas : MonoBehaviour
 		}
 	}
 
+	public int expectedReward { get { return _expectedReward; } }
+	ObscuredInt _expectedReward;
 	MissionModeTableData _missionModeTableData;
 	List<MissionCanvasRewardIcon> _listMissionCanvasRewardIcon = new List<MissionCanvasRewardIcon>();
 	void RefreshDifficulty()
@@ -378,6 +380,7 @@ public class RushDefenseEnterCanvas : MonoBehaviour
 			_listMissionCanvasRewardIcon[i].gameObject.SetActive(false);
 		_listMissionCanvasRewardIcon.Clear();
 
+		_expectedReward = 0;
 		if (newObject.activeSelf)
 		{
 			// first
@@ -387,6 +390,7 @@ public class RushDefenseEnterCanvas : MonoBehaviour
 				missionCanvasRewardIcon.rewardIcon.RefreshReward(missionModeTableData.firstRewardType1, missionModeTableData.firstRewardValue1, missionModeTableData.firstRewardCount1);
 				missionCanvasRewardIcon.firstObject.SetActive(true);
 				_listMissionCanvasRewardIcon.Add(missionCanvasRewardIcon);
+				_expectedReward += missionModeTableData.firstRewardCount1;
 			}
 			if (string.IsNullOrEmpty(missionModeTableData.firstRewardType2) == false)
 			{
@@ -394,6 +398,7 @@ public class RushDefenseEnterCanvas : MonoBehaviour
 				missionCanvasRewardIcon.rewardIcon.RefreshReward(missionModeTableData.firstRewardType2, missionModeTableData.firstRewardValue2, missionModeTableData.firstRewardCount2);
 				missionCanvasRewardIcon.firstObject.SetActive(true);
 				_listMissionCanvasRewardIcon.Add(missionCanvasRewardIcon);
+				_expectedReward += missionModeTableData.firstRewardCount2;
 			}
 			if (string.IsNullOrEmpty(missionModeTableData.firstRewardType3) == false)
 			{
@@ -401,6 +406,7 @@ public class RushDefenseEnterCanvas : MonoBehaviour
 				missionCanvasRewardIcon.rewardIcon.RefreshReward(missionModeTableData.firstRewardType3, missionModeTableData.firstRewardValue3, missionModeTableData.firstRewardCount3);
 				missionCanvasRewardIcon.firstObject.SetActive(true);
 				_listMissionCanvasRewardIcon.Add(missionCanvasRewardIcon);
+				_expectedReward += missionModeTableData.firstRewardCount3;
 			}
 		}
 
@@ -411,6 +417,7 @@ public class RushDefenseEnterCanvas : MonoBehaviour
 			missionCanvasRewardIcon.rewardIcon.RefreshReward(missionModeTableData.rewardType1, missionModeTableData.rewardValue1, missionModeTableData.rewardCount1);
 			missionCanvasRewardIcon.firstObject.SetActive(false);
 			_listMissionCanvasRewardIcon.Add(missionCanvasRewardIcon);
+			_expectedReward += missionModeTableData.rewardCount1;
 		}
 		if (string.IsNullOrEmpty(missionModeTableData.rewardType2) == false)
 		{
@@ -418,6 +425,7 @@ public class RushDefenseEnterCanvas : MonoBehaviour
 			missionCanvasRewardIcon.rewardIcon.RefreshReward(missionModeTableData.rewardType2, missionModeTableData.rewardValue2, missionModeTableData.rewardCount2);
 			missionCanvasRewardIcon.firstObject.SetActive(false);
 			_listMissionCanvasRewardIcon.Add(missionCanvasRewardIcon);
+			_expectedReward += missionModeTableData.rewardCount2;
 		}
 	}
 
