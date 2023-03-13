@@ -665,52 +665,49 @@ public class PetSearchGround : MonoBehaviour
 		}
 		else
 		{
-			// 패스로 인한 여러마리 보상일땐 골고루 나오게
-			if (listExtraGainId.Count == 1 || listExtraGainId.Count == 3)
+			// 순차로 만들어내야 버그 없이 만들어낼 수 있어서 Process 형태로 처리한다.
+			Timing.RunCoroutine(SpawnExtraGainProcess(listExtraGainId));
+		}
+	}
+
+	IEnumerator<float> SpawnExtraGainProcess(List<ObscuredString> listExtraGainId)
+	{
+		// 패스로 인한 여러마리 보상일땐 골고루 나오게
+		if (listExtraGainId.Count == 1 || listExtraGainId.Count == 3)
+		{
+			bool spawnedFirstEnemy = false;
+			string petId = listExtraGainId[0];
+			SpawnPetActor(petId, (newPetActor) =>
 			{
-				string petId = listExtraGainId[0];
-				SpawnPetActor(petId, (newPetActor) =>
-				{
-					newPetActor.cachedTransform.position = extraGain1PositionTransform.position;
-					newPetActor.cachedTransform.rotation = extraGain1PositionTransform.rotation;
+				newPetActor.cachedTransform.position = extraGain1PositionTransform.position;
+				newPetActor.cachedTransform.rotation = extraGain1PositionTransform.rotation;
+				spawnedFirstEnemy = true;
 
-					extraGain1PetBattleInfo.SetInfo(petId);
-					extraGain1PetBattleInfo.gameObject.SetActive(true);
-				});
-				if (listExtraGainId.Count == 3)
-				{
-					petId = listExtraGainId[1];
-					SpawnPetActor(petId, (newPetActor) =>
-					{
-						newPetActor.cachedTransform.position = extraGain2PositionTransform.position;
-						newPetActor.cachedTransform.rotation = extraGain2PositionTransform.rotation;
+				extraGain1PetBattleInfo.SetInfo(petId);
+				extraGain1PetBattleInfo.gameObject.SetActive(true);
+			});
 
-						extraGain2PetBattleInfo.SetInfo(petId);
-						extraGain2PetBattleInfo.gameObject.SetActive(true);
-					});
-					petId = listExtraGainId[2];
-					SpawnPetActor(petId, (newPetActor) =>
-					{
-						newPetActor.cachedTransform.position = extraGain3PositionTransform.position;
-						newPetActor.cachedTransform.rotation = extraGain3PositionTransform.rotation;
-
-						extraGain3PetBattleInfo.SetInfo(petId);
-						extraGain3PetBattleInfo.gameObject.SetActive(true);
-					});
-				}
-			}
-			else if (listExtraGainId.Count == 2)
+			if (listExtraGainId.Count == 3)
 			{
-				string petId = listExtraGainId[0];
+				while (spawnedFirstEnemy == false)
+					yield return Timing.WaitForOneFrame;
+
+				bool spawnedSecondEnemy = false;
+				petId = listExtraGainId[1];
 				SpawnPetActor(petId, (newPetActor) =>
 				{
 					newPetActor.cachedTransform.position = extraGain2PositionTransform.position;
 					newPetActor.cachedTransform.rotation = extraGain2PositionTransform.rotation;
+					spawnedSecondEnemy = true;
 
 					extraGain2PetBattleInfo.SetInfo(petId);
 					extraGain2PetBattleInfo.gameObject.SetActive(true);
 				});
-				petId = listExtraGainId[1];
+
+				while (spawnedSecondEnemy == false)
+					yield return Timing.WaitForOneFrame;
+
+				petId = listExtraGainId[2];
 				SpawnPetActor(petId, (newPetActor) =>
 				{
 					newPetActor.cachedTransform.position = extraGain3PositionTransform.position;
@@ -721,7 +718,36 @@ public class PetSearchGround : MonoBehaviour
 				});
 			}
 		}
+		else if (listExtraGainId.Count == 2)
+		{
+			bool spawnedFirstEnemy = false;
+			string petId = listExtraGainId[0];
+			SpawnPetActor(petId, (newPetActor) =>
+			{
+				newPetActor.cachedTransform.position = extraGain2PositionTransform.position;
+				newPetActor.cachedTransform.rotation = extraGain2PositionTransform.rotation;
+				spawnedFirstEnemy = true;
+
+				extraGain2PetBattleInfo.SetInfo(petId);
+				extraGain2PetBattleInfo.gameObject.SetActive(true);
+			});
+
+			while (spawnedFirstEnemy == false)
+				yield return Timing.WaitForOneFrame;
+
+			petId = listExtraGainId[1];
+			SpawnPetActor(petId, (newPetActor) =>
+			{
+				newPetActor.cachedTransform.position = extraGain3PositionTransform.position;
+				newPetActor.cachedTransform.rotation = extraGain3PositionTransform.rotation;
+
+				extraGain3PetBattleInfo.SetInfo(petId);
+				extraGain3PetBattleInfo.gameObject.SetActive(true);
+			});
+		}
 	}
+
+
 
 	public void RotateCameraToExtraGain()
 	{
