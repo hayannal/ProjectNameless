@@ -651,7 +651,9 @@ public class MonsterAI : MonoBehaviour
 			if (StageManager.instance != null && StageManager.instance.noNavStage)
 			{
 				nodeWarDestinationState = true;
-				nodeWarDestinationPosition = DefenseWarGround.s_groundOffset;
+
+				// 아래처럼 컨텐츠에서 필요한 위치로 설정하면 될거다.
+				//nodeWarDestinationPosition = DefenseWarGround.s_groundOffset;
 			}
 			else
 			{
