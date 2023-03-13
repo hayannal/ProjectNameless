@@ -72,6 +72,13 @@ public class LoadingCanvas : MonoBehaviour
 
 	public void FadeOutObject()
 	{
+		// 미션창에서 되돌아오는거면
+		if (SubMissionData.instance.readyToReopenMissionListCanvas)
+		{
+			MainCanvas.instance.OnClickContentsButton();
+			SubMissionData.instance.readyToReopenMissionListCanvas = false;
+		}
+
 		progressObject.SetActive(false);
 		objectFadeTweenAnimation.DOPlay();
 	}

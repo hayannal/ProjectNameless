@@ -184,6 +184,7 @@ public class PetSearchCanvas : MonoBehaviour
 	public void OnClickBackButton()
 	{
 		YesNoCanvas.instance.ShowCanvas(true, UIString.instance.GetString("GameUI_BackToLobby"), UIString.instance.GetString("GameUI_BackToLobbyDescription"), () => {
+			SubMissionData.instance.readyToReopenMissionListCanvas = true;
 			SceneManager.LoadScene(0);
 		});
 	}
@@ -454,6 +455,7 @@ public class PetSearchCanvas : MonoBehaviour
 
 	public void OnClickResultExitButton()
 	{
+		SubMissionData.instance.readyToReopenMissionListCanvas = true;
 		SceneManager.LoadScene(0);
 	}
 
