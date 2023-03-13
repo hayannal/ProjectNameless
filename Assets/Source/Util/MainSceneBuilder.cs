@@ -497,7 +497,7 @@ public class MainSceneBuilder : MonoBehaviour
 #endif
 
 		//
-		TeamManager.instance.InitializeTeamMember();
+		TeamManager.instance.InitializeTeamMember(true);
 
 #if !UNITY_EDITOR
 		Debug.LogWarning("FFFFFFFFF");
