@@ -39,6 +39,15 @@ public class RushDefenseMissionGround : MonoBehaviour
 			GameObject newObject = BattleInstanceManager.instance.GetCachedObject(spawnPointWaitEffectPrefab, spawnPointTransformList[i].position, Quaternion.identity);
 			_listSpawnPointEffectObject.Add(newObject);
 		}
+
+		// 미션에 들어온다는건 이미 Layer가 셋팅된 상태일거다. 그냥 사용하면 된다.
+		Physics.IgnoreLayerCollision(Team.TEAM1_ACTOR_LAYER, Team.TEAM1_ACTOR_LAYER, false);
+		FloatingDamageTextRootCanvas.instance.ignoreDamageText = true;
+	}
+
+	void OnDisable()
+	{
+		Physics.IgnoreLayerCollision(Team.TEAM1_ACTOR_LAYER, Team.TEAM1_ACTOR_LAYER, true);
 	}
 
 	public void OnClickBox1()
