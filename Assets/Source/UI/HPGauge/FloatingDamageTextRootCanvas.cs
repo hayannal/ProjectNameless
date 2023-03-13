@@ -58,6 +58,9 @@ public class FloatingDamageTextRootCanvas : MonoBehaviour
 			return;
 #endif
 
+		if (ignoreDamageText)
+			return;
+
 		// position ani
 		int index = GetPositionAnimationIndex(actor);
 		index = index % floatingDamageTextPrefabList.Length;
@@ -92,6 +95,8 @@ public class FloatingDamageTextRootCanvas : MonoBehaviour
 		listCachedFloatingDamageText.Add(floatingDamageText);
 		return floatingDamageText;
 	}
+
+	public bool ignoreDamageText { get; set; }
 
 	const float ContinuousDelay = 1.5f;
 	Dictionary<Actor, float> _dicLastTime = new Dictionary<Actor, float>();
