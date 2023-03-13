@@ -57,6 +57,9 @@ public class FestivalData : MonoBehaviour
 		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.Analysis);
 		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.FreeFortuneWheel);
 		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.UseEnergy);
+		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.UseTicket);
+		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.ClearRushDefense);
+		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.ClearBossDefense);
 	}
 
 	void Update()
