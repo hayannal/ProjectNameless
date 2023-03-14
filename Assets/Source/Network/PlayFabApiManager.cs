@@ -4286,6 +4286,29 @@ public class PlayFabApiManager : MonoBehaviour
 		});
 	}
 
+	public void RequestSelectRushDefenseMission(int selectedDifficulty)
+	{
+		string input = string.Format("{0}_{1}", selectedDifficulty, "ormzajpd");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "SelectRushDefense",
+			FunctionParameter = new { Sel = selectedDifficulty, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				SubMissionData.instance.rushDefenseSelectedLevel = selectedDifficulty;
+			}
+		}, (error) =>
+		{
+			//HandleCommonError(error);
+		});
+	}
+
 	public void RequestEndRushDefenseMission(bool firstClear, int selectedDifficulty, int reward, int useTicket, Action successCallback)
 	{
 		WaitingNetworkCanvas.Show(true);
@@ -4328,6 +4351,29 @@ public class PlayFabApiManager : MonoBehaviour
 		}, (error) =>
 		{
 			HandleCommonError(error);
+		});
+	}
+
+	public void RequestSelectBossDefenseMission(int selectedDifficulty)
+	{
+		string input = string.Format("{0}_{1}", selectedDifficulty, "xprwalms");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "SelectBossDefense",
+			FunctionParameter = new { Sel = selectedDifficulty, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				SubMissionData.instance.bossDefenseSelectedLevel = selectedDifficulty;
+			}
+		}, (error) =>
+		{
+			//HandleCommonError(error);
 		});
 	}
 

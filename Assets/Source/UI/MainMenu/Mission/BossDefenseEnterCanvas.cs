@@ -488,6 +488,7 @@ public class BossDefenseEnterCanvas : MonoBehaviour
 		//TeamManager.instance.HideForMoveMap(false);
 		TeamManager.instance.ClearTeamPlayerActorForMission();
 		RecordLastCharacterList();
+		PlayFabApiManager.instance.RequestSelectBossDefenseMission(_selectedDifficulty);
 
 		yield return Timing.WaitForSeconds(0.2f);
 

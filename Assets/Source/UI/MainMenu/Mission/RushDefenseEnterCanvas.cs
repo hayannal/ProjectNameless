@@ -481,6 +481,7 @@ public class RushDefenseEnterCanvas : MonoBehaviour
 		//TeamManager.instance.HideForMoveMap(false);
 		TeamManager.instance.ClearTeamPlayerActorForMission();
 		RecordLastCharacterList();
+		PlayFabApiManager.instance.RequestSelectRushDefenseMission(_selectedDifficulty);
 
 		yield return Timing.WaitForSeconds(0.2f);
 
