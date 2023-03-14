@@ -177,8 +177,10 @@ public class PetSearchCanvas : MonoBehaviour
 	{
 		int count = CashShopData.instance.GetCashItemCount(CashShopData.eCashItemCountType.CaptureBetter);
 		captureBetterCountText.text = count.ToString("N0");
+		captureBetterCountText.color = (count > 0) ? Color.white : Color.red;
 		count = CashShopData.instance.GetCashItemCount(CashShopData.eCashItemCountType.CaptureBest);
 		captureBestCountText.text = count.ToString("N0");
+		captureBestCountText.color = (count > 0) ? Color.white : Color.red;
 	}
 
 	public void OnClickBackButton()
