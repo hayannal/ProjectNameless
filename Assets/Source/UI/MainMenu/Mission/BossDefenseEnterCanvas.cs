@@ -484,7 +484,7 @@ public class BossDefenseEnterCanvas : MonoBehaviour
 		if (this == null)
 			yield break;
 
-		StageManager.instance.InitializeMissionStage(_missionModeTableData.stage + 10000);
+		StageManager.instance.InitializeMissionStage(_missionModeTableData.stage);
 		//TeamManager.instance.HideForMoveMap(false);
 		TeamManager.instance.ClearTeamPlayerActorForMission();
 		RecordLastCharacterList();
