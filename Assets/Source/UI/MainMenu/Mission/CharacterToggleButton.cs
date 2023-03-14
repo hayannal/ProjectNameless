@@ -37,7 +37,11 @@ public class CharacterToggleButton : MonoBehaviour
 			RushDefenseMissionCanvas.instance.OnValueChangedToggle(actorId);
 		}
 
-		//if (RushDefenseMissionCanvas.instance != null && RushDefenseMissionCanvas.instance.gameObject.activeSelf)
-		//	RushDefenseMissionCanvas.instance.OnValueChangedToggle(actorId);
+		if (BossDefenseMissionCanvas.instance != null && BossDefenseMissionCanvas.instance.gameObject.activeSelf)
+		{
+			if (BossDefenseMissionCanvas.instance.autoPositionProcessed)
+				return;
+			BossDefenseMissionCanvas.instance.OnValueChangedToggle(actorId);
+		}
 	}
 }

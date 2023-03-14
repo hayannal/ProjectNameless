@@ -93,7 +93,8 @@ public class StageGround : MonoBehaviour
 
 		if (_monsterSpawnPortalObject != null)
 			_monsterSpawnPortalObject.SetActive(false);
-		_monsterSpawnPortalObject = BattleInstanceManager.instance.GetCachedObject(monsterSpawnPortalPrefab, new Vector3(stageTableData.monsterSpawnx, 0.0f, stageTableData.monsterSpawnz) + StageManager.instance.GetSafeWorldOffset(), Quaternion.identity);
+		if (missionMode == false)
+			_monsterSpawnPortalObject = BattleInstanceManager.instance.GetCachedObject(monsterSpawnPortalPrefab, new Vector3(stageTableData.monsterSpawnx, 0.0f, stageTableData.monsterSpawnz) + StageManager.instance.GetSafeWorldOffset(), Quaternion.identity);
 
 		Debug.LogWarning("6666");
 
