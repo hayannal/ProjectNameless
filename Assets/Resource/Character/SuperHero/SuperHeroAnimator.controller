@@ -37,12 +37,12 @@ MonoBehaviour:
   minimumDistance: 0
   lookAtWorldPosition: 0
   worldPosition: {x: 0, y: 0, z: 0}
-  lookAtLowestMonster: 0
+  lookAtHighestMonster: 0
   lerpPower: 5
   boneName: 
 --- !u!1102 &-4713780209319880699
 AnimatorState:
-  serializedVersion: 5
+  serializedVersion: 6
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -146,6 +146,7 @@ MonoBehaviour:
   checkRaycastWallInArea: 0
   raycastWallHeight: 0.5
   applyCollisionDamageInterval: 0
+  removeColliderArea: 0
   repeatCount: 0
   repeatInterval: 0
   movementType: 0
@@ -228,7 +229,7 @@ MonoBehaviour:
   showHitRimBlink: 1
 --- !u!1107 &-1805817263514781681
 AnimatorStateMachine:
-  serializedVersion: 5
+  serializedVersion: 6
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -262,7 +263,7 @@ AnimatorStateMachine:
   m_DefaultState: {fileID: 8503796429965771016}
 --- !u!1102 &-1605484021271178934
 AnimatorState:
-  serializedVersion: 5
+  serializedVersion: 6
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -289,8 +290,8 @@ AnimatorState:
   m_TimeParameter: 
 --- !u!1102 &-1155749964944844878
 AnimatorState:
-  serializedVersion: 5
-  m_ObjectHideFlags: 3
+  serializedVersion: 6
+  m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -322,7 +323,7 @@ AnimatorState:
   m_TimeParameter: 
 --- !u!1102 &-1088882121441906198
 AnimatorState:
-  serializedVersion: 5
+  serializedVersion: 6
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -401,6 +402,7 @@ MonoBehaviour:
   checkRaycastWallInArea: 0
   raycastWallHeight: 0.5
   applyCollisionDamageInterval: 0
+  removeColliderArea: 0
   repeatCount: 0
   repeatInterval: 0
   movementType: 0
@@ -448,7 +450,7 @@ MonoBehaviour:
   ignoreMainHitObjectByCircularSector: 0
   continuousHitObjectGeneratorBaseList: []
   contactAll: 0
-  monsterThroughCount: -1
+  monsterThroughCount: 10
   wallThrough: 0
   quadThrough: 0
   overrideResetIgnoreSqrMagnitude: 0
@@ -646,7 +648,7 @@ MonoBehaviour:
   disableOnMapChanged: 0
 --- !u!1102 &8503796429965771016
 AnimatorState:
-  serializedVersion: 5
+  serializedVersion: 6
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
