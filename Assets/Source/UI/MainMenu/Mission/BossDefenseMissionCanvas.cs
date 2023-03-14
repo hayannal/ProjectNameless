@@ -187,6 +187,9 @@ public class BossDefenseMissionCanvas : MonoBehaviour
 				_listCharacterToggleButton.Add(newToggleButton);
 			}
 		}
+		// 가로 길이 체크
+		if (listSelectedActorId.Count > 6)
+			toggleRootRectTransform.anchoredPosition = new Vector2(65.0f, toggleRootRectTransform.anchoredPosition.y);
 
 		// 기본적으로 0번탭을 보게 해준다.
 		OnValueChangedToggle(listSelectedActorId[0]);
