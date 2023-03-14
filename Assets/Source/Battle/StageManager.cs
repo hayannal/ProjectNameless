@@ -539,6 +539,11 @@ public class StageManager : MonoBehaviour
 				RushDefenseMissionCanvas.instance.ClearMission();
 				return;
 			}
+			if (BossDefenseMissionCanvas.instance != null && BossDefenseMissionCanvas.instance.gameObject.activeSelf)
+			{
+				BossDefenseMissionCanvas.instance.ClearMission();
+				return;
+			}
 			#endregion
 
 			int prevHighestClearStage = PlayerData.instance.highestClearStage;
@@ -644,6 +649,11 @@ public class StageManager : MonoBehaviour
 
 			#region Mission
 			if (RushDefenseMissionCanvas.instance != null && RushDefenseMissionCanvas.instance.gameObject.activeSelf)
+			{
+				StartCoroutine(MissionFailureProcess());
+				return;
+			}
+			if (BossDefenseMissionCanvas.instance != null && BossDefenseMissionCanvas.instance.gameObject.activeSelf)
 			{
 				StartCoroutine(MissionFailureProcess());
 				return;

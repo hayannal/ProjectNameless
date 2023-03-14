@@ -40,6 +40,7 @@ public class SubMissionData : MonoBehaviour
 
 	#region Boss Defense
 	public ObscuredInt bossDefenseClearLevel { get; set; }
+	public ObscuredInt bossDefenseSelectedLevel { get; set; }
 	public ObscuredInt bossDefenseDailyCount { get; set; }
 	#endregion
 
@@ -103,6 +104,42 @@ public class SubMissionData : MonoBehaviour
 		}
 		#endregion
 
+		#region Boss Defense
+		bossDefenseDailyCount = 0;
+		if (userReadOnlyData.ContainsKey("bossDefenseCount"))
+		{
+			int intValue = 0;
+			if (int.TryParse(userReadOnlyData["bossDefenseCount"].Value, out intValue))
+				bossDefenseDailyCount = intValue;
+		}
+
+		if (userReadOnlyData.ContainsKey("lasBosDefDat"))
+		{
+			if (string.IsNullOrEmpty(userReadOnlyData["lasBosDefDat"].Value) == false)
+				OnRecvDailyBossDefenseInfo(userReadOnlyData["lasBosDefDat"].Value);
+		}
+		else
+			bossDefenseDailyCount = 0;
+
+		bossDefenseSelectedLevel = 0;
+		if (userReadOnlyData.ContainsKey("bossDefenseSelectedLevel"))
+		{
+			int intValue = 0;
+			if (int.TryParse(userReadOnlyData["bossDefenseSelectedLevel"].Value, out intValue))
+				bossDefenseSelectedLevel = intValue;
+		}
+
+		bossDefenseClearLevel = 0;
+		for (int i = 0; i < playerStatistics.Count; ++i)
+		{
+			if (playerStatistics[i].StatisticName == "bossDefenseClearLevel")
+			{
+				bossDefenseClearLevel = playerStatistics[i].Value;
+				break;
+			}
+		}
+		#endregion
+
 		readyToReopenMissionListCanvas = false;
 	}
 
@@ -151,10 +188,33 @@ public class SubMissionData : MonoBehaviour
 	}
 	#endregion
 
+	#region Boss Defense
+	void OnRecvDailyBossDefenseInfo(DateTime lastBossDefenseTime)
+	{
+		if (ServerTime.UtcNow.Year == lastBossDefenseTime.Year && ServerTime.UtcNow.Month == lastBossDefenseTime.Month && ServerTime.UtcNow.Day == lastBossDefenseTime.Day)
+		{
+			// 유효하면 읽어놨던 count값을 유지하고
+		}
+		else
+			bossDefenseDailyCount = 0;
+	}
+
+	public void OnRecvDailyBossDefenseInfo(string lastBossDefenseTimeString)
+	{
+		DateTime lastBossDefenseTime = new DateTime();
+		if (DateTime.TryParse(lastBossDefenseTimeString, out lastBossDefenseTime))
+		{
+			DateTime universalTime = lastBossDefenseTime.ToUniversalTime();
+			OnRecvDailyBossDefenseInfo(universalTime);
+		}
+	}
+	#endregion
+
 	public void OnRefreshDay()
 	{
 		fortuneWheelDailyCount = 0;
 		rushDefenseDailyCount = 0;
+		bossDefenseDailyCount = 0;
 
 		if (MainCanvas.instance != null)
 			MainCanvas.instance.RefreshMissionAlarmObject();

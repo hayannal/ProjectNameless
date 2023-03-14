@@ -238,7 +238,7 @@ public class MissionListCanvas : MonoBehaviour
 				break;
 			case 3:
 
-				if (CharacterManager.instance.listCharacterData.Count < 5)
+				if (CharacterManager.instance.listCharacterData.Count < BossDefenseEnterCanvas.MINIMUM_COUNT)
 				{
 					ToastCanvas.instance.ShowToast(UIString.instance.GetString("MissionUI_BossDefenseMemberLimit"), 2.0f);
 					return;

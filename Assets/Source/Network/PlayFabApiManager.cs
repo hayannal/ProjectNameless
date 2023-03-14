@@ -4330,6 +4330,51 @@ public class PlayFabApiManager : MonoBehaviour
 			HandleCommonError(error);
 		});
 	}
+
+	public void RequestEndBossDefenseMission(bool firstClear, int selectedDifficulty, int reward, int useTicket, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}_{2}_{3}_{4}_{5}", (int)SubMissionData.instance.bossDefenseDailyCount, reward, useTicket, selectedDifficulty, firstClear ? 1 : 0, "xprwalmz");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "EndBossDefense",
+			FunctionParameter = new { Sel = selectedDifficulty, Fir = firstClear ? 1 : 0, AddEn = reward, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				SubMissionData.instance.bossDefenseDailyCount += 1;
+				CurrencyData.instance.OnRecvRefillEnergy(reward);
+				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.ClearBossDefense);
+				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.UseTicket, useTicket);
+				CurrencyData.instance.UseTicket(useTicket);
+
+				if (firstClear)
+				{
+					SubMissionData.instance.bossDefenseClearLevel = selectedDifficulty;
+
+					int nextLevel = selectedDifficulty + 1;
+					if (nextLevel > BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxBossDefense"))
+						nextLevel = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxBossDefense");
+					SubMissionData.instance.bossDefenseSelectedLevel = nextLevel;
+				}
+				else
+					SubMissionData.instance.bossDefenseSelectedLevel = selectedDifficulty;
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
 	#endregion
 
 
