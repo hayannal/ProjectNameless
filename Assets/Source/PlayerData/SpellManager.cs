@@ -725,23 +725,24 @@ public class SpellManager : MonoBehaviour
 		return null;
 	}
 
-	public void UseEquipSkill(SkillProcessor.SkillInfo skillInfo)
+	public bool UseEquipSkill(SkillProcessor.SkillInfo skillInfo)
 	{
 		if (_playerActorForSpellProcessor == null)
-			return;
+			return false;
 
 		PlayerActor actor = _playerActorForSpellProcessor;
 
 		// 미션 넘어갈때 플레이어 액터 꺼지게되면 초기화
 		if (actor.gameObject == null || actor.gameObject.activeSelf == false)
-			return;
+			return false;
 
-		// Die까지 검사하는게 맞나?
-		//if (actor.actorStatus.IsDie())
-		//	return;
+		// Die까지 검사하는게 맞을 듯
+		if (actor.actorStatus.IsDie())
+			return false;
 
 		actor.skillProcessor.ApplyNonAniSkill(skillInfo);
 		cooltimeProcessor.ApplyCooltime(skillInfo.skillId, skillInfo.cooltime);
+		return true;
 	}
 
 	public void ReinitializeEquipSkill()

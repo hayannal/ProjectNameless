@@ -79,10 +79,11 @@ public class EquipSkillSlotIcon : MonoBehaviour
 		if (grayscaleEffect.enabled)
 			return;
 
-		// 별다른 처리가 없다면 1회 사용시 바로 회색처리로 바꿔야한다.
-		grayscaleEffect.enabled = true;
-
-		SpellManager.instance.UseEquipSkill(_skillInfo);
+		if (SpellManager.instance.UseEquipSkill(_skillInfo))
+		{
+			// 별다른 처리가 없다면 1회 사용시 바로 회색처리로 바꿔야한다.
+			grayscaleEffect.enabled = true;
+		}
 	}
 
 	
