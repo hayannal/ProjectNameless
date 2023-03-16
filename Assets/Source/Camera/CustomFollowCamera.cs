@@ -80,6 +80,8 @@ public class CustomFollowCamera : MonoBehaviour
 				if (result.x > _quadRight - RIGHT_LIMIT)
 					result.x = _quadRight - RIGHT_LIMIT;
 			}
+			if (StageManager.instance != null)
+				result += StageManager.instance.GetSafeWorldOffset();
 			return result;
 		}
 	}
