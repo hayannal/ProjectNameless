@@ -55,19 +55,6 @@ public class RushDefenseEnterCanvas : MonoBehaviour
 		contentItemPrefab.SetActive(false);
 		rewardContentItemPrefab.SetActive(false);
 
-		/*
-		if (EventManager.instance.reservedOpenBossBattleEvent)
-		{
-			UIInstanceManager.instance.ShowCanvasAsync("EventInfoCanvas", () =>
-			{
-				EventInfoCanvas.instance.ShowCanvas(true, UIString.instance.GetString("BossBattleUI_PopupName"), UIString.instance.GetString("BossBattleUI_PopupDesc"), UIString.instance.GetString("BossBattleUI_PopupMore"), null, 0.785f);
-			});
-			EventManager.instance.reservedOpenBossBattleEvent = false;
-			EventManager.instance.CompleteServerEvent(EventManager.eServerEvent.boss);
-			LobbyCanvas.instance.HideSubMenuAlarmObject(0);
-		}
-		*/
-
 		// 시작하자마자 트윈 제대로 발동하게 하려면 Start에서 한번 호출해줘야한다.
 		levelChangeTweenAnimation.DORestart();
 	}
@@ -113,73 +100,7 @@ public class RushDefenseEnterCanvas : MonoBehaviour
 		if (_selectedDifficulty == 0)
 			_selectedDifficulty = 1;
 
-
 		/*
-		int currentBossId = ContentsData.instance.bossBattleId;
-		if (currentBossId == 0)
-		{
-			// 0이라면 처음 보스배틀을 시작하는 유저일거다.
-			// 1번 몬스터를 가져와서 셋팅한다.
-			currentBossId = 1;
-		}
-
-		_bossBattleTableData = TableDataManager.instance.FindBossBattleData(currentBossId);
-		if (_bossBattleTableData == null)
-			return;
-
-		int clearDifficulty = ContentsData.instance.GetBossBattleClearDifficulty(currentBossId.ToString());
-		_selectedDifficulty = ContentsData.instance.GetBossBattleSelectedDifficulty(currentBossId.ToString());
-		if (_selectedDifficulty == 0)
-		{
-			// _selectedDifficulty이면 한번도 플레이 안했다는거니 bossBattleTable에서 시작 챕터를 가져와야한다.
-			_selectedDifficulty = _bossBattleTableData.chapter;
-		}
-		// 선택한게 클리어난이도+1 보다 크면 뭔가 이상한거다. 조정해준다.
-		// 이제 챕터의 난이도에서 시작하게 되면서 이 로직을 사용할 수 없게 되었다.
-		//if (_selectedDifficulty > (clearDifficulty + 1))
-		//	_selectedDifficulty = (clearDifficulty + 1);
-
-		int bossBattleCount = ContentsData.instance.GetBossBattleCount(currentBossId.ToString());
-
-
-		StageTableData bossStageTableData = BattleInstanceManager.instance.GetCachedStageTableData(_bossBattleTableData.chapter, _bossBattleTableData.stage, false);
-		if (bossStageTableData == null)
-			return;
-		MapTableData bossMapTableData = BattleInstanceManager.instance.GetCachedMapTableData(bossStageTableData.firstFixedMap);
-		if (bossMapTableData == null)
-			return;
-		// 챕터 테이블은 권장 레벨 표기를 위한거라 선택된 난이도로 구해오는게 맞다.
-		ChapterTableData chapterTableData = TableDataManager.instance.FindChapterTableData(_selectedDifficulty);
-		if (chapterTableData == null)
-			return;
-
-		_bossStageTableData = bossStageTableData;
-		_bossMapTableData = bossMapTableData;
-		_bossChapterTableData = chapterTableData;
-		levelText.text = string.Format("<size=24>DIFFICULTY</size> {0}", _selectedDifficulty);
-		newObject.SetActive(_selectedDifficulty > clearDifficulty);
-
-		int selectableDifficultyCount = clearDifficulty - _bossBattleTableData.chapter + 2;
-		changeDifficultyButtonObject.SetActive(selectableDifficultyCount > 1);
-		_clearDifficulty = clearDifficulty;
-		if (changeDifficultyButtonObject.activeSelf)
-		{
-			AlarmObject.Hide(alarmRootTransform);
-			if (_selectedDifficulty != (clearDifficulty + 1) && ChangeDifficultyCanvasListItem.CheckSelectable(_clearDifficulty + 1) == 0)
-				AlarmObject.Show(alarmRootTransform, false, false, true);
-		}
-
-		if (string.IsNullOrEmpty(bossMapTableData.bossName) == false)
-		{
-			AddressableAssetLoadManager.GetAddressableGameObject(string.Format("Preview_{0}", bossMapTableData.bossName), "Preview", (prefab) =>
-			{
-				_cachedPreviewObject = UIInstanceManager.instance.GetCachedObject(prefab, previewRootTransform);
-			});
-		}
-		bossNameText.SetLocalizedText(UIString.instance.GetString(bossMapTableData.nameId));
-
-		RefreshBossBattleCount(bossBattleCount);
-
 		// 패널티를 구할땐 그냥 스테이지 테이블에서 구해오면 안되고 선택된 난이도의 1층을 구해와서 처리해야한다.
 		StageTableData penaltyStageTableData = BattleInstanceManager.instance.GetCachedStageTableData(_selectedDifficulty, 1, false);
 		if (penaltyStageTableData == null)
