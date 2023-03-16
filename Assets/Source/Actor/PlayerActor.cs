@@ -44,13 +44,6 @@ public class PlayerActor : Actor
 	}
 	#endregion
 
-	void OnDisable()
-	{
-		/*
-		ShowUltimateIndicator(false);
-		*/
-	}
-
 	protected override void InitializeComponent()
 	{
 		base.InitializeComponent();
@@ -93,9 +86,6 @@ public class PlayerActor : Actor
 	public void InitializeCanvas()
 	{
 		PlayerGaugeCanvas.instance.InitializeGauge(this);
-		/*
-		SkillSlotCanvas.instance.InitializeSkillSlot(this);
-		*/
 	}
 
 	void RegisterBattleInstance()
@@ -218,39 +208,9 @@ public class PlayerActor : Actor
 		BattleInstanceManager.instance.playerActor = this;
 		CustomFollowCamera.instance.targetTransform = cachedTransform;
 
-		if (StageFloorInfoCanvas.instance != null)
+		if (StageFloorInfoCanvas.instance != null && StageFloorInfoCanvas.instance.gameObject.activeSelf)
 			StageFloorInfoCanvas.instance.RefreshCombatPower();
-		/*
-		if (DotMainMenuCanvas.instance != null && DotMainMenuCanvas.instance.gameObject.activeSelf)
-			DotMainMenuCanvas.instance.ForceSetTargetTransform(cachedTransform);
-		if (TimeSpaceGround.instance != null && TimeSpaceGround.instance.gameObject.activeSelf)
-			TimeSpaceGround.instance.RefreshTranslationEffectorTransform();
-		*/
-
-		// 첫 플레이 튜토에서는 시작하자마자 전투씬이기 때문에 InitializeCanvas를 호출해야하나 BattleManager는 천천히 생성되므로 이 타이밍에 로드할 수 없다.
-		// MainSceneBuilder의 LateInitialize에서 처리될테니 여기서는 패스하면 된다.
-		bool showPlayerCanvas = true;
-		if (MainSceneBuilder.instance != null && MainSceneBuilder.instance.buildTutorialScene)
-			showPlayerCanvas = false;
-		/*
-		if (MainSceneBuilder.instance != null && MainSceneBuilder.s_buildReturnScrollUsedScene)
-			showPlayerCanvas = false;
-		*/
-		if (lobby == false && showPlayerCanvas)
-			InitializeCanvas();
-
-		/*
-		StageManager.instance.PreparePowerSource();
-		*/
 	}
-
-	/*
-	void Update()
-	{
-		UpdateUltimateIndicator();
-		UpdateSpRegenOnBoss();
-	}
-	*/
 
 	public override void OnChangedHP()
 	{
@@ -263,11 +223,6 @@ public class PlayerActor : Actor
 
 	public override void OnChangedSP()
 	{
-		/*
-		// hpRatio와 마찬가지. 클라이언트 저장을 SkillSlotCanvas에게 위임한다.
-		SkillSlotCanvas.instance.OnChangedSP(this);
-		ShowUltimateIndicator(actorStatus.GetSPRatio() == 1.0f);
-		*/
 	}
 
 	public override void OnDie()
