@@ -99,7 +99,7 @@ public class RushDefenseMissionGround : MonoBehaviour
 	{
 		if (memberActorId == CharacterData.s_PlayerActorId)
 		{
-			SpellManager.instance.ApplyGlobalSpellCooltime(3.0f);
+			//SpellManager.instance.ApplyGlobalSpellCooltime(3.0f);
 			BattleInstanceManager.instance.playerActor.gameObject.SetActive(true);
 			OnFinishLoadedPlayerActor(index, BattleInstanceManager.instance.playerActor);
 			return;
