@@ -9,6 +9,7 @@ public class EquipSkillSlotCanvas : MonoBehaviour
 
 	public GameObject equipSkillSlotIconPrefab;
 	public Transform[] equipSkillSlotTransformList;
+	public Transform[] equipSkillSlotTransformListForVertical;
 
 	void Awake()
 	{
@@ -41,6 +42,8 @@ public class EquipSkillSlotCanvas : MonoBehaviour
 	List<EquipSkillSlotIcon> _listEquipSkillSlotIcon;
 	void InitializeSkillSlot()
 	{
+		bool useVerticalSlot = (BossBattleMissionCanvas.instance != null && BossBattleMissionCanvas.instance.gameObject.activeSelf && BossBattleMissionCanvas.instance.IsUseVerticalSkillSlot());
+
 		if (_listEquipSkillSlotIcon == null)
 		{
 			_listEquipSkillSlotIcon = new List<EquipSkillSlotIcon>();
@@ -70,7 +73,7 @@ public class EquipSkillSlotCanvas : MonoBehaviour
 			}
 			else
 			{
-				GameObject newObject = Instantiate<GameObject>(equipSkillSlotIconPrefab, equipSkillSlotTransformList[count]);
+				GameObject newObject = Instantiate<GameObject>(equipSkillSlotIconPrefab, useVerticalSlot ? equipSkillSlotTransformListForVertical[count] : equipSkillSlotTransformList[count]);
 				EquipSkillSlotIcon equipSkillSlotIcon = newObject.GetComponent<EquipSkillSlotIcon>();
 				if (equipSkillSlotIcon == null)
 					continue;
@@ -93,6 +96,23 @@ public class EquipSkillSlotCanvas : MonoBehaviour
 			if (_listEquipSkillSlotIcon[i].gameObject.activeSelf == false)
 				continue;
 			_listEquipSkillSlotIcon[i].Reinitialize();
+		}
+	}
+
+	public void RefreshVerticalPosition()
+	{
+		bool useVerticalSlot = (BossBattleMissionCanvas.instance != null && BossBattleMissionCanvas.instance.gameObject.activeSelf && BossBattleMissionCanvas.instance.IsUseVerticalSkillSlot());
+
+		// 생성 초기화 관련해선 위에서 다 끝났으니 여기선 포지션만 변경해준다.
+		for (int i = 0; i < _listEquipSkillSlotIcon.Count; ++i)
+		{
+			if (_listEquipSkillSlotIcon[i] == null)
+				continue;
+			if (_listEquipSkillSlotIcon[i].gameObject.activeSelf == false)
+				continue;
+
+			_listEquipSkillSlotIcon[i].cachedRectTransform.parent = useVerticalSlot ? equipSkillSlotTransformListForVertical[i] : equipSkillSlotTransformList[i];
+			_listEquipSkillSlotIcon[i].cachedRectTransform.anchoredPosition = Vector2.zero;
 		}
 	}
 }
