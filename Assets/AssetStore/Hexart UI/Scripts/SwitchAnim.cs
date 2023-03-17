@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿//#define NotUse
+using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 
@@ -25,53 +26,91 @@ namespace Michsky.UI.Hexart
 
         private string onTransition = "Switch On";
         private string offTransition = "Switch Off";
+		private string onTransitionX10 = "Switch On x10";
+		private string offTransitionX10 = "Switch Off x10";
 
+		public Text onOffText;
+		public Image handlerImage;
+
+		bool _started = false;
         void Start()
         {
+#if NotUse
             playerPrefsHelper = PlayerPrefs.GetInt(switchID + "Switch");
 
-            if (saveValue == true)
+			if (saveValue == true)
             {
                 if (playerPrefsHelper == 1)
                 {
                     OnEvents.Invoke();
                     switchAnimator.Play(onTransition);
-                    isOn = true;
+					OnOffText(true);
+					isOn = true;
                 }
 
                 else
                 {
                     OffEvents.Invoke();
-                    switchAnimator.Play(offTransition);
-                    isOn = false;
+					switchAnimator.Play(offTransition);
+					OnOffText(false);
+					isOn = false;
                 }
             }
 
             else
             {
-                if (isOn == true)
+#endif
+				if (isOn == true)
                 {
-                    switchAnimator.Play(onTransition);
-                    OnEvents.Invoke();
+                    switchAnimator.Play(onTransitionX10);
+					OnOffText(true);
+#if NotUse
+					OnEvents.Invoke();
                     isOn = true;
+#endif
                 }
 
                 else
                 {
-                    switchAnimator.Play(offTransition);
-                    OffEvents.Invoke();
+                    switchAnimator.Play(offTransitionX10);
+					OnOffText(false);
+#if NotUse
+					OffEvents.Invoke();
                     isOn = false;
+#endif
                 }
-            }
-        }
+#if NotUse
+			}
+#endif
+			_started = true;
+		}
 
-        public void AnimateSwitch()
+		void OnEnable()
+		{
+			if (_started == false)
+				return;
+
+			if (isOn == true)
+			{
+				switchAnimator.Play(onTransitionX10);
+				OnOffText(true);
+			}
+			else
+			{
+				switchAnimator.Play(offTransitionX10);
+				OnOffText(false);
+			}
+		}
+
+
+		public void AnimateSwitch()
         {
             if (isOn == true)
             {
                 OffEvents.Invoke();
                 switchAnimator.Play(offTransition);
-                isOn = false;
+				OnOffText(false);
+				isOn = false;
                 playerPrefsHelper = 0;
             }
 
@@ -79,14 +118,28 @@ namespace Michsky.UI.Hexart
             {
                 OnEvents.Invoke();
                 switchAnimator.Play(onTransition);
-                isOn = true;
+				OnOffText(true);
+				isOn = true;
                 playerPrefsHelper = 1;
             }
 
+#if NotUse
             if (saveValue == true)
             {
                 PlayerPrefs.SetInt(switchID + "Switch", playerPrefsHelper);
             }
-        }
-    }
+#endif
+		}
+
+		void OnOffText(bool on)
+		{
+			if (onOffText == null)
+				return;
+			onOffText.text = on ? "ON" : "OFF";
+
+			if (handlerImage == null)
+				return;
+			onOffText.color = on ? Color.white : handlerImage.color;
+		}
+	}
 }

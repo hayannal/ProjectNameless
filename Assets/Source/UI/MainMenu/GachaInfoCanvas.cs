@@ -38,7 +38,6 @@ public class GachaInfoCanvas : MonoBehaviour
 
 	public GameObject switchGroupObject;
 	public SwitchAnim alarmSwitch;
-	public Text alarmOnOffText;
 
 	public Text betText;
 	public GameObject boostOnObject;
@@ -104,7 +103,6 @@ public class GachaInfoCanvas : MonoBehaviour
 
 		GetComponent<Canvas>().worldCamera = UIInstanceManager.instance.GetCachedCameraMain();
 		_defaultGaugeColor = gaugeImage.color;
-		_ignoreStartEvent = true;
 		_started = true;
 	}
 
@@ -145,7 +143,7 @@ public class GachaInfoCanvas : MonoBehaviour
 
 	void OnDisable()
 	{
-		ObscuredPrefs.SetInt(OptionManager.instance.OPTION_ENERGY_ALARM, OptionManager.instance.energyAlarm);
+		PlayerPrefs.SetInt(OptionManager.instance.OPTION_ENERGY_ALARM, OptionManager.instance.energyAlarm);
 	}
 
 	bool _reserveGaugeMoveTweenAnimation;
@@ -340,27 +338,13 @@ public class GachaInfoCanvas : MonoBehaviour
 
 	void RefreshAlarm()
 	{
-		_notUserSetting = true;
 		alarmSwitch.isOn = (OptionManager.instance.energyAlarm == 1);
-		_notUserSetting = false;
 	}
 	
 	#region Alarm
-	bool _ignoreStartEvent = false;
-	bool _notUserSetting = false;
 	public void OnSwitchOnCompleteAlarm()
 	{
 		OptionManager.instance.energyAlarm = 1;
-		alarmOnOffText.text = "ON";
-		alarmOnOffText.color = Color.white;
-
-		if (_notUserSetting)
-			return;
-		if (_ignoreStartEvent)
-		{
-			_ignoreStartEvent = false;
-			return;
-		}
 
 #if UNITY_ANDROID
 		CurrencyData.instance.ReserveEnergyNotification();
@@ -587,16 +571,6 @@ public class GachaInfoCanvas : MonoBehaviour
 	public void OnSwitchOffCompleteAlarm()
 	{
 		OptionManager.instance.energyAlarm = 0;
-		alarmOnOffText.text = "OFF";
-		alarmOnOffText.color = new Color(0.176f, 0.176f, 0.176f);
-
-		if (_notUserSetting)
-			return;
-		if (_ignoreStartEvent)
-		{
-			_ignoreStartEvent = false;
-			return;
-		}
 
 		CurrencyData.instance.CancelEnergyNotification();
 	}

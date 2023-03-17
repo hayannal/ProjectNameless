@@ -43,7 +43,6 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 
 	public GameObject switchGroupObject;
 	public SwitchAnim alarmSwitch;
-	public Text alarmOnOffText;
 
 	public Slider centerGaugeSlider;
 	public Image centerGaugeFillImage;
@@ -86,7 +85,6 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 		*/
 
 		GetComponent<Canvas>().worldCamera = UIInstanceManager.instance.GetCachedCameraMain();
-		_ignoreStartEvent = true;
 	}
 
 	Vector2 _leftTweenPosition = new Vector2(-150.0f, 0.0f);
@@ -148,9 +146,7 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 	string OPTION_COMPLETE_ALARM = "_option_analysis_alarm_key";
 	void RefreshAlarm()
 	{
-		_notUserSetting = true;
 		alarmSwitch.isOn = _onCompleteAlarmState;
-		_notUserSetting = false;
 	}
 
 	ObscuredBool _maxTimeReached = false;
@@ -368,21 +364,9 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 	}
 
 	#region Alarm
-	bool _ignoreStartEvent = false;
-	bool _notUserSetting = false;
 	public void OnSwitchOnCompleteAlarm()
 	{
 		_onCompleteAlarmState = true;
-		alarmOnOffText.text = "ON";
-		alarmOnOffText.color = Color.white;
-
-		if (_notUserSetting)
-			return;
-		if (_ignoreStartEvent)
-		{
-			_ignoreStartEvent = false;
-			return;
-		}
 
 		// 최초 분석 시작도 안된상태에서 누르게 되면 리셋해둬야한다.
 		if (AnalysisData.instance.analysisStarted == false)
@@ -415,16 +399,6 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 	public void OnSwitchOffCompleteAlarm()
 	{
 		_onCompleteAlarmState = false;
-		alarmOnOffText.text = "OFF";
-		alarmOnOffText.color = new Color(0.176f, 0.176f, 0.176f);
-
-		if (_notUserSetting)
-			return;
-		if (_ignoreStartEvent)
-		{
-			_ignoreStartEvent = false;
-			return;
-		}
 
 		AnalysisData.instance.CancelAnalysisNotification();
 	}
