@@ -86,14 +86,13 @@ public class CharacterCanvasListItem : MonoBehaviour
 
 		recommandedText.gameObject.SetActive(false);
 		bool lobby = (MainSceneBuilder.instance != null && MainSceneBuilder.instance.lobby);
-		//if (lobby && BossBattleEnterCanvas.instance != null && BossBattleEnterCanvas.instance.gameObject.activeSelf) lobby = false;
-		/*
-		if (lobby == false && GatePillar.CheckSuggestedActor(suggestedActorIdList, actorId))
+		if (CheckSuggestedActor(suggestedActorIdList, actorId))
 		{
 			recommandedText.color = (listPenaltyPowerSource != null && listPenaltyPowerSource.Contains(actorTableData.powerSource)) ? new Color(0.831f, 0.831f, 0.831f) : new Color(0.074f, 1.0f, 0.0f);
 			recommandedText.SetLocalizedText(UIString.instance.GetString("GameUI_Suggested"));
 			recommandedText.gameObject.SetActive(true);
 		}
+		/*
 		if (lobby == false && mercenary)
 		{
 			recommandedText.color = new Color(0.074f, 1.0f, 0.0f);
@@ -110,6 +109,18 @@ public class CharacterCanvasListItem : MonoBehaviour
 
 		selectObject.SetActive(false);
 		_clickAction = clickCallback;
+	}
+
+	public static bool CheckSuggestedActor(string[] suggestedActorIdList, string actorId)
+	{
+		if (suggestedActorIdList == null)
+			return false;
+		for (int i = 0; i < suggestedActorIdList.Length; ++i)
+		{
+			if (suggestedActorIdList[i] == actorId)
+				return true;
+		}
+		return false;
 	}
 
 	public void InitializeGrade(int grade, bool questionCharacter = false)

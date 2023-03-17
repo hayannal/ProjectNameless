@@ -544,6 +544,11 @@ public class StageManager : MonoBehaviour
 				BossDefenseMissionCanvas.instance.ClearMission();
 				return;
 			}
+			if (BossBattleMissionCanvas.instance != null && BossBattleMissionCanvas.instance.gameObject.activeSelf)
+			{
+				BossBattleMissionCanvas.instance.ClearMission();
+				return;
+			}
 			#endregion
 
 			int prevHighestClearStage = PlayerData.instance.highestClearStage;

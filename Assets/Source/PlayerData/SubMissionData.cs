@@ -44,6 +44,23 @@ public class SubMissionData : MonoBehaviour
 	public ObscuredInt bossDefenseDailyCount { get; set; }
 	#endregion
 
+	#region Boss Battle
+	public ObscuredInt bossBattleId { get; set; }
+	Dictionary<string, int> _dicBossBattleClearDifficulty = new Dictionary<string, int>();
+	Dictionary<string, int> _dicBossBattleSelectedDifficulty = new Dictionary<string, int>();
+	Dictionary<string, int> _dicBossBattleCount = new Dictionary<string, int>();
+	// 클라 전용 변수. 보스가 갱신되었음을 다음번 창 열릴때 알린다.
+	public ObscuredBool newBossRefreshed { get; set; }
+	// 보스전 결과창 후 로비로 되돌아올때 로딩을 위한 변수
+	public ObscuredBool readyToPreloadBossBattleEnterCanvas { get; set; }
+	// 제한 횟수는 아니고 보너스 횟수
+	public ObscuredInt bossBattleDailyCount { get; set; }
+	// 마지막으로 클리어한 보스Id. 왕관체크에 사용한다.
+	public ObscuredInt bossBattleClearId { get; set; }
+	// 포인트샵 포인트
+	public ObscuredInt bossBattlePoint { get; set; }
+	#endregion
+
 	// 미션 결과창 후 로비로 되돌아올때 로딩을 위한 변수
 	public ObscuredBool readyToReopenMissionListCanvas { get; set; }
 
@@ -140,6 +157,72 @@ public class SubMissionData : MonoBehaviour
 		}
 		#endregion
 
+		#region Boss Battle
+		bossBattleId = 0;
+		if (userReadOnlyData.ContainsKey("bossBattleId"))
+		{
+			int intValue = 0;
+			if (int.TryParse(userReadOnlyData["bossBattleId"].Value, out intValue))
+				bossBattleId = intValue;
+		}
+
+		// difficulty
+		string bossBattleRecord = "";
+		if (userReadOnlyData.ContainsKey("bossBattleClLv"))
+			bossBattleRecord = userReadOnlyData["bossBattleClLv"].Value;
+		OnRecvBossBattleClearData(bossBattleRecord);
+
+		bossBattleRecord = "";
+		if (userReadOnlyData.ContainsKey("bossBattleSeLv"))
+			bossBattleRecord = userReadOnlyData["bossBattleSeLv"].Value;
+		OnRecvBossBattleSelectData(bossBattleRecord);
+
+		bossBattleRecord = "";
+		if (userReadOnlyData.ContainsKey("bossBattleCnt"))
+			bossBattleRecord = userReadOnlyData["bossBattleCnt"].Value;
+		OnRecvBossBattleCountData(bossBattleRecord);
+
+		newBossRefreshed = false;
+		readyToPreloadBossBattleEnterCanvas = false;
+
+		// count. bossBattleCnt와 이름이 비슷하긴 한데 하나는 json이고 하나는 dailyCount다.
+		bossBattleDailyCount = 0;
+		if (userReadOnlyData.ContainsKey("bossBattleCount"))
+		{
+			int intValue = 0;
+			if (int.TryParse(userReadOnlyData["bossBattleCount"].Value, out intValue))
+				bossBattleDailyCount = intValue;
+		}
+
+		if (userReadOnlyData.ContainsKey("lasBosBatDat"))
+		{
+			if (string.IsNullOrEmpty(userReadOnlyData["lasBosBatDat"].Value) == false)
+				OnRecvDailyBossBattleInfo(userReadOnlyData["lasBosBatDat"].Value);
+		}
+		else
+			bossBattleDailyCount = 0;
+
+		bossBattleClearId = 0;
+		for (int i = 0; i < playerStatistics.Count; ++i)
+		{
+			if (playerStatistics[i].StatisticName == "bossBattleClearLevel")
+			{
+				bossBattleClearId = playerStatistics[i].Value;
+				break;
+			}
+		}
+
+		bossBattlePoint = 0;
+		for (int i = 0; i < playerStatistics.Count; ++i)
+		{
+			if (playerStatistics[i].StatisticName == "bossBattlePoint")
+			{
+				bossBattlePoint = playerStatistics[i].Value;
+				break;
+			}
+		}
+		#endregion
+
 		readyToReopenMissionListCanvas = false;
 	}
 
@@ -210,11 +293,229 @@ public class SubMissionData : MonoBehaviour
 	}
 	#endregion
 
+	#region Boss Battle
+	void OnRecvBossBattleClearData(string json)
+	{
+		_dicBossBattleClearDifficulty.Clear();
+		if (string.IsNullOrEmpty(json))
+			return;
+
+		var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
+		_dicBossBattleClearDifficulty = serializer.DeserializeObject<Dictionary<string, int>>(json);
+	}
+
+	void OnRecvBossBattleSelectData(string json)
+	{
+		_dicBossBattleSelectedDifficulty.Clear();
+		if (string.IsNullOrEmpty(json))
+			return;
+
+		var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
+		_dicBossBattleSelectedDifficulty = serializer.DeserializeObject<Dictionary<string, int>>(json);
+	}
+
+	void OnRecvBossBattleCountData(string json)
+	{
+		_dicBossBattleCount.Clear();
+		if (string.IsNullOrEmpty(json))
+			return;
+
+		var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
+		_dicBossBattleCount = serializer.DeserializeObject<Dictionary<string, int>>(json);
+	}
+
+	public int GetBossBattleClearDifficulty(string id)
+	{
+		if (_dicBossBattleClearDifficulty.ContainsKey(id))
+			return _dicBossBattleClearDifficulty[id];
+		return 0;
+	}
+
+	public int GetBossBattleSelectedDifficulty(string id)
+	{
+		if (_dicBossBattleSelectedDifficulty.ContainsKey(id))
+			return _dicBossBattleSelectedDifficulty[id];
+
+		// 선택 데이터가 없으면 분명 처음 열린걸꺼다. 이때는 0을 리턴해준다.
+		return 0;
+	}
+
+	public int GetBossBattleCount(string id)
+	{
+		if (_dicBossBattleCount.ContainsKey(id))
+			return _dicBossBattleCount[id];
+		return 0;
+	}
+
+	public void ClearBossBattleDifficulty(int difficulty)
+	{
+		int id = bossBattleId;
+		if (id == 0) id = 1;
+		string key = id.ToString();
+		if (_dicBossBattleClearDifficulty.ContainsKey(key))
+			_dicBossBattleClearDifficulty[key] = difficulty;
+		else
+			_dicBossBattleClearDifficulty.Add(key, difficulty);
+	}
+
+	public void SelectBossBattleDifficulty(int difficulty)
+	{
+		int id = bossBattleId;
+		if (id == 0) id = 1;
+		string key = id.ToString();
+		if (_dicBossBattleSelectedDifficulty.ContainsKey(key))
+			_dicBossBattleSelectedDifficulty[key] = difficulty;
+		else
+			_dicBossBattleSelectedDifficulty.Add(key, difficulty);
+	}
+
+	public void AddBossBattleCount()
+	{
+		int id = bossBattleId;
+		if (id == 0) id = 1;
+		string key = id.ToString();
+		if (_dicBossBattleCount.ContainsKey(key))
+		{
+			int value = _dicBossBattleCount[key];
+			if (value < GetMaxXpExp())
+				_dicBossBattleCount[key]++;
+		}
+		else
+			_dicBossBattleCount.Add(key, 1);
+	}
+
+	int GetMaxXpExp()
+	{
+		for (int i = 1; i < TableDataManager.instance.bossExpTable.dataArray.Length; ++i)
+		{
+			if (TableDataManager.instance.bossExpTable.dataArray[i].xpLevel >= BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxBossBattleXpLevel"))
+				return TableDataManager.instance.bossExpTable.dataArray[i].requiredAccumulatedExp;
+		}
+		return 0;
+	}
+
+
+	public int GetNextKingBossId()
+	{
+		// 확인차 체크하는건데 현재 상대하는 보스가 최종 클리어라고 적혀있는거보다 작거나 같진 않을거다.
+		// 이럴땐 그냥 랜덤을 리턴
+		if (bossBattleId <= bossBattleClearId)
+		{
+			// something wrong
+			return GetNextRandomBossId();
+		}
+
+		// 등장하는 마지막 왕관 보스를 처리한거면 더이상 왕관이 나올 수 없다.
+		if (bossBattleId >= BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxBossBattle"))
+		{
+			// 이럴때도 그냥 랜덤 리턴
+			return GetNextRandomBossId();
+		}
+		return bossBattleId + 1;
+	}
+
+	List<int> _listNextRandomBossId = new List<int>();
+	public int GetNextRandomBossId()
+	{
+		_listNextRandomBossId.Clear();
+
+		// 현재 설정된 보스를 제외한 나머지 중에서 
+		int prevBossBattleId = bossBattleId;
+		if (prevBossBattleId == 0)
+			prevBossBattleId = 1;
+		for (int i = 0; i < TableDataManager.instance.bossBattleTable.dataArray.Length; ++i)
+		{
+			// 왕관 몬스터는 랜덤 리스트에는 추가하지 않고 클리어한 범위 안에서 추가한다.
+			if (TableDataManager.instance.bossBattleTable.dataArray[i].num <= bossBattleClearId)
+			{
+				if (prevBossBattleId != TableDataManager.instance.bossBattleTable.dataArray[i].num)
+					_listNextRandomBossId.Add(TableDataManager.instance.bossBattleTable.dataArray[i].num);
+			}
+			else
+				break;
+		}
+		if (_listNextRandomBossId.Count == 0)
+			return prevBossBattleId;
+		return _listNextRandomBossId[UnityEngine.Random.Range(0, _listNextRandomBossId.Count)];
+	}
+
+	public void OnClearBossBattle(int selectedDifficulty, int clearDifficulty, int nextBossId)
+	{
+		// 현재 선택한 레벨이 최고레벨일때랑 아닐때랑 나뉜다.
+		if (selectedDifficulty <= clearDifficulty)
+		{
+			// 최고 클리어 난이도보다 낮거나 같은 난이도를 클리어. 이미 클리어한 곳을 클리어하는거니 아무것도 하지 않는다.
+		}
+		else
+		{
+			// record
+			bool firstClear = false;
+			if (clearDifficulty == 0)
+				firstClear = true;
+			else if (selectedDifficulty == (clearDifficulty + 1))
+				firstClear = true;
+
+			if (firstClear)
+			{
+				ClearBossBattleDifficulty(selectedDifficulty);
+
+				int currentBossId = bossBattleId;
+				if (currentBossId == 0)
+					currentBossId = 1;
+				if (GetBossBattleClearDifficulty(currentBossId.ToString()) == selectedDifficulty)
+				{
+					// 난이도의 최대 범위를 넘지않는 한도 내에서
+					// 그러나 최대 범위 넘지 않더라도 7챕터를 깨지 않으면 난이도 8 이상으로는 올릴 수 없도록 해야한다.
+					int nextDifficulty = selectedDifficulty + 1;
+					if (nextDifficulty > BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxBossBattleDifficulty"))
+						nextDifficulty = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxBossBattleDifficulty");
+
+					if (selectedDifficulty != nextDifficulty)
+					{
+						selectedDifficulty = nextDifficulty;
+						SelectBossBattleDifficulty(selectedDifficulty);
+					}
+
+					if (bossBattleClearId < bossBattleId)
+						bossBattleClearId = bossBattleId;
+				}
+			}
+		}
+
+		// 난이도 처리가 다 끝난 후 다음 보스 아이디를 갱신해야한다.
+		bossBattleId = nextBossId;
+		newBossRefreshed = true;
+	}
+	#endregion
+
+	#region BossBattle
+	void OnRecvDailyBossBattleInfo(DateTime lastBossBattleTime)
+	{
+		if (ServerTime.UtcNow.Year == lastBossBattleTime.Year && ServerTime.UtcNow.Month == lastBossBattleTime.Month && ServerTime.UtcNow.Day == lastBossBattleTime.Day)
+		{
+			// 유효하면 읽어놨던 count값을 유지하고
+		}
+		else
+			bossBattleDailyCount = 0;
+	}
+
+	public void OnRecvDailyBossBattleInfo(string lastBossBattleTimeString)
+	{
+		DateTime lastBossBattleTime = new DateTime();
+		if (DateTime.TryParse(lastBossBattleTimeString, out lastBossBattleTime))
+		{
+			DateTime universalTime = lastBossBattleTime.ToUniversalTime();
+			OnRecvDailyBossBattleInfo(universalTime);
+		}
+	}
+	#endregion
+
 	public void OnRefreshDay()
 	{
 		fortuneWheelDailyCount = 0;
 		rushDefenseDailyCount = 0;
 		bossDefenseDailyCount = 0;
+		bossBattleDailyCount = 0;
 
 		if (MainCanvas.instance != null)
 			MainCanvas.instance.RefreshMissionAlarmObject();

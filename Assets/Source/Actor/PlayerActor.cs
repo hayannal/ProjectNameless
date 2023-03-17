@@ -219,6 +219,9 @@ public class PlayerActor : Actor
 		// 사실은 여기서 전투중에 피 깎일때만 저장을 해야하는데 이전값을 기억하고 있지도 않고있어서
 		// 차라리 PlayerGaugeCanvas에게 위임해서 처리하기로 한다.
 		PlayerGaugeCanvas.instance.OnChangedHP(this);
+
+		if (BossBattleMissionCanvas.instance != null && BossBattleMissionCanvas.instance.gameObject.activeSelf)
+			BossBattleMissionCanvas.instance.OnChangedHP();
 	}
 
 	public override void OnChangedSP()
@@ -232,9 +235,8 @@ public class PlayerActor : Actor
 		//CharacterController cc = GetComponent<CharacterController>();
 		//if (cc != null) cc.enabled = false;
 
-		/*
-		BattleManager.instance.OnDiePlayer(this);
-		*/
+		if (BossBattleMissionCanvas.instance != null && BossBattleMissionCanvas.instance.gameObject.activeSelf)
+			BossBattleMissionCanvas.instance.OnDiePlayer();
 	}
 
 	public override void EnableAI(bool enable)

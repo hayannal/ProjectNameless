@@ -4424,6 +4424,106 @@ public class PlayFabApiManager : MonoBehaviour
 	#endregion
 
 
+	#region BossBattle
+	// BossBattle역시 입장시마다 랜덤으로 된 숫자키를 하나 받는다.
+	ObscuredString _serverEnterKeyForBossBattle;
+	public void RequestEnterBossBattle(int selectedDifficulty, Action<bool> successCallback, Action failureCallback)
+	{
+		string input = string.Format("{0}_{1}", selectedDifficulty, "eimzkrnx");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "EnterBossBattle",
+			FunctionParameter = new { Enter = 1, SeLv = selectedDifficulty, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			_serverEnterKeyForBossBattle = failure ? "" : resultString;
+			if (successCallback != null) successCallback.Invoke(failure);
+		}, (error) =>
+		{
+			HandleCommonError(error);
+			if (failureCallback != null) failureCallback.Invoke();
+		});
+	}
+
+	public void RequestCancelBossBattle()
+	{
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "CancelBossBattle",
+			GeneratePlayStreamEvent = true,
+		}, null, null);
+	}
+
+	public void RequestEndBossBattle(bool clear, int nextBossId, int playLevel, int useTicket, Action<bool, int> successCallback)
+	{
+		string input = string.Format("{0}_{1}_{2}_{3}_{4}", (string)_serverEnterKeyForBossBattle, clear ? 1 : 0, nextBossId, playLevel, "rezslmnq");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "EndBossBattle",
+			FunctionParameter = new { Flg = (string)_serverEnterKeyForBossBattle, Cl = (clear ? 1 : 0), Nb = nextBossId, PlLv = playLevel, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			_serverEnterKeyForBossBattle = "";
+			if (!failure)
+			{
+				if (clear)
+					SubMissionData.instance.bossBattleDailyCount += 1;
+				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.ClearBossBattle);
+				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.UseTicket, useTicket);
+				CurrencyData.instance.UseTicket(useTicket);
+
+				if (successCallback != null) successCallback.Invoke(clear, nextBossId);
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
+	public void RequestRefreshBoss(int nextBossId, int price, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+		string input = string.Format("{0}_{1}", nextBossId, "vkalqwmi");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "RefreshBoss",
+			FunctionParameter = new { Nb = nextBossId, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				SubMissionData.instance.bossBattleId = nextBossId;
+
+				// 클라이언트에서 먼저 삭제한 다음
+				CurrencyData.instance.UseEnergy(price);
+				//if (EnergyGaugeCanvas.instance != null)
+				//	EnergyGaugeCanvas.instance.RefreshEnergy();
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+	#endregion
+
+
 	#region Attendance
 	public void RequestStartAttendance(string startAttendanceId, int givenTime, bool oneTime, bool completeRefresh, Action successCallback, Action failureCallback)
 	{

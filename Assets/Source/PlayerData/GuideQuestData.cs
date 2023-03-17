@@ -47,8 +47,9 @@ public class GuideQuestData : MonoBehaviour
 		GatherPetCount = 25,	// 펫 아무나 하나 n마리 모으기
 		GradeUpEquip = 26,		// 임의의 장비 하나 특정 등급 도달하기
 		UseTicket = 27,			// 티켓 소모하기
-		ClearRushDefense = 28,	// 침공방어 플레이하기
-		ClearBossDefense = 29,	// 보스저지 플레이하기
+		ClearRushDefense = 28,	// 침공방어 클리어하기
+		ClearBossDefense = 29,	// 보스저지 클리어하기
+		ClearBossBattle = 30,	// 토벌 클리어하기
 	}
 
 	// 이거 서버에도 둬서 완료 체크할때 수량 체크를 느슨하게 하니 변경된다면 서버에도 등록해야한다.

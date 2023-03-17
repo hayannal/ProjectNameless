@@ -577,7 +577,7 @@ public class MainCanvas : MonoBehaviour
 
 	public static bool IsAlarmMission()
 	{
-		if (MissionListCanvas.IsAlarmPetSearch() || MissionListCanvas.IsAlarmFortuneWheel() || MissionListCanvas.IsAlarmRushDefense() || MissionListCanvas.IsAlarmBossDefense())
+		if (MissionListCanvas.IsAlarmPetSearch() || MissionListCanvas.IsAlarmFortuneWheel() || MissionListCanvas.IsAlarmRushDefense() || MissionListCanvas.IsAlarmBossDefense() || MissionListCanvas.IsAlarmBossBattle())
 			return true;
 		return false;
 	}

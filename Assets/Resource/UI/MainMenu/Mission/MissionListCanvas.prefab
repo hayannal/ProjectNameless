@@ -1200,8 +1200,11 @@ MonoBehaviour:
   bossDefenseTodayResetRemainTimeText: {fileID: 4342580986563603145}
   bossDefenseEnergyText: {fileID: 6365680921344868318}
   bossDefenseAlarmRootTransform: {fileID: 3832812442829260334}
+  bossBattleMenuRemainCount: {fileID: 8284677625182708114}
+  bossBattleTodayResetRemainTimeText: {fileID: 5804987962712095668}
   bossBattleEnergyText: {fileID: 3790894814994607779}
   bossBattleImage: {fileID: 4518624425158174344}
+  bossBattleAlarmRootTransform: {fileID: 6484168828579960659}
 --- !u!1 &5477255245349656365
 GameObject:
   m_ObjectHideFlags: 0
@@ -1922,7 +1925,7 @@ PrefabInstance:
     - target: {fileID: 238641536057521734, guid: d279a83f763064442b933816f45efbf7,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: -310.04443
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 387271987959848111, guid: d279a83f763064442b933816f45efbf7,
         type: 3}
@@ -1933,6 +1936,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 974956192113482013, guid: d279a83f763064442b933816f45efbf7,
+        type: 3}
+      propertyPath: uiStringKey
+      value: MissionUI_TodayBonusRemainCount
       objectReference: {fileID: 0}
     - target: {fileID: 1667167667856418925, guid: d279a83f763064442b933816f45efbf7,
         type: 3}
@@ -2064,11 +2072,6 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6120340010285774152, guid: d279a83f763064442b933816f45efbf7,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6382747290600586746, guid: d279a83f763064442b933816f45efbf7,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -2130,6 +2133,36 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 669594474540581404}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5804987962712095668 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6468740729741064616, guid: d279a83f763064442b933816f45efbf7,
+    type: 3}
+  m_PrefabInstance: {fileID: 669594474540581404}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!224 &6484168828579960659 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 5815982829122950479, guid: d279a83f763064442b933816f45efbf7,
+    type: 3}
+  m_PrefabInstance: {fileID: 669594474540581404}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8284677625182708114 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8913739424490726286, guid: d279a83f763064442b933816f45efbf7,
+    type: 3}
+  m_PrefabInstance: {fileID: 669594474540581404}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &6729436134040480104
 PrefabInstance:
   m_ObjectHideFlags: 0

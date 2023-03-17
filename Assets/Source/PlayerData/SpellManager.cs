@@ -575,6 +575,9 @@ public class SpellManager : MonoBehaviour
 	const float SpellDistance = 11.0f;
 	void UpdateSpellInfo()
 	{
+		if (BossBattleMissionGround.instance != null && BossBattleMissionGround.instance.gameObject.activeSelf)
+			return;
+
 		if (_playerActorForSpellProcessor == null)
 			return;
 

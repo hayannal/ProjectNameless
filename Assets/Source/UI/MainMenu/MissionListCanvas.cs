@@ -39,8 +39,11 @@ public class MissionListCanvas : MonoBehaviour
 	public Text bossDefenseEnergyText;
 	public RectTransform bossDefenseAlarmRootTransform;
 
+	public Text bossBattleMenuRemainCount;
+	public Text bossBattleTodayResetRemainTimeText;
 	public Text bossBattleEnergyText;
 	public Image bossBattleImage;
+	public RectTransform bossBattleAlarmRootTransform;
 
 	void Awake()
 	{
@@ -140,6 +143,13 @@ public class MissionListCanvas : MonoBehaviour
 		return false;
 	}
 
+	public static bool IsAlarmBossBattle()
+	{
+		if (SubMissionData.instance.bossBattleDailyCount < BattleInstanceManager.instance.GetCachedGlobalConstantInt("BossBattleDailyCount"))
+			return true;
+		return false;
+	}
+
 	void RefreshInfo()
 	{
 		int cost = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MissionEnergyPet");
@@ -185,6 +195,12 @@ public class MissionListCanvas : MonoBehaviour
 		}
 		cost = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MissionEnergyBossBattle");
 		bossBattleEnergyText.text = cost.ToString("N0");
+		int remainBonusCount = BattleInstanceManager.instance.GetCachedGlobalConstantInt("BossBattleDailyCount") - SubMissionData.instance.bossBattleDailyCount;
+		if (remainBonusCount < 0) remainBonusCount = 0;
+		bossBattleMenuRemainCount.text = remainBonusCount.ToString();
+		AlarmObject.Hide(bossBattleAlarmRootTransform);
+		if (IsAlarmBossBattle())
+			AlarmObject.Show(bossBattleAlarmRootTransform);
 	}
 
 	public void OnClickButton(int index)
@@ -357,7 +373,15 @@ public class MissionListCanvas : MonoBehaviour
 			bossDefenseProcess = true;
 		#endregion
 
-		if (petProcess == false && wheelProcess == false && rushDefenseProcess == false && bossDefenseProcess == false)
+		#region Boss Battle
+		bool bossBattleProcess = false;
+		if (SubMissionData.instance.bossBattleDailyCount == 0)
+			bossBattleTodayResetRemainTimeText.text = "";
+		else
+			bossBattleProcess = true;
+		#endregion
+
+		if (petProcess == false && wheelProcess == false && rushDefenseProcess == false && bossDefenseProcess == false && bossBattleProcess == false)
 		{
 			_lastRefreshRemainTimeSecond = -1;
 			return;
@@ -372,6 +396,7 @@ public class MissionListCanvas : MonoBehaviour
 				if (wheelProcess) wheelTodayResetRemainTimeText.text = string.Format("{0:00}:{1:00}:{2:00}", remainTime.Hours, remainTime.Minutes, remainTime.Seconds);
 				if (rushDefenseProcess) rushDefenseTodayResetRemainTimeText.text = string.Format("{0:00}:{1:00}:{2:00}", remainTime.Hours, remainTime.Minutes, remainTime.Seconds);
 				if (bossDefenseProcess) bossDefenseTodayResetRemainTimeText.text = string.Format("{0:00}:{1:00}:{2:00}", remainTime.Hours, remainTime.Minutes, remainTime.Seconds);
+				if (bossBattleProcess) bossBattleTodayResetRemainTimeText.text = string.Format("{0:00}:{1:00}:{2:00}", remainTime.Hours, remainTime.Minutes, remainTime.Seconds);
 				_lastRefreshRemainTimeSecond = (int)remainTime.TotalSeconds;
 			}
 		}
@@ -381,6 +406,7 @@ public class MissionListCanvas : MonoBehaviour
 			if (wheelProcess) wheelTodayResetRemainTimeText.text = "";
 			if (rushDefenseProcess) rushDefenseTodayResetRemainTimeText.text = "";
 			if (bossDefenseProcess) bossDefenseTodayResetRemainTimeText.text = "";
+			if (bossBattleProcess) bossBattleTodayResetRemainTimeText.text = "";
 		}
 	}
 
