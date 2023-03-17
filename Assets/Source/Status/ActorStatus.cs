@@ -19,6 +19,7 @@ public class ActorStatus : MonoBehaviour
 	public Actor actor { get; private set; }
 	public int actorLevel { get; private set; }
 
+	public static float s_DefaultMaxHp = 3.9f;
 	static float s_criticalPowerConstantA = 5.0f;
 	static float s_criticalPowerConstantB = 3.0f;
 
@@ -55,7 +56,7 @@ public class ActorStatus : MonoBehaviour
 
 		ActorTableData actorTableData = TableDataManager.instance.FindActorTableData(actor.actorId);
 
-		_statusBase.valueList[(int)eActorStatus.MaxHp] = 9999.0f;
+		_statusBase.valueList[(int)eActorStatus.MaxHp] = s_DefaultMaxHp;
 		_statusBase.valueList[(int)eActorStatus.Attack] = GetPlayerBaseAttack();
 
 		// analysis
