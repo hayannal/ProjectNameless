@@ -72,6 +72,7 @@ public class MissionData : MonoBehaviour
 		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.UseTicket);
 		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.ClearRushDefense);
 		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.ClearBossDefense);
+		_listAvailableQuestType.Add(GuideQuestData.eQuestClearType.ClearBossBattle);
 	}
 
 	void Update()
