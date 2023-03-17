@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 #endif
+using DG.Tweening;
 
 public class PlayerGaugeCanvas : MonoBehaviour
 {
@@ -31,6 +32,7 @@ public class PlayerGaugeCanvas : MonoBehaviour
 	public GameObject offsetRootObject;
 	public RectTransform widthRectTransform;
 	public MOBAEnergyBar mobaEnergyBar;
+	public DOTweenAnimation shakeTween;
 
 	const float g1 = 1.2332f;
 	const float g2 = -1.8884f;
@@ -45,6 +47,7 @@ public class PlayerGaugeCanvas : MonoBehaviour
 	{
 		GetComponent<Canvas>().worldCamera = UIInstanceManager.instance.GetCachedCameraMain();
 		canvasGroup.alpha = DEFAULT_CANVAS_GROUP_ALPHA;
+		shakeTween.transform.localScale = Vector3.one;
 	}
 
 	void OnEnable()
@@ -62,7 +65,8 @@ public class PlayerGaugeCanvas : MonoBehaviour
 		mobaEnergyBar.MaxValue = playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.MaxHp);
 		mobaEnergyBar.Value = playerActor.actorStatus.GetHP();
 		float baseMaxHp = playerActor.actorStatus.GetMaxHpWithoutLevelPack();
-		mobaEnergyBar.SmallGapInterval = baseMaxHp / (g1 * Mathf.Log(baseMaxHp) + g2);
+		//mobaEnergyBar.SmallGapInterval = baseMaxHp / (g1 * Mathf.Log(baseMaxHp) + g2);
+		mobaEnergyBar.SmallGapInterval = ActorStatus.s_DefaultMaxHp * 0.3333f * 0.2f;
 		_lastMaxValue = mobaEnergyBar.MaxValue;
 		_lastRatio = playerActor.actorStatus.GetHPRatio();
 		_targetTransform = playerActor.cachedTransform;
@@ -144,7 +148,8 @@ public class PlayerGaugeCanvas : MonoBehaviour
 			*/
 
 			if (mobaEnergyBar.IsDamageZero() && _lateFillDelayRemainTime == 0.0f)
-				_lateFillDelayRemainTime = LateFillDelay;	
+				_lateFillDelayRemainTime = LateFillDelay;
+			shakeTween.DORestart();
 		}
 
 		_lastRatio = hpRatio;
