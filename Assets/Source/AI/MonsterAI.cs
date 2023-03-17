@@ -98,22 +98,35 @@ public class MonsterAI : MonoBehaviour
 	}
 	#endregion
 
+	bool IsUsableRunAI()
+	{
+		if (BossBattleMissionGround.instance != null && BossBattleMissionGround.instance.gameObject.activeSelf)
+			return false;
+		return true;
+	}
+
 	// 같은 프리팹에 MonsterActor와 MonsterAI가 붙어있는데
 	// MosnterAI의 Start와 Update가 호출되고나서 MonsterActor의 Start가 호출되는 경우도 발생하길래
 	// 아예 순서를 MonsterActor가 제어하도록 한다.
 	bool _initialized = false;
+	bool _useRunAI = false;
 	public void InitializeAI()
 	{
-		//_startDelayRemainTime = Random.Range(startDelayRange.x, startDelayRange.y);
-		_startDelayRemainTime = 0.0f;
-		_currentState = startState;
+		_useRunAI = IsUsableRunAI();
+		if (_useRunAI)
+		{
+			_startDelayRemainTime = 0.0f;
+			_currentState = eStateType.Chase;
+		}
+		else
+		{
+			_startDelayRemainTime = Random.Range(startDelayRange.x, startDelayRange.y);
+			_currentState = startState;
 
-		// exception handling
-		if (useStateList[(int)_currentState] == false)
-			_currentState = eStateType.TypeAmount;
-
-		// force setting
-		_currentState = eStateType.Chase;
+			// exception handling
+			if (useStateList[(int)_currentState] == false)
+				_currentState = eStateType.TypeAmount;
+		}
 
 		ResetRandomMoveStateInfo();
 		ResetStraightMoveStateInfo();
@@ -127,10 +140,13 @@ public class MonsterAI : MonoBehaviour
 		_initialized = true;
 	}
 
-	//void Update()
-    //{
-	//	UpdateTargeting();
-	//}
+	void Update()
+    {
+		if (_useRunAI)
+			return;
+
+		UpdateTargeting();
+	}
 
 	// 다른 클래스들의 Update에서 PlayAction 한게 있어도 덮어야하므로 LateUpdate에서 처리한다.
 	// 대표적으로 PathFinderController의 Animate 함수.
@@ -643,26 +659,12 @@ public class MonsterAI : MonoBehaviour
 	#endregion
 	void UpdateChase()
 	{
-		if (pathFinderController.agent.pathPending)
-			pathFinderController.agent.ResetPath();
-
-		if (pathFinderController.agent.destination.x != StageManager.instance.monsterTargetPosition.x || pathFinderController.agent.destination.z != StageManager.instance.monsterTargetPosition.z)
+		if (_useRunAI)
 		{
-			if (StageManager.instance != null && StageManager.instance.noNavStage)
-			{
-				nodeWarDestinationState = true;
-
-				// 아래처럼 컨텐츠에서 필요한 위치로 설정하면 될거다.
-				//nodeWarDestinationPosition = DefenseWarGround.s_groundOffset;
-			}
-			else
-			{
-				if (pathFinderController.agent.isOnNavMesh)
-					pathFinderController.agent.destination = StageManager.instance.monsterTargetPosition;
-			}
+			UpdateRunChase();
+			return;
 		}
 
-		/*
 		if (targetActor == null)
 		{
 			ResetPath();
@@ -747,7 +749,28 @@ public class MonsterAI : MonoBehaviour
 			}
 			_lastGoalPosition = targetActor.cachedTransform.position;
 		}
-		*/
+	}
+
+	void UpdateRunChase()
+	{
+		if (pathFinderController.agent.pathPending)
+			pathFinderController.agent.ResetPath();
+
+		if (pathFinderController.agent.destination.x != StageManager.instance.monsterTargetPosition.x || pathFinderController.agent.destination.z != StageManager.instance.monsterTargetPosition.z)
+		{
+			if (StageManager.instance != null && StageManager.instance.noNavStage)
+			{
+				nodeWarDestinationState = true;
+
+				// 아래처럼 컨텐츠에서 필요한 위치로 설정하면 될거다.
+				//nodeWarDestinationPosition = DefenseWarGround.s_groundOffset;
+			}
+			else
+			{
+				if (pathFinderController.agent.isOnNavMesh)
+					pathFinderController.agent.destination = StageManager.instance.monsterTargetPosition;
+			}
+		}
 	}
 
 	void ResetChaseStateInfo()
