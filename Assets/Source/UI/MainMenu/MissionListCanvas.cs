@@ -229,7 +229,7 @@ public class MissionListCanvas : MonoBehaviour
 
 				if (SubMissionData.instance.fortuneWheelDailyCount == 0 && CurrencyData.instance.ticket < BattleInstanceManager.instance.GetCachedGlobalConstantInt("MissionEnergyRoulette"))
 				{
-					ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughEnergy"), 2.0f);
+					ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughTicket"), 2.0f);
 					return;
 				}
 
