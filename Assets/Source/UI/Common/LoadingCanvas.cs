@@ -78,6 +78,12 @@ public class LoadingCanvas : MonoBehaviour
 			MainCanvas.instance.OnClickContentsButton();
 			SubMissionData.instance.readyToReopenMissionListCanvas = false;
 		}
+		// 다음 토벌 보스를 로딩해야하는거면
+		if (SubMissionData.instance.readyToPreloadBossBattleEnterCanvas)
+		{
+			BossBattleEnterCanvas.PreloadReadyToReopen();
+			SubMissionData.instance.readyToPreloadBossBattleEnterCanvas = false;
+		}
 
 		progressObject.SetActive(false);
 		objectFadeTweenAnimation.DOPlay();
