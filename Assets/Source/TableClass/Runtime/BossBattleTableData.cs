@@ -36,8 +36,4 @@ public class BossBattleTableData
   int _startDifficulty;
   public int startDifficulty { get { return _startDifficulty; } set { _startDifficulty = value; } }
   
-  [SerializeField]
-  int _defaultHave;
-  public int defaultHave { get { return _defaultHave; } set { _defaultHave = value; } }
-  
 }
