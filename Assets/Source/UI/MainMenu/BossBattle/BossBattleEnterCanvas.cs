@@ -107,7 +107,7 @@ public class BossBattleEnterCanvas : MonoBehaviour
 			currentBossId = 1;
 		}
 
-		_bossBattleTableData = TableDataManager.instance.FindBossBattleData(currentBossId);
+		_bossBattleTableData = TableDataManager.instance.FindBossBattleTableData(currentBossId);
 		if (_bossBattleTableData == null)
 			return;
 
@@ -212,7 +212,7 @@ public class BossBattleEnterCanvas : MonoBehaviour
 		AddressableAssetLoadManager.GetAddressableGameObject("BossBattleEnterCanvas", "Canvas");
 
 		int currentBossId = SubMissionData.instance.bossBattleId;
-		BossBattleTableData bossBattleTableData = TableDataManager.instance.FindBossBattleData(currentBossId);
+		BossBattleTableData bossBattleTableData = TableDataManager.instance.FindBossBattleTableData(currentBossId);
 		if (bossBattleTableData == null)
 			return;
 		if (string.IsNullOrEmpty(bossBattleTableData.bossAddress) == false)

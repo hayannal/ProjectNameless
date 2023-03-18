@@ -760,7 +760,7 @@ public class TableDataManager : MonoBehaviour
 		return null;
 	}
 
-	public BossBattleTableData FindBossBattleData(int id)
+	public BossBattleTableData FindBossBattleTableData(int id)
 	{
 		for (int i = 0; i < bossBattleTable.dataArray.Length; ++i)
 		{
