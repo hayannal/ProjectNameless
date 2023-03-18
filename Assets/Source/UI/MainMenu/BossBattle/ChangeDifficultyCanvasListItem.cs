@@ -34,7 +34,7 @@ public class ChangeDifficultyCanvasListItem : MonoBehaviour
 
 	public static int CheckSelectable(int targetDifficulty)
 	{
-		if (targetDifficulty > 28)
+		if (targetDifficulty > BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxBossBattleDifficulty"))
 			return -1;
 		return 0;
 	}
