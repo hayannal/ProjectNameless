@@ -344,15 +344,19 @@ public class BossMonsterGaugeCanvas : MonoBehaviour
 		if (allDie)
 		{
 			gameObject.SetActive(false);
-			if (StageManager.instance.fastBossClear)
+
+			if (StageFloorInfoCanvas.instance != null && StageFloorInfoCanvas.instance.gameObject.activeSelf)
 			{
-				if (Time.time - _bossGaugeAppearTime > (BattleInstanceManager.instance.GetCachedGlobalConstantInt("FastBossClearEndBase") * 0.1f) || CheckFastClearStageDefense() == false)
-					StageManager.instance.OnOffFastBossClear(false);
-			}
-			else
-			{
-				if (Time.time - _bossGaugeAppearTime < (BattleInstanceManager.instance.GetCachedGlobalConstantInt("FastBossClearStartBase") * 0.1f) && CheckFastClearStageDefense() == true)
-					StageManager.instance.OnOffFastBossClear(true);
+				if (StageManager.instance.fastBossClear)
+				{
+					if (Time.time - _bossGaugeAppearTime > (BattleInstanceManager.instance.GetCachedGlobalConstantInt("FastBossClearEndBase") * 0.1f) || CheckFastClearStageDefense() == false)
+						StageManager.instance.OnOffFastBossClear(false);
+				}
+				else
+				{
+					if (Time.time - _bossGaugeAppearTime < (BattleInstanceManager.instance.GetCachedGlobalConstantInt("FastBossClearStartBase") * 0.1f) && CheckFastClearStageDefense() == true)
+						StageManager.instance.OnOffFastBossClear(true);
+				}
 			}
 		}
 	}
