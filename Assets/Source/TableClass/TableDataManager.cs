@@ -89,6 +89,7 @@ public class TableDataManager : MonoBehaviour
 	public MissionModeTable missionModeTable;
 	public BossBattleTable bossBattleTable;
 	public BossExpTable bossExpTable;
+	public BossBattleDifficultyTable bossBattleDifficultyTable;
 
 	void Awake()
 	{
@@ -766,6 +767,16 @@ public class TableDataManager : MonoBehaviour
 		{
 			if (bossBattleTable.dataArray[i].num == id)
 				return bossBattleTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public BossBattleDifficultyTableData FindBossBattleDifficultyTableData(int difficulty)
+	{
+		for (int i = 0; i < bossBattleDifficultyTable.dataArray.Length; ++i)
+		{
+			if (bossBattleDifficultyTable.dataArray[i].difficulty == difficulty)
+				return bossBattleDifficultyTable.dataArray[i];
 		}
 		return null;
 	}
