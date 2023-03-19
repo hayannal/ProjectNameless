@@ -81,7 +81,7 @@ public partial class SoundManager : MonoBehaviour
 
 	public void PlayBossBgm(float fadeTime = 2.0f)
 	{
-		PlayBgm("BGM_NodeWar", fadeTime);
+		PlayBgm("BGM_UnicornCharacter", fadeTime);
 	}
 	#endregion
 }
