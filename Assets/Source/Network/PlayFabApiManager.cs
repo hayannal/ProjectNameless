@@ -4510,9 +4510,35 @@ public class PlayFabApiManager : MonoBehaviour
 				SubMissionData.instance.bossBattleId = nextBossId;
 
 				// 클라이언트에서 먼저 삭제한 다음
-				CurrencyData.instance.UseEnergy(price);
-				//if (EnergyGaugeCanvas.instance != null)
-				//	EnergyGaugeCanvas.instance.RefreshEnergy();
+				CurrencyData.instance.gold -= price;
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
+	public void RequestCallKingBoss(Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "CallKingBoss",
+			FunctionParameter = new { Call = 1 },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				int nextKingId = SubMissionData.instance.bossBattleClearId + 1;
+				if (nextKingId < BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxBossBattle"))
+					SubMissionData.instance.bossBattleId = nextKingId;
 
 				if (successCallback != null) successCallback.Invoke();
 			}
