@@ -85,7 +85,7 @@ public class BossBattleEnterCanvas : MonoBehaviour
 	}
 
 	public int selectedDifficulty { get { return _selectedDifficulty; } }
-	public int clearDifficulty { get { return selectedDifficulty; } }
+	public int clearDifficulty { get { return _clearDifficulty; } }
 	public bool isKingMonster { get { if (kingButtonRootTransform != null) return kingButtonRootTransform.gameObject.activeSelf; return false; } }
 	GameObject _cachedPreviewObject;
 	StageTableData _bossStageTableData;
