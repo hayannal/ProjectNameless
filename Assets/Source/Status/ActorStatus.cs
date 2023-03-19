@@ -139,6 +139,15 @@ public class ActorStatus : MonoBehaviour
 		if (actor.team.teamId == (int)Team.eTeamID.DefaultAlly)
 		{
 		}
+		else if (BossBattleMissionCanvas.instance != null && BossBattleMissionCanvas.instance.gameObject.activeSelf)
+		{
+			BossBattleDifficultyTableData bossBattleDifficultyTableData = TableDataManager.instance.FindBossBattleDifficultyTableData(BossBattleEnterCanvas.instance.selectedDifficulty);
+			if (bossBattleDifficultyTableData != null)
+			{
+				standardHp = bossBattleDifficultyTableData.standardHp;
+				standardDef = bossBattleDifficultyTableData.standardDef;
+			}
+		}
 		else if (BattleManager.instance != null && BattleManager.instance.IsNodeWar())
 		{
 			/*
