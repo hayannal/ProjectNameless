@@ -101,8 +101,10 @@ public class EquipSkillSlotIcon : MonoBehaviour
 		cooltimeImage.gameObject.SetActive(false);
 
 		activeSkillOutlineImageObject.gameObject.SetActive(true);
-		activeAlarmObject.SetActive(true);
 		blinkObject.SetActive(true);
+
+		if (grayscaleEffect.enabled == false)
+			activeAlarmObject.SetActive(true);
 	}
 	
 	void UpdateCooltime()
