@@ -12,6 +12,8 @@ public class PickUpEquipListItem : MonoBehaviour
 	public Text countText;
 	public Text priceText;
 	public Image equipIconImage;
+	public Text rarityText;
+	public Coffee.UIExtensions.UIGradient rarityGradient;
 	public Text remainTimeText;
 	public Text notStreakCountText;
 
@@ -31,6 +33,7 @@ public class PickUpEquipListItem : MonoBehaviour
 			equipIconImage.sprite = null;
 			equipIconImage.sprite = sprite;
 		});
+		EquipCanvasListItem.RefreshRarity(equipTableData.rarity, rarityText, rarityGradient);
 
 		countText.text = string.Format("X {0:N0}", info.count);
 		priceText.text = info.price.ToString("N0");
