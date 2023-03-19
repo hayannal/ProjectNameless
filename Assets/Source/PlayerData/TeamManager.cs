@@ -39,7 +39,10 @@ public class TeamManager : MonoBehaviour
 	{
 		// 미션 진입할때 이 리스트를 초기화 하고 n개 이상 Add하는 경우가 있어서 씬 초기화할때는 clear시켜놓고 다시 셋팅하기로 한다.
 		if (clear)
+		{
 			_listPlayerActor.Clear();
+			_hideFlag = false;
+		}
 
 		if (_listPlayerActor.Count == 0)
 		{
