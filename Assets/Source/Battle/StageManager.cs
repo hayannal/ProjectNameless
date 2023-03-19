@@ -717,6 +717,7 @@ public class StageManager : MonoBehaviour
 		// restore
 		Screen.sleepTimeout = SleepTimeout.SystemSetting;
 
+		YesNoCanvas.instance.ShowCanvas(false, "", "", null);
 		if (MainCanvas.instance != null)
 			MainCanvas.instance.OnPointerDown(null);
 
