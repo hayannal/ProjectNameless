@@ -347,7 +347,7 @@ public class BossBattleMissionCanvas : MonoBehaviour
 		// boss clear
 		homeButton.interactable = false;
 		_endProcess = true;
-		_endProcessWaitRemainTime = 1.5f;
+		_endProcessWaitRemainTime = 1.8f;
 	}
 	#endregion
 
