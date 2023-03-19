@@ -46,10 +46,25 @@ public class ConfirmSpendCanvas : MonoBehaviour
 				priceGrayscaleEffect[i].enabled = disablePrice;
 		}
 		_okAction = okAction;
+
+		_currencyType = currencyType;
+		_disablePrice = disablePrice;
 	}
 
+	CurrencyData.eCurrencyType _currencyType;
+	bool _disablePrice;
 	public void OnClickOkButton()
 	{
+		if (_disablePrice)
+		{
+			if (_currencyType == CurrencyData.eCurrencyType.Gold)
+				ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughGold"), 2.0f);
+			else
+				ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughDiamond"), 2.0f);
+
+			return;
+		}
+
 		//gameObject.SetActive(false);
 		if (_okAction != null)
 			_okAction();
