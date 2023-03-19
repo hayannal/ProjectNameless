@@ -461,7 +461,7 @@ public class BossBattleEnterCanvas : MonoBehaviour
 				PlayFabApiManager.instance.RequestRefreshBoss(nextId, price, () =>
 				{
 					ConfirmSpendCanvas.instance.gameObject.SetActive(false);
-					ToastCanvas.instance.ShowToast(UIString.instance.GetString("MissionUI_NewAppear"), 2.0f);
+					ToastCanvas.instance.ShowToast(UIString.instance.GetString("MissionUI_NewAppearBoss"), 2.0f);
 					gameObject.SetActive(false);
 					gameObject.SetActive(true);
 				});
@@ -499,7 +499,7 @@ public class BossBattleEnterCanvas : MonoBehaviour
 			PlayFabApiManager.instance.RequestCallKingBoss(() =>
 			{
 				ConfirmSpendCanvas.instance.gameObject.SetActive(false);
-				ToastCanvas.instance.ShowToast(UIString.instance.GetString("MissionUI_NewAppear"), 2.0f);
+				ToastCanvas.instance.ShowToast(UIString.instance.GetString("MissionUI_KingAppearBoss"), 2.0f);
 				gameObject.SetActive(false);
 				gameObject.SetActive(true);
 			});
