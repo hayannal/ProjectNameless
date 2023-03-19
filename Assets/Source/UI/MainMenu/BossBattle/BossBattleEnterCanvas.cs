@@ -188,8 +188,8 @@ public class BossBattleEnterCanvas : MonoBehaviour
 		bool callableKing = false;
 		if (currentKing == false)
 		{
-			// 현재가 왕관 몬스터가 아닐때 호출할 수 있는 왕관 몬스터가 있는지 확인한다.
-			if (lastClearId < BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxBossBattle"))
+			// 현재가 왕관 몬스터가 아닐때 호출 버튼은 하이드 하지 않기로 한다. 토스트로 알려줘야하기 때문.
+			if (lastClearId <= BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxBossBattle"))
 				callableKing = true;
 		}
 		callKingButtonObject.SetActive(callableKing);
