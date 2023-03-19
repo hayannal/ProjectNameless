@@ -487,9 +487,22 @@ public class BossBattleEnterCanvas : MonoBehaviour
 
 	public void OnClickCallKingButton()
 	{
+		// > 검사는 안해도 되긴 하지만 혹시 몰라 해둔다. MaxBossBattle까지 클리어 했으면 열려있는건 다 깬거다.
+		if (SubMissionData.instance.bossBattleClearId >= BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxBossBattle"))
+		{
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("MissionUI_CallMaxReached"), 2.0f);
+			return;
+		}
+
 		YesNoCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("MissionUI_CallKing"), () =>
 		{
-
+			PlayFabApiManager.instance.RequestCallKingBoss(() =>
+			{
+				ConfirmSpendCanvas.instance.gameObject.SetActive(false);
+				ToastCanvas.instance.ShowToast(UIString.instance.GetString("MissionUI_NewAppear"), 2.0f);
+				gameObject.SetActive(false);
+				gameObject.SetActive(true);
+			});
 		});
 	}
 
