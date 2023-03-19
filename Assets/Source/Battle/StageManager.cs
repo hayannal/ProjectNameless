@@ -178,6 +178,9 @@ public class StageManager : MonoBehaviour
 		public GameObject monsterPrefab;
 		public int count;
 		public float delay;
+		public int useOverridePosition;
+		public float overridePositionX;
+		public float overridePositionZ;
 	}
 
 	public class GroupMonsterSpawnInfo : MonsterSpawnInfoBase
@@ -239,23 +242,8 @@ public class StageManager : MonoBehaviour
 				}
 				else
 				{
-					// 일반몹 아이디일땐 개수에 딜레이까지 들어있을거다. 두개 더 파싱해야한다.
-					MonsterSpawnInfo monsterSpawnInfo = new MonsterSpawnInfo();
-					int.TryParse(id, out monsterSpawnInfo.monsterSimpleId);
-					int.TryParse(split[currentIndex + 1], out monsterSpawnInfo.count);
-					float.TryParse(split[currentIndex + 2], out monsterSpawnInfo.delay);
-
-					MonsterTableData monsterTableData = TableDataManager.instance.FindMonsterTableData(monsterSpawnInfo.monsterSimpleId);
-					if (monsterTableData != null)
-					{
-						monsterSpawnInfo.monsterId = monsterTableData.monsterId;
-						AddressableAssetLoadManager.GetAddressableGameObject(monsterTableData.monsterId, "Monster", (prefab) =>
-						{
-							monsterSpawnInfo.monsterPrefab = prefab;
-						});
-						_listMonsterSpawnInfo.Add(monsterSpawnInfo);
-					}
-					currentIndex += 3;
+					MonsterSpawnInfo monsterSpawnInfo = ParseMonsterSpawnInfo(split, ref currentIndex);
+					_listMonsterSpawnInfo.Add(monsterSpawnInfo);
 				}
 			}
 		}
@@ -272,37 +260,52 @@ public class StageManager : MonoBehaviour
 		while (currentIndex < split.Length)
 		{
 			string id = split[currentIndex];
-			MonsterSpawnInfo monsterSpawnInfo = new MonsterSpawnInfo();
 
 			// 그룹몹 파싱할땐 일반몹만 있는게 아니다. 여기서도 empty 체크해야한다.
 			if (id == "empty")
 			{
 				// empty일때는 
+				MonsterSpawnInfo monsterSpawnInfo = new MonsterSpawnInfo();
 				monsterSpawnInfo.monsterId = id;
 				float.TryParse(split[currentIndex + 1], out monsterSpawnInfo.delay);
 				listInfo.Add(monsterSpawnInfo);
 				currentIndex += 2;
 				continue;
 			}
-
-			int.TryParse(id, out monsterSpawnInfo.monsterSimpleId);
-			int.TryParse(split[currentIndex + 1], out monsterSpawnInfo.count);
-			float.TryParse(split[currentIndex + 2], out monsterSpawnInfo.delay);
-
-			MonsterTableData monsterTableData = TableDataManager.instance.FindMonsterTableData(monsterSpawnInfo.monsterSimpleId);
-			if (monsterTableData != null)
+			else
 			{
-				monsterSpawnInfo.monsterId = monsterTableData.monsterId;
-				AddressableAssetLoadManager.GetAddressableGameObject(monsterTableData.monsterId, "Monster", (prefab) =>
-				{
-					monsterSpawnInfo.monsterPrefab = prefab;
-				});
+				MonsterSpawnInfo monsterSpawnInfo = ParseMonsterSpawnInfo(split, ref currentIndex);
 				listInfo.Add(monsterSpawnInfo);
 			}
-			currentIndex += 3;
 		}
 	}
 
+	static MonsterSpawnInfo ParseMonsterSpawnInfo(string[] split, ref int currentIndex)
+	{
+		MonsterSpawnInfo monsterSpawnInfo = new MonsterSpawnInfo();
+		int.TryParse(split[currentIndex], out monsterSpawnInfo.monsterSimpleId);
+		int.TryParse(split[currentIndex + 1], out monsterSpawnInfo.count);
+		float.TryParse(split[currentIndex + 2], out monsterSpawnInfo.delay);
+		int.TryParse(split[currentIndex + 3], out monsterSpawnInfo.useOverridePosition);
+		if (monsterSpawnInfo.useOverridePosition == 1)
+		{
+			float.TryParse(split[currentIndex + 4], out monsterSpawnInfo.overridePositionX);
+			float.TryParse(split[currentIndex + 5], out monsterSpawnInfo.overridePositionZ);
+		}
+
+		MonsterTableData monsterTableData = TableDataManager.instance.FindMonsterTableData(monsterSpawnInfo.monsterSimpleId);
+		if (monsterTableData != null)
+		{
+			monsterSpawnInfo.monsterId = monsterTableData.monsterId;
+			AddressableAssetLoadManager.GetAddressableGameObject(monsterTableData.monsterId, "Monster", (prefab) =>
+			{
+				monsterSpawnInfo.monsterPrefab = prefab;
+			});
+		}
+		currentIndex += (monsterSpawnInfo.useOverridePosition == 1) ? 6 : 4;
+		return monsterSpawnInfo;
+	}
+	
 	// 
 	bool IsDoneLoadedMonsterList()
 	{
@@ -393,15 +396,7 @@ public class StageManager : MonoBehaviour
 				}
 				else
 				{
-					Vector3 spawnPosition = _monsterSpawnPosition + new Vector3(Random.value * 0.01f, 0.0f, Random.value * 0.01f);
-					#region Mission
-					if (RushDefenseMissionGround.instance != null && RushDefenseMissionGround.instance.gameObject.activeSelf)
-						spawnPosition.x += RushDefenseMissionGround.instance.GetMonsterRandomSpawnOffsetX();
-					#endregion
-					GameObject newObject = BattleInstanceManager.instance.GetCachedObject(monsterSpawnInfo.monsterPrefab, spawnPosition, Quaternion.LookRotation(Vector3.back), cachedTransform);
-					MonsterActor monsterActor = newObject.GetComponent<MonsterActor>();
-					if (monsterActor != null)
-						monsterActor.checkOverlapPositionFrameCount = 100;
+					SpawnMonster(monsterSpawnInfo, _monsterSpawnPosition, cachedTransform);
 					++_currentSpawnCount;
 					if (_currentSpawnCount >= monsterSpawnInfo.count)
 					{
@@ -435,10 +430,7 @@ public class StageManager : MonoBehaviour
 			}
 			else
 			{
-				GameObject newObject = BattleInstanceManager.instance.GetCachedObject(monsterSpawnInfo.monsterPrefab, _monsterSpawnPosition + new Vector3(Random.value * 0.01f, 0.0f, Random.value * 0.01f), Quaternion.LookRotation(Vector3.back), cachedTransform);
-				MonsterActor monsterActor = newObject.GetComponent<MonsterActor>();
-				if (monsterActor != null)
-					monsterActor.checkOverlapPositionFrameCount = 100;
+				SpawnMonster(monsterSpawnInfo, _monsterSpawnPosition, cachedTransform);
 				++_currentSpawnCount;
 				if (_currentSpawnCount >= monsterSpawnInfo.count)
 				{
@@ -457,6 +449,24 @@ public class StageManager : MonoBehaviour
 				_spawnFinished = true;
 			}
 		}
+	}
+
+	void SpawnMonster(MonsterSpawnInfo monsterSpawnInfo, Vector3 spawnPosition, Transform parentTransform)
+	{
+		if (monsterSpawnInfo.useOverridePosition == 1)
+		{
+			spawnPosition.x = monsterSpawnInfo.overridePositionX;
+			spawnPosition.z = monsterSpawnInfo.overridePositionZ;
+			spawnPosition += GetSafeWorldOffset();
+		}
+		#region Mission
+		if (RushDefenseMissionGround.instance != null && RushDefenseMissionGround.instance.gameObject.activeSelf)
+			spawnPosition.x += RushDefenseMissionGround.instance.GetMonsterRandomSpawnOffsetX();
+		#endregion
+		GameObject newObject = BattleInstanceManager.instance.GetCachedObject(monsterSpawnInfo.monsterPrefab, spawnPosition + new Vector3(Random.value * 0.01f, 0.0f, Random.value * 0.01f), Quaternion.LookRotation(Vector3.back), parentTransform);
+		MonsterActor monsterActor = newObject.GetComponent<MonsterActor>();
+		if (monsterActor != null)
+			monsterActor.checkOverlapPositionFrameCount = 100;
 	}
 
 
