@@ -452,13 +452,21 @@ public class BossBattleEnterCanvas : MonoBehaviour
 
 	public void OnClickRefreshButton()
 	{
-		if (CurrencyData.instance.energy == 0)
+		int price = BattleInstanceManager.instance.GetCachedGlobalConstantInt("BossBattleRefreshPrice");
+		UIInstanceManager.instance.ShowCanvasAsync("ConfirmSpendCanvas", () =>
 		{
-			//ShowRefillEnergyCanvas(true);
-			return;
-		}
-
-		UIInstanceManager.instance.ShowCanvasAsync("BossBattleRefreshCanvas", null);
+			ConfirmSpendCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("MissionUI_RefreshBoss"), CurrencyData.eCurrencyType.Gold, price, false, () =>
+			{
+				int nextId = SubMissionData.instance.GetNextRandomBossId();
+				PlayFabApiManager.instance.RequestRefreshBoss(nextId, price, () =>
+				{
+					ConfirmSpendCanvas.instance.gameObject.SetActive(false);
+					ToastCanvas.instance.ShowToast(UIString.instance.GetString("MissionUI_NewAppear"), 2.0f);
+					gameObject.SetActive(false);
+					gameObject.SetActive(true);
+				});
+			});
+		});
 	}
 
 	public void OnClickChangeDifficultyButton()
