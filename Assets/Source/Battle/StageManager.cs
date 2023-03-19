@@ -641,6 +641,10 @@ public class StageManager : MonoBehaviour
 			return;
 		if (repeatMode)
 			return;
+		#region Mission
+		if (BossBattleMissionCanvas.instance != null && BossBattleMissionCanvas.instance.gameObject.activeSelf)
+			return;
+		#endregion
 		List<MonsterActor> listMonsterActor = BattleInstanceManager.instance.GetLiveMonsterList();
 		if (listMonsterActor.Count == 0)
 			return;
