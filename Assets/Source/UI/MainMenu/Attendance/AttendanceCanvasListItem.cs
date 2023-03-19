@@ -38,7 +38,7 @@ public class AttendanceCanvasListItem : MonoBehaviour
 			if (rewardIcon2 != null)
 			{
 				rewardIcon2.RefreshReward(attendanceRewardTableData.rewardType2, attendanceRewardTableData.rewardValue2, attendanceRewardTableData.rewardCount2);
-				rewardIcon2.ShowOnlyIcon(true, 1.3f, 100);
+				rewardIcon2.ShowOnlyIcon(true, 1.3f);
 			}
 		}
 		else
@@ -128,6 +128,8 @@ public class AttendanceCanvasListItem : MonoBehaviour
 				earlyBonus = remainTime.Days;
 				if (earlyBonus > 10) earlyBonus = 10;
 			}
+
+			// 장비가 있을 수 있지만 패킷으로 전달하진 않고 
 
 			PlayFabApiManager.instance.RequestGetAttendanceReward(_attendanceRewardTableData.rewardType1, _attendanceRewardTableData.key, addDia, addGold, addEnergy, earlyBonus, () =>
 			{

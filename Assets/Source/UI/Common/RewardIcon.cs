@@ -60,6 +60,7 @@ public class RewardIcon : MonoBehaviour
 		RefreshReward(eventRewardTableData.rewardType, eventRewardTableData.rewardValue, eventRewardTableData.rewardCount);
 	}
 
+	int _rewardCount = 0;
 	public void RefreshReward(string rewardType, string rewardValue, int rewardCount)
 	{
 		goldObject.SetActive(false);
@@ -76,6 +77,7 @@ public class RewardIcon : MonoBehaviour
 		if (petRootObject != null) petRootObject.SetActive(false);
 		if (uncommonImage != null) uncommonImage.gameObject.SetActive(false);
 		countText.text = rewardCount.ToString("N0");
+		_rewardCount = rewardCount;
 		switch (rewardType)
 		{
 			case "cu":
@@ -254,7 +256,7 @@ public class RewardIcon : MonoBehaviour
 	}
 
 	bool _showOnlyIcon = false;
-	public void ShowOnlyIcon(bool onlyIcon, float onlyIconScale = 1.5f, int adjustCountTextWidth = 70)
+	public void ShowOnlyIcon(bool onlyIcon, float onlyIconScale = 1.5f)
 	{
 		_showOnlyIcon = onlyIcon;
 		for (int i = 0; i < frameObjectList.Length; ++i)
@@ -266,7 +268,13 @@ public class RewardIcon : MonoBehaviour
 		{
 			if (_defaultCountTextSizeDelta.x == 0.0f) _defaultCountTextSizeDelta.x = 70.0f;
 			if (_defaultCountTextSizeDelta.y == 0.0f) _defaultCountTextSizeDelta.y = 24.0f;
-			countTextRectTransform.sizeDelta = onlyIcon ? new Vector2(adjustCountTextWidth, _defaultCountTextSizeDelta.y) : _defaultCountTextSizeDelta;
+
+			if (onlyIcon && _rewardCount >= 1000000)
+				countTextRectTransform.sizeDelta = new Vector2(100.0f, _defaultCountTextSizeDelta.y);
+			else if (onlyIcon && _rewardCount >= 100000)
+				countTextRectTransform.sizeDelta = new Vector2(90.0f, _defaultCountTextSizeDelta.y);
+			else
+				countTextRectTransform.sizeDelta = _defaultCountTextSizeDelta;
 		}
 	}
 
