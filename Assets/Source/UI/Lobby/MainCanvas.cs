@@ -242,6 +242,7 @@ public class MainCanvas : MonoBehaviour
 		StageManager.instance.OnOffFastBossClear(false);
 		StageManager.instance.InitializeStageFloor(PlayerData.instance.selectedStage, false);
 		TeamManager.instance.HideForMoveMap(false);
+		SoundManager.instance.PlayBossBgm();
 		SpellManager.instance.InitializeEquipSpellInfo();
 		FadeCanvas.instance.FadeIn(0.5f);
 
@@ -292,6 +293,8 @@ public class MainCanvas : MonoBehaviour
 
 		if (repeatMode)
 		{
+			SoundManager.instance.PlayLobbyBgm();
+
 			if (EquipSkillSlotCanvas.instance != null && EquipSkillSlotCanvas.instance.gameObject.activeSelf)
 				EquipSkillSlotCanvas.instance.gameObject.SetActive(false);
 

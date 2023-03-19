@@ -695,6 +695,7 @@ public class StageManager : MonoBehaviour
 		}
 		InitializeStageFloor(PlayerData.instance.selectedStage, true);
 		TeamManager.instance.HideForMoveMap(false);
+		SoundManager.instance.PlayLobbyBgm();
 		if (EquipSkillSlotCanvas.instance != null && EquipSkillSlotCanvas.instance.gameObject.activeSelf)
 			EquipSkillSlotCanvas.instance.gameObject.SetActive(false);
 		FadeCanvas.instance.FadeIn(0.5f, true);
