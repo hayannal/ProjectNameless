@@ -20,8 +20,4 @@ public class BossExpTableData
   int _requiredAccumulatedExp;
   public int requiredAccumulatedExp { get { return _requiredAccumulatedExp; } set { _requiredAccumulatedExp = value; } }
   
-  [SerializeField]
-  int _atk;
-  public int atk { get { return _atk; } set { _atk = value; } }
-  
 }
