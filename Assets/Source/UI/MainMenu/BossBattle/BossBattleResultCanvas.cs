@@ -14,20 +14,21 @@ public class BossBattleResultCanvas : MonoBehaviour
 	public Text difficultyText;
 	public Text resultText;
 
-	public GameObject firstRewardGroupObject;
-	public DOTweenAnimation firstRewardTweenAnimation;
-	public Text firstRewardValueText;
-	
-	public GameObject repeatOnlyRectObject;
-	public GameObject goldGroupObject;
-	public DOTweenAnimation goldImageTweenAnimation;
-	public Text goldValueText;
-
+	public GameObject xpRewardGroupObject;
 	public Text xpLevelText;
 	public Text xpLevelExpText;
 	public Image xpLevelExpImage;
 	public GameObject xpLevelUpInfoObject;
-	
+
+	public GameObject pointRewardGroupObject;
+	public Text pointText;
+	public DOTweenAnimation pointTextTweenAnimation;
+	public Text bonusTimesText;
+	public Text remainCountText;
+	public GameObject bonusRectObject;
+
+	public Text kingBossResultText;
+
 	public GameObject exitGroupObject;
 
 	void Awake()
@@ -47,18 +48,26 @@ public class BossBattleResultCanvas : MonoBehaviour
 
 	void Update()
 	{
-		UpdateFirstRewardText();
-		UpdateGoldText();
+		UpdatePointText();
 	}
 
 	bool _clear = false;
 	int _selectedDifficulty;
 	bool _firstClear;
+	bool _dailyBonusApplied;
+	bool _allKingClear;
 	public void RefreshInfo(bool clear, int selectedDifficulty, bool firstClear)
 	{
 		_clear = clear;
 		_selectedDifficulty = selectedDifficulty;
 		_firstClear = firstClear;
+		_dailyBonusApplied = (SubMissionData.instance.bossBattleDailyCount <= BattleInstanceManager.instance.GetCachedGlobalConstantInt("BossBattleDailyCount"));
+		_allKingClear = false;
+		if (SubMissionData.instance.bossBattleId == BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxBossBattle"))
+		{
+			if ((SubMissionData.instance.bossBattleClearId + 1) == SubMissionData.instance.bossBattleId)
+				_allKingClear = true;
+		}
 
 		difficultyText.text = string.Format("DIFFICULTY {0}", selectedDifficulty);
 		resultText.text = UIString.instance.GetString(clear ? "GameUI_Success" : "GameUI_Failure");
@@ -80,75 +89,12 @@ public class BossBattleResultCanvas : MonoBehaviour
 		SoundManager.instance.PlayBgm("BGM_BattleEnd", 3.0f);
 	}
 
-	#region NodeWar Result
-	int _firstRewardAmount = 0;
 	public void OnEventSuccessResult()
 	{
-		exitGroupObject.SetActive(true);
-		return;
-
-
-
-		if (_clear && _firstClear)
-		{
-			//_firstRewardAmount = BattleManager.instance.GetCachedBossRewardTableData().firstEnergy;
-			firstRewardGroupObject.SetActive(true);
-			return;
-		}
-
-		// 첫 클리어 보상이 없을땐 일반보상만 켜면 된다.
-		SetRepeatRewardInfo();
-		repeatOnlyRectObject.SetActive(true);
-		goldGroupObject.SetActive(true);
+		RefreshBossBattleCount(BossBattleEnterCanvas.instance.GetXp());
+		xpRewardGroupObject.SetActive(true);
 	}
-	#endregion
-
-	#region First Reward
-	public void OnEventIncreaseFirst()
-	{
-		_firstRewardChangeRemainTime = firstRewardChangeTime;
-		_firstRewardChangeSpeed = _firstRewardAmount / _firstRewardChangeRemainTime;
-		_currentFirstReward = 0.0f;
-		_updateFirstRewardText = true;
-		firstRewardTweenAnimation.DOPlay();
-
-		StartCoroutine(FirstRewardProcess());
-	}
-
-	IEnumerator FirstRewardProcess()
-	{
-		yield return new WaitForSecondsRealtime(firstRewardChangeTime);
-
-		SetRepeatRewardInfo();
-		goldGroupObject.SetActive(true);
-	}
-
-	const float firstRewardChangeTime = 0.2f;
-	float _firstRewardChangeRemainTime;
-	float _firstRewardChangeSpeed;
-	float _currentFirstReward;
-	int _lastFirstReward;
-	bool _updateFirstRewardText;
-	void UpdateFirstRewardText()
-	{
-		if (_updateFirstRewardText == false)
-			return;
-
-		_currentFirstReward += _firstRewardChangeSpeed * Time.unscaledDeltaTime;
-		int currentFirstRewardInt = (int)_currentFirstReward;
-		if (currentFirstRewardInt >= _firstRewardAmount)
-		{
-			currentFirstRewardInt = _firstRewardAmount;
-			_updateFirstRewardText = false;
-		}
-		if (currentFirstRewardInt != _lastFirstReward)
-		{
-			_lastFirstReward = currentFirstRewardInt;
-			firstRewardValueText.text = _lastFirstReward.ToString("N0");
-		}
-	}
-	#endregion
-
+	
 	#region Xp
 	bool _maxXpLevel = false;
 	float _nextPercent = 0.0f;
@@ -158,7 +104,7 @@ public class BossBattleResultCanvas : MonoBehaviour
 	void RefreshBossBattleCount(int count)
 	{
 		// 현재 카운트가 속하는 테이블 구해와서 레벨 및 경험치로 표시.
-		int maxXpLevel = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxBossBattleLevel");
+		int maxXpLevel = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxBossBattleXpLevel");
 		int level = 0;
 		float percent = 0.0f;
 		int currentPeriodExp = 0;
@@ -205,31 +151,13 @@ public class BossBattleResultCanvas : MonoBehaviour
 	}
 	#endregion
 
-	#region Gold
-	int _repeatRewardAmount;
-	void SetRepeatRewardInfo()
+	public void OnEventIncreaseXp()
 	{
-		//_repeatRewardAmount = BattleManager.instance.GetCachedBossRewardTableData().enterGold;
-		RefreshBossBattleCount(BossBattleEnterCanvas.instance.GetXp());
+		StartCoroutine(XpProcess());
 	}
 
-	public void OnEventIncreaseGold()
+	IEnumerator XpProcess()
 	{
-		_goldChangeRemainTime = goldChangeTime;
-		_goldChangeSpeed = _repeatRewardAmount / _goldChangeRemainTime;
-		_currentGold = 0.0f;
-		_updateGoldText = true;
-
-		goldImageTweenAnimation.DOPlay();
-
-		StartCoroutine(GoldProcess());
-	}
-
-	IEnumerator GoldProcess()
-	{
-		yield return new WaitForSecondsRealtime(goldChangeTime);
-
-		// Exp Process
 		yield return new WaitForSecondsRealtime(0.2f);
 
 		if (_maxXpLevel == false)
@@ -252,34 +180,120 @@ public class BossBattleResultCanvas : MonoBehaviour
 
 			yield return new WaitForSecondsRealtime(0.2f);
 		}
+		else
+		{
+			// max 상태일때는 잠시 대기 후 넘어간다.
+			yield return new WaitForSecondsRealtime(0.5f);
+		}
+
+		SetPointRewardInfo();
+		pointRewardGroupObject.SetActive(true);
 	}
 
-	const float goldChangeTime = 0.4f;
-	float _goldChangeRemainTime;
-	float _goldChangeSpeed;
-	float _currentGold;
-	int _lastGold;
-	bool _updateGoldText;
-	void UpdateGoldText()
+	#region Point
+	int _targetPoint;
+	void SetPointRewardInfo()
 	{
-		if (_updateGoldText == false)
+		if (_clear)
+		{
+			_targetPoint = _selectedDifficulty;
+		}
+	}
+
+	public void OnEventIncreasePoint()
+	{
+		if (_clear == false)
+		{
+			exitGroupObject.SetActive(true);
+			return;
+		}
+
+		_pointChangeRemainTime = pointChangeTime;
+		_pointChangeSpeed = _targetPoint / _pointChangeRemainTime;
+		_currentPoint = 0.0f;
+		_updatePointText = true;
+
+		StartCoroutine(PointProcess());
+	}
+
+	
+
+	const float pointChangeTime = 0.4f;
+	float _pointChangeRemainTime;
+	float _pointChangeSpeed;
+	float _currentPoint;
+	int _lastPoint;
+	bool _updatePointText;
+	void UpdatePointText()
+	{
+		if (_updatePointText == false)
 			return;
 
-		_currentGold += _goldChangeSpeed * Time.unscaledDeltaTime;
-		int currentGoldInt = (int)_currentGold;
-		if (currentGoldInt >= _repeatRewardAmount)
+		_currentPoint += _pointChangeSpeed * Time.unscaledDeltaTime;
+		int currentPointInt = (int)_currentPoint;
+		if (currentPointInt >= _targetPoint)
 		{
-			currentGoldInt = _repeatRewardAmount;
-			_updateGoldText = false;
+			currentPointInt = _targetPoint;
+			_updatePointText = false;
 		}
-		if (currentGoldInt != _lastGold)
+		if (currentPointInt != _lastPoint)
 		{
-			_lastGold = currentGoldInt;
-			goldValueText.text = _lastGold.ToString("N0");
+			_lastPoint = currentPointInt;
+			pointText.text = _lastPoint.ToString("N0");
 		}
 	}
 	#endregion
-	
+
+	IEnumerator PointProcess()
+	{
+		yield return new WaitForSecondsRealtime(pointChangeTime);
+
+		if (_dailyBonusApplied == false)
+		{
+			pointTextTweenAnimation.DORestart();
+			yield return new WaitForSecondsRealtime(0.6f);
+		}
+
+		// standby
+		yield return new WaitForSecondsRealtime(0.2f);
+
+		// 오늘의 보너스를 받을게 있다면
+		if (_dailyBonusApplied)
+		{
+			int bonusTimes = BattleInstanceManager.instance.GetCachedGlobalConstantInt("BossBattleDailyBonusTimes");
+			bonusTimesText.text = string.Format("X{0}", bonusTimes);
+			int remainBonusCount = BattleInstanceManager.instance.GetCachedGlobalConstantInt("BossBattleDailyCount") - SubMissionData.instance.bossBattleDailyCount;
+			if (remainBonusCount < 0) remainBonusCount = 0;
+			remainCountText.text = remainBonusCount.ToString("N0");
+			bonusRectObject.SetActive(true);
+			yield return new WaitForSecondsRealtime(0.6f);
+
+			_targetPoint *= bonusTimes;
+
+			_pointChangeRemainTime = pointChangeTime;
+			_pointChangeSpeed = (_targetPoint - _currentPoint) / _pointChangeRemainTime;
+			//_currentPoint = 0.0f;
+			_updatePointText = true;
+			yield return new WaitForSecondsRealtime(pointChangeTime);
+
+			pointTextTweenAnimation.DORestart();
+			yield return new WaitForSecondsRealtime(0.6f);
+		}
+
+		ShowKingBossResultText();
+		exitGroupObject.SetActive(true);
+	}
+
+	void ShowKingBossResultText()
+	{
+		// 평소에는 안해도 무방할거 같고, 마지막 왕관 보스를 잡았을때만 메세지 한줄 넣기로 한다.
+		if (_allKingClear)
+		{
+			kingBossResultText.SetLocalizedText(UIString.instance.GetString("MissionUI_KingBossMaxCleared"));
+			kingBossResultText.gameObject.SetActive(true);
+		}
+	}
+
 	public void OnClickExitButton()
 	{
 		SubMissionData.instance.readyToPreloadBossBattleEnterCanvas = true;

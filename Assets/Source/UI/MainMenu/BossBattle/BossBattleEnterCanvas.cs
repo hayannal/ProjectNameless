@@ -498,7 +498,6 @@ public class BossBattleEnterCanvas : MonoBehaviour
 		{
 			PlayFabApiManager.instance.RequestCallKingBoss(() =>
 			{
-				ConfirmSpendCanvas.instance.gameObject.SetActive(false);
 				ToastCanvas.instance.ShowToast(UIString.instance.GetString("MissionUI_KingAppearBoss"), 2.0f);
 				gameObject.SetActive(false);
 				gameObject.SetActive(true);

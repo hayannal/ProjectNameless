@@ -4476,7 +4476,13 @@ public class PlayFabApiManager : MonoBehaviour
 			if (!failure)
 			{
 				if (clear)
+				{
+					int addPoint = playLevel;
+					if (MissionListCanvas.IsAlarmBossBattle())
+						addPoint *= BattleInstanceManager.instance.GetCachedGlobalConstantInt("BossBattleDailyBonusTimes");
+					SubMissionData.instance.bossBattlePoint += addPoint;
 					SubMissionData.instance.bossBattleDailyCount += 1;
+				}
 				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.ClearBossBattle);
 				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.UseTicket, useTicket);
 				CurrencyData.instance.UseTicket(useTicket);
@@ -4537,7 +4543,7 @@ public class PlayFabApiManager : MonoBehaviour
 				WaitingNetworkCanvas.Show(false);
 
 				int nextKingId = SubMissionData.instance.bossBattleClearId + 1;
-				if (nextKingId < BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxBossBattle"))
+				if (nextKingId == BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxBossBattle"))
 					SubMissionData.instance.bossBattleId = nextKingId;
 
 				if (successCallback != null) successCallback.Invoke();
