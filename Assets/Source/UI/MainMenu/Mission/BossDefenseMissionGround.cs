@@ -113,6 +113,9 @@ public class BossDefenseMissionGround : MonoBehaviour
 		// TeamManager에 강제 추가.
 		if (playerActor.actorId != CharacterData.s_PlayerActorId)
 			TeamManager.instance.AddTeamPlayerActorForMission(playerActor);
+
+		// 여기서도 버프는 초기화 하는게 좋을거 같다.
+		ChangeActorStatusAffector.Clear(playerActor.affectorProcessor);
 	}
 
 	public void OnFinishSelect()

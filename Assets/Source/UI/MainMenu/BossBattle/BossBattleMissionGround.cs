@@ -112,6 +112,10 @@ public class BossBattleMissionGround : MonoBehaviour
 		CustomFollowCamera.instance.followPlayerPosition = true;
 		ScreenJoystick.instance.GetComponent<NonDrawingGraphic>().enabled = true;
 
+		// 밖에서 사용한 버프가 여기까지 유지되면 안된다.
+		// 이런 로직을 호출한 적이 없는데 우선은 이렇게 해본다.
+		ChangeActorStatusAffector.Clear(playerActor.affectorProcessor);
+
 		// spell
 		SpellManager.instance.InitializeActorForSpellProcessor(playerActor);
 		SpellManager.instance.InitializeEquipSpellInfo();
