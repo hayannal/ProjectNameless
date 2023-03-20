@@ -159,6 +159,10 @@ public class MonsterActor : Actor
 	List<AffectorBase> _listPassiveAffector;
 	void InitializePassiveSkill()
 	{
+		#region BossBattle
+		InitializeBossBattleDamageAffector();
+		#endregion
+
 		if (cachedMonsterTableData.passiveAffectorValueId.Length == 0)
 			return;
 
@@ -185,6 +189,26 @@ public class MonsterActor : Actor
 			else
 				Debug.LogErrorFormat("Non-continuous affector in a passive skill! / AffectorValueId = {1}", cachedMonsterTableData.passiveAffectorValueId[i]);
 		}
+	}
+	#endregion
+
+	#region BossBattle
+	void InitializeBossBattleDamageAffector()
+	{
+		float bonusValue = 0.0f;
+		if (BossBattleMissionCanvas.instance != null && BossBattleMissionCanvas.instance.gameObject.activeSelf)
+		{
+			if (BossBattleEnterCanvas.instance != null)
+				bonusValue = BossBattleEnterCanvas.instance.GetDamageBonusByXpLevel();
+		}
+		if (bonusValue <= 0.0f)
+			return;
+
+		AffectorValueLevelTableData enlargeDamageAffectorValue = new AffectorValueLevelTableData();
+		enlargeDamageAffectorValue.fValue1 = -1.0f;
+		enlargeDamageAffectorValue.fValue2 = bonusValue;
+
+		affectorProcessor.ExecuteAffectorValueWithoutTable(eAffectorType.EnlargeDamage, enlargeDamageAffectorValue, this, false);
 	}
 	#endregion
 
