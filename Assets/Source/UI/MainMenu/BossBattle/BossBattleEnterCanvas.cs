@@ -482,7 +482,7 @@ public class BossBattleEnterCanvas : MonoBehaviour
 		string xpLevelString1 = UIString.instance.GetString("MissionUI_XpLevelMore1");
 		string xpLevelString2 = GetDamageBonusString();
 
-		TooltipCanvas.Show(true, TooltipCanvas.eDirection.CharacterInfo, string.Format("{0}{1}", xpLevelString1, xpLevelString2), 300, xpLevelButtonTransform, new Vector2(0.0f, -35.0f));
+		TooltipCanvas.Show(true, TooltipCanvas.eDirection.CharacterInfo, string.Format("{0} {1}", xpLevelString1, xpLevelString2), 300, xpLevelButtonTransform, new Vector2(0.0f, -35.0f));
 	}
 
 	public float GetDamageBonusByXpLevel()
