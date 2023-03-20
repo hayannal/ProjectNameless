@@ -732,15 +732,20 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 
 
 	#region Exp Percent Gauge
+	float _additionalExpFillTime = 0.0f;
 	public void RefreshExpPercent(float targetPercent, int levelUpCount)
 	{
 		_targetPercent = targetPercent;
 		_levelUpCount = levelUpCount;
+		if (_levelUpCount <= 4)
+			_additionalExpFillTime = 0.0f;
+		else
+			_additionalExpFillTime = (_levelUpCount - 4) * 0.0625f;
 
 		float totalDiff = levelUpCount;
 		totalDiff += (targetPercent - expGaugeSlider.value);
-		_fillSpeed = totalDiff / LevelUpExpFillTime;
-		_fillRemainTime = LevelUpExpFillTime;
+		_fillSpeed = totalDiff / (LevelUpExpFillTime + _additionalExpFillTime);
+		_fillRemainTime = (LevelUpExpFillTime + _additionalExpFillTime);
 		_changeCount = 0;
 		_targetLevel = _currentLevel + levelUpCount;
 
@@ -818,7 +823,7 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 
 		// 오브젝트 정지
 		ResearchObjects.instance.objectTweenAnimation.DOTogglePause();
-		yield return Timing.WaitForSeconds(0.3f);
+		yield return Timing.WaitForSeconds(0.3f + _additionalExpFillTime);
 
 		// 이펙트
 		BattleInstanceManager.instance.GetCachedObject(effectPrefab, ResearchObjects.instance.effectRootTransform);
