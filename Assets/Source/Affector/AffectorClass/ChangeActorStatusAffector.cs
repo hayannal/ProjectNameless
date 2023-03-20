@@ -144,4 +144,13 @@ public class ChangeActorStatusAffector : AffectorBase
 		}
 		return result;
 	}
+
+	// 플레이어 리셋할때 제일 크게 영향받는 어펙터가 이거라서 이거만 삭제 함수를 만들어서 써보기로 한다.
+	public static void Clear(AffectorProcessor affectorProcessor)
+	{
+		List<AffectorBase> listChangeActorStatusAffector = affectorProcessor.GetContinuousAffectorList(eAffectorType.ChangeActorStatus);
+		if (listChangeActorStatusAffector == null)
+			return;
+		listChangeActorStatusAffector.Clear();
+	}
 }
