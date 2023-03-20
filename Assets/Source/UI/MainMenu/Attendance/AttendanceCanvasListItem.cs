@@ -5,11 +5,17 @@ using UnityEngine;
 using UnityEngine.UI;
 using PlayFab.ClientModels;
 using CodeStage.AntiCheat.ObscuredTypes;
+using MEC;
 
 public class AttendanceCanvasListItem : MonoBehaviour
 {
 	public RewardIcon rewardIcon;
 	public RewardIcon rewardIcon2;
+
+	public Image equipIconImage;
+	public Text equipNameText;
+	public Text rarityText;
+	public Coffee.UIExtensions.UIGradient rarityGradient;
 
 	public Text countText;
 	public Text claimText;
@@ -24,6 +30,18 @@ public class AttendanceCanvasListItem : MonoBehaviour
 	public void RefreshInfo(int lastRewardNum, AttendanceRewardTableData attendanceRewardTableData)
 	{
 		_attendanceRewardTableData = attendanceRewardTableData;
+
+		#region Equip
+		if (lastRewardNum == attendanceRewardTableData.num && attendanceRewardTableData.rewardType1 == "it")
+		{
+			_lastItem = true;
+			rewardIcon.gameObject.SetActive(false);
+			if (rewardIcon2 != null) rewardIcon2.gameObject.SetActive(false);
+			RefreshEquipReward();
+			RefreshClaimState(attendanceRewardTableData);
+			return;
+		}
+		#endregion
 
 		rewardIcon.RefreshReward(attendanceRewardTableData.rewardType1, attendanceRewardTableData.rewardValue1, attendanceRewardTableData.rewardCount1);
 		RefreshClaimState(attendanceRewardTableData);
@@ -48,7 +66,60 @@ public class AttendanceCanvasListItem : MonoBehaviour
 			countText.text = rewardIcon.countText.text;
 		}
 	}
-	
+
+	#region Equip
+	void RefreshEquipReward()
+	{
+		string id = _attendanceRewardTableData.rewardValue1;
+		EquipLevelTableData equipLevelTableData = TableDataManager.instance.FindEquipLevelTableData(id);
+		if (equipLevelTableData == null)
+			return;
+		EquipTableData equipTableData = EquipManager.instance.GetCachedEquipTableData(equipLevelTableData.equipGroup);
+		if (equipTableData == null)
+			return;
+
+		equipNameText.SetLocalizedText(UIString.instance.GetString(equipTableData.nameId));
+
+		AddressableAssetLoadManager.GetAddressableSprite(equipTableData.shotAddress, "Icon", (sprite) =>
+		{
+			equipIconImage.sprite = null;
+			equipIconImage.sprite = sprite;
+		});
+		EquipCanvasListItem.RefreshRarity(equipTableData.rarity, rarityText, rarityGradient);
+	}
+
+	public void OnClickEquipDetailButton()
+	{
+		Timing.RunCoroutine(ShowEquipDetailCanvasProcess());
+	}
+
+	IEnumerator<float> ShowEquipDetailCanvasProcess()
+	{
+		FadeCanvas.instance.FadeOut(0.2f, 1.0f, true);
+		yield return Timing.WaitForSeconds(0.2f);
+
+		// 이거로 막아둔다.
+		DelayedLoadingCanvas.Show(true);
+
+		AttendanceCanvas.instance.ignoreStartEventFlag = true;
+		AttendanceCanvas.instance.gameObject.SetActive(false);
+
+		while (AttendanceCanvas.instance.gameObject.activeSelf)
+			yield return Timing.WaitForOneFrame;
+		yield return Timing.WaitForOneFrame;
+
+		MissionListCanvas.ShowCanvasAsyncWithPrepareGround("PickUpEquipDetailCanvas", null);
+
+		while ((PickUpEquipDetailCanvas.instance != null && PickUpEquipDetailCanvas.instance.gameObject.activeSelf) == false)
+			yield return Timing.WaitForOneFrame;
+		PickUpEquipDetailCanvas.instance.RefreshInfo(_attendanceRewardTableData.rewardValue1);
+		PickUpEquipDetailCanvas.instance.SetRestoreCanvas("attendance");
+
+		DelayedLoadingCanvas.Show(false);
+		FadeCanvas.instance.FadeIn(0.4f);
+	}
+	#endregion
+
 	void RefreshClaimState(AttendanceRewardTableData attendanceRewardTableData)
 	{
 		int count = AttendanceData.instance.rewardReceiveCount;
@@ -82,6 +153,7 @@ public class AttendanceCanvasListItem : MonoBehaviour
 		}
 	}
 
+	int _earlyBonus = 0;
 	public void OnClickButton()
 	{
 		if (blackObject.activeSelf)
@@ -93,6 +165,23 @@ public class AttendanceCanvasListItem : MonoBehaviour
 		if (dayText.gameObject.activeSelf)
 		{
 			ToastCanvas.instance.ShowToast(UIString.instance.GetString("LoginUI_CannotClaimYet"), 2.0f);
+			return;
+		}
+
+		int earlyBonus = 0;
+		if (_lastItem)
+		{
+			TimeSpan remainTime = AttendanceData.instance.attendanceExpireTime - ServerTime.UtcNow;
+			earlyBonus = remainTime.Days;
+			if (earlyBonus > 10) earlyBonus = 10;
+			_earlyBonus = earlyBonus;
+		}
+
+		if (_attendanceRewardTableData.rewardType1 == "it")
+		{
+			// 보상이 장비면 서버가 itemGrantString 을 보내줄거다.
+			_count = _attendanceRewardTableData.rewardCount1;
+			PlayFabApiManager.instance.RequestGetAttendanceReward(_attendanceRewardTableData.rewardType1, _attendanceRewardTableData.key, 0, 0, 0, earlyBonus, OnRecvResult);
 			return;
 		}
 
@@ -121,17 +210,7 @@ public class AttendanceCanvasListItem : MonoBehaviour
 			if (addGold > 0 && CurrencyData.instance.CheckMaxGold())
 				return;
 
-			int earlyBonus = 0;
-			if (_lastItem)
-			{
-				TimeSpan remainTime = AttendanceData.instance.attendanceExpireTime - ServerTime.UtcNow;
-				earlyBonus = remainTime.Days;
-				if (earlyBonus > 10) earlyBonus = 10;
-			}
-
-			// 장비가 있을 수 있지만 패킷으로 전달하진 않고 
-
-			PlayFabApiManager.instance.RequestGetAttendanceReward(_attendanceRewardTableData.rewardType1, _attendanceRewardTableData.key, addDia, addGold, addEnergy, earlyBonus, () =>
+			PlayFabApiManager.instance.RequestGetAttendanceReward(_attendanceRewardTableData.rewardType1, _attendanceRewardTableData.key, addDia, addGold, addEnergy, earlyBonus, (itemGrantString) =>
 			{
 				RefreshClaimState(_attendanceRewardTableData);
 				AttendanceCanvas.instance.currencySmallInfo.RefreshInfo();
@@ -155,5 +234,38 @@ public class AttendanceCanvasListItem : MonoBehaviour
 				});
 			});
 		}
+	}
+
+	int _count;
+	void OnRecvResult(string itemGrantString)
+	{
+		if (itemGrantString == "")
+			return;
+
+		List<ItemInstance> listItemInstance = EquipManager.instance.OnRecvItemGrantResult(itemGrantString, _count);
+		if (listItemInstance == null)
+			return;
+
+		RefreshClaimState(_attendanceRewardTableData);
+		AttendanceCanvas.instance.RefreshNextInfo();
+		if (MainCanvas.instance != null)
+			MainCanvas.instance.RefreshAttendanceAlarmObject();
+
+		UIInstanceManager.instance.ShowCanvasAsync("CommonRewardCanvas", () =>
+		{
+			CommonRewardCanvas.instance.RefreshReward(_attendanceRewardTableData.rewardType1, _attendanceRewardTableData.rewardValue1, _attendanceRewardTableData.rewardCount1, () =>
+			{
+				if (_earlyBonus > 0)
+				{
+					AttendanceCanvas.instance.RefreshRemainTime();
+					UIInstanceManager.instance.ShowCanvasAsync("AttendanceEarlyCanvas", () =>
+					{
+						AttendanceEarlyCanvas.instance.RefreshInfo(_earlyBonus);
+					});
+				}
+			});
+		});
+
+		MainCanvas.instance.RefreshMenuButton();
 	}
 }

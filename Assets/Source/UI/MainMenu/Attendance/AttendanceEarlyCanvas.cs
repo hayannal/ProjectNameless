@@ -24,7 +24,10 @@ public class AttendanceEarlyCanvas : MonoBehaviour
 	public void OnClickExitButton()
 	{
 		if (AttendanceCanvas.instance != null)
+		{
+			AttendanceCanvas.instance.currencySmallInfo.RefreshInfo();
 			AttendanceCanvas.instance.RefreshEarlyBonusRectInfo();
+		}
 		gameObject.SetActive(false);
 	}
 }

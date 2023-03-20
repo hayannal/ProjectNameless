@@ -11,6 +11,7 @@ public class AttendanceCanvas : MonoBehaviour
 	public CurrencySmallInfo currencySmallInfo;
 	public Text remainTimeText;
 	public AttendanceCanvasListItem lastItem;
+	public AttendanceCanvasListItem lastItemForEquip;
 	public GameObject earlyInfoRectObject;
 	public GameObject earlyBonusRectObject;
 	public Text earlyBonusNumberText;
@@ -50,11 +51,18 @@ public class AttendanceCanvas : MonoBehaviour
 			DragThresholdController.instance.ApplyUIDragThreshold();
 	}
 
+	public bool ignoreStartEventFlag { get; set; }
 	void OnDisable()
 	{
 		if (DragThresholdController.instance != null)
 			DragThresholdController.instance.ResetUIDragThreshold();
 
+		if (ignoreStartEventFlag)
+		{
+			ignoreStartEventFlag = false;
+			MainCanvas.instance.OnEnterCharacterMenu(false, true);
+			return;
+		}
 		MainCanvas.instance.OnEnterCharacterMenu(false);
 	}
 
@@ -124,7 +132,16 @@ public class AttendanceCanvas : MonoBehaviour
 		}
 
 		AttendanceRewardTableData lastAttendanceRewardTableData = TableDataManager.instance.FindAttendanceRewardTableData(attendanceTypeTableData.attendanceId, attendanceTypeTableData.lastRewardNum);
+		if (lastAttendanceRewardTableData.rewardType1 == "it")
+		{
+			lastItem.gameObject.SetActive(false);
+			lastItemForEquip.RefreshInfo(attendanceTypeTableData.lastRewardNum, lastAttendanceRewardTableData);
+			lastItemForEquip.gameObject.SetActive(true);
+			return;
+		}
+		lastItemForEquip.gameObject.SetActive(false);
 		lastItem.RefreshInfo(attendanceTypeTableData.lastRewardNum, lastAttendanceRewardTableData);
+		lastItem.gameObject.SetActive(true);
 	}
 
 	public void RefreshNextInfo()

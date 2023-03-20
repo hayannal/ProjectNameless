@@ -4587,7 +4587,7 @@ public class PlayFabApiManager : MonoBehaviour
 		});
 	}
 
-	public void RequestGetAttendanceReward(string rewardType, int key, int addDia, int addGold, int addEnergy, int earlyBonus, Action successCallback)
+	public void RequestGetAttendanceReward(string rewardType, int key, int addDia, int addGold, int addEnergy, int earlyBonus, Action<string> successCallback)
 	{
 		WaitingNetworkCanvas.Show(true);
 
@@ -4627,7 +4627,9 @@ public class PlayFabApiManager : MonoBehaviour
 				if (addEnergy > 0)
 					CurrencyData.instance.OnRecvRefillEnergy(addEnergy);
 
-				if (successCallback != null) successCallback.Invoke();
+				jsonResult.TryGetValue("itmRet", out object itmRet);
+
+				if (successCallback != null) successCallback.Invoke((string)itmRet);
 			}
 		}, (error) =>
 		{

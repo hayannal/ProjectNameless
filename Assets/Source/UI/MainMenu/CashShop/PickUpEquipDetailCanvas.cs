@@ -124,6 +124,13 @@ public class PickUpEquipDetailCanvas : EquipShowCanvasBase
 					yield return Timing.WaitForOneFrame;
 			}
 		}
+		else if (_restoreType == "attendance")
+		{
+			_restoreType = "";
+			MainCanvas.instance.OnClickAttendanceButton();
+			while ((AttendanceCanvas.instance != null && AttendanceCanvas.instance.gameObject.activeSelf) == false)
+				yield return Timing.WaitForOneFrame;
+		}
 		else
 		{
 			MainCanvas.instance.OnClickCashShopButton();
