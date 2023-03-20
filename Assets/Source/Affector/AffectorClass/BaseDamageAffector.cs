@@ -70,6 +70,14 @@ public class BaseDamageAffector : AffectorBase {
 		float damage = hitParameter.statusBase.valueList[(int)eActorStatus.Attack] - _actor.actorStatus.GetValue(eActorStatus.Defense);
 		//float damage = hitParameter.statusBase.valueList[(int)eActorStatus.Attack];
 
+		if (StageManager.instance != null && StageManager.instance.repeatMode && StageFloorInfoCanvas.instance != null && StageFloorInfoCanvas.instance.gameObject.activeSelf)
+		{
+			float maxHp = _actor.actorStatus.GetValue(eActorStatus.MaxHp);
+			float minValue = maxHp * 0.045f;
+			if (damage < minValue)
+				damage = minValue;
+		}
+
 		if (damage <= 1.0f)
 			damage = 1.0f;
 
