@@ -80,6 +80,9 @@ public class ActorStatus : MonoBehaviour
 		// pass
 		_statusBase.valueList[(int)eActorStatus.Attack] += PassManager.instance.cachedValue;
 
+		// bossbattle
+		_statusBase.valueList[(int)eActorStatus.Attack] += SubMissionData.instance.cachedValue;
+
 		_statusBase.valueList[(int)eActorStatus.CombatPower] = _statusBase.valueList[(int)eActorStatus.Attack];
 		_statusBase.valueList[(int)eActorStatus.AttackMulti] = actorTableData.multiAtk;
 

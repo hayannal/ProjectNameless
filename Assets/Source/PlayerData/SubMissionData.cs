@@ -64,6 +64,9 @@ public class SubMissionData : MonoBehaviour
 	// 미션 결과창 후 로비로 되돌아올때 로딩을 위한 변수
 	public ObscuredBool readyToReopenMissionListCanvas { get; set; }
 
+	// 토벌 추가하면서 공격력이 들어가게 되었다.
+	public ObscuredInt cachedValue { get; set; }
+
 	public void OnRecvSubMissionData(Dictionary<string, UserDataRecord> userReadOnlyData, List<StatisticValue> playerStatistics)
 	{
 		#region Fortune Wheel
@@ -224,6 +227,14 @@ public class SubMissionData : MonoBehaviour
 		#endregion
 
 		readyToReopenMissionListCanvas = false;
+
+		// status
+		RefreshCachedStatus();
+	}
+
+	void RefreshCachedStatus()
+	{
+		cachedValue = 0;
 	}
 
 	#region Fortune Wheel
