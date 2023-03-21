@@ -230,6 +230,8 @@ public class AttendanceData : MonoBehaviour
 	{
 		if (attendanceId == "")
 			return "fr";
+		else if (attendanceId == "fr")
+			return "fr2";
 
 		if (_listAttendanceTypeInfo == null)
 			_listAttendanceTypeInfo = new List<RandomAttendanceTypeInfo>();
