@@ -4555,6 +4555,43 @@ public class PlayFabApiManager : MonoBehaviour
 	}
 	#endregion
 
+	#region Point Shop
+	public void RequestBuyPointShopItem(int typeId, int index, int price, int rewardAmount, int key, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}_{2}_{3}_{4}_{5}", typeId, index, rewardAmount, key, SubMissionData.instance.bossBattlePoint, "rplamqzs");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "BuyPointShopItem",
+			FunctionParameter = new { TypeId = typeId, Idx = index, Pr = price, Rwd = rewardAmount, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			WaitingNetworkCanvas.Show(false);
+
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				switch (typeId)
+				{
+					case 1: CurrencyData.instance.gold += rewardAmount; break;
+					case 2: CurrencyData.instance.dia += rewardAmount; break;
+					case 3: CurrencyData.instance.OnRecvRefillEnergy(rewardAmount); break;
+				}
+				SubMissionData.instance.bossBattlePoint -= price;
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+	#endregion
+
 
 	#region Attendance
 	public void RequestStartAttendance(string startAttendanceId, int givenTime, bool oneTime, bool completeRefresh, Action successCallback, Action failureCallback)

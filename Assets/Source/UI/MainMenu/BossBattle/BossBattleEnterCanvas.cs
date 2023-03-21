@@ -61,13 +61,16 @@ public class BossBattleEnterCanvas : MonoBehaviour
 
 	void OnEnable()
 	{
-		RefreshInfo();
-		RefreshGrid(true);
-
-		StackCanvas.Push(gameObject);
+		bool restore = StackCanvas.Push(gameObject, false, null, OnPopStack);
 
 		if (DragThresholdController.instance != null)
 			DragThresholdController.instance.ApplyUIDragThreshold();
+
+		if (restore)
+			return;
+
+		RefreshInfo();
+		RefreshGrid(true);
 
 		if (SubMissionData.instance.newBossRefreshed)
 		{
@@ -81,7 +84,20 @@ public class BossBattleEnterCanvas : MonoBehaviour
 		if (DragThresholdController.instance != null)
 			DragThresholdController.instance.ResetUIDragThreshold();
 
-		StackCanvas.Pop(gameObject);
+		if (StackCanvas.Pop(gameObject))
+			return;
+
+		OnPopStack();
+	}
+
+	void OnPopStack()
+	{
+		if (StageManager.instance == null)
+			return;
+		if (MainSceneBuilder.instance == null)
+			return;
+		if (MainCanvas.instance == null)
+			return;
 	}
 
 	public int selectedDifficulty { get { return _selectedDifficulty; } }
@@ -518,6 +534,11 @@ public class BossBattleEnterCanvas : MonoBehaviour
 	public void OnClickKingInfoButton()
 	{
 		TooltipCanvas.Show(true, TooltipCanvas.eDirection.CharacterInfo, UIString.instance.GetString("MissionUI_KingBossMore"), 200, kingButtonRootTransform, new Vector2(24.0f, -35.0f));
+	}
+
+	public void OnClickExchangeButton()
+	{
+		UIInstanceManager.instance.ShowCanvasAsync("PointShopTabCanvas", null);
 	}
 
 
