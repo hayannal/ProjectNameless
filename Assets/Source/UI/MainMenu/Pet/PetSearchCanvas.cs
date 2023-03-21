@@ -431,6 +431,8 @@ public class PetSearchCanvas : MonoBehaviour
 	public float prevPowerValue { get; set; }
 	public void ShowResult(bool success, bool extraChanceExit)
 	{
+		attackPercentText.gameObject.SetActive(false);
+
 		resultText.SetLocalizedText(UIString.instance.GetString(success ? "PetUI_ResultSuccess" : "PetUI_ResultFailure"));
 
 		exitButtonObject.SetActive(!extraChanceExit);
