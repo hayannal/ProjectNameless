@@ -31,6 +31,8 @@ public class PlayerData : MonoBehaviour
 	// 심사빌드인지 체크해두는 변수
 	public bool reviewVersion { get; set; }
 #endif
+	// market url
+	public ObscuredString iosUrl { get; set; }
 
 	public ObscuredInt highestClearStage { get; set; }
 	public ObscuredInt selectedStage { get; set; }
@@ -202,6 +204,9 @@ public class PlayerData : MonoBehaviour
 
 		// 날짜 변경 감지
 		dayRefreshTime = new DateTime(ServerTime.UtcNow.Year, ServerTime.UtcNow.Month, ServerTime.UtcNow.Day) + TimeSpan.FromDays(1);
+
+		if (titleData.ContainsKey("iosUrl") && string.IsNullOrEmpty(titleData["iosUrl"]) == false)
+			iosUrl = titleData["iosUrl"];
 
 		/*
 		_listDailyShopSlotInfo = null;
