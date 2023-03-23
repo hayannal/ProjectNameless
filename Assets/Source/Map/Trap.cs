@@ -5,7 +5,6 @@ using ActorStatusDefine;
 
 public class Trap : MonoBehaviour
 {
-	public float multiAtk;
 	public float hitStayInterval;
 	public bool damageIncludingFlying;
 	public int hitStayIdForIgnoreDuplicate = 99;
@@ -54,7 +53,7 @@ public class Trap : MonoBehaviour
 		{
 			eAffectorType affectorType = eAffectorType.CollisionDamage;
 			AffectorValueLevelTableData collisionDamageAffectorValue = new AffectorValueLevelTableData();
-			collisionDamageAffectorValue.fValue1 = multiAtk;
+			collisionDamageAffectorValue.fValue1 = BattleInstanceManager.instance.GetCachedGlobalConstantInt("TrapDamage10") * 0.1f;
 			collisionDamageAffectorValue.iValue1 = 1;
 			affectorProcessor.ExecuteAffectorValueWithoutTable(affectorType, collisionDamageAffectorValue, null, false);
 
