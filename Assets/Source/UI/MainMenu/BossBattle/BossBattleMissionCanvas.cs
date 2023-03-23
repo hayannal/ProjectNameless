@@ -290,7 +290,7 @@ public class BossBattleMissionCanvas : MonoBehaviour
 
 			// 한대 딱 맞을때 이후 들어오는 연타에 안죽게 하려면 0.1초 무적 처리도 해줘야한다.
 			AffectorValueLevelTableData invincibleAffectorValue = new AffectorValueLevelTableData();
-			invincibleAffectorValue.fValue1 = 0.6f;
+			invincibleAffectorValue.fValue1 = BattleInstanceManager.instance.GetCachedGlobalConstantInt("InvincibleTime10") * 0.1f;
 			invincibleAffectorValue.iValue3 = 1;    // noText
 			BattleInstanceManager.instance.playerActor.affectorProcessor.ExecuteAffectorValueWithoutTable(eAffectorType.Invincible, invincibleAffectorValue, BattleInstanceManager.instance.playerActor, false);
 		}
