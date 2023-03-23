@@ -17,6 +17,11 @@ public class AttendanceCanvasListItem : MonoBehaviour
 	public Text rarityText;
 	public Coffee.UIExtensions.UIGradient rarityGradient;
 
+	public GameObject blurImageObject;
+	public GameObject underLegendBlurImageObject;
+	public GameObject backImageObject;
+	public GameObject underLegendBackImageObject;
+
 	public Text countText;
 	public Text claimText;
 	public Text dayText;
@@ -77,6 +82,12 @@ public class AttendanceCanvasListItem : MonoBehaviour
 		EquipTableData equipTableData = EquipManager.instance.GetCachedEquipTableData(equipLevelTableData.equipGroup);
 		if (equipTableData == null)
 			return;
+
+		bool useUnderLegend = (equipLevelTableData.grade <= 3);
+		blurImageObject.SetActive(!useUnderLegend);
+		backImageObject.SetActive(!useUnderLegend);
+		underLegendBlurImageObject.SetActive(useUnderLegend);
+		underLegendBackImageObject.SetActive(useUnderLegend);
 
 		equipNameText.SetLocalizedText(UIString.instance.GetString(equipTableData.nameId));
 
