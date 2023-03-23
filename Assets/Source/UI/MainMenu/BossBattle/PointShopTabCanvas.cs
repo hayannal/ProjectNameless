@@ -11,6 +11,10 @@ public class PointShopTabCanvas : MonoBehaviour
 
 	public RectTransform alarmRootTransform;
 
+	public RectTransform goldAlarmRootTransform;
+	public RectTransform diaAlarmRootTransform;
+	public RectTransform energyAlarmRootTransform;
+
 	#region Tab Button
 	public GameObject[] innerMenuPrefabList;
 	public Transform innerMenuRootTransform;
@@ -69,6 +73,22 @@ public class PointShopTabCanvas : MonoBehaviour
 		AlarmObject.Hide(alarmRootTransform);
 		if (PointShopAttackCanvas.CheckLevelUp())
 			AlarmObject.Show(alarmRootTransform);
+
+		AlarmObject.Hide(goldAlarmRootTransform);
+		AlarmObject.Hide(diaAlarmRootTransform);
+		AlarmObject.Hide(energyAlarmRootTransform);
+
+		PointShopTableData pointShopTableData = TableDataManager.instance.FindPointShopTableData(1, 5);
+		if (pointShopTableData != null && SubMissionData.instance.bossBattlePoint >= pointShopTableData.price)
+			AlarmObject.Show(goldAlarmRootTransform);
+
+		pointShopTableData = TableDataManager.instance.FindPointShopTableData(2, 3);
+		if (pointShopTableData != null && SubMissionData.instance.bossBattlePoint >= pointShopTableData.price)
+			AlarmObject.Show(diaAlarmRootTransform);
+
+		pointShopTableData = TableDataManager.instance.FindPointShopTableData(3, 5);
+		if (pointShopTableData != null && SubMissionData.instance.bossBattlePoint >= pointShopTableData.price)
+			AlarmObject.Show(energyAlarmRootTransform);
 	}
 
 

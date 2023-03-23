@@ -15,6 +15,9 @@ public class PointShopCanvasListItem : MonoBehaviour
 	public Text minMaxText;
 	public Text priceText;
 
+	public bool lastProduct;
+	public RectTransform alarmRootTransform;
+
 	PointShopTableData _pointShopTableData;
 	void OnEnable()
 	{
@@ -26,6 +29,10 @@ public class PointShopCanvasListItem : MonoBehaviour
 
 		minMaxText.text = string.Format("{0:N0}\n{1:N0}", pointShopTableData.min, pointShopTableData.max);
 		priceText.text = string.Format("{0:N0} P", _pointShopTableData.price);
+
+		AlarmObject.Hide(alarmRootTransform);
+		if (lastProduct && pointShopTableData != null && SubMissionData.instance.bossBattlePoint >= pointShopTableData.price)
+			AlarmObject.Show(alarmRootTransform);
 	}
 
 	public void OnClickButton()
