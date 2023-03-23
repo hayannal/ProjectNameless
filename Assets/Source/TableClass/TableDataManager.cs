@@ -43,6 +43,7 @@ public class TableDataManager : MonoBehaviour
 	public ShopEquipTable shopEquipTable;
 	public PickOneSpellTable pickOneSpellTable;
 	public PickOneCharacterTable pickOneCharacterTable;
+	public RelayPackTable relayPackTable;
 
 	public EventPointTypeTable eventPointTypeTable;
 	public EventPointRewardTable eventPointRewardTable;
