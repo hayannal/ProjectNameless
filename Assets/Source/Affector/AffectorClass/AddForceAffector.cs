@@ -48,6 +48,8 @@ public class AddForceAffector : AffectorBase
 				force.z = affectorValueLevelTableData.fValue3;
 				break;
 		}
+		if (_actor.GetRigidbody().mass > 1.0f)
+			force *= (_actor.GetRigidbody().mass * 0.75f);
 		return force;
 	}
 
