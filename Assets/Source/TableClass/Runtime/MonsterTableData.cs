@@ -25,6 +25,10 @@ public class MonsterTableData
   public float multiAtk { get { return _multiAtk; } set { _multiAtk = value; } }
   
   [SerializeField]
+  float _collisionDamageRate;
+  public float collisionDamageRate { get { return _collisionDamageRate; } set { _collisionDamageRate = value; } }
+  
+  [SerializeField]
   float _moveSpeed;
   public float moveSpeed { get { return _moveSpeed; } set { _moveSpeed = value; } }
   

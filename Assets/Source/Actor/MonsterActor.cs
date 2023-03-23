@@ -518,7 +518,7 @@ public class MonsterActor : Actor
 		{
 			eAffectorType affectorType = eAffectorType.BaseDamage;
 			AffectorValueLevelTableData baseDamageAffectorValue = new AffectorValueLevelTableData();
-			//baseDamageAffectorValue.fValue1 = cachedMonsterTableData.collisionDamageRate * rushAffector.GetCollisionDamageRate();
+			baseDamageAffectorValue.fValue1 = cachedMonsterTableData.collisionDamageRate * rushAffector.GetCollisionDamageRate();
 			baseDamageAffectorValue.fValue4 = 1.0f;
 			defenderAffectorProcessor.ExecuteAffectorValueWithoutTable(affectorType, baseDamageAffectorValue, this, false);
 		}
@@ -530,7 +530,7 @@ public class MonsterActor : Actor
 		{
 			eAffectorType affectorType = eAffectorType.CollisionDamage;
 			AffectorValueLevelTableData collisionDamageAffectorValue = new AffectorValueLevelTableData();
-			//collisionDamageAffectorValue.fValue1 = cachedMonsterTableData.collisionDamageRate;
+			collisionDamageAffectorValue.fValue1 = cachedMonsterTableData.collisionDamageRate;
 			collisionDamageAffectorValue.iValue1 = 0;
 			defenderAffectorProcessor.ExecuteAffectorValueWithoutTable(affectorType, collisionDamageAffectorValue, this, false);
 		}
