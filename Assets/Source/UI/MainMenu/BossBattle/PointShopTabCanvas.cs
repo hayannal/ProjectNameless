@@ -67,7 +67,7 @@ public class PointShopTabCanvas : MonoBehaviour
 	public void RefreshAlarmObject()
 	{
 		AlarmObject.Hide(alarmRootTransform);
-		if (MainCanvas.IsAlarmSevenDays())
+		if (PointShopAttackCanvas.CheckLevelUp())
 			AlarmObject.Show(alarmRootTransform);
 	}
 

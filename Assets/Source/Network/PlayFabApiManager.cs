@@ -4590,6 +4590,36 @@ public class PlayFabApiManager : MonoBehaviour
 			HandleCommonError(error);
 		});
 	}
+
+	public void RequestLevelUpPointShopAttack(int targetLevel, int price, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}_{2}_{3}", (int)SubMissionData.instance.bossBattleAttackLevel, targetLevel, price, "vrojbqse");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "LevelUpPointShopAttack",
+			FunctionParameter = new { T = targetLevel, Pr = price, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				SubMissionData.instance.bossBattlePoint -= price;
+				SubMissionData.instance.OnLevelUpPointShopAttack(targetLevel);
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
 	#endregion
 
 

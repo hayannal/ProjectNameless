@@ -59,6 +59,8 @@ public class SubMissionData : MonoBehaviour
 	public ObscuredInt bossBattleClearId { get; set; }
 	// 포인트샵 포인트
 	public ObscuredInt bossBattlePoint { get; set; }
+	// 
+	public ObscuredInt bossBattleAttackLevel { get; set; }
 	#endregion
 
 	// 미션 결과창 후 로비로 되돌아올때 로딩을 위한 변수
@@ -224,6 +226,17 @@ public class SubMissionData : MonoBehaviour
 				break;
 			}
 		}
+
+		// spellTotalLevel 처럼 Lv.1 로 시작한다.
+		bossBattleAttackLevel = 1;
+		for (int i = 0; i < playerStatistics.Count; ++i)
+		{
+			if (playerStatistics[i].StatisticName == "bossBattleAttackLevel")
+			{
+				bossBattleAttackLevel = playerStatistics[i].Value;
+				break;
+			}
+		}
 		#endregion
 
 		readyToReopenMissionListCanvas = false;
@@ -235,6 +248,23 @@ public class SubMissionData : MonoBehaviour
 	void RefreshCachedStatus()
 	{
 		cachedValue = 0;
+
+		// boss battle level status
+		PointShopAtkTableData pointShopAtkTableData = TableDataManager.instance.FindPointShopAtkTableData(bossBattleAttackLevel);
+		if (pointShopAtkTableData != null)
+			cachedValue = pointShopAtkTableData.accumulatedAtk;
+	}
+
+	public void OnChangedStatus()
+	{
+		RefreshCachedStatus();
+		PlayerData.instance.OnChangedStatus();
+	}
+
+	public void OnLevelUpPointShopAttack(int targetLevel)
+	{
+		bossBattleAttackLevel = targetLevel;
+		OnChangedStatus();
 	}
 
 	#region Fortune Wheel

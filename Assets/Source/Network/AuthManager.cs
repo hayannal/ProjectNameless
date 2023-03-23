@@ -238,6 +238,7 @@ public class AuthManager : MonoBehaviour
 		playerStatisticNames.Add("bossDefenseClearLevel");
 		playerStatisticNames.Add("bossBattleClearLevel");
 		playerStatisticNames.Add("bossBattlePoint");
+		playerStatisticNames.Add("bossBattleAttackLevel");
 		/*
 		playerStatisticNames.Add("highestValue");
 		playerStatisticNames.Add("nodClLv");

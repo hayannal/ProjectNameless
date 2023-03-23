@@ -91,6 +91,7 @@ public class TableDataManager : MonoBehaviour
 	public BossExpTable bossExpTable;
 	public BossBattleDifficultyTable bossBattleDifficultyTable;
 	public PointShopTable pointShopTable;
+	public PointShopAtkTable pointShopAtkTable;
 
 	void Awake()
 	{
@@ -788,6 +789,16 @@ public class TableDataManager : MonoBehaviour
 		{
 			if (pointShopTable.dataArray[i].productId == typeId && pointShopTable.dataArray[i].index == index)
 				return pointShopTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public PointShopAtkTableData FindPointShopAtkTableData(int level)
+	{
+		for (int i = 0; i < pointShopAtkTable.dataArray.Length; ++i)
+		{
+			if (pointShopAtkTable.dataArray[i].level == level)
+				return pointShopAtkTable.dataArray[i];
 		}
 		return null;
 	}
