@@ -70,9 +70,9 @@ public class SettingCanvas : MonoBehaviour
 		policyText.fontStyle = FontStyle.Italic;
 
 		if (OptionManager.instance.language == "KOR")
-			cafeText.SetLocalizedText("GameUI_OfficialCafe");
+			cafeText.SetLocalizedText(UIString.instance.GetString("GameUI_OfficialCafe"));
 		else
-			cafeText.SetLocalizedText("GameUI_OfficialTelegram");
+			cafeText.SetLocalizedText(UIString.instance.GetString("GameUI_OfficialTelegram"));
 	}
 
 	void OnDisable()
