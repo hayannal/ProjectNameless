@@ -24,6 +24,7 @@ public class SettingCanvas : MonoBehaviour
 	public Text accountDeleteText;
 	public Slider frameRateSlider;
 	public Text frameRateText;
+	public Text cafeText;
 	//public SwitchAnim spinAlarmSwitch;
 	//public Text spinAlarmOnOffText;
 
@@ -67,6 +68,11 @@ public class SettingCanvas : MonoBehaviour
 		termsText.fontStyle = FontStyle.Italic;
 		policyText.SetLocalizedText(UIString.instance.GetString("GameUI_PrivacyPolicy"));
 		policyText.fontStyle = FontStyle.Italic;
+
+		if (OptionManager.instance.language == "KOR")
+			cafeText.SetLocalizedText("GameUI_OfficialCafe");
+		else
+			cafeText.SetLocalizedText("GameUI_OfficialTelegram");
 	}
 
 	void OnDisable()
@@ -398,6 +404,16 @@ public class SettingCanvas : MonoBehaviour
 		*/
 
 		UIInstanceManager.instance.ShowCanvasAsync("SupportListCanvas", null);
+	}
+	#endregion
+
+	#region Cafe
+	public void OnClickCafeButton()
+	{
+		if (OptionManager.instance.language == "KOR")
+			Application.OpenURL(BattleInstanceManager.instance.GetCachedGlobalConstantString("OfficialCafe"));
+		else
+			Application.OpenURL(BattleInstanceManager.instance.GetCachedGlobalConstantString("OfficialTelegram"));
 	}
 	#endregion
 
