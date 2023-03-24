@@ -24,7 +24,7 @@ public class RelayPackageBox : SimpleCashCanvas
 		_relayPackTableData = relayPackTableData;
 		_shopProductTableData = TableDataManager.instance.FindShopProductTableData(relayPackTableData.shopProductId);
 
-		nameText.SetLocalizedText(UIString.instance.GetString("ShopUI_RelayPackage", relayPackTableData.num));
+		nameText.SetLocalizedText(string.Format("{0} {1}", UIString.instance.GetString("ShopUI_RelayPackage"), GetRomanNumberString(_relayPackTableData.num)));
 
 		RefreshPrice(_shopProductTableData.serverItemId, _shopProductTableData.kor, _shopProductTableData.eng);
 
@@ -70,6 +70,11 @@ public class RelayPackageBox : SimpleCashCanvas
 		// 이걸 현재에 맞는 상품으로 바꿔주는 절차가 필요하다.
 		iapButton.productId = _shopProductTableData.serverItemId;
 		gameObject.SetActive(true);
+	}
+
+	public static string GetRomanNumberString(int number)
+	{
+		return UIString.instance.GetString(string.Format("GameUI_RomanNumber{0}", number));
 	}
 
 	void RefreshLineImage()
