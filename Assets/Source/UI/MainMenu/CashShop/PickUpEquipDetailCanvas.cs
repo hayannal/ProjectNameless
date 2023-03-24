@@ -135,7 +135,7 @@ public class PickUpEquipDetailCanvas : EquipShowCanvasBase
 		{
 			MainCanvas.instance.OnClickCashShopButton();
 
-			while ((CashShopCanvas.instance != null && CashShopCanvas.instance.gameObject.activeSelf) == false)
+			while ((CashShopTabCanvas.instance != null && CashShopTabCanvas.instance.gameObject.activeSelf) == false)
 				yield return Timing.WaitForOneFrame;
 		}
 

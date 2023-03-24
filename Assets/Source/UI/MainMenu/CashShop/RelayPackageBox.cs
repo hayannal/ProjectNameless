@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Purchasing;
-using PlayFab;
 
-public class StageClearPackageBox : SimpleCashCanvas
+public class RelayPackageBox : SimpleCashCanvas
 {
 	public RewardIcon[] rewardIconList;
 	public Transform iconImageRootTransform;
@@ -18,14 +17,14 @@ public class StageClearPackageBox : SimpleCashCanvas
 
 	public IAPButton iapButton;
 
-	StageClearTableData _stageClearTableData;
+	RelayPackTableData _relayPackTableData;
 	ShopProductTableData _shopProductTableData;
-	public void RefreshInfo(StageClearTableData stageClearTableData)
+	public void RefreshInfo(RelayPackTableData relayPackTableData)
 	{
-		_stageClearTableData = stageClearTableData;
-		_shopProductTableData = TableDataManager.instance.FindShopProductTableData(stageClearTableData.shopProductId);
+		_relayPackTableData = relayPackTableData;
+		_shopProductTableData = TableDataManager.instance.FindShopProductTableData(relayPackTableData.shopProductId);
 
-		nameText.SetLocalizedText(UIString.instance.GetString("ShopUI_StageClearPackage", stageClearTableData.stagecleared));
+		nameText.SetLocalizedText(UIString.instance.GetString("ShopUI_RelayPackage", relayPackTableData.num));
 
 		RefreshPrice(_shopProductTableData.serverItemId, _shopProductTableData.kor, _shopProductTableData.eng);
 
@@ -72,7 +71,7 @@ public class StageClearPackageBox : SimpleCashCanvas
 		iapButton.productId = _shopProductTableData.serverItemId;
 		gameObject.SetActive(true);
 	}
-	
+
 	void RefreshLineImage()
 	{
 		Vector3 diff = rightTopRectTransform.position - lineImageRectTransform.position;
@@ -98,6 +97,24 @@ public class StageClearPackageBox : SimpleCashCanvas
 		if (CurrencyData.instance.CheckMaxGold())
 			return;
 
+		// 구매할 수 있는 인덱스인지 확인해야한다.
+		int firstIndex = -1;
+		for (int i = 0; i < TableDataManager.instance.relayPackTable.dataArray.Length; ++i)
+		{
+			int num = TableDataManager.instance.relayPackTable.dataArray[i].num;
+			if (num <= CashShopData.instance.relayPackagePurchasedNum)
+				continue;
+
+			firstIndex = i;
+			break;
+		}
+		if (TableDataManager.instance.relayPackTable.dataArray[firstIndex].num != _relayPackTableData.num)
+		{
+			RelayPackageGroupInfo.instance.scrollSnap.GoToPanel(0);
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("ShopUI_CannotBuyFirstProduct"), 2.0f);
+			return;
+		}
+
 		// 이건 다른 캐시상품도 마찬가지인데 클릭 즉시 간단한 패킷을 보내서 통신가능한 상태인지부터 확인한다.
 		PlayFabApiManager.instance.RequestNetworkOnce(OnResponse, null, true);
 	}
@@ -107,10 +124,10 @@ public class StageClearPackageBox : SimpleCashCanvas
 
 	protected override void RequestServerPacket(Product product)
 	{
-		ExternalRequestServerPacket(product, _stageClearTableData, _shopProductTableData);
+		ExternalRequestServerPacket(product, _relayPackTableData, _shopProductTableData);
 	}
 
-	public static void ExternalRequestServerPacket(Product product, StageClearTableData stageClearTableData, ShopProductTableData shopProductTableData)
+	public static void ExternalRequestServerPacket(Product product, RelayPackTableData relayPackTableData, ShopProductTableData shopProductTableData)
 	{
 #if UNITY_ANDROID
 		GooglePurchaseData data = new GooglePurchaseData(product.receipt);
@@ -130,24 +147,29 @@ public class StageClearPackageBox : SimpleCashCanvas
 				CurrencyData.instance.OnRecvProductRewardExtendGacha(shopProductTableData);
 			}
 
-			int stage = 0;
-			if (stageClearTableData != null)
-				stage = stageClearTableData.stagecleared;
+			int num = 0;
+			if (relayPackTableData != null)
+				num = relayPackTableData.num;
 			else
 			{
 				if (product != null)
 				{
 					string[] split = product.definition.id.Split('_');
-					if (split.Length == 2 && split[0].Contains("stageclear"))
-						int.TryParse(split[1], out stage);
+					if (split.Length == 2 && split[0].Contains("relay"))
+						int.TryParse(split[1], out num);
 				}
 			}
-			if (stage != 0)
+			if (num != 0)
 			{
-				List<int> listResult = CashShopData.instance.OnRecvStageClearPackage(stage);
-				var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
-				string jsonStageClearPackageList = serializer.SerializeObject(listResult);
-				PlayFabApiManager.instance.RequestUpdateStageClearPackageList(jsonStageClearPackageList, null);
+				CashShopData.instance.PurchaseFlag(CashShopData.eCashConsumeFlagType.RelayPackage);
+				PlayFabApiManager.instance.RequestConsumeRelayPackage(() =>
+				{
+					if (RelayPackageGroupInfo.instance != null && RelayPackageGroupInfo.instance.gameObject.activeSelf)
+					{
+						RelayPackageGroupInfo.instance.gameObject.SetActive(false);
+						RelayPackageGroupInfo.instance.gameObject.SetActive(true);
+					}
+				});
 			}
 
 			WaitingNetworkCanvas.Show(false);
@@ -162,12 +184,6 @@ public class StageClearPackageBox : SimpleCashCanvas
 							ConsumeProductProcessor.instance.ConsumeGacha(shopProductTableData);
 					});
 				});
-
-				if (StageClearGroupInfo.instance != null && StageClearGroupInfo.instance.gameObject.activeSelf)
-				{
-					StageClearGroupInfo.instance.gameObject.SetActive(false);
-					StageClearGroupInfo.instance.gameObject.SetActive(true);
-				}
 			}
 
 			CodelessIAPStoreListener.Instance.StoreController.ConfirmPendingPurchase(product);
@@ -185,14 +201,6 @@ public class StageClearPackageBox : SimpleCashCanvas
 
 	public static void ExternalRetryPurchase(Product product)
 	{
-		// 이미 구매했던 상품인지 확인해야하나?
-		// 그렇다 하더라도 복구는 해야 
-		//if (CashShopData.instance.IsPurchasedStageClearPackage(stage))
-		//{
-		//	OkCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("ShopUI_NotDoneBuyingAccount", product.metadata.localizedTitle), null, -1, true);
-		//	return;
-		//}
-
 		YesNoCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("ShopUI_NotDoneBuyingProgress", product.metadata.localizedTitle), () =>
 		{
 			WaitingNetworkCanvas.Show(true);

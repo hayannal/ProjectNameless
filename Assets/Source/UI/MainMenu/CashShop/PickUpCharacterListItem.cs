@@ -81,10 +81,10 @@ public class PickUpCharacterListItem : MonoBehaviour
 		// 이거로 막아둔다.
 		DelayedLoadingCanvas.Show(true);
 
-		CashShopCanvas.instance.ignoreStartEventFlag = true;
-		CashShopCanvas.instance.gameObject.SetActive(false);
+		CashShopTabCanvas.instance.ignoreStartEventFlag = true;
+		CashShopTabCanvas.instance.gameObject.SetActive(false);
 
-		while (CashShopCanvas.instance.gameObject.activeSelf)
+		while (CashShopTabCanvas.instance.gameObject.activeSelf)
 			yield return Timing.WaitForOneFrame;
 		yield return Timing.WaitForOneFrame;
 

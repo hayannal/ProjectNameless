@@ -57,7 +57,7 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 	{
 		//MainCanvas.instance.OnEnterCharacterMenu(true);
 
-		if (CashShopCanvas.instance != null && CashShopCanvas.instance.gameObject.activeSelf)
+		if (CashShopTabCanvas.instance != null && CashShopTabCanvas.instance.gameObject.activeSelf)
 		{
 			StackCanvas.Push(gameObject);
 		}
@@ -82,7 +82,7 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 
 	void OnDisable()
 	{
-		if (CashShopCanvas.instance != null && CashShopCanvas.instance.gameObject.activeSelf == false && StackCanvas.IsInStack(CashShopCanvas.instance.gameObject))
+		if (CashShopTabCanvas.instance != null && CashShopTabCanvas.instance.gameObject.activeSelf == false && StackCanvas.IsInStack(CashShopTabCanvas.instance.gameObject))
 		{
 			StackCanvas.Pop(gameObject);
 		}

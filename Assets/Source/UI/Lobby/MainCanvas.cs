@@ -848,7 +848,7 @@ public class MainCanvas : MonoBehaviour
 
 	public void OnClickCashShopButton()
 	{
-		UIInstanceManager.instance.ShowCanvasAsync("CashShopCanvas", null);
+		UIInstanceManager.instance.ShowCanvasAsync("CashShopTabCanvas", null);
 	}
 
 	public void OnClickDownloadButton()

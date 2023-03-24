@@ -60,8 +60,8 @@ public class CashShopSpellListItem : MonoBehaviour
 	{
 		Vector3 diff = rightTopRectTransform.position - lineImageRectTransform.position;
 		lineImageRectTransform.rotation = Quaternion.Euler(0.0f, 0.0f, Mathf.Atan2(-diff.x, diff.y) * Mathf.Rad2Deg);
-		if (CashShopCanvas.instance != null)
-			lineImageRectTransform.sizeDelta = new Vector2(lineImageRectTransform.sizeDelta.x, diff.magnitude * CashShopCanvas.instance.lineLengthRatio);
+		if (CashShopTabCanvas.instance != null)
+			lineImageRectTransform.sizeDelta = new Vector2(lineImageRectTransform.sizeDelta.x, diff.magnitude * CashShopTabCanvas.instance.lineLengthRatio);
 	}
 
 	int _updateRefreshLineImageCount;

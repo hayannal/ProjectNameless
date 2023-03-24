@@ -61,8 +61,8 @@ public class CashShopEnergyListItem : SimpleCashCanvas
 	{
 		Vector3 diff = rightTopRectTransform.position - lineImageRectTransform.position;
 		lineImageRectTransform.rotation = Quaternion.Euler(0.0f, 0.0f, Mathf.Atan2(-diff.x, diff.y) * Mathf.Rad2Deg);
-		if (CashShopCanvas.instance != null)
-			lineImageRectTransform.sizeDelta = new Vector2(lineImageRectTransform.sizeDelta.x, diff.magnitude * CashShopCanvas.instance.lineLengthRatio);
+		if (CashShopTabCanvas.instance != null)
+			lineImageRectTransform.sizeDelta = new Vector2(lineImageRectTransform.sizeDelta.x, diff.magnitude * CashShopTabCanvas.instance.lineLengthRatio);
 	}
 
 	int _updateRefreshLineImageCount;
@@ -108,8 +108,8 @@ public class CashShopEnergyListItem : SimpleCashCanvas
 				});
 			}
 
-			if (CashShopCanvas.instance != null && CashShopCanvas.instance.gameObject.activeSelf)
-				CashShopCanvas.instance.currencySmallInfo.RefreshInfo();
+			if (CashShopTabCanvas.instance != null && CashShopTabCanvas.instance.gameObject.activeSelf)
+				CashShopTabCanvas.instance.currencySmallInfo.RefreshInfo();
 
 			CodelessIAPStoreListener.Instance.StoreController.ConfirmPendingPurchase(product);
 			IAPListenerWrapper.instance.CheckConfirmPendingPurchase(product);

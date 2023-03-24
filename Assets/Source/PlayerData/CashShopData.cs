@@ -74,6 +74,7 @@ public class CashShopData : MonoBehaviour
 		AcquiredCompanion = 17,
 		AcquiredCompanionPp = 18,
 		TeamPass = 19,
+		RelayPackage = 20,
 
 		Amount,
 	}
@@ -82,7 +83,7 @@ public class CashShopData : MonoBehaviour
 		"Cash_sSevenSlot1", "Cash_sSevenSlot2", "Cash_sSevenSlot3", "Cash_sSevenSlot4", "Cash_sPetSale", "Cash_sPetPass", "Cash_sFortuneWheel",
 		"Cash_sFestivalSlot1", "Cash_sFestivalSlot2", "Cash_sFestivalSlot3", "Cash_sFestivalSlot4",
 		"Cash_sUnacquiredSpell", "Cash_sAcquiredSpell", "Cash_sUnacquiredCompanion", "Cash_sAcquiredCompanion", "Cash_sAcquiredCompanionPp",
-		"Cash_sTeamPass"
+		"Cash_sTeamPass", "Cash_sRelayPackage"
 	};
 
 	public enum eCashConsumeCountType
@@ -122,6 +123,9 @@ public class CashShopData : MonoBehaviour
 
 	// 스테이지 클리어 패키지 리스트
 	List<int> _listStageClearPackage;
+
+	// 릴레이 패키지 번호
+	public ObscuredInt relayPackagePurchasedNum { get; set; }
 
 	// 브로큰 에너지 레벨
 	ObscuredInt _brokenEnergyLevel;
@@ -538,6 +542,17 @@ public class CashShopData : MonoBehaviour
 			}
 		}
 		#endregion
+
+		relayPackagePurchasedNum = 0;
+		if (userReadOnlyData.ContainsKey("relayPackageNum"))
+		{
+			if (string.IsNullOrEmpty(userReadOnlyData["relayPackageNum"].Value) == false)
+			{
+				int intValue = 0;
+				if (int.TryParse(userReadOnlyData["relayPackageNum"].Value, out intValue))
+					relayPackagePurchasedNum = intValue;
+			}
+		}
 
 		/*
 		// 일일 무료 아이템 수령기록 데이터. 마지막 오픈 시간을 받는건 일퀘 때와 비슷한 구조다. 상점 슬롯과 별개로 처리된다.
@@ -1344,6 +1359,10 @@ public class CashShopData : MonoBehaviour
 		{
 			TeamPassCanvas.ExternalRetryPurchase(pendingProduct);
 		}
+		else if (pendingProduct.definition.id == "relay_")
+		{
+			RelayPackageBox.ExternalRetryPurchase(pendingProduct);
+		}
 
 		return true;
 	}
@@ -1454,6 +1473,9 @@ public class CashShopData : MonoBehaviour
 					break;
 				case eCashConsumeFlagType.TeamPass:
 					PlayFabApiManager.instance.RequestConsumeTeamPass(null);
+					break;
+				case eCashConsumeFlagType.RelayPackage:
+					PlayFabApiManager.instance.RequestConsumeRelayPackage(null);
 					break;
 			}
 

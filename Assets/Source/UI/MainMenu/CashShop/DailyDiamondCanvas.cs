@@ -207,7 +207,8 @@ public class DailyDiamondCanvas : SimpleCashCanvas
 			PlayFabApiManager.instance.RequestReceiveDailyDiamond(_dailyDiamondAmount, () =>
 			{
 				RefreshInfo();
-				CashShopCanvas.instance.currencySmallInfo.RefreshInfo();
+				CashShopTabCanvas.instance.RefreshAlarmObject();
+				CashShopTabCanvas.instance.currencySmallInfo.RefreshInfo();
 				MainCanvas.instance.RefreshCashShopAlarmObject();
 
 				UIInstanceManager.instance.ShowCanvasAsync("CommonRewardCanvas", () =>
@@ -323,7 +324,8 @@ public class DailyDiamondCanvas : SimpleCashCanvas
 	{
 		if (instance != null)
 			instance.RefreshInfo();
-		CashShopCanvas.instance.currencySmallInfo.RefreshInfo();
+		CashShopTabCanvas.instance.RefreshAlarmObject();
+		CashShopTabCanvas.instance.currencySmallInfo.RefreshInfo();
 		MainCanvas.instance.RefreshCashShopAlarmObject();
 
 		UIInstanceManager.instance.ShowCanvasAsync("CommonRewardCanvas", () =>
