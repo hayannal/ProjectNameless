@@ -131,13 +131,13 @@ public class PointShopAttackConfirmCanvas : MonoBehaviour
 			return;
 		}
 
+		_prevCombatValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
 		PlayFabApiManager.instance.RequestLevelUpPointShopAttack(SubMissionData.instance.bossBattleAttackLevel + _baseCount, _price, OnRecvResult);
 	}
 
+	float _prevCombatValue;
 	void OnRecvResult()
 	{
-		float prevPowerValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
-
 		gameObject.SetActive(false);
 		PointShopTabCanvas.instance.gameObject.SetActive(false);
 		PointShopTabCanvas.instance.gameObject.SetActive(true);
@@ -145,11 +145,11 @@ public class PointShopAttackConfirmCanvas : MonoBehaviour
 			PointShopAttackCanvas.instance.levelUpImageEffectObject.SetActive(true);
 
 		float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
-		if (nextValue > prevPowerValue)
+		if (nextValue > _prevCombatValue)
 		{
 			UIInstanceManager.instance.ShowCanvasAsync("ChangePowerCanvas", () =>
 			{
-				ChangePowerCanvas.instance.ShowInfo(prevPowerValue, nextValue);
+				ChangePowerCanvas.instance.ShowInfo(_prevCombatValue, nextValue);
 			});
 		}
 	}
