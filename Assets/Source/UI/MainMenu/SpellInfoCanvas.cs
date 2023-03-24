@@ -38,6 +38,8 @@ public class SpellInfoCanvas : MonoBehaviour
 		{
 			if (_showIndex < _listId.Count)
 			{
+				gameObject.SetActive(false);
+				gameObject.SetActive(true);
 				RefreshNewInfo();
 				return;
 			}
