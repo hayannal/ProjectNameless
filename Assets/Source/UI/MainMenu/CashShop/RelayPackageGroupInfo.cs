@@ -24,6 +24,10 @@ public class RelayPackageGroupInfo : MonoBehaviour
 	void Start()
 	{
 		contentItemPrefab.SetActive(false);
+
+		// 다 구성하고나서 처음에 한번만 이렇게 Setup 호출해주면 된다.
+		scrollSnap.Setup();
+		scrollSnap.GoToLastPanel();
 	}
 
 	List<int> _listShowIndex = new List<int>();
@@ -64,9 +68,6 @@ public class RelayPackageGroupInfo : MonoBehaviour
 			_listRelayPackageBoxListItem.Add(relayPackageBox);
 		}
 
-		// 다 구성하고나서 이렇게 Setup 호출해주면 된다.
-		scrollSnap.Setup();
-		scrollSnap.GoToLastPanel();
 		gameObject.SetActive(true);
 	}
 }
