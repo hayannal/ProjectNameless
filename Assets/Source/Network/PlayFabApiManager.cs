@@ -4571,7 +4571,7 @@ public class PlayFabApiManager : MonoBehaviour
 				WaitingNetworkCanvas.Show(false);
 
 				int nextKingId = SubMissionData.instance.bossBattleClearId + 1;
-				if (nextKingId == BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxBossBattle"))
+				if (nextKingId <= BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxBossBattle"))
 					SubMissionData.instance.bossBattleId = nextKingId;
 
 				if (successCallback != null) successCallback.Invoke();
