@@ -45,7 +45,7 @@ public class GuideQuestData : MonoBehaviour
 		LevelUpCharacter = 23,	// 동료 한명 아무나 n레벨 도달하기
 		GatherPet = 24,			// 펫 n마리 모으기
 		GatherPetCount = 25,	// 펫 아무나 하나 n마리 모으기
-		GradeUpEquip = 26,		// 임의의 장비 하나 특정 등급 도달하기
+		GradeUpEquip = 26,		// 임의의 장비 하나 특정 등급 도달하기. 하려고 했었는데 그냥 빼기로 한다.
 		UseTicket = 27,			// 티켓 소모하기
 		ClearRushDefense = 28,	// 침공방어 클리어하기
 		ClearBossDefense = 29,	// 보스저지 클리어하기
