@@ -645,6 +645,13 @@ public class GachaInfoCanvas : MonoBehaviour
 			if (weight <= 0.0f)
 				continue;
 
+			#region WeightAdjust
+			if (TableDataManager.instance.summonTypeTable.dataArray[i].weightAdjust < 1.0f)
+			{
+				weight = GetAdjustWeight(TableDataManager.instance.summonTypeTable.dataArray[i]);
+			}
+			#endregion
+
 			sumWeight += weight;
 			RandomSummonTypeInfo newInfo = new RandomSummonTypeInfo();
 			newInfo.summonTypeTableData = TableDataManager.instance.summonTypeTable.dataArray[i];
@@ -677,6 +684,75 @@ public class GachaInfoCanvas : MonoBehaviour
 		return (eGachaResult)intId;
 	}
 
+	#region WeightAdjust
+	List<float> _listAdjustWeight = new List<float>();
+	void ApplyWeightAdjust(eGachaResult gachaResult)
+	{
+		if (_listAdjustWeight.Count == 0)
+		{
+			for (int i = 0; i < (int)eGachaResult.Amount; ++i)
+				_listAdjustWeight.Add(-1.0f);
+		}
+
+		int intId = (int)_gachaResult;
+		string stringId = intId.ToString();
+
+		// 여기서 해당 stringId를 제외한 나머지 값에 대해서는 턴 처리를 해야한다.
+		for (int i = 0; i < _listAdjustWeight.Count; ++i)
+		{
+			if (i == intId)
+				continue;
+
+			SummonTypeTableData findSummonTypeTableData = TableDataManager.instance.FindeSummonTypeTableData(i.ToString());
+			if (findSummonTypeTableData != null && findSummonTypeTableData.weightAdjust < 1.0f)
+			{
+				float accumWeight = _listAdjustWeight[i];
+				if (accumWeight < 0.0f)
+				{
+					// 0.0f 미만이라는건 아직 한번도 호출되지 않았다거다. 이땐 복구할 필요도 없다.
+					continue;
+				}
+				float valueA = accumWeight * findSummonTypeTableData.restoreWeight;
+				float valueB = findSummonTypeTableData.gachaWeight * (1.0f - findSummonTypeTableData.restoreWeight);
+				float nextValue = valueA + valueB;
+				if (nextValue > findSummonTypeTableData.gachaWeight * BattleInstanceManager.instance.GetCachedGlobalConstantInt("SummonWeightThreshold100") * 0.01f)
+				{
+					// 이거면 원본으로 복구
+					// 원본으로 복구된건 -1로 다시 기록해둔다.
+					nextValue = -1.0f;
+				}
+				_listAdjustWeight[i] = nextValue;
+			}
+		}
+		
+		SummonTypeTableData summonTypeTableData = TableDataManager.instance.FindeSummonTypeTableData(stringId);
+		if (summonTypeTableData == null)
+			return;
+		if (summonTypeTableData.weightAdjust >= 1.0f)
+			return;
+
+		_listAdjustWeight[intId] = summonTypeTableData.gachaWeight * summonTypeTableData.weightAdjust;
+	}
+
+	float GetAdjustWeight(SummonTypeTableData summonTypeTableData)
+	{
+		string id = summonTypeTableData.gachaId;
+		int intId = 0;
+		int.TryParse(id, out intId);
+		if (intId == 0)
+		{
+			// something wrong
+			return 0.0f;
+		}
+
+		if (intId < _listAdjustWeight.Count && _listAdjustWeight[intId] >= 0.0f)
+			return _listAdjustWeight[intId];
+
+		// first
+		return summonTypeTableData.gachaWeight;
+	}
+	#endregion
+
 	// 결과 저장
 	eGachaResult _gachaResult;
 
@@ -700,6 +776,11 @@ public class GachaInfoCanvas : MonoBehaviour
 		{
 			_gachaResult = GetRandomGachaResult();
 		}
+
+
+		#region WeightAdjust
+		ApplyWeightAdjust(_gachaResult);
+		#endregion
 
 		Debug.LogFormat("Betting Prepare : {0}", _gachaResult);
 

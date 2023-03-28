@@ -17,6 +17,14 @@ public class SummonTypeTableData
   public float gachaWeight { get { return _gachaWeight; } set { _gachaWeight = value; } }
   
   [SerializeField]
+  float _weightAdjust;
+  public float weightAdjust { get { return _weightAdjust; } set { _weightAdjust = value; } }
+  
+  [SerializeField]
+  float _restoreWeight;
+  public float restoreWeight { get { return _restoreWeight; } set { _restoreWeight = value; } }
+  
+  [SerializeField]
   float _effectLen_1;
   public float effectLen_1 { get { return _effectLen_1; } set { _effectLen_1 = value; } }
   
