@@ -336,7 +336,9 @@ public class MonsterActor : Actor
 		if (bossMonster)
 		{
 			BossMonsterGaugeCanvas.OnDie(this);
-			GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.KillBossMonster);
+
+			if (StageManager.instance != null && StageManager.instance.repeatMode && StageFloorInfoCanvas.instance != null && StageFloorInfoCanvas.instance.gameObject.activeSelf)
+				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.KillBossMonster);
 		}
 		
 		if (bossMonster == false || (groupMonster && group.shareCurrentHp == false))
