@@ -235,6 +235,68 @@ public class GuideQuestInfo : MonoBehaviour
 		smallBackButtonRootObject.SetActive(false);
 		_openRemainTime = _closeRemainTime = _claimReopenRemainTime = 0.0f;
 	}
+
+	public void OnClickNameTextButton()
+	{
+		GuideQuestTableData guideQuestTableData = GuideQuestData.instance.GetCurrentGuideQuestTableData();
+		if (guideQuestTableData == null)
+			return;
+
+		switch ((GuideQuestData.eQuestClearType)guideQuestTableData.typeId)
+		{
+			case GuideQuestData.eQuestClearType.KillBossMonster:
+				ToastCanvas.instance.ShowToast(UIString.instance.GetString("QuestUI_KillBossMonsterInfo"), 2.0f);
+				break;
+			case GuideQuestData.eQuestClearType.EnhancePlayer:
+			case GuideQuestData.eQuestClearType.LevelUpPlayer:
+				MainCanvas.instance.OnClickCharacterButton();
+				break;
+			case GuideQuestData.eQuestClearType.ClearStage:
+				ToastCanvas.instance.ShowToast(UIString.instance.GetString("QuestUI_ClearStageInfo"), 2.0f);
+				break;
+			case GuideQuestData.eQuestClearType.Analysis:
+				MainCanvas.instance.OnClickAnalysisButton();
+				break;
+			case GuideQuestData.eQuestClearType.SpinChargeAlarm:
+			case GuideQuestData.eQuestClearType.UseEnergy:
+				MainCanvas.instance.OnClickGachaButton();
+				break;
+			case GuideQuestData.eQuestClearType.FreeFortuneWheel:
+				// 더이상 이런 일일 제한 미션을 가이드 퀘에서는 사용하지 않기로 한다.
+				break;
+			case GuideQuestData.eQuestClearType.SpellGacha:
+			case GuideQuestData.eQuestClearType.CharacterGacha:
+			case GuideQuestData.eQuestClearType.EquipGacha:
+				MainCanvas.instance.OnClickCashShopButton();
+				break;
+			case GuideQuestData.eQuestClearType.LevelUpSpellTotal:
+				MainCanvas.instance.OnClickSpellButton();
+				break;
+			case GuideQuestData.eQuestClearType.GatherCharacter:
+				MainCanvas.instance.OnClickCashShopButton();
+				break;
+			case GuideQuestData.eQuestClearType.LevelUpCharacter:
+				MainCanvas.instance.OnClickTeamButton();
+				break;
+			case GuideQuestData.eQuestClearType.GatherPet:
+			case GuideQuestData.eQuestClearType.GatherPetCount:
+				MainCanvas.instance.OnClickContentsButton();
+				break;
+			case GuideQuestData.eQuestClearType.GradeUpEquip:
+				// 아예 안쓰기로 하는 미션이다.
+				break;
+			case GuideQuestData.eQuestClearType.UseTicket:
+				MainCanvas.instance.OnClickContentsButton();
+				break;
+			case GuideQuestData.eQuestClearType.ClearRushDefense:
+			case GuideQuestData.eQuestClearType.ClearBossDefense:
+				// 더이상 이런 일일 제한 미션을 가이드 퀘에서는 사용하지 않기로 한다.
+				break;
+			case GuideQuestData.eQuestClearType.ClearBossBattle:
+				MainCanvas.instance.OnClickContentsButton();
+				break;
+		}
+	}
 	
 	public void OnClickBlinkImage()
 	{
