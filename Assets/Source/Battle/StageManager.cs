@@ -554,6 +554,11 @@ public class StageManager : MonoBehaviour
 				BossDefenseMissionCanvas.instance.ClearMission();
 				return;
 			}
+			if (GoldDefenseMissionCanvas.instance != null && GoldDefenseMissionCanvas.instance.gameObject.activeSelf)
+			{
+				GoldDefenseMissionCanvas.instance.ClearMission();
+				return;
+			}
 			if (BossBattleMissionCanvas.instance != null && BossBattleMissionCanvas.instance.gameObject.activeSelf)
 			{
 				BossBattleMissionCanvas.instance.ClearMission();
@@ -673,6 +678,11 @@ public class StageManager : MonoBehaviour
 				return;
 			}
 			if (BossDefenseMissionCanvas.instance != null && BossDefenseMissionCanvas.instance.gameObject.activeSelf)
+			{
+				StartCoroutine(MissionFailureProcess());
+				return;
+			}
+			if (GoldDefenseMissionCanvas.instance != null && GoldDefenseMissionCanvas.instance.gameObject.activeSelf)
 			{
 				StartCoroutine(MissionFailureProcess());
 				return;

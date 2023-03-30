@@ -236,6 +236,7 @@ public class AuthManager : MonoBehaviour
 		playerStatisticNames.Add("highestBattlePower");
 		playerStatisticNames.Add("rushDefenseClearLevel");
 		playerStatisticNames.Add("bossDefenseClearLevel");
+		playerStatisticNames.Add("goldDefenseClearLevel");
 		playerStatisticNames.Add("bossBattleClearLevel");
 		playerStatisticNames.Add("bossBattlePoint");
 		playerStatisticNames.Add("bossBattleAttackLevel");

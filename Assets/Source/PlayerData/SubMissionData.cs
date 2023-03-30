@@ -29,7 +29,8 @@ public class SubMissionData : MonoBehaviour
 	public enum eSubMissionType
 	{
 		RushDefense = 1,
-		BossDefense = 2
+		BossDefense = 2,
+		GoldDefense = 3
 	}
 
 	#region Rush Defense
@@ -42,6 +43,12 @@ public class SubMissionData : MonoBehaviour
 	public ObscuredInt bossDefenseClearLevel { get; set; }
 	public ObscuredInt bossDefenseSelectedLevel { get; set; }
 	public ObscuredInt bossDefenseDailyCount { get; set; }
+	#endregion
+
+	#region Gold Defense
+	public ObscuredInt goldDefenseClearLevel { get; set; }
+	public ObscuredInt goldDefenseSelectedLevel { get; set; }
+	public ObscuredInt goldDefenseDailyCount { get; set; }
 	#endregion
 
 	#region Boss Battle
@@ -157,6 +164,42 @@ public class SubMissionData : MonoBehaviour
 			if (playerStatistics[i].StatisticName == "bossDefenseClearLevel")
 			{
 				bossDefenseClearLevel = playerStatistics[i].Value;
+				break;
+			}
+		}
+		#endregion
+
+		#region Gold Defense
+		goldDefenseDailyCount = 0;
+		if (userReadOnlyData.ContainsKey("goldDefenseCount"))
+		{
+			int intValue = 0;
+			if (int.TryParse(userReadOnlyData["goldDefenseCount"].Value, out intValue))
+				goldDefenseDailyCount = intValue;
+		}
+
+		if (userReadOnlyData.ContainsKey("lasGolDefDat"))
+		{
+			if (string.IsNullOrEmpty(userReadOnlyData["lasGolDefDat"].Value) == false)
+				OnRecvDailyGoldDefenseInfo(userReadOnlyData["lasGolDefDat"].Value);
+		}
+		else
+			goldDefenseDailyCount = 0;
+
+		goldDefenseSelectedLevel = 0;
+		if (userReadOnlyData.ContainsKey("goldDefenseSelectedLevel"))
+		{
+			int intValue = 0;
+			if (int.TryParse(userReadOnlyData["goldDefenseSelectedLevel"].Value, out intValue))
+				goldDefenseSelectedLevel = intValue;
+		}
+
+		goldDefenseClearLevel = 0;
+		for (int i = 0; i < playerStatistics.Count; ++i)
+		{
+			if (playerStatistics[i].StatisticName == "goldDefenseClearLevel")
+			{
+				goldDefenseClearLevel = playerStatistics[i].Value;
 				break;
 			}
 		}
@@ -330,6 +373,28 @@ public class SubMissionData : MonoBehaviour
 		{
 			DateTime universalTime = lastBossDefenseTime.ToUniversalTime();
 			OnRecvDailyBossDefenseInfo(universalTime);
+		}
+	}
+	#endregion
+
+	#region Gold Defense
+	void OnRecvDailyGoldDefenseInfo(DateTime lastGoldDefenseTime)
+	{
+		if (ServerTime.UtcNow.Year == lastGoldDefenseTime.Year && ServerTime.UtcNow.Month == lastGoldDefenseTime.Month && ServerTime.UtcNow.Day == lastGoldDefenseTime.Day)
+		{
+			// 유효하면 읽어놨던 count값을 유지하고
+		}
+		else
+			goldDefenseDailyCount = 0;
+	}
+
+	public void OnRecvDailyGoldDefenseInfo(string lastGoldDefenseTimeString)
+	{
+		DateTime lastGoldDefenseTime = new DateTime();
+		if (DateTime.TryParse(lastGoldDefenseTimeString, out lastGoldDefenseTime))
+		{
+			DateTime universalTime = lastGoldDefenseTime.ToUniversalTime();
+			OnRecvDailyGoldDefenseInfo(universalTime);
 		}
 	}
 	#endregion
@@ -556,6 +621,7 @@ public class SubMissionData : MonoBehaviour
 		fortuneWheelDailyCount = 0;
 		rushDefenseDailyCount = 0;
 		bossDefenseDailyCount = 0;
+		goldDefenseDailyCount = 0;
 		bossBattleDailyCount = 0;
 
 		if (MainCanvas.instance != null)

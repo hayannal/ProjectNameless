@@ -4449,6 +4449,74 @@ public class PlayFabApiManager : MonoBehaviour
 			HandleCommonError(error);
 		});
 	}
+
+	public void RequestSelectGoldDefenseMission(int selectedDifficulty)
+	{
+		string input = string.Format("{0}_{1}", selectedDifficulty, "kslrmzqa");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "SelectGoldDefense",
+			FunctionParameter = new { Sel = selectedDifficulty, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				SubMissionData.instance.goldDefenseSelectedLevel = selectedDifficulty;
+			}
+		}, (error) =>
+		{
+			//HandleCommonError(error);
+		});
+	}
+
+	public void RequestEndGoldDefenseMission(bool firstClear, int selectedDifficulty, int reward, int useTicket, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}_{2}_{3}_{4}_{5}", (int)SubMissionData.instance.goldDefenseDailyCount, reward, useTicket, selectedDifficulty, firstClear ? 1 : 0, "lramqxpk");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "EndGoldDefense",
+			FunctionParameter = new { Sel = selectedDifficulty, Fir = firstClear ? 1 : 0, AddDi = reward, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				SubMissionData.instance.goldDefenseDailyCount += 1;
+				CurrencyData.instance.dia += reward;
+				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.ClearGoldDefense);
+				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.UseTicket, useTicket);
+				CurrencyData.instance.UseTicket(useTicket);
+
+				if (firstClear)
+				{
+					SubMissionData.instance.goldDefenseClearLevel = selectedDifficulty;
+
+					int nextLevel = selectedDifficulty + 1;
+					if (nextLevel > BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxGoldDefense"))
+						nextLevel = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxGoldDefense");
+					SubMissionData.instance.goldDefenseSelectedLevel = nextLevel;
+				}
+				else
+					SubMissionData.instance.goldDefenseSelectedLevel = selectedDifficulty;
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
 	#endregion
 
 

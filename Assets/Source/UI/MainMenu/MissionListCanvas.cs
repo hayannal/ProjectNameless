@@ -39,6 +39,11 @@ public class MissionListCanvas : MonoBehaviour
 	public Text bossDefenseEnergyText;
 	public RectTransform bossDefenseAlarmRootTransform;
 
+	public Text goldDefenseMenuRemainCount;
+	public Text goldDefenseTodayResetRemainTimeText;
+	public Text goldDefenseEnergyText;
+	public RectTransform goldDefenseAlarmRootTransform;
+
 	public Text bossBattleMenuRemainCount;
 	public Text bossBattleTodayResetRemainTimeText;
 	public Text bossBattleEnergyText;
@@ -143,6 +148,13 @@ public class MissionListCanvas : MonoBehaviour
 		return false;
 	}
 
+	public static bool IsAlarmGoldDefense()
+	{
+		if (SubMissionData.instance.goldDefenseDailyCount < BattleInstanceManager.instance.GetCachedGlobalConstantInt("GoldDefenseDailyCount"))
+			return true;
+		return false;
+	}
+
 	public static bool IsAlarmBossBattle()
 	{
 		if (SubMissionData.instance.bossBattleDailyCount < BattleInstanceManager.instance.GetCachedGlobalConstantInt("BossBattleDailyCount"))
@@ -183,6 +195,13 @@ public class MissionListCanvas : MonoBehaviour
 		AlarmObject.Hide(bossDefenseAlarmRootTransform);
 		if (IsAlarmBossDefense())
 			AlarmObject.Show(bossDefenseAlarmRootTransform);
+
+		cost = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MissionEnergyGoldDefense");
+		goldDefenseEnergyText.text = cost.ToString("N0");
+		goldDefenseMenuRemainCount.text = (BattleInstanceManager.instance.GetCachedGlobalConstantInt("GoldDefenseDailyCount") - SubMissionData.instance.goldDefenseDailyCount).ToString();
+		AlarmObject.Hide(goldDefenseAlarmRootTransform);
+		if (IsAlarmGoldDefense())
+			AlarmObject.Show(goldDefenseAlarmRootTransform);
 
 		if (bossBattleImage.sprite == null)
 		{
@@ -274,7 +293,29 @@ public class MissionListCanvas : MonoBehaviour
 
 				UIInstanceManager.instance.ShowCanvasAsync("BossDefenseEnterCanvas", null);
 				break;
+
 			case 4:
+				if (CharacterManager.instance.listCharacterData.Count < GoldDefenseEnterCanvas.MINIMUM_COUNT)
+				{
+					ToastCanvas.instance.ShowToast(UIString.instance.GetString("MissionUI_GoldDefenseMemberLimit"), 2.0f);
+					return;
+				}
+
+				if (IsAlarmGoldDefense() == false)
+				{
+					ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_TodayCountComplete"), 2.0f);
+					return;
+				}
+
+				if (CurrencyData.instance.ticket < BattleInstanceManager.instance.GetCachedGlobalConstantInt("MissionEnergyGoldDefense"))
+				{
+					ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughTicket"), 2.0f);
+					return;
+				}
+
+				UIInstanceManager.instance.ShowCanvasAsync("GoldDefenseEnterCanvas", null);
+				break;
+			case 5:
 
 				if (CharacterManager.instance.listCharacterData.Count == 0)
 				{
@@ -373,6 +414,14 @@ public class MissionListCanvas : MonoBehaviour
 			bossDefenseProcess = true;
 		#endregion
 
+		#region Gold Defense
+		bool goldDefenseProcess = false;
+		if (SubMissionData.instance.goldDefenseDailyCount == 0)
+			goldDefenseTodayResetRemainTimeText.text = "";
+		else
+			goldDefenseProcess = true;
+		#endregion
+
 		#region Boss Battle
 		bool bossBattleProcess = false;
 		if (SubMissionData.instance.bossBattleDailyCount == 0)
@@ -381,7 +430,7 @@ public class MissionListCanvas : MonoBehaviour
 			bossBattleProcess = true;
 		#endregion
 
-		if (petProcess == false && wheelProcess == false && rushDefenseProcess == false && bossDefenseProcess == false && bossBattleProcess == false)
+		if (petProcess == false && wheelProcess == false && rushDefenseProcess == false && bossDefenseProcess == false && goldDefenseProcess == false && bossBattleProcess == false)
 		{
 			_lastRefreshRemainTimeSecond = -1;
 			return;
@@ -396,6 +445,7 @@ public class MissionListCanvas : MonoBehaviour
 				if (wheelProcess) wheelTodayResetRemainTimeText.text = string.Format("{0:00}:{1:00}:{2:00}", remainTime.Hours, remainTime.Minutes, remainTime.Seconds);
 				if (rushDefenseProcess) rushDefenseTodayResetRemainTimeText.text = string.Format("{0:00}:{1:00}:{2:00}", remainTime.Hours, remainTime.Minutes, remainTime.Seconds);
 				if (bossDefenseProcess) bossDefenseTodayResetRemainTimeText.text = string.Format("{0:00}:{1:00}:{2:00}", remainTime.Hours, remainTime.Minutes, remainTime.Seconds);
+				if (goldDefenseProcess) goldDefenseTodayResetRemainTimeText.text = string.Format("{0:00}:{1:00}:{2:00}", remainTime.Hours, remainTime.Minutes, remainTime.Seconds);
 				if (bossBattleProcess) bossBattleTodayResetRemainTimeText.text = string.Format("{0:00}:{1:00}:{2:00}", remainTime.Hours, remainTime.Minutes, remainTime.Seconds);
 				_lastRefreshRemainTimeSecond = (int)remainTime.TotalSeconds;
 			}
@@ -406,6 +456,7 @@ public class MissionListCanvas : MonoBehaviour
 			if (wheelProcess) wheelTodayResetRemainTimeText.text = "";
 			if (rushDefenseProcess) rushDefenseTodayResetRemainTimeText.text = "";
 			if (bossDefenseProcess) bossDefenseTodayResetRemainTimeText.text = "";
+			if (goldDefenseProcess) goldDefenseTodayResetRemainTimeText.text = "";
 			if (bossBattleProcess) bossBattleTodayResetRemainTimeText.text = "";
 		}
 	}
