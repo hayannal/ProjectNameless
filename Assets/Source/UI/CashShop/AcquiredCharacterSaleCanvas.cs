@@ -96,10 +96,15 @@ public class AcquiredCharacterSaleCanvas : SimpleCashEventCanvas
 			yield return Timing.WaitForOneFrame;
 		yield return Timing.WaitForOneFrame;
 
-		UIInstanceManager.instance.ShowCanvasAsync("CharacterListCanvas", () =>
-		{
-			CharacterListCanvas.instance.OnClickListItem(CashShopData.instance.acquiredCharacterSelectedId);
-		});
+		// Character
+		MainCanvas.instance.OnClickTeamButton();
+
+		while ((CharacterListCanvas.instance != null && CharacterListCanvas.instance.gameObject.activeSelf) == false)
+			yield return Timing.WaitForOneFrame;
+		yield return Timing.WaitForOneFrame;
+		yield return Timing.WaitForOneFrame;
+
+		CharacterListCanvas.instance.OnClickListItem(CashShopData.instance.acquiredCharacterSelectedId);
 
 		while ((CharacterInfoCanvas.instance != null && CharacterInfoCanvas.instance.gameObject.activeSelf) == false)
 			yield return Timing.WaitForOneFrame;
