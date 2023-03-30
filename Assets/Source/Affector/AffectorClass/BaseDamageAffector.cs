@@ -78,9 +78,6 @@ public class BaseDamageAffector : AffectorBase {
 				damage = minValue;
 		}
 
-		if (damage <= 1.0f)
-			damage = 1.0f;
-
 		// 방어력 빼고나서 제일 먼저 하는게 multiAtk 곱하는거다.
 		// 이거 평타에만 적용해야한다.
 		if (affectorValueLevelTableData.sValue3 == "1")
@@ -126,6 +123,10 @@ public class BaseDamageAffector : AffectorBase {
 				break;
 		}
 		damage *= damageRatio;
+
+		// 방어력 처리는 여기서 해야 맞는거 같다.
+		if (damage <= 1.0f)
+			damage = 1.0f;
 
 		Actor attackerActor = null;
 		bool appliedCritical = false;
