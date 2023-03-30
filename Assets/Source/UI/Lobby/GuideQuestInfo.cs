@@ -282,15 +282,14 @@ public class GuideQuestInfo : MonoBehaviour
 			case GuideQuestData.eQuestClearType.GatherPetCount:
 				MainCanvas.instance.OnClickContentsButton();
 				break;
-			case GuideQuestData.eQuestClearType.GradeUpEquip:
-				// 아예 안쓰기로 하는 미션이다.
-				break;
 			case GuideQuestData.eQuestClearType.UseTicket:
 				MainCanvas.instance.OnClickContentsButton();
 				break;
 			case GuideQuestData.eQuestClearType.ClearRushDefense:
 			case GuideQuestData.eQuestClearType.ClearBossDefense:
+			case GuideQuestData.eQuestClearType.ClearGoldDefense:
 				// 더이상 이런 일일 제한 미션을 가이드 퀘에서는 사용하지 않기로 한다.
+				// 그러니 가이드에서는 FreeFortune이나 이 3종 미션은 기능상으로는 문제 없지만 유저 체험이 별로일까봐 사용하지 않는거 뿐이다.
 				break;
 			case GuideQuestData.eQuestClearType.ClearBossBattle:
 				MainCanvas.instance.OnClickContentsButton();
