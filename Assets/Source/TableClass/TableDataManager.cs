@@ -44,6 +44,7 @@ public class TableDataManager : MonoBehaviour
 	public PickOneSpellTable pickOneSpellTable;
 	public PickOneCharacterTable pickOneCharacterTable;
 	public RelayPackTable relayPackTable;
+	public FreePackageTable freePackageTable;
 
 	public EventPointTypeTable eventPointTypeTable;
 	public EventPointRewardTable eventPointRewardTable;
