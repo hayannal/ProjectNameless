@@ -43,8 +43,8 @@ public class RelayPackageBox : SimpleCashCanvas
 			{
 				if (Application.systemLanguage == SystemLanguage.Korean)
 					localizedPrice = _shopProductTableData.kor;
-				//else
-				//	localizedPrice = _shopProductTableData.eng;
+				else
+					localizedPrice = (decimal)_shopProductTableData.eng;
 			}
 			prevPriceText.text = (localizedPrice * _shopProductTableData.times).ToString("N0");
 			prevPriceText.gameObject.SetActive(true);
