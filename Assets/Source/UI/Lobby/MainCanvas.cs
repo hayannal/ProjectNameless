@@ -479,22 +479,7 @@ public class MainCanvas : MonoBehaviour
 
 	public static bool IsAlarmCashShop()
 	{
-		bool result = false;
-		if (CashShopData.instance.GetCashItemCount(CashShopData.eCashItemCountType.DailyDiamond) > 0 && CashShopData.instance.dailyDiamondReceived == false)
-			result = true;
-		/*
-		if (DailyShopData.instance.GetTodayFreeItemData() != null && DailyShopData.instance.dailyFreeItemReceived == false)
-			result = true;
-		if (PlayerData.instance.chaosFragmentCount >= BattleInstanceManager.instance.GetCachedGlobalConstantInt("ChaosPowerPointsCost"))
-		{
-			for (int i = 0; i <= DailyShopData.ChaosSlotMax; ++i)
-			{
-				if (i <= DailyShopData.instance.chaosSlotUnlockLevel && DailyShopData.instance.IsPurchasedTodayChaosData(i) == false)
-					return true;
-			}
-		}
-		*/
-		return result;
+		return CashShopTabCanvas.CheckDailyDiamond() || CashShopTabCanvas.CheckGetFreePackage();
 	}
 
 	public void RefreshCashShopAlarmObject()

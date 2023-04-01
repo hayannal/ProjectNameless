@@ -127,6 +127,12 @@ public class CashShopData : MonoBehaviour
 	// 릴레이 패키지 번호
 	public ObscuredInt relayPackagePurchasedNum { get; set; }
 
+	// Free Level 패키지 리스트
+	List<int> _listFreeLevelPackage;
+
+	// Free Stage 패키지 리스트
+	List<int> _listFreeStagePackage;
+
 	// 브로큰 에너지 레벨
 	ObscuredInt _brokenEnergyLevel;
 	public int brokenEnergyLevel { get { return _brokenEnergyLevel; } set { _brokenEnergyLevel = value; } }
@@ -552,6 +558,22 @@ public class CashShopData : MonoBehaviour
 				if (int.TryParse(userReadOnlyData["relayPackageNum"].Value, out intValue))
 					relayPackagePurchasedNum = intValue;
 			}
+		}
+
+		_listFreeLevelPackage = null;
+		if (userReadOnlyData.ContainsKey("freeLevelPackLst"))
+		{
+			string freeLevelPckLstString = userReadOnlyData["freeLevelPackLst"].Value;
+			if (string.IsNullOrEmpty(freeLevelPckLstString) == false)
+				_listFreeLevelPackage = serializer.DeserializeObject<List<int>>(freeLevelPckLstString);
+		}
+
+		_listFreeStagePackage = null;
+		if (userReadOnlyData.ContainsKey("freeStagePackLst"))
+		{
+			string freeStagePckLstString = userReadOnlyData["freeStagePackLst"].Value;
+			if (string.IsNullOrEmpty(freeStagePckLstString) == false)
+				_listFreeStagePackage = serializer.DeserializeObject<List<int>>(freeStagePckLstString);
 		}
 
 		/*
@@ -1140,6 +1162,44 @@ public class CashShopData : MonoBehaviour
 		if (_listStageClearPackage.Contains(stage) == false)
 			_listStageClearPackage.Add(stage);
 		return _listStageClearPackage;
+	}
+	#endregion
+
+	#region Free Level Package
+	public bool IsRewardedFreeLevelPackage(int level)
+	{
+		if (_listFreeLevelPackage == null)
+			return false;
+
+		return _listFreeLevelPackage.Contains(level);
+	}
+
+	public List<int> OnRecvFreeLevelPackage(int level)
+	{
+		if (_listFreeLevelPackage == null)
+			_listFreeLevelPackage = new List<int>();
+		if (_listFreeLevelPackage.Contains(level) == false)
+			_listFreeLevelPackage.Add(level);
+		return _listFreeLevelPackage;
+	}
+	#endregion
+
+	#region Free Stage Package
+	public bool IsRewardedFreeStagePackage(int stage)
+	{
+		if (_listFreeStagePackage == null)
+			return false;
+
+		return _listFreeStagePackage.Contains(stage);
+	}
+
+	public List<int> OnRecvFreeStagePackage(int stage)
+	{
+		if (_listFreeStagePackage == null)
+			_listFreeStagePackage = new List<int>();
+		if (_listFreeStagePackage.Contains(stage) == false)
+			_listFreeStagePackage.Add(stage);
+		return _listFreeStagePackage;
 	}
 	#endregion
 

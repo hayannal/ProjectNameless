@@ -10,6 +10,7 @@ public class CashShopTabCanvas : MonoBehaviour
 	public CurrencySmallInfo currencySmallInfo;
 
 	public RectTransform alarmRootTransform;
+	public RectTransform freeAlarmRootTransform;
 
 	#region Tab Button
 	public GameObject[] innerMenuPrefabList;
@@ -102,11 +103,54 @@ public class CashShopTabCanvas : MonoBehaviour
 		#endregion
 	}
 
+	public static bool CheckDailyDiamond()
+	{
+		if (CashShopData.instance.GetCashItemCount(CashShopData.eCashItemCountType.DailyDiamond) > 0 && CashShopData.instance.dailyDiamondReceived == false)
+			return true;
+
+		/*
+		if (DailyShopData.instance.GetTodayFreeItemData() != null && DailyShopData.instance.dailyFreeItemReceived == false)
+			result = true;
+		if (PlayerData.instance.chaosFragmentCount >= BattleInstanceManager.instance.GetCachedGlobalConstantInt("ChaosPowerPointsCost"))
+		{
+			for (int i = 0; i <= DailyShopData.ChaosSlotMax; ++i)
+			{
+				if (i <= DailyShopData.instance.chaosSlotUnlockLevel && DailyShopData.instance.IsPurchasedTodayChaosData(i) == false)
+					return true;
+			}
+		}
+		*/
+		return false;
+	}
+
+	public static bool CheckGetFreePackage()
+	{
+		for (int i = 0; i < TableDataManager.instance.freePackageTable.dataArray.Length; ++i)
+		{
+			int conValue = TableDataManager.instance.freePackageTable.dataArray[i].conValue;
+			if (TableDataManager.instance.freePackageTable.dataArray[i].type == (int)FreePackageGroupInfo.eFreeType.Level)
+			{
+				if (PlayerData.instance.playerLevel >= conValue && CashShopData.instance.IsRewardedFreeLevelPackage(conValue) == false)
+					return true;
+			}
+			else if (TableDataManager.instance.freePackageTable.dataArray[i].type == (int)FreePackageGroupInfo.eFreeType.Stage)
+			{
+				if (PlayerData.instance.highestClearStage >= conValue && CashShopData.instance.IsRewardedFreeStagePackage(conValue) == false)
+					return true;
+			}
+		}
+		return false;
+	}
+
 	public void RefreshAlarmObject()
 	{
 		AlarmObject.Hide(alarmRootTransform);
-		if (MainCanvas.IsAlarmCashShop())
+		if (CheckDailyDiamond())
 			AlarmObject.Show(alarmRootTransform);
+
+		AlarmObject.Hide(freeAlarmRootTransform);
+		if (CheckGetFreePackage())
+			AlarmObject.Show(freeAlarmRootTransform);
 	}
 
 
@@ -114,6 +158,7 @@ public class CashShopTabCanvas : MonoBehaviour
 	#region Tab Button
 	public void OnClickTabButton1() { OnValueChangedToggle(0); }
 	public void OnClickTabButton2() { OnValueChangedToggle(1); }
+	public void OnClickTabButton3() { OnValueChangedToggle(2); }
 
 	List<Transform> _listMenuTransform = new List<Transform>();
 	int _lastIndex = -1;
