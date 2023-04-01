@@ -762,6 +762,17 @@ public class BattleInstanceManager : MonoBehaviour
 		if (playerActor.GetInstanceID() == instanceId)
 			return playerActor;
 
+		// RPG Knight가 동료로 배치될때도 Timer Ricochet 제대로 돌아가야하니 항상 검사하는게 맞다.
+		if (_dicCachedPlayerActor != null)
+		{
+			Dictionary<string, PlayerActor>.Enumerator e = _dicCachedPlayerActor.GetEnumerator();
+			while (e.MoveNext())
+			{
+				if (e.Current.Value.GetInstanceID() == instanceId)
+					return e.Current.Value;
+			}
+		}
+
 		/*
 		if (ExperienceCanvas.instance != null && ExperienceCanvas.instance.gameObject.activeSelf && CharacterListCanvas.instance.selectedPlayerActor.GetInstanceID() == instanceId)
 			return CharacterListCanvas.instance.selectedPlayerActor;
