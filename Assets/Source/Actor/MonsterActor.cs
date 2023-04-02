@@ -480,6 +480,12 @@ public class MonsterActor : Actor
 		if (team.teamId != (int)Team.eTeamID.DefaultMonster || excludeMonsterCount)
 			return;
 
+		if (BossBattleMissionCanvas.instance != null && BossBattleMissionCanvas.instance.gameObject.activeSelf)
+		{
+		}
+		else
+			return;
+
 		foreach (ContactPoint contact in collision.contacts)
 		{
 			Collider col = contact.otherCollider;
