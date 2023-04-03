@@ -40,17 +40,6 @@ public class FreePackageGroupInfo : MonoBehaviour
 			if (TableDataManager.instance.freePackageTable.dataArray[i].type != freeType)
 				continue;
 
-			int conValue = TableDataManager.instance.freePackageTable.dataArray[i].conValue;
-			if (freeType == (int)eFreeType.Level)
-			{
-				if (CashShopData.instance.IsRewardedFreeLevelPackage(conValue))
-					continue;
-			}
-			else if (freeType == (int)eFreeType.Stage)
-			{
-				if (CashShopData.instance.IsRewardedFreeStagePackage(conValue))
-					continue;
-			}
 			_listShowIndex.Add(i);
 		}
 

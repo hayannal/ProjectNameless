@@ -15,6 +15,11 @@ public class RelayPackageBox : SimpleCashCanvas
 	public RectTransform rightTopRectTransform;
 	public Text nameText;
 
+	public Text itemAtkValueText;
+	public GameObject priceObject;
+	public GameObject completeObject;
+	public GameObject blackObject;
+
 	public IAPButton iapButton;
 
 	RelayPackTableData _relayPackTableData;
@@ -66,6 +71,14 @@ public class RelayPackageBox : SimpleCashCanvas
 			rewardIconList[i].ShowOnlyIcon(true, 1.0f);
 		}
 
+		string attackItemId = PassManager.ShopProductId2ItemId(_relayPackTableData.shopProductId);
+		itemAtkValueText.text = PassManager.instance.GetItemAttackValue(attackItemId).ToString("N0");
+
+		bool purchased = (_relayPackTableData.num <= CashShopData.instance.relayPackagePurchasedNum);
+		priceObject.SetActive(!purchased);
+		completeObject.SetActive(purchased);
+		blackObject.SetActive(purchased);
+
 		// 다른 캐시상품들과 달리 프리팹 하나에서 정보를 바꿔가며 내용을 구성하기 때문에 productId에는 최초꺼로 설정되어있다.
 		// 이걸 현재에 맞는 상품으로 바꿔주는 절차가 필요하다.
 		iapButton.productId = _shopProductTableData.serverItemId;
@@ -94,8 +107,22 @@ public class RelayPackageBox : SimpleCashCanvas
 		}
 	}
 
+	public void OnClickAtkInfoButton()
+	{
+		UIInstanceManager.instance.ShowCanvasAsync("ItemAtkInfoCanvas", () =>
+		{
+			ItemAtkInfoCanvas.instance.RefreshInfo(PassManager.ShopProductId2ItemId(_relayPackTableData.shopProductId));
+		});
+	}
+
 	public void OnClickCustomButton()
 	{
+		if (blackObject.activeSelf)
+		{
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("ShopUI_AlreadyThatItem"), 2.0f);
+			return;
+		}
+
 		if (PlayerData.instance.CheckConfirmDownload() == false)
 			return;
 
@@ -115,7 +142,7 @@ public class RelayPackageBox : SimpleCashCanvas
 		}
 		if (TableDataManager.instance.relayPackTable.dataArray[firstIndex].num != _relayPackTableData.num)
 		{
-			RelayPackageGroupInfo.instance.scrollSnap.GoToPanel(0);
+			RelayPackageGroupInfo.instance.scrollSnap.GoToPanel(firstIndex);
 			ToastCanvas.instance.ShowToast(UIString.instance.GetString("ShopUI_CannotBuyFirstProduct"), 2.0f);
 			return;
 		}
@@ -142,6 +169,8 @@ public class RelayPackageBox : SimpleCashCanvas
 		PlayFabApiManager.instance.RequestValidatePurchase(product.metadata.isoCurrencyCode, (int)(product.metadata.localizedPrice * 100), data.Payload, () =>
 #endif
 		{
+			float prevPowerValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
+
 			if (shopProductTableData == null)
 				shopProductTableData = TableDataManager.instance.FindShopProductTableData(product.definition.id);
 			if (shopProductTableData != null)
@@ -151,6 +180,10 @@ public class RelayPackageBox : SimpleCashCanvas
 				// 클라에서는 컨슘처리만 제대로 하면 된다는거다.
 				CurrencyData.instance.OnRecvProductRewardExtendGacha(shopProductTableData);
 			}
+
+			// 릴레이의 첫번째 상품은 공격력 보유아이템이라서 이렇게 별도로 호출해주기로 한다.
+			string attackItemId = PassManager.ShopProductId2ItemId(shopProductTableData.productId);
+			PassManager.instance.OnRecvItemGrantResult(attackItemId);
 
 			int num = 0;
 			if (relayPackTableData != null)
@@ -174,6 +207,15 @@ public class RelayPackageBox : SimpleCashCanvas
 						RelayPackageGroupInfo.instance.gameObject.SetActive(false);
 						RelayPackageGroupInfo.instance.gameObject.SetActive(true);
 					}
+				});
+			}
+
+			float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
+			if (nextValue > prevPowerValue)
+			{
+				UIInstanceManager.instance.ShowCanvasAsync("ChangePowerCanvas", () =>
+				{
+					ChangePowerCanvas.instance.ShowInfo(prevPowerValue, nextValue);
 				});
 			}
 

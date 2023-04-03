@@ -46,10 +46,11 @@ public class RelayPackageGroupInfo : MonoBehaviour
 		_listRelayPackageBoxListItem.Clear();
 		_listShowIndex.Clear();
 
+		// 공격력 구매 내역을 확인해야해서 하이드하지 않기로 한다.
 		for (int i = 0; i < TableDataManager.instance.relayPackTable.dataArray.Length; ++i)
 		{
-			if (TableDataManager.instance.relayPackTable.dataArray[i].num <= CashShopData.instance.relayPackagePurchasedNum)
-				continue;
+			//if (TableDataManager.instance.relayPackTable.dataArray[i].num <= CashShopData.instance.relayPackagePurchasedNum)
+			//	continue;
 
 			_listShowIndex.Add(i);
 		}

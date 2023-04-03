@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using PlayFab;
@@ -21,16 +21,35 @@ public class PassManager : MonoBehaviour
 	}
 	static PassManager _instance = null;
 
+	List<ObscuredString> _listItemAtk = new List<ObscuredString>();
+
 	public ObscuredInt cachedValue { get; set; }
 
 	Dictionary<string, int> _dicPassAttackInfo;
-	public void OnRecvPassData(Dictionary<string, string> titleData, Dictionary<string, UserDataRecord> userReadOnlyData, List<StatisticValue> playerStatistics)
+	Dictionary<string, int> _dicItemAttackInfo;
+	public void OnRecvPassData(List<ItemInstance> userInventory, Dictionary<string, string> titleData, Dictionary<string, UserDataRecord> userReadOnlyData, List<StatisticValue> playerStatistics)
 	{
 		var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
 
 		_dicPassAttackInfo = null;
 		if (titleData.ContainsKey("passAtk"))
 			_dicPassAttackInfo = serializer.DeserializeObject<Dictionary<string, int>>(titleData["passAtk"]);
+
+		_dicItemAttackInfo = null;
+		if (titleData.ContainsKey("itemAtk"))
+			_dicItemAttackInfo = serializer.DeserializeObject<Dictionary<string, int>>(titleData["itemAtk"]);
+
+
+		// ë‹¤ë¥¸ ì¸ë²¤í† ë¦¬ì™€ ë‹¬ë¦¬ ë³„ë‹¤ë¥¸ ì •ë³´ê°€ í•„ìš”ì—†ìœ¼ë¯€ë¡œ ì•„ì´ë””ë§Œ ì €ì¥í•´ë„ ëœë‹¤.
+		_listItemAtk.Clear();
+		for (int i = 0; i < userInventory.Count; ++i)
+		{
+			if (userInventory[i].ItemId.StartsWith("RelayAtk_") == false && userInventory[i].ItemId.StartsWith("FreeLevelAtk_") == false && userInventory[i].ItemId.StartsWith("FreeStageAtk_") == false)
+				continue;
+
+			if (_listItemAtk.Contains(userInventory[i].ItemId) == false)
+				_listItemAtk.Add(userInventory[i].ItemId);
+		}
 
 		// setting flag
 		RefreshFlag();
@@ -39,9 +58,28 @@ public class PassManager : MonoBehaviour
 		RefreshCachedStatus();
 	}
 
+	public static string ShopProductId2ItemId(string shopProductId)
+	{
+		string[] split = shopProductId.Split('_');
+		if (split.Length != 2)
+			return "";
+
+		string nameId = "";
+		switch (split[0])
+		{
+			case "relay": nameId = "RelayAtk"; break;
+			case "freelevel": nameId = "FreeLevelAtk"; break;
+			case "freestage": nameId = "FreeStageAtk"; break;
+			default: return "";
+		}
+		int number = 0;
+		int.TryParse(split[1], out number);
+		return string.Format("{0}_{1:00}", nameId, number);
+	}
+
 	void RefreshFlag()
 	{
-		// ÀÌ ¸Å´ÏÀú´Â ¸¶Áö¸·¿¡ È£ÃâµÇ±â ¶§¹®¿¡ ´Ù¸¥ ¸Å´ÏÀú¿¡ ÀÖ´Â °á°ú°ªÀ» °¡Á®¿Í¼­ Ã³¸®ÇØµµ ±¦Âú´Ù.
+		// ì´ ë§¤ë‹ˆì €ëŠ” ë§ˆì§€ë§‰ì— í˜¸ì¶œë˜ê¸° ë•Œë¬¸ì— ë‹¤ë¥¸ ë§¤ë‹ˆì €ì— ìˆëŠ” ê²°ê³¼ê°’ì„ ê°€ì ¸ì™€ì„œ ì²˜ë¦¬í•´ë„ ê´œì°®ë‹¤.
 		_petPassActived = PetManager.instance.IsPetPass();
 		_teamPassActived = CharacterManager.instance.IsTeamPass();
 	}
@@ -50,10 +88,16 @@ public class PassManager : MonoBehaviour
 	{
 		cachedValue = 0;
 
-		// ¸ÕÀú ¿µ±¸Àû ÆĞ½º Àû¿ë
+		// ë¨¼ì € ë³´ìœ í•œ ì•„ì´í…œì— ëŒ€í•´ì„œ ì˜êµ¬ì  íŒ¨ìŠ¤ ì ìš©. ì¤‘ë³µí•´ì„œ ê°€ì§€ê³  ìˆë”ë¼ë„ 1íšŒë§Œ ì ìš©ë˜ê²Œ í•´ë‘”ë‹¤.
+		Dictionary<string, int>.Enumerator e = _dicItemAttackInfo.GetEnumerator();
+		while (e.MoveNext())
+		{
+			if (_listItemAtk.Contains(e.Current.Key))
+				cachedValue += e.Current.Value;
+		}
 
-		// ÀÌÈÄ ±â°£Á¦ ÆĞ½º Àû¿ë
-		// ÀÌ¹Ì ¾ÕºÎºĞ¿¡¼­ ´Ù¸¥ ¸Å´ÏÀúµé È£ÃâÀÌ ³¡³µÀ»Å×´Ï ¿©±â¼± °¡Á®¿Í¼­ Àû¿ë¸¸ ÇÏ¸é µÈ´Ù.
+		// ì´í›„ ê¸°ê°„ì œ íŒ¨ìŠ¤ ì ìš©
+		// ì´ë¯¸ ì•ë¶€ë¶„ì—ì„œ ë‹¤ë¥¸ ë§¤ë‹ˆì €ë“¤ í˜¸ì¶œì´ ëë‚¬ì„í…Œë‹ˆ ì—¬ê¸°ì„  ê°€ì ¸ì™€ì„œ ì ìš©ë§Œ í•˜ë©´ ëœë‹¤.
 		if (PetManager.instance.IsPetPass())
 			cachedValue += GetPassAttackValue("petpass");
 
@@ -65,6 +109,13 @@ public class PassManager : MonoBehaviour
 	{
 		if (_dicPassAttackInfo.ContainsKey(key))
 			return _dicPassAttackInfo[key];
+		return 0;
+	}
+
+	public int GetItemAttackValue(string key)
+	{
+		if (_dicItemAttackInfo.ContainsKey(key))
+			return _dicItemAttackInfo[key];
 		return 0;
 	}
 
@@ -110,11 +161,23 @@ public class PassManager : MonoBehaviour
 
 	public void OnChangedStatus()
 	{
-		// ÆĞ½º Áß º¯°æÀÌ ÀÏ¾î³­°Å´Ù.
+		// íŒ¨ìŠ¤ ì¤‘ ë³€ê²½ì´ ì¼ì–´ë‚œê±°ë‹¤.
 		RefreshFlag();
 
-		// ÀüÃ¼ ÆĞ½º Àç°è»ê ÈÄ
+		// ì „ì²´ íŒ¨ìŠ¤ ì¬ê³„ì‚° í›„
 		RefreshCachedStatus();
 		PlayerData.instance.OnChangedStatus();
 	}
+
+
+	#region Grant
+	public void OnRecvItemGrantResult(string itemId)
+	{
+		if (_listItemAtk.Contains(itemId))
+			return;
+
+		_listItemAtk.Add(itemId);
+		OnChangedStatus();
+	}
+	#endregion
 }
