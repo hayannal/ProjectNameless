@@ -257,6 +257,7 @@ public class GuideQuestInfo : MonoBehaviour
 			case GuideQuestData.eQuestClearType.Analysis:
 				MainCanvas.instance.OnClickAnalysisButton();
 				break;
+			case GuideQuestData.eQuestClearType.OpenSummonCanvas:
 			case GuideQuestData.eQuestClearType.SpinChargeAlarm:
 			case GuideQuestData.eQuestClearType.UseEnergy:
 				MainCanvas.instance.OnClickGachaButton();
@@ -363,6 +364,9 @@ public class GuideQuestInfo : MonoBehaviour
 				ConsumeProductProcessor.instance.ConsumeGacha(guideQuestTableData.rewardValue, guideQuestTableData.rewardCount); 
 				_claimReopenRemainTime = 1.0f;
 			}
+
+			if (PlayerData.instance.tutorialFlagClearGuideQuest)
+				PlayerData.instance.OnCompleteTutorialStep(2);
 		});
 	}
 	

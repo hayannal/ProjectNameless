@@ -69,6 +69,12 @@ public class PlayerData : MonoBehaviour
 	// Vtd
 	public int vtd { get; set; }
 
+	#region Tutorial Step
+	// 튜토는 간단하게 두개뿐이니
+	public bool tutorialFlagShowSummonCanvas { get; set; }
+	public bool tutorialFlagClearGuideQuest { get; set; }
+	#endregion
+
 	// 네트워크 오류로 인해 씬을 재시작할때는 타이틀 떠서 진입하듯 초기 프로세스들을 검사해야한다.
 	public bool checkRestartScene { get; set; }
 
@@ -318,6 +324,20 @@ public class PlayerData : MonoBehaviour
 		ContentsData.instance.OnRecvContentsData(userData, userReadOnlyData);
 		*/
 
+		#region Tutorial Step
+		// tutorial flag 두개밖에 안되니 EventManager 만들지 않고 PlayerData에서 직접 관리하기로 한다.
+		tutorialFlagShowSummonCanvas = true;
+		tutorialFlagClearGuideQuest = false;
+		if (userReadOnlyData.ContainsKey("tutorialCompleteStep"))
+		{
+			if (string.IsNullOrEmpty(userReadOnlyData["tutorialCompleteStep"].Value) == false)
+			{
+				if (userReadOnlyData["tutorialCompleteStep"].Value == "1") { tutorialFlagShowSummonCanvas = false; tutorialFlagClearGuideQuest = true; }
+				if (userReadOnlyData["tutorialCompleteStep"].Value == "2") { tutorialFlagShowSummonCanvas = false; tutorialFlagClearGuideQuest = false; }
+			}
+		}
+		#endregion
+
 		displayName = "";
 		if (string.IsNullOrEmpty(playerProfile.DisplayName) == false)
 			displayName = playerProfile.DisplayName;
@@ -398,4 +418,23 @@ public class PlayerData : MonoBehaviour
 		UIInstanceManager.instance.ShowCanvasAsync("DownloadConfirmCanvas", null);
 		return false;
 	}
+
+	#region Tutorial Step
+	public void OnCompleteTutorialStep(int step)
+	{
+		switch (step)
+		{
+			case 1:
+				tutorialFlagShowSummonCanvas = false;
+				tutorialFlagClearGuideQuest = true;
+				MainCanvas.instance.RefreshTutorialGuideObject();
+				break;
+			case 2:
+				tutorialFlagClearGuideQuest = false;
+				MainCanvas.instance.HideTutorialGuideObject();
+				break;
+		}
+		PlayFabApiManager.instance.RequestCompleteTutorialStep(step);
+	}
+	#endregion
 }

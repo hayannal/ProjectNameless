@@ -63,6 +63,10 @@ public class MainCanvas : MonoBehaviour
 	public RectTransform onePlusTwo1AlarmRootTransform;  // ev5
 
 
+	public RectTransform tutorialGachaButtonRootTransform;
+	public RectTransform tutorialSmallQuestButtonRootTransform;
+
+
 	List<Vector2> _listBasePosition = new List<Vector2>();
 	void Awake()
 	{
@@ -88,8 +92,8 @@ public class MainCanvas : MonoBehaviour
 	// Start is called before the first frame update
 	void Start()
     {
-        
-    }
+		RefreshTutorialGuideObject();
+	}
 
     // Update is called once per frame
     void Update()
@@ -931,6 +935,35 @@ public class MainCanvas : MonoBehaviour
 		}
 
 		challengeButtonRootTransform.anchoredPosition = new Vector2(0.0f, count > 9 ? -240.0f : -170.0f);
+	}
+	#endregion
+
+
+	#region Tutorial Guide Object
+	GameObject _tutorialGuideObject;
+	public void RefreshTutorialGuideObject()
+	{
+		if (PlayerData.instance.tutorialFlagShowSummonCanvas || PlayerData.instance.tutorialFlagClearGuideQuest)
+		{
+			AddressableAssetLoadManager.GetAddressableGameObject("TutorialGuideObject", "", (prefab) =>
+			{
+				HideTutorialGuideObject();
+
+				if (PlayerData.instance.tutorialFlagShowSummonCanvas)
+					_tutorialGuideObject = UIInstanceManager.instance.GetCachedObject(prefab, tutorialGachaButtonRootTransform);
+				else if (PlayerData.instance.tutorialFlagClearGuideQuest)
+					_tutorialGuideObject = UIInstanceManager.instance.GetCachedObject(prefab, tutorialSmallQuestButtonRootTransform);
+
+				_tutorialGuideObject.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+			});
+		}
+	}
+
+	public void HideTutorialGuideObject()
+	{
+		if (_tutorialGuideObject == null)
+			return;
+		_tutorialGuideObject.SetActive(false);
 	}
 	#endregion
 

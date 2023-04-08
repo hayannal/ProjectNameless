@@ -1499,6 +1499,29 @@ public class PlayFabApiManager : MonoBehaviour
 	}
 	#endregion
 
+	#region Tutorial Step
+	public void RequestCompleteTutorialStep(int step)
+	{
+		ExecuteCloudScriptRequest request = new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "CompleteTutorialStep",
+			FunctionParameter = new { Step = step },
+			GeneratePlayStreamEvent = true,
+		};
+		Action action = () =>
+		{
+			PlayFabClientAPI.ExecuteCloudScript(request, (success) =>
+			{
+				RetrySendManager.instance.OnSuccess();
+			}, (error) =>
+			{
+				RetrySendManager.instance.OnFailure();
+			});
+		};
+		RetrySendManager.instance.RequestAction(action, false);
+	}
+	#endregion
+
 	#region Support
 	public void RequestRefreshInquiryList(Action<string> successCallback)
 	{

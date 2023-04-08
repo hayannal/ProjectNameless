@@ -50,6 +50,8 @@ public class GuideQuestData : MonoBehaviour
 		ClearBossDefense = 28,  // 보스저지 클리어하기
 		ClearGoldDefense = 29,  // 보물습격 클리어하기
 		ClearBossBattle = 30,	// 토벌 클리어하기
+
+		OpenSummonCanvas = 91,	// 소환창을 열기. 처음 튜토용으로 만들어둔거다.
 	}
 
 	// 이거 서버에도 둬서 완료 체크할때 수량 체크를 느슨하게 하니 변경된다면 서버에도 등록해야한다.
