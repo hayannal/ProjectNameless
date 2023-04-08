@@ -171,7 +171,9 @@ public class GoldDefenseMissionGround : MonoBehaviour
 
 		// 시작하자마자 보이지도 않는 곳에서 스폰된 몬스터에게 마법 쓰는게 이상해서 3초 딜레이를 주기로 해본다.
 		SpellManager.instance.ApplyGlobalSpellCooltime(3.0f);
-		SpellManager.instance.InitializeEquipSpellInfo();
+
+		// 여기서는 스펠은 안나가게 막기로 한다.
+		//SpellManager.instance.InitializeEquipSpellInfo();
 		StageManager.instance.SetCompleteWaitLoaded(false);
 	}
 }

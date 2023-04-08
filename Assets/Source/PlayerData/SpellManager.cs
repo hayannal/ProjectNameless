@@ -577,6 +577,8 @@ public class SpellManager : MonoBehaviour
 	{
 		if (BossBattleMissionGround.instance != null && BossBattleMissionGround.instance.gameObject.activeSelf)
 			return;
+		if (GoldDefenseMissionGround.instance != null && GoldDefenseMissionGround.instance.gameObject.activeSelf)
+			return;
 
 		if (_playerActorForSpellProcessor == null)
 			return;
