@@ -243,6 +243,8 @@ public class RewardIcon : MonoBehaviour
 						SevenDaysCanvas.instance.OnClickPetDetailButton(rewardValue);
 					if (FestivalTabCanvas.instance != null && FestivalTabCanvas.instance.gameObject.activeSelf)
 						FestivalRewardCanvas.instance.OnClickPetDetailButton(rewardValue);
+					if (CashShopTabCanvas.instance != null && CashShopTabCanvas.instance.gameObject.activeSelf)
+						CashShopPackageCanvas.instance.OnClickPetDetailButton(rewardValue);
 				}
 				else if (rewardValue.StartsWith("Equip"))
 				{
@@ -250,6 +252,8 @@ public class RewardIcon : MonoBehaviour
 						SevenDaysCanvas.instance.OnClickEquipDetailButton(rewardValue);
 					if (FestivalTabCanvas.instance != null && FestivalTabCanvas.instance.gameObject.activeSelf)
 						FestivalRewardCanvas.instance.OnClickEquipDetailButton(rewardValue);
+					if (CashShopTabCanvas.instance != null && CashShopTabCanvas.instance.gameObject.activeSelf)
+						CashShopPackageCanvas.instance.OnClickEquipDetailButton(rewardValue);
 				}
 				break;
 		}

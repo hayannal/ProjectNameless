@@ -68,7 +68,14 @@ public class RelayPackageBox : SimpleCashCanvas
 				case 3: rewardIconList[i].RefreshReward(_shopProductTableData.rewardType4, _shopProductTableData.rewardValue4, _shopProductTableData.rewardCount4); break;
 				case 4: rewardIconList[i].RefreshReward(_shopProductTableData.rewardType5, _shopProductTableData.rewardValue5, _shopProductTableData.rewardCount5); break;
 			}
-			rewardIconList[i].ShowOnlyIcon(true, 1.0f);
+			switch (i)
+			{
+				case 0: if (_shopProductTableData.rewardType1 == "cu") rewardIconList[i].ShowOnlyIcon(true, 1.0f); break;
+				case 1: if (_shopProductTableData.rewardType2 == "cu") rewardIconList[i].ShowOnlyIcon(true, 1.0f); break;
+				case 2: if (_shopProductTableData.rewardType3 == "cu") rewardIconList[i].ShowOnlyIcon(true, 1.0f); break;
+				case 3: if (_shopProductTableData.rewardType4 == "cu") rewardIconList[i].ShowOnlyIcon(true, 1.0f); break;
+				case 4: if (_shopProductTableData.rewardType5 == "cu") rewardIconList[i].ShowOnlyIcon(true, 1.0f); break;
+			}
 		}
 
 		string attackItemId = PassManager.ShopProductId2ItemId(_relayPackTableData.shopProductId);
@@ -113,6 +120,19 @@ public class RelayPackageBox : SimpleCashCanvas
 		{
 			ItemAtkInfoCanvas.instance.RefreshInfo(PassManager.ShopProductId2ItemId(_relayPackTableData.shopProductId));
 		});
+	}
+
+	public void OnClickRewardButton(int index)
+	{
+		switch (index)
+		{
+			// 0번 index는 Atk로 고정이고 rewardIcon은 하이드 된 상태일거다.
+			//case 0: if (_shopProductTableData.rewardType1 == "it") RewardIcon.ShowDetailInfo(_shopProductTableData.rewardType1, _shopProductTableData.rewardValue1); break;
+			case 1: if (_shopProductTableData.rewardType2 == "it") RewardIcon.ShowDetailInfo(_shopProductTableData.rewardType2, _shopProductTableData.rewardValue2); break;
+			case 2: if (_shopProductTableData.rewardType3 == "it") RewardIcon.ShowDetailInfo(_shopProductTableData.rewardType3, _shopProductTableData.rewardValue3); break;
+			case 3: if (_shopProductTableData.rewardType4 == "it") RewardIcon.ShowDetailInfo(_shopProductTableData.rewardType4, _shopProductTableData.rewardValue4); break;
+			case 4: if (_shopProductTableData.rewardType5 == "it") RewardIcon.ShowDetailInfo(_shopProductTableData.rewardType5, _shopProductTableData.rewardValue5); break;
+		}
 	}
 
 	public void OnClickCustomButton()
