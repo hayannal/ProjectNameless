@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using MEC;
 
 public class CashShopTabCanvas : MonoBehaviour
 {
@@ -54,6 +55,8 @@ public class CashShopTabCanvas : MonoBehaviour
 			_lineLengthRatio = _canvasMatchWidthOrHeightSize / Screen.height;
 		}
 		#endregion
+
+		Timing.RunCoroutine(PreloadProcess());
 	}
 
 	void OnEnable()
@@ -101,6 +104,32 @@ public class CashShopTabCanvas : MonoBehaviour
 		}
 		MainCanvas.instance.OnEnterCharacterMenu(false);
 		#endregion
+	}
+
+	IEnumerator<float> PreloadProcess()
+	{
+		// 두번째 탭 열거면 이렇게 프리로딩을 시작해둬야한다.
+		if (SpellSpriteContainer.instance == null)
+		{
+			AddressableAssetLoadManager.GetAddressableGameObject("SpellSpriteContainer", "", (prefab) =>
+			{
+				BattleInstanceManager.instance.GetCachedObject(prefab, null);
+			});
+		}
+		while (SpellSpriteContainer.instance == null)
+			yield return Timing.WaitForOneFrame;
+		yield return Timing.WaitForOneFrame;
+
+		if (PetSpriteContainer.instance == null)
+		{
+			AddressableAssetLoadManager.GetAddressableGameObject("PetSpriteContainer", "", (prefab) =>
+			{
+				BattleInstanceManager.instance.GetCachedObject(prefab, null);
+			});
+		}
+		while (PetSpriteContainer.instance == null)
+			yield return Timing.WaitForOneFrame;
+		yield return Timing.WaitForOneFrame;
 	}
 
 	public static bool CheckDailyDiamond()
