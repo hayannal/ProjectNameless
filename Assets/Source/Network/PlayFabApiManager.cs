@@ -1202,7 +1202,7 @@ public class PlayFabApiManager : MonoBehaviour
 	#endregion
 
 	#region Gacha
-	public void RequestGacha(int useEnergy, int resultGold, int resultEnergy, int resultBrokenEnergy, int resultEventPoint, List<ObscuredString> listEventItemId, int reserveRoomType, bool refreshTurn, int newTurn, int newGold, Action<bool> successCallback)
+	public void RequestGacha(int useEnergy, int resultGold, int resultDia, int resultEnergy, int resultBrokenEnergy, int resultEventPoint, List<ObscuredString> listEventItemId, int reserveRoomType, bool refreshTurn, int newTurn, int newGold, int eventPointRewardCount, int eventPointRewardCompleteCount, Action<bool> successCallback)
 	{
 		WaitingNetworkCanvas.Show(true);
 
@@ -1210,14 +1210,14 @@ public class PlayFabApiManager : MonoBehaviour
 		bool checkPayback = CashShopData.instance.IsShowEvent("ev6");
 
 		int intRefreshTurn = refreshTurn ? 1 : 0;
-		string input = string.Format("{0}_{1}_{2}_{3}_{4}_{5}_{6}_{7}_{8}_{9}", CurrencyData.instance.bettingCount + 1, useEnergy, resultGold, resultEnergy, resultBrokenEnergy, resultEventPoint, reserveRoomType, intRefreshTurn, newTurn, "azirjwlm");
+		string input = string.Format("{0}_{1}_{2}_{3}_{4}_{5}_{6}_{7}_{8}_{9}_{10}_{11}_{12}", CurrencyData.instance.bettingCount + 1, useEnergy, resultGold, resultDia, resultEnergy, resultBrokenEnergy, resultEventPoint, reserveRoomType, intRefreshTurn, newTurn, eventPointRewardCount, eventPointRewardCompleteCount, "azirjwlm");
 		string checkSum = CheckSum(input);
 		string checkSum2 = "";
 		List<ItemGrantRequest> listItemGrantRequest = GenerateGrantRequestInfo(listEventItemId, ref checkSum2);
 		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "Gacha",
-			FunctionParameter = new { Cnt = CurrencyData.instance.bettingCount + 1, Bet = useEnergy, AddGo = resultGold, AddEn = resultEnergy, AddBrEn = resultBrokenEnergy, AddEv = resultEventPoint, Lst = listItemGrantRequest, LstCs = checkSum2, ResRoomTp = reserveRoomType, RefreshTurn = intRefreshTurn, NewTurn = newTurn, NewGold = newGold, Cp = checkPayback ? 1 : 0, Cs = checkSum },
+			FunctionParameter = new { Cnt = CurrencyData.instance.bettingCount + 1, Bet = useEnergy, AddGo = resultGold, AddDi = resultDia, AddEn = resultEnergy, AddBrEn = resultBrokenEnergy, AddEv = resultEventPoint, Lst = listItemGrantRequest, LstCs = checkSum2, ResRoomTp = reserveRoomType, RefreshTurn = intRefreshTurn, NewTurn = newTurn, NewGold = newGold, Cp = checkPayback ? 1 : 0, EpRc = eventPointRewardCount, EpRcc = eventPointRewardCompleteCount, Cs = checkSum },
 			GeneratePlayStreamEvent = true,
 		}, (success) =>
 		{
@@ -1233,6 +1233,7 @@ public class PlayFabApiManager : MonoBehaviour
 				CurrencyData.instance.bettingCount += 1;
 
 				CurrencyData.instance.gold += resultGold;
+				CurrencyData.instance.dia += resultDia;
 
 				if (resultBrokenEnergy > 0)
 				{
