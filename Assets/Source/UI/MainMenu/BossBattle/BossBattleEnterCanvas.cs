@@ -40,6 +40,7 @@ public class BossBattleEnterCanvas : MonoBehaviour
 	public Coffee.UIExtensions.UIEffect priceGrayscaleEffect;
 
 	public RectTransform alarmRootTransform;
+	public RectTransform exchangeAlarmRootTransform;
 
 	public GameObject contentItemPrefab;
 	public RectTransform contentRootRectTransform;
@@ -61,6 +62,8 @@ public class BossBattleEnterCanvas : MonoBehaviour
 
 	void OnEnable()
 	{
+		RefreshExchangeAlarmObject();
+
 		bool restore = StackCanvas.Push(gameObject, false, null, OnPopStack);
 
 		if (DragThresholdController.instance != null)
@@ -215,6 +218,23 @@ public class BossBattleEnterCanvas : MonoBehaviour
 
 		// price
 		RefreshPrice();
+	}
+
+	void RefreshExchangeAlarmObject()
+	{
+		AlarmObject.Hide(exchangeAlarmRootTransform);
+
+		bool showAlarm = false;
+		if (PointShopAttackCanvas.CheckLevelUp())
+			showAlarm = true;
+		if (showAlarm == false)
+		{
+			PointShopTableData pointShopTableData = TableDataManager.instance.FindPointShopTableData(1, 5);
+			if (pointShopTableData != null && SubMissionData.instance.bossBattlePoint >= pointShopTableData.price)
+				showAlarm = true;
+		}
+		if (showAlarm)
+			AlarmObject.Show(exchangeAlarmRootTransform);
 	}
 
 	BossBattleTableData _bossBattleTableData;
