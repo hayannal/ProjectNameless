@@ -70,11 +70,11 @@ public class RelayPackageBox : SimpleCashCanvas
 			}
 			switch (i)
 			{
-				case 0: if (_shopProductTableData.rewardType1 == "cu") rewardIconList[i].ShowOnlyIcon(true, 1.0f); break;
-				case 1: if (_shopProductTableData.rewardType2 == "cu") rewardIconList[i].ShowOnlyIcon(true, 1.0f); break;
-				case 2: if (_shopProductTableData.rewardType3 == "cu") rewardIconList[i].ShowOnlyIcon(true, 1.0f); break;
-				case 3: if (_shopProductTableData.rewardType4 == "cu") rewardIconList[i].ShowOnlyIcon(true, 1.0f); break;
-				case 4: if (_shopProductTableData.rewardType5 == "cu") rewardIconList[i].ShowOnlyIcon(true, 1.0f); break;
+				case 0: if (_shopProductTableData.rewardType1 == "cu" || _shopProductTableData.rewardValue1.StartsWith("Cash_s")) rewardIconList[i].ShowOnlyIcon(true, 1.0f); break;
+				case 1: if (_shopProductTableData.rewardType2 == "cu" || _shopProductTableData.rewardValue2.StartsWith("Cash_s")) rewardIconList[i].ShowOnlyIcon(true, 1.0f); break;
+				case 2: if (_shopProductTableData.rewardType3 == "cu" || _shopProductTableData.rewardValue3.StartsWith("Cash_s")) rewardIconList[i].ShowOnlyIcon(true, 1.0f); break;
+				case 3: if (_shopProductTableData.rewardType4 == "cu" || _shopProductTableData.rewardValue4.StartsWith("Cash_s")) rewardIconList[i].ShowOnlyIcon(true, 1.0f); break;
+				case 4: if (_shopProductTableData.rewardType5 == "cu" || _shopProductTableData.rewardValue5.StartsWith("Cash_s")) rewardIconList[i].ShowOnlyIcon(true, 1.0f); break;
 			}
 		}
 
@@ -124,15 +124,33 @@ public class RelayPackageBox : SimpleCashCanvas
 
 	public void OnClickRewardButton(int index)
 	{
+		bool processed = false;
+		string rewardType = "";
+		string rewardValue = "";
 		switch (index)
 		{
 			// 0번 index는 Atk로 고정이고 rewardIcon은 하이드 된 상태일거다.
-			//case 0: if (_shopProductTableData.rewardType1 == "it") RewardIcon.ShowDetailInfo(_shopProductTableData.rewardType1, _shopProductTableData.rewardValue1); break;
-			case 1: if (_shopProductTableData.rewardType2 == "it") RewardIcon.ShowDetailInfo(_shopProductTableData.rewardType2, _shopProductTableData.rewardValue2); break;
-			case 2: if (_shopProductTableData.rewardType3 == "it") RewardIcon.ShowDetailInfo(_shopProductTableData.rewardType3, _shopProductTableData.rewardValue3); break;
-			case 3: if (_shopProductTableData.rewardType4 == "it") RewardIcon.ShowDetailInfo(_shopProductTableData.rewardType4, _shopProductTableData.rewardValue4); break;
-			case 4: if (_shopProductTableData.rewardType5 == "it") RewardIcon.ShowDetailInfo(_shopProductTableData.rewardType5, _shopProductTableData.rewardValue5); break;
+			//case 0: rewardType = _shopProductTableData.rewardType1; rewardValue = _shopProductTableData.rewardValue1; break;
+			case 1: rewardType = _shopProductTableData.rewardType2; rewardValue = _shopProductTableData.rewardValue2; break;
+			case 2: rewardType = _shopProductTableData.rewardType3; rewardValue = _shopProductTableData.rewardValue3; break;
+			case 3: rewardType = _shopProductTableData.rewardType4; rewardValue = _shopProductTableData.rewardValue4; break;
+			case 4: rewardType = _shopProductTableData.rewardType5; rewardValue = _shopProductTableData.rewardValue5; break;
 		}
+
+		if (rewardType == "it")
+		{
+			if (rewardValue.StartsWith("Cash_s"))
+			{
+				ConsumeItemTableData consumeItemTableData = TableDataManager.instance.FindConsumeItemTableData(rewardValue);
+				if (consumeItemTableData != null)
+					TooltipCanvas.Show(true, TooltipCanvas.eDirection.Bottom, UIString.instance.GetString(consumeItemTableData.name), 120, rewardIconList[index].iconRootTransform, new Vector2(0.0f, -45.0f));
+			}
+			else
+				RewardIcon.ShowDetailInfo(rewardType, rewardValue);
+			processed = true;
+		}
+		if (processed == false)
+			OnClickCustomButton();
 	}
 
 	public void OnClickCustomButton()
@@ -242,15 +260,12 @@ public class RelayPackageBox : SimpleCashCanvas
 			WaitingNetworkCanvas.Show(false);
 			if (shopProductTableData != null)
 			{
-				UIInstanceManager.instance.ShowCanvasAsync("CommonRewardCanvas", () =>
-				{
-					CommonRewardCanvas.instance.RefreshReward(shopProductTableData, () =>
-					{
-						// 컨슘처리
-						if (ConsumeProductProcessor.ConstainsConsumeGacha(shopProductTableData))
-							ConsumeProductProcessor.instance.ConsumeGacha(shopProductTableData);
-					});
-				});
+				// 공격력 항목이 있으니 CommonRewardCanvas 대신 토스트로 처리
+				ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_CompletePurchase"), 2.0f);
+
+				// 컨슘처리
+				if (ConsumeProductProcessor.ConstainsConsumeGacha(shopProductTableData))
+					ConsumeProductProcessor.instance.ConsumeGacha(shopProductTableData);
 			}
 
 			CodelessIAPStoreListener.Instance.StoreController.ConfirmPendingPurchase(product);

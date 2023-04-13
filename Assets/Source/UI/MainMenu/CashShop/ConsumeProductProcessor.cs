@@ -68,11 +68,11 @@ public class ConsumeProductProcessor : MonoBehaviour
 	public static bool ConstainsConsumeGacha(ShopProductTableData shopProductTableData)
 	{
 		// type만 검사하고 value까진 검사하지 않는다. 팔거라고 가정한 곳에서만 호출할테니 이렇게만 해도 된다.
-		if (shopProductTableData.rewardType1 == "it" ||
-			shopProductTableData.rewardType2 == "it" ||
-			shopProductTableData.rewardType3 == "it" ||
-			shopProductTableData.rewardType4 == "it" ||
-			shopProductTableData.rewardType5 == "it")
+		if ((shopProductTableData.rewardType1 == "it" && shopProductTableData.rewardValue1.StartsWith("Cash_s") && shopProductTableData.rewardValue1.Contains("Gacha")) ||
+			(shopProductTableData.rewardType2 == "it" && shopProductTableData.rewardValue2.StartsWith("Cash_s") && shopProductTableData.rewardValue2.Contains("Gacha")) ||
+			(shopProductTableData.rewardType3 == "it" && shopProductTableData.rewardValue3.StartsWith("Cash_s") && shopProductTableData.rewardValue3.Contains("Gacha")) ||
+			(shopProductTableData.rewardType4 == "it" && shopProductTableData.rewardValue4.StartsWith("Cash_s") && shopProductTableData.rewardValue4.Contains("Gacha")) ||
+			(shopProductTableData.rewardType5 == "it" && shopProductTableData.rewardValue5.StartsWith("Cash_s") && shopProductTableData.rewardValue5.Contains("Gacha")))
 			return true;
 
 		return false;
