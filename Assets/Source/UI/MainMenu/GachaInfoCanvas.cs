@@ -87,19 +87,14 @@ public class GachaInfoCanvas : MonoBehaviour
 	bool _started = false;
 	void Start()
 	{
-		/*
-		if (EventManager.instance.reservedOpenAnalysisEvent)
+		if (PlayerData.instance.tutorialFlagShowSummonCanvas)
 		{
 			UIInstanceManager.instance.ShowCanvasAsync("EventInfoCanvas", () =>
 			{
-				EventInfoCanvas.instance.ShowCanvas(true, UIString.instance.GetString("GameUI_AnalysisName"), UIString.instance.GetString("GameUI_AnalysisDesc"), UIString.instance.GetString("GameUI_AnalysisMore"), null, 0.785f);
+				EventInfoCanvas.instance.ShowCanvas(true, UIString.instance.GetString("TutorialUI_SummonName"), UIString.instance.GetString("TutorialUI_SummonDesc"), UIString.instance.GetString("TutorialUI_SummonMore"), null, 0.785f);
 			});
-			EventManager.instance.reservedOpenAnalysisEvent = false;
-			EventManager.instance.CompleteServerEvent(EventManager.eServerEvent.analysis);
-			ResearchCanvas.instance.RefreshAlarmObjectList();
-			DotMainMenuCanvas.instance.RefreshResearchAlarmObject();
+			PlayerData.instance.OnCompleteTutorialStep(1);
 		}
-		*/
 
 		GetComponent<Canvas>().worldCamera = UIInstanceManager.instance.GetCachedCameraMain();
 		_defaultGaugeColor = gaugeImage.color;
@@ -139,6 +134,8 @@ public class GachaInfoCanvas : MonoBehaviour
 
 		MoveTween(false);
 		RefreshInfo();
+
+		GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.OpenSummonCanvas);
 	}
 
 	void OnDisable()
