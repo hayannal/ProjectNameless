@@ -19,6 +19,7 @@ public class CostumeCanvasListItem : SimpleCashCanvas
 	public GameObject eventGainObject;
 	public GameObject baseCostumeObject;
 
+	public GameObject visualDetailButtonObject;
 	public GameObject equippedObject;
 
 	bool _baseCostume;
@@ -27,6 +28,7 @@ public class CostumeCanvasListItem : SimpleCashCanvas
 	public void Initialize(bool contains, CostumeTableData costumeTableData)
 	{
 		_baseCostume = (costumeTableData.costumeId == CostumeManager.s_DefaultCostumeId);
+		visualDetailButtonObject.SetActive(_baseCostume);
 
 		costumeImage.sprite = CostumeListCanvas.instance.GetSprite(costumeTableData.spriteName);
 		atkText.text = costumeTableData.atk.ToString("N0");
@@ -102,6 +104,12 @@ public class CostumeCanvasListItem : SimpleCashCanvas
 			ToastCanvas.instance.ShowToast(UIString.instance.GetString("CostumeUI_ChangeCostumeToast"), 2.0f);
 		});
 	}
+
+	public void OnClickVisualDetailButton()
+	{
+		ToastCanvas.instance.ShowToast(UIString.instance.GetString("SystemUI_WaitUpdate"), 2.0f);
+	}
+
 
 	// SimpleCashCanvas 과 다르게 구현하는거만 처리
 	public void OnClickCustomButton()
