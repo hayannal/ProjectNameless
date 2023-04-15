@@ -278,6 +278,7 @@ public class PlayFabApiManager : MonoBehaviour
 		PlayerData.instance.OnRecvServerTableData(loginResult.InfoResultPayload.TitleData);
 		AnalysisData.instance.OnRecvAnalysisData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 		GuideQuestData.instance.OnRecvGuideQuestData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
+		SubQuestData.instance.OnRecvQuestData(loginResult.InfoResultPayload.UserReadOnlyData);
 		MissionData.instance.OnRecvMissionData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 		SubMissionData.instance.OnRecvSubMissionData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 		FestivalData.instance.OnRecvFestivalData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
@@ -294,7 +295,6 @@ public class PlayFabApiManager : MonoBehaviour
 
 		/*
 		DailyShopData.instance.OnRecvShopData(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData);		
-		QuestData.instance.OnRecvQuestData(loginResult.InfoResultPayload.UserReadOnlyData);
 		PlayerData.instance.OnRecvLevelPackageResetInfo(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData, loginResult.NewlyCreated);
 		CumulativeEventData.instance.OnRecvCumulativeEventData(loginResult.InfoResultPayload.TitleData, loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics, loginResult.NewlyCreated);
 		*/
@@ -1854,6 +1854,119 @@ public class PlayFabApiManager : MonoBehaviour
 						CashShopData.instance.OnRecvConsumeItem(listEventItemId[i], 1);
 				}
 
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+	#endregion
+
+
+	#region Quest
+	public void RequestRegisterQuestList(List<SubQuestData.QuestInfo> listQuestInfoForSend, Action successCallback)
+	{
+		string checkSum = "";
+		var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
+		string jsonListQst = serializer.SerializeObject(listQuestInfoForSend);
+		checkSum = CheckSum(string.Format("{0}_{1}", jsonListQst, "cibpqxrh"));
+
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "SetQuestList",
+			FunctionParameter = new { Lst = listQuestInfoForSend, LstCs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (failure)
+				HandleCommonError();
+			else
+			{
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+	public void RequestSelectQuest(int questIdx, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "SelectQuest",
+			FunctionParameter = new { QstIdx = questIdx },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+				SubQuestData.instance.currentQuestIndex = questIdx;
+				SubQuestData.instance.currentQuestStep = SubQuestData.eQuestStep.Proceeding;
+				SubQuestData.instance.currentQuestProceedingCount = 0;
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+	public void RequestQuestProceedingCount(int addCount, Action successCallback)
+	{
+		string input = string.Format("{0}_{1}", addCount, "ckwqizmn");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "QuestProceedingCount",
+			FunctionParameter = new { Add = addCount, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (failure)
+				HandleCommonError();
+			else
+			{
+				SubQuestData.instance.currentQuestProceedingCount += addCount;
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+	public void RequestCompleteQuest(bool doubleClaim, int diaCount, int addEnergy, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "CompleteQuest",
+			FunctionParameter = new { Dbl = doubleClaim ? 1 : 0 },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				SubQuestData.instance.currentQuestStep = SubQuestData.eQuestStep.Select;
+				SubQuestData.instance.currentQuestIndex = 0;
+				SubQuestData.instance.currentQuestProceedingCount = 0;
+				SubQuestData.instance.todayQuestRewardedCount += 1;
+				if (doubleClaim)
+					CurrencyData.instance.dia -= diaCount;
+				CurrencyData.instance.OnRecvRefillEnergy(addEnergy);
 				if (successCallback != null) successCallback.Invoke();
 			}
 		}, (error) =>

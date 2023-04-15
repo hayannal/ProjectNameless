@@ -200,7 +200,7 @@ public class GuideQuestInfo : MonoBehaviour
 			proceedingCountImage.color = Color.white;
 		}
 		proceedingCountImage.fillAmount = (float)(currentCount) / maxCount;
-		proceedingCountText.text = string.Format("{0} / {1}", currentCount, maxCount);
+		proceedingCountText.text = string.Format("{0} / {1}", Mathf.Min(currentCount, maxCount), maxCount);
 		//completeText.gameObject.SetActive(_complete);
 
 		blinkObject.SetActive(_complete);
@@ -242,7 +242,12 @@ public class GuideQuestInfo : MonoBehaviour
 		if (guideQuestTableData == null)
 			return;
 
-		switch ((GuideQuestData.eQuestClearType)guideQuestTableData.typeId)
+		OnClickQuickMenu((GuideQuestData.eQuestClearType)guideQuestTableData.typeId);
+	}
+
+	public static void OnClickQuickMenu(GuideQuestData.eQuestClearType questClearType)
+	{
+		switch (questClearType)
 		{
 			case GuideQuestData.eQuestClearType.KillBossMonster:
 				ToastCanvas.instance.ShowToast(UIString.instance.GetString("QuestUI_KillBossMonsterInfo"), 2.0f);

@@ -55,6 +55,7 @@ public class TableDataManager : MonoBehaviour
 	public AnalysisBoostTable analysisBoostTable;
 
 	public GuideQuestTable guideQuestTable;
+	public SubQuestTable subQuestTable;
 	public SummonTypeTable summonTypeTable;
 	public ShopProductTable shopProductTable;
 	public LevelPassTable levelPassTable;
@@ -523,6 +524,16 @@ public class TableDataManager : MonoBehaviour
 		{
 			if (guideQuestTable.dataArray[i].id == id)
 				return guideQuestTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public SubQuestTableData FindSubQuestTableData(int type)
+	{
+		for (int i = 0; i < subQuestTable.dataArray.Length; ++i)
+		{
+			if (subQuestTable.dataArray[i].type == type)
+				return subQuestTable.dataArray[i];
 		}
 		return null;
 	}
