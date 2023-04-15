@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -40,10 +40,10 @@ public class SubQuestData : MonoBehaviour
 	}
 	List<QuestInfo> _listSubQuestInfo;
 	
-	// º¸»ó±îÁö ¹ŞÀº Äù½ºÆ® È½¼ö
+	// ë³´ìƒê¹Œì§€ ë°›ì€ í€˜ìŠ¤íŠ¸ íšŸìˆ˜
 	public ObscuredInt todayQuestRewardedCount { get; set; }
 
-	// ÇöÀç ÁøÇàÁßÀÎ Äù½ºÆ®. ¿À¸®Áø ¹Ú½º¸¦ ¿­¶§ Index´Â 0À¸·Î StepÀº 
+	// í˜„ì¬ ì§„í–‰ì¤‘ì¸ í€˜ìŠ¤íŠ¸. ì˜¤ë¦¬ì§„ ë°•ìŠ¤ë¥¼ ì—´ë•Œ IndexëŠ” 0ìœ¼ë¡œ Stepì€ 
 	public eQuestStep currentQuestStep { get; set; }
 	public ObscuredInt currentQuestIndex { get; set; }
 	public ObscuredInt currentQuestProceedingCount { get; set; }
@@ -74,10 +74,10 @@ public class SubQuestData : MonoBehaviour
 
 	public void OnRecvQuestData(Dictionary<string, UserDataRecord> userReadOnlyData)
 	{
-		// PlayerData.ResetData È£ÃâµÇ¸é ´Ù½Ã ¿©±â·Î µé¾î¿ÃÅ×´Ï ÇÃ·¡±×µé ÃÊ±âÈ­ ½ÃÄÑ³õ´Â´Ù.
+		// PlayerData.ResetData í˜¸ì¶œë˜ë©´ ë‹¤ì‹œ ì—¬ê¸°ë¡œ ë“¤ì–´ì˜¬í…Œë‹ˆ í”Œë˜ê·¸ë“¤ ì´ˆê¸°í™” ì‹œì¼œë†“ëŠ”ë‹¤.
 		_checkUnfixedQuestListInfo = false;
 
-		// ´Ù¸¥ Unfixed Ã³·³ ÇÏ·ç¿¡ ÇÒ ¼ö ÀÖ´Â Äù½ºÆ® ¸ñ·Ï ÃÑ 6°³¸¦ ¼­¹ö·Î º¸³»¼­ µî·ÏÇÏ°Ô µÈ´Ù.
+		// ë‹¤ë¥¸ Unfixed ì²˜ëŸ¼ í•˜ë£¨ì— í•  ìˆ˜ ìˆëŠ” í€˜ìŠ¤íŠ¸ ëª©ë¡ ì´ 6ê°œë¥¼ ì„œë²„ë¡œ ë³´ë‚´ì„œ ë“±ë¡í•˜ê²Œ ëœë‹¤.
 		if (userReadOnlyData.ContainsKey("lasUnfxQstDat"))
 		{
 			if (string.IsNullOrEmpty(userReadOnlyData["lasUnfxQstDat"].Value) == false)
@@ -90,7 +90,7 @@ public class SubQuestData : MonoBehaviour
 				_questListDataString = userReadOnlyData["qstLst"].Value;
 		}
 
-		// ÇöÀç ÁøÇàÁßÀÎ Äù½ºÆ®ÀÇ »óÅÂ. µ¿½Ã¿¡ 1°³¸¸ ÁøÇà°¡´ÉÇÏ´Ù.
+		// í˜„ì¬ ì§„í–‰ì¤‘ì¸ í€˜ìŠ¤íŠ¸ì˜ ìƒíƒœ. ë™ì‹œì— 1ê°œë§Œ ì§„í–‰ê°€ëŠ¥í•˜ë‹¤.
 		currentQuestStep = eQuestStep.Select;
 		currentQuestIndex = 0;
 		if (userReadOnlyData.ContainsKey("qstIdx"))
@@ -119,7 +119,7 @@ public class SubQuestData : MonoBehaviour
 				todayQuestRewardedCount = intValue;
 		}
 
-		// °¡ÀÌµå Äù½ºÆ® ¸»°í ¼­ºêÄù½ºÆ®µµ Å¬¶óÀÌ¾ğÆ® Ä³½ÌÀ» »ç¿ëÇÏ±â·Î ÇÑ´Ù.
+		// ê°€ì´ë“œ í€˜ìŠ¤íŠ¸ ë§ê³  ì„œë¸Œí€˜ìŠ¤íŠ¸ë„ í´ë¼ì´ì–¸íŠ¸ ìºì‹±ì„ ì‚¬ìš©í•˜ê¸°ë¡œ í•œë‹¤.
 		clientCacheIndex = ObscuredPrefs.GetInt("cachedSubQuestIndex");
 		clientCacheCount = 0;
 		if (currentQuestIndex == clientCacheIndex)
@@ -128,7 +128,7 @@ public class SubQuestData : MonoBehaviour
 		_lastCachedQuestIndex = -1;
 		_listSubQuestInfo = null;
 
-		// Å¬¶ó ±¸µ¿ ÈÄ Äù½ºÆ®´Â ÇÏ·ç¿¡ ÇÑ¹ø ¹Ì¸® Á¤ÇØµĞ´Ù.
+		// í´ë¼ êµ¬ë™ í›„ í€˜ìŠ¤íŠ¸ëŠ” í•˜ë£¨ì— í•œë²ˆ ë¯¸ë¦¬ ì •í•´ë‘”ë‹¤.
 		CheckUnfixedQuestListInfo();
 	}
 
@@ -150,6 +150,14 @@ public class SubQuestData : MonoBehaviour
 		if (_checkUnfixedQuestListInfo)
 			return;
 
+		// í•œë²ˆì´ë¼ë„ ì €ì¥í–ˆìœ¼ë©´ ë°ì´í„° ì´ì–´ë°›ì•„ì„œ ë‹¤ì‹œ ì“¸ìˆ˜ë„ ìˆìœ¼ë‹ˆ íŒŒì‹±ì€ í•´ë‘”ë‹¤.
+		if (string.IsNullOrEmpty(_questListDataString) == false)
+		{
+			var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
+			_listSubQuestInfo = serializer.DeserializeObject<List<QuestInfo>>(_questListDataString);
+		}
+		_checkUnfixedQuestListInfo = true;
+
 		bool needRegister = false;
 		if (_lastUnfixedDateTimeString == "")
 			needRegister = true;
@@ -160,17 +168,11 @@ public class SubQuestData : MonoBehaviour
 			{
 				DateTime universalTime = lastUnfixedItemDateTime.ToUniversalTime();
 				if (ServerTime.UtcNow.Year == universalTime.Year && ServerTime.UtcNow.Month == universalTime.Month && ServerTime.UtcNow.Day == universalTime.Day)
-				{
-					var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
-					_listSubQuestInfo = serializer.DeserializeObject<List<QuestInfo>>(_questListDataString);
-
 					OnCompleteRecvQuestList();
-				}
 				else
 					needRegister = true;
 			}
 		}
-		_checkUnfixedQuestListInfo = true;
 
 		if (needRegister == false)
 			return;
@@ -182,7 +184,26 @@ public class SubQuestData : MonoBehaviour
 	{
 		_listSubQuestInfoForSend.Clear();
 
-		// µÎ°³¾¿ ¼¼Æ®·Î ¸¸µé°Å´Ù. µÎ°³ ¾È¿¡¼­´Â ´Ù¸¥ Äù½ºÆ®¸¦ ¸¸µé¾î¾ßÇÑ´Ù.
+		// í˜¹ì‹œ ì§„í–‰ì¤‘ì´ë˜ í€˜ìŠ¤íŠ¸ê°€ ìˆëŠ”ì§€ í™•ì¸í•´ì•¼í•œë‹¤.
+		int proceedingType = 0;
+		int proceedingCount = 0;
+		int proceedingReward = 0;
+		int proceedingDifficulty = 0;
+		bool proceeding = false;
+		if (currentQuestStep == eQuestStep.Proceeding)
+		{
+			QuestInfo proceedingQuestInfo = FindQuestInfoByIndex(currentQuestIndex);
+			if (proceedingQuestInfo != null)
+			{
+				proceedingType = proceedingQuestInfo.tp;
+				proceedingCount = proceedingQuestInfo.cnt;
+				proceedingReward = proceedingQuestInfo.rwd;
+				proceedingDifficulty = proceedingQuestInfo.dif;
+				proceeding = true;
+			}
+		}
+
+		// ë‘ê°œì”© ì„¸íŠ¸ë¡œ ë§Œë“¤ê±°ë‹¤. ë‘ê°œ ì•ˆì—ì„œëŠ” ë‹¤ë¥¸ í€˜ìŠ¤íŠ¸ë¥¼ ë§Œë“¤ì–´ì•¼í•œë‹¤.
 		for (int i = 0; i < DailyMaxCount; ++i)
 		{
 			int questType1 = 0;
@@ -213,17 +234,33 @@ public class SubQuestData : MonoBehaviour
 			_listSubQuestInfoForSend.Add(questInfo);
 		}
 
-		PlayFabApiManager.instance.RequestRegisterQuestList(_listSubQuestInfoForSend, () =>
+		if (proceeding)
 		{
-			// ¼º°øÀÌ ¿À¸é »õ·Î ¸¸µç°Å·Î µ¤¾î¾º¿î´Ù.
+			_listSubQuestInfoForSend[0].tp = proceedingType;
+			_listSubQuestInfoForSend[0].cnt = proceedingCount;
+			_listSubQuestInfoForSend[0].rwd = proceedingReward;
+			_listSubQuestInfoForSend[0].dif = proceedingDifficulty;
+		}
+
+		PlayFabApiManager.instance.RequestRegisterQuestList(_listSubQuestInfoForSend, proceeding, () =>
+		{
+			// ì„±ê³µì´ ì˜¤ë©´ ìƒˆë¡œ ë§Œë“ ê±°ë¡œ ë®ì–´ì”Œìš´ë‹¤.
 			_listSubQuestInfo = _listSubQuestInfoForSend;
 
-			// ¼º°øÇß´Ù¸é ¿À´ÃÀÇ ÃÖÃÊ ·Î±×ÀÎ¿¡¼­ Äù½ºÆ® ¸®½ºÆ®¸¦ µî·ÏÇß´Ù´Â°Å´Ï
-			// Äù½ºÆ® ½ºÅÜÀ» ÃÊ±âÈ­ ÇØµµ µÇÁö ¾ÊÀ»±î.
-			// ¿©±â¿¡¼­ Ã³¸®ÇÏ¸é ¿À¸®Áø¹Ú½º ¿ÀÇÂÇÏ°í³ª¼­ ¼³Á¤ÇÏÁö ¾Ê¾Æµµ µÇ±â¶§¹®¿¡ ÇÏ´Â°Ô ÁÁÀ»°Å °°´Ù.
+			// ì„±ê³µí–ˆë‹¤ë©´ ì˜¤ëŠ˜ì˜ ìµœì´ˆ ë¡œê·¸ì¸ì—ì„œ í€˜ìŠ¤íŠ¸ ë¦¬ìŠ¤íŠ¸ë¥¼ ë“±ë¡í–ˆë‹¤ëŠ”ê±°ë‹ˆ
+			// í€˜ìŠ¤íŠ¸ ìŠ¤í…ì„ ì´ˆê¸°í™” í•´ë„ ë˜ì§€ ì•Šì„ê¹Œ.
+			// ì—¬ê¸°ì—ì„œ ì²˜ë¦¬í•˜ë©´ ì˜¤ë¦¬ì§„ë°•ìŠ¤ ì˜¤í”ˆí•˜ê³ ë‚˜ì„œ ì„¤ì •í•˜ì§€ ì•Šì•„ë„ ë˜ê¸°ë•Œë¬¸ì— í•˜ëŠ”ê²Œ ì¢‹ì„ê±° ê°™ë‹¤.
 			currentQuestIndex = 0;
-			currentQuestStep = eQuestStep.Select;
-			currentQuestProceedingCount = 0;
+
+			if (proceeding)
+			{
+				currentQuestStep = eQuestStep.Proceeding;
+			}
+			else
+			{
+				currentQuestStep = eQuestStep.Select;
+				currentQuestProceedingCount = 0;
+			}
 			todayQuestRewardedCount = 0;
 			_lastCachedQuestIndex = -1;
 
@@ -233,7 +270,7 @@ public class SubQuestData : MonoBehaviour
 
 	void OnCompleteRecvQuestList()
 	{
-		// ÆĞÅ¶ ¹Ş°í³ª¼­ ¹Ù·Î È®ÀÎÇÏµµ·Ï Ã³¸®
+		// íŒ¨í‚· ë°›ê³ ë‚˜ì„œ ë°”ë¡œ í™•ì¸í•˜ë„ë¡ ì²˜ë¦¬
 		if (_checkIndicatorOnRecvQuestList)
 		{
 			if (SubQuestInfo.instance != null)
@@ -250,12 +287,12 @@ public class SubQuestData : MonoBehaviour
 	List<int> _listTempIndex = new List<int>();
 	void CreateQuestPair(ref int questType1, ref int questNeedCountIndex1, ref int questType2, ref int questNeedCountIndex2)
 	{
-		// Å¸ÀÔµµ ´Ş¶ó¾ßÇÏ°í ³­ÀÌµµµµ ´Ş¶ó¾ßÇÑ´Ù. Ã¹¹øÂ°²¨´Â Å×ÀÌºí¿¡¼­ ·£´ıÀ¸·Î »Ì°í
+		// íƒ€ì…ë„ ë‹¬ë¼ì•¼í•˜ê³  ë‚œì´ë„ë„ ë‹¬ë¼ì•¼í•œë‹¤. ì²«ë²ˆì§¸êº¼ëŠ” í…Œì´ë¸”ì—ì„œ ëœë¤ìœ¼ë¡œ ë½‘ê³ 
 		int firstIndex = UnityEngine.Random.Range(0, TableDataManager.instance.subQuestTable.dataArray.Length);
 		questType1 = TableDataManager.instance.subQuestTable.dataArray[firstIndex].type;
 		questNeedCountIndex1 = UnityEngine.Random.Range(0, TableDataManager.instance.subQuestTable.dataArray[firstIndex].needCount.Length);
 
-		// µÎ¹øÂ°²¨´Â Ã¹¹øÂ°²¬ Á¦¿ÜÇÑ ¸®½ºÆ®¸¦ ¸¸µé¾î¼­ ÀÌ ¾È¿¡¼­ »Ì´Â´Ù.
+		// ë‘ë²ˆì§¸êº¼ëŠ” ì²«ë²ˆì§¸ê»„ ì œì™¸í•œ ë¦¬ìŠ¤íŠ¸ë¥¼ ë§Œë“¤ì–´ì„œ ì´ ì•ˆì—ì„œ ë½‘ëŠ”ë‹¤.
 		_listTempIndex.Clear();
 		for (int i = 0; i < TableDataManager.instance.subQuestTable.dataArray.Length; ++i)
 		{
@@ -280,25 +317,25 @@ public class SubQuestData : MonoBehaviour
 
 	public void OnRefreshDay()
 	{
-		// ÁøÇàÁßÀÎ Äù½ºÆ®´Â °Çµå¸®Áö ¾Ê±â·Î ÇÏ°í ¿À´ÃÀÇ ¿Ï·áÈ½¼ö¸¸ ÃÊ±âÈ­ÇÏ±â·Î ÇÑ´Ù.
+		// ì§„í–‰ì¤‘ì¸ í€˜ìŠ¤íŠ¸ëŠ” ê±´ë“œë¦¬ì§€ ì•Šê¸°ë¡œ í•˜ê³  ì˜¤ëŠ˜ì˜ ì™„ë£ŒíšŸìˆ˜ë§Œ ì´ˆê¸°í™”í•˜ê¸°ë¡œ í•œë‹¤.
 		todayQuestRewardedCount = 0;
 
-		// ´ë½Å ¸®½ºÆ®¸¦ °»½ÅÇÒ°Å±â ¶§¹®¿¡ ÁøÇàÁßÀÎ Äù½ºÆ®°¡ ³²¾ÆÀÖ´Ù¸é
+		// ëŒ€ì‹  ë¦¬ìŠ¤íŠ¸ë¥¼ ê°±ì‹ í• ê±°ê¸° ë•Œë¬¸ì— ì§„í–‰ì¤‘ì¸ í€˜ìŠ¤íŠ¸ê°€ ë‚¨ì•„ìˆë‹¤ë©´
 		if (currentQuestStep == eQuestStep.Proceeding)
 		{
-			// ÀÎµ¦½º¸¸ 0¹øÀ¸·Î ¿Å°Ü³õ°í ´ÙÀ½³¯¿¡µµ °è¼Ó »ç¿ëÇÏ±â·Î ÇÑ´Ù.
+			// ì¸ë±ìŠ¤ë§Œ 0ë²ˆìœ¼ë¡œ ì˜®ê²¨ë†“ê³  ë‹¤ìŒë‚ ì—ë„ ê³„ì† ì‚¬ìš©í•˜ê¸°ë¡œ í•œë‹¤.
 			currentQuestIndex = 0;
 			//currentQuestStep = eQuestStep.Select;
 			//currentQuestProceedingCount = 0;
 		}
 
-		// ÀÌ Å¸ÀÌ¹Ö¿¡ ´ÙÀ½³¯ »õ·Î ¿­¸®´Â Äù½ºÆ® °»½ÅÃ³¸®µµ ÇÔ²² ÇØÁØ´Ù.
+		// ì´ íƒ€ì´ë°ì— ë‹¤ìŒë‚  ìƒˆë¡œ ì—´ë¦¬ëŠ” í€˜ìŠ¤íŠ¸ ê°±ì‹ ì²˜ë¦¬ë„ í•¨ê»˜ í•´ì¤€ë‹¤.
 		RegisterQuestList();
 	}
 
 	public bool IsCompleteQuest()
 	{
-		// ÀÌ¹Ì º¸»ó¹ŞÀº Äù½ºÆ®´Â Complete·Î ÆÇ´ÜÇÏÁö ¾Ê°í rewarded count¿¡ Æ÷ÇÔµÇ¾îÀÖ´Ù.
+		// ì´ë¯¸ ë³´ìƒë°›ì€ í€˜ìŠ¤íŠ¸ëŠ” Completeë¡œ íŒë‹¨í•˜ì§€ ì•Šê³  rewarded countì— í¬í•¨ë˜ì–´ìˆë‹¤.
 		if (currentQuestStep != eQuestStep.Proceeding)
 			return false;
 
@@ -315,7 +352,7 @@ public class SubQuestData : MonoBehaviour
 		if (currentQuestStep != eQuestStep.Proceeding)
 			return;
 
-		// ÀÚÁÖ È£ÃâµÇ´Â ºÎºĞÀÌ¶ó¼­ Ä³½ÌÀ» »ç¿ëÇÑ´Ù.
+		// ìì£¼ í˜¸ì¶œë˜ëŠ” ë¶€ë¶„ì´ë¼ì„œ ìºì‹±ì„ ì‚¬ìš©í•œë‹¤.
 		QuestInfo selectedQuestInfo = null;
 		if (_lastCachedQuestIndex == currentQuestIndex && _cachedQuestInfo != null)
 			selectedQuestInfo = _cachedQuestInfo;
@@ -326,23 +363,23 @@ public class SubQuestData : MonoBehaviour
 			_cachedQuestInfo = selectedQuestInfo;
 		}
 
-		// ¼³¸¶ ÀÌ·¨´Âµ¥µµ nullÀÌ¸é ÀÌ»óÇÑ°Å´Ù.
+		// ì„¤ë§ˆ ì´ë¬ëŠ”ë°ë„ nullì´ë©´ ì´ìƒí•œê±°ë‹¤.
 		if (selectedQuestInfo == null)
 			return;
 
-		// ÀÌ¹Ì ¿Ï·áÇÑ »óÅÂ¶ó¸é ´õ ÇÒ ÇÊ¿äµµ ¾ø´Ù.
+		// ì´ë¯¸ ì™„ë£Œí•œ ìƒíƒœë¼ë©´ ë” í•  í•„ìš”ë„ ì—†ë‹¤.
 		if (GetProceedingCount() >= selectedQuestInfo.cnt)
 		{
 			#region Sync Max Count
-			// ¿Ï·áÇÑ°Çµ¥ ¾ÆÁ÷ ¼­¹ö·Î ¸øº¸³»°í ÀÖ´Â°Å¿´´Ù¸é
-			// ¸¶Áö¸· µ¿±âÈ­ Å¸ÀÓ Ã¼Å©ÇØ¼­ °­Á¦·Î µ¿±âÈ­ ½ÃÄÑµĞ´Ù.
+			// ì™„ë£Œí•œê±´ë° ì•„ì§ ì„œë²„ë¡œ ëª»ë³´ë‚´ê³  ìˆëŠ”ê±°ì˜€ë‹¤ë©´
+			// ë§ˆì§€ë§‰ ë™ê¸°í™” íƒ€ì„ ì²´í¬í•´ì„œ ê°•ì œë¡œ ë™ê¸°í™” ì‹œì¼œë‘”ë‹¤.
 			if (currentQuestIndex == clientCacheIndex && clientCacheCount > 0)
 			{
 				if (ServerTime.UtcNow > _lastSendTime + TimeSpan.FromSeconds(15))
 				{
 					_lastSendTime = ServerTime.UtcNow;
 
-					// UI °»½ÅÀº ÇÒÇÊ¿ä ¾øÀ»°Å´Ù.
+					// UI ê°±ì‹ ì€ í• í•„ìš” ì—†ì„ê±°ë‹¤.
 					PlayFabApiManager.instance.RequestQuestProceedingCount(clientCacheCount, () =>
 					{
 						clientCacheCount = 0;
@@ -354,11 +391,11 @@ public class SubQuestData : MonoBehaviour
 			return;
 		}
 
-		// Á¶°Çµé Ã¼Å©
+		// ì¡°ê±´ë“¤ ì²´í¬
 		if ((GuideQuestData.eQuestClearType)selectedQuestInfo.tp != questClearType)
 			return;
 
-		// ³Ê¹« º¯È­·®ÀÌ »¡¶ó¼­ ¸Å¹ø º¸³»Áö ¾ÊÀ» Ç×¸ñµéÀº Å¬¶óÀÌ¾ğÆ® Ä³½ÌÀ» ÇÔ²² »ç¿ëÇÏ±â·Î ÇÑ´Ù.
+		// ë„ˆë¬´ ë³€í™”ëŸ‰ì´ ë¹¨ë¼ì„œ ë§¤ë²ˆ ë³´ë‚´ì§€ ì•Šì„ í•­ëª©ë“¤ì€ í´ë¼ì´ì–¸íŠ¸ ìºì‹±ì„ í•¨ê»˜ ì‚¬ìš©í•˜ê¸°ë¡œ í•œë‹¤.
 		bool ignorePacket = false;
 		if (GuideQuestData.IsUseClientCache(questClearType))
 		{
@@ -373,12 +410,12 @@ public class SubQuestData : MonoBehaviour
 			ObscuredPrefs.SetInt("cachedSubQuestIndex", clientCacheIndex);
 			ObscuredPrefs.SetInt("cachedSubQuestCount", clientCacheCount);
 
-			// ÆĞÅ¶ º¸³»´Â°É ÆĞ½ºÇÒ¶© ±×³É UI Ã³¸®¸¸ ÇØµÎ°í ³Ñ¾î°¡¾ßÇÑ´Ù.
+			// íŒ¨í‚· ë³´ë‚´ëŠ”ê±¸ íŒ¨ìŠ¤í• ë• ê·¸ëƒ¥ UI ì²˜ë¦¬ë§Œ í•´ë‘ê³  ë„˜ì–´ê°€ì•¼í•œë‹¤.
 			OnQuestProceedingCount();
 		}
 		else
 		{
-			// ³ª¸ÓÁö Ç×¸ñµéÀº ¹Ù·Î º¸³»´Â°Ô ¸Â´Ù.
+			// ë‚˜ë¨¸ì§€ í•­ëª©ë“¤ì€ ë°”ë¡œ ë³´ë‚´ëŠ”ê²Œ ë§ë‹¤.
 			if (currentQuestIndex == clientCacheIndex)
 				addValue += clientCacheCount;
 
@@ -392,15 +429,15 @@ public class SubQuestData : MonoBehaviour
 		}
 	}
 
-	// 30ÃÊ¿¡ ÇÑ¹ø¾¿¸¸ º¸³»µµ ¹®Á¦¾øÁö ¾ÊÀ»±î
+	// 30ì´ˆì— í•œë²ˆì”©ë§Œ ë³´ë‚´ë„ ë¬¸ì œì—†ì§€ ì•Šì„ê¹Œ
 	DateTime _lastSendTime;
 	bool CheckLastSendDelay(GuideQuestData.eQuestClearType questClearType)
 	{
-		// ¸¶Áö¸·À¸·Î º¸³½ ½Ã°£À¸·ÎºÎÅÍ 30ÃÊ°¡ Áö³ªÁö ¾Ê¾Ò´Ù¸é
+		// ë§ˆì§€ë§‰ìœ¼ë¡œ ë³´ë‚¸ ì‹œê°„ìœ¼ë¡œë¶€í„° 30ì´ˆê°€ ì§€ë‚˜ì§€ ì•Šì•˜ë‹¤ë©´
 		if (_lastSendTime + TimeSpan.FromSeconds(30) > ServerTime.UtcNow)
 			return true;
 
-		// Áö³µÀ¸¸é º¸³»µµ µÈ´Ù. ¸¶Áö¸· ½Ã°£À» ±â·ÏÇØµĞ´Ù.
+		// ì§€ë‚¬ìœ¼ë©´ ë³´ë‚´ë„ ëœë‹¤. ë§ˆì§€ë§‰ ì‹œê°„ì„ ê¸°ë¡í•´ë‘”ë‹¤.
 		_lastSendTime = ServerTime.UtcNow;
 		return false;
 	}

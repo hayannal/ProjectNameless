@@ -1865,17 +1865,17 @@ public class PlayFabApiManager : MonoBehaviour
 
 
 	#region Quest
-	public void RequestRegisterQuestList(List<SubQuestData.QuestInfo> listQuestInfoForSend, Action successCallback)
+	public void RequestRegisterQuestList(List<SubQuestData.QuestInfo> listQuestInfoForSend, bool proceeding, Action successCallback)
 	{
 		string checkSum = "";
 		var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
 		string jsonListQst = serializer.SerializeObject(listQuestInfoForSend);
-		checkSum = CheckSum(string.Format("{0}_{1}", jsonListQst, "cibpqxrh"));
+		checkSum = CheckSum(string.Format("{0}_{1}_{2}", jsonListQst, proceeding ? 1 : 0, "cibpqxrh"));
 
 		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "SetQuestList",
-			FunctionParameter = new { Lst = listQuestInfoForSend, LstCs = checkSum },
+			FunctionParameter = new { Lst = listQuestInfoForSend, Proc = proceeding ? 1 : 0, LstCs = checkSum },
 			GeneratePlayStreamEvent = true,
 		}, (success) =>
 		{
