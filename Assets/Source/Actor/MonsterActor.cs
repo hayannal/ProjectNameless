@@ -337,7 +337,7 @@ public class MonsterActor : Actor
 		{
 			BossMonsterGaugeCanvas.OnDie(this);
 
-			if (StageManager.instance != null && StageManager.instance.repeatMode && StageFloorInfoCanvas.instance != null && StageFloorInfoCanvas.instance.gameObject.activeSelf)
+			if (StageManager.instance != null && StageManager.instance.repeatMode == false && StageFloorInfoCanvas.instance != null && StageFloorInfoCanvas.instance.gameObject.activeSelf)
 				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.KillBossMonster);
 		}
 		
