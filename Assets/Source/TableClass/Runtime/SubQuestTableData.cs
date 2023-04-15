@@ -13,10 +13,6 @@ public class SubQuestTableData
   public int type { get { return _type; } set { _type = value; } }
   
   [SerializeField]
-  string _nameId;
-  public string nameId { get { return _nameId; } set { _nameId = value; } }
-  
-  [SerializeField]
   string _descriptionId;
   public string descriptionId { get { return _descriptionId; } set { _descriptionId = value; } }
   
@@ -29,7 +25,7 @@ public class SubQuestTableData
   public int[] needCount { get { return _needCount; } set { _needCount = value; } }
   
   [SerializeField]
-  int[] _rewardGold = new int[0];
-  public int[] rewardGold { get { return _rewardGold; } set { _rewardGold = value; } }
+  int[] _rewardEnergy = new int[0];
+  public int[] rewardEnergy { get { return _rewardEnergy; } set { _rewardEnergy = value; } }
   
 }
