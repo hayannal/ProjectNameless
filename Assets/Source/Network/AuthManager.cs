@@ -344,7 +344,8 @@ public class AuthManager : MonoBehaviour
 #endif
 			}
 		}
-		else if (error.Error == PlayFabErrorCode.AccountNotFound)
+		// 계정을 삭제한 직후에는 AccountDeleted 가 날아온다. 이후엔 AccountNotFound 로 날아오게 된다.
+		else if (error.Error == PlayFabErrorCode.AccountNotFound || error.Error == PlayFabErrorCode.AccountDeleted)
 		{
 			if (GetLastLoginType() == eAuthType.Guest)
 			{
