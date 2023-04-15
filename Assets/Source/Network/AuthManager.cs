@@ -327,6 +327,7 @@ public class AuthManager : MonoBehaviour
 	{
 		PlayFabApiManager.instance.EndTimeRecord("Login");
 		Debug.LogError(error.GenerateErrorReport());
+		Debug.LogError(error.Error.ToString());
 
 		string stringId = "SystemUI_DisconnectServer";
 		if (error.Error == PlayFabErrorCode.AccountBanned)
