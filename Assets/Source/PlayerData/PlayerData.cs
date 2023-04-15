@@ -162,6 +162,8 @@ public class PlayerData : MonoBehaviour
 		termsConfirmed = false;
 		downloadConfirmed = false;
 		downloadRewarded = false;
+		tutorialFlagShowSummonCanvas = true;
+		tutorialFlagClearGuideQuest = false;
 		displayName = "";
 		vtd = 0;
 
