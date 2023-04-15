@@ -4743,8 +4743,8 @@ public class PlayFabApiManager : MonoBehaviour
 						addPoint *= BattleInstanceManager.instance.GetCachedGlobalConstantInt("BossBattleDailyBonusTimes");
 					SubMissionData.instance.bossBattlePoint += addPoint;
 					SubMissionData.instance.bossBattleDailyCount += 1;
+					GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.ClearBossBattle);
 				}
-				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.ClearBossBattle);
 				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.UseTicket, useTicket);
 				CurrencyData.instance.UseTicket(useTicket);
 
