@@ -29,7 +29,7 @@ public class SubQuestInfo : MonoBehaviour
 	void OnEnable()
 	{
 		// 처음 로그인하면서 들어갈때는 GuideQuest와 달리 퀘스트 리스트가 제대로 처리되지 않은 상태라서 유효성 검사를 해야한다.
-		if (SubQuestData.instance.CheckValidQuestList(false) == false)
+		if (SubQuestData.instance.CheckValidQuestList(false) == false || PlayerData.instance.downloadConfirmed == false)
 		{
 			infoRootTweenAnimation.gameObject.SetActive(false);
 			smallBackButtonRootObject.SetActive(false);
