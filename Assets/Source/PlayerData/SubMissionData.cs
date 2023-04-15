@@ -505,19 +505,21 @@ public class SubMissionData : MonoBehaviour
 	{
 		// 확인차 체크하는건데 현재 상대하는 보스가 최종 클리어라고 적혀있는거보다 작거나 같진 않을거다.
 		// 이럴땐 그냥 랜덤을 리턴
-		if (bossBattleId <= bossBattleClearId)
+		int id = bossBattleId;
+		if (id == 0) id = 1;
+		if (id <= bossBattleClearId)
 		{
 			// something wrong
 			return GetNextRandomBossId();
 		}
 
 		// 등장하는 마지막 왕관 보스를 처리한거면 더이상 왕관이 나올 수 없다.
-		if (bossBattleId >= BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxBossBattle"))
+		if (id >= BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxBossBattle"))
 		{
 			// 이럴때도 그냥 랜덤 리턴
 			return GetNextRandomBossId();
 		}
-		return bossBattleId + 1;
+		return id + 1;
 	}
 
 	List<int> _listNextRandomBossId = new List<int>();
@@ -582,8 +584,8 @@ public class SubMissionData : MonoBehaviour
 						SelectBossBattleDifficulty(selectedDifficulty);
 					}
 
-					if (bossBattleClearId < bossBattleId)
-						bossBattleClearId = bossBattleId;
+					if (bossBattleClearId < currentBossId)
+						bossBattleClearId = currentBossId;
 				}
 			}
 		}
