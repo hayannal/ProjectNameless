@@ -197,7 +197,7 @@ public class SubQuestData : MonoBehaviour
 			questInfo.tp = questType1;
 			SubQuestTableData subQuestTableData = TableDataManager.instance.FindSubQuestTableData(questType1);
 			questInfo.cnt = subQuestTableData.needCount[questNeedCountIndex1];
-			questInfo.rwd = subQuestTableData.rewardGold[questNeedCountIndex1];
+			questInfo.rwd = subQuestTableData.rewardEnergy[questNeedCountIndex1];
 			questInfo.dif = questNeedCountIndex1;
 			//SetSubCondition(questInfo);
 			_listSubQuestInfoForSend.Add(questInfo);
@@ -207,7 +207,7 @@ public class SubQuestData : MonoBehaviour
 			questInfo.tp = questType2;
 			subQuestTableData = TableDataManager.instance.FindSubQuestTableData(questType2);
 			questInfo.cnt = subQuestTableData.needCount[questNeedCountIndex2];
-			questInfo.rwd = subQuestTableData.rewardGold[questNeedCountIndex2];
+			questInfo.rwd = subQuestTableData.rewardEnergy[questNeedCountIndex2];
 			questInfo.dif = questNeedCountIndex2;
 			//SetSubCondition(questInfo);
 			_listSubQuestInfoForSend.Add(questInfo);
