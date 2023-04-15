@@ -338,12 +338,12 @@ public class GoldDefenseMissionCanvas : MonoBehaviour
 		// 0번 포지션엔 누구 1번 포지션엔 누구 이렇게 저장해둔다.
 		var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
 		string value = serializer.SerializeObject(_dicAutoPositionLastInfo);
-		ObscuredPrefs.SetString(string.Format("_rdPosition_{0}", PlayFabApiManager.instance.playFabId), value);
+		ObscuredPrefs.SetString(string.Format("_gdPosition_{0}", PlayFabApiManager.instance.playFabId), value);
 	}
 
 	Dictionary<string, string> GetCachedLastPositionInfo()
 	{
-		string cachedLastPositionInfo = ObscuredPrefs.GetString(string.Format("_rdPosition_{0}", PlayFabApiManager.instance.playFabId));
+		string cachedLastPositionInfo = ObscuredPrefs.GetString(string.Format("_gdPosition_{0}", PlayFabApiManager.instance.playFabId));
 		if (string.IsNullOrEmpty(cachedLastPositionInfo))
 			return null;
 
