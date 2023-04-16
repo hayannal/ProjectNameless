@@ -213,10 +213,8 @@ public class RelayPackageBox : SimpleCashCanvas
 				shopProductTableData = TableDataManager.instance.FindShopProductTableData(product.definition.id);
 			if (shopProductTableData != null)
 			{
-				// 여긴 캐시상품중에 유일하게 cu도 들어있고 it 중에서도 가차 컨슘 들어있는 곳이라서 이렇게 호출한다.
-				// Summon 이벤트 리워드랑은 다른 점은 디비에 알아서 들어갈거기 때문에
-				// 클라에서는 컨슘처리만 제대로 하면 된다는거다.
-				CurrencyData.instance.OnRecvProductRewardExtendGacha(shopProductTableData);
+				// 여긴 캐시상품중에 유일하게 cu도 들어있고 it 중에서도 가차 컨슘도 들어있을 수 있고 심지어 고정 펫에 장비까지 다 들어있을 수 있기 때문에
+				CurrencyData.instance.OnRecvProductRewardExtendGachaAndItem(shopProductTableData);
 			}
 
 			// 릴레이의 첫번째 상품은 공격력 보유아이템이라서 이렇게 별도로 호출해주기로 한다.
