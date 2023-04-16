@@ -166,7 +166,7 @@ public class EquipManager : MonoBehaviour
 		RefreshCachedStatus();
 	}
 
-	public static bool ConstainsEquip(ShopProductTableData shopProductTableData)
+	public static bool ContainsEquip(ShopProductTableData shopProductTableData)
 	{
 		if ((shopProductTableData.rewardType1 == "it" && shopProductTableData.rewardValue1.StartsWith("Equip")) ||
 			(shopProductTableData.rewardType2 == "it" && shopProductTableData.rewardValue2.StartsWith("Equip")) ||
