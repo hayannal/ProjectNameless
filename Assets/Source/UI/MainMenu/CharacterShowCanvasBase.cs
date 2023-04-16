@@ -350,6 +350,11 @@ public class CharacterShowCanvasBase : MonoBehaviour
 		//Timing.RunCoroutine(DelayedShowCharacterInfoCanvas());
 	}
 
+	public bool IsWaiting()
+	{
+		return _wait;
+	}
+
 	//IEnumerator<float> DelayedShowCharacterInfoCanvas()
 	//{
 	//	yield return Timing.WaitForOneFrame;

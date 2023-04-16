@@ -92,6 +92,10 @@ public class PickUpCharacterListItem : MonoBehaviour
 		while ((CharacterListCanvas.instance != null && CharacterListCanvas.instance.gameObject.activeSelf) == false)
 			yield return Timing.WaitForOneFrame;
 		yield return Timing.WaitForOneFrame;
+		yield return Timing.WaitForOneFrame;
+
+		while (CharacterListCanvas.instance.IsWaiting())
+			yield return Timing.WaitForOneFrame;
 
 		CharacterListCanvas.instance.OnClickListItem(_info.id);
 		while ((CharacterInfoCanvas.instance != null && CharacterInfoCanvas.instance.gameObject.activeSelf) == false)

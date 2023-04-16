@@ -104,6 +104,9 @@ public class AcquiredCharacterSaleCanvas : SimpleCashEventCanvas
 		yield return Timing.WaitForOneFrame;
 		yield return Timing.WaitForOneFrame;
 
+		while (CharacterListCanvas.instance.IsWaiting())
+			yield return Timing.WaitForOneFrame;
+
 		CharacterListCanvas.instance.OnClickListItem(CashShopData.instance.acquiredCharacterSelectedId);
 
 		while ((CharacterInfoCanvas.instance != null && CharacterInfoCanvas.instance.gameObject.activeSelf) == false)
