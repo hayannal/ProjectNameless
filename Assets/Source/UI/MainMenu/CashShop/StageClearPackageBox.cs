@@ -158,7 +158,7 @@ public class StageClearPackageBox : SimpleCashCanvas
 					CommonRewardCanvas.instance.RefreshReward(shopProductTableData, () =>
 					{
 						// 컨슘처리
-						if (ConsumeProductProcessor.ConstainsConsumeGacha(shopProductTableData))
+						if (ConsumeProductProcessor.ContainsConsumeGacha(shopProductTableData))
 							ConsumeProductProcessor.instance.ConsumeGacha(shopProductTableData);
 					});
 				});
