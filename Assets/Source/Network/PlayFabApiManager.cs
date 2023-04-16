@@ -4407,6 +4407,20 @@ public class PlayFabApiManager : MonoBehaviour
 			HandleCommonError(error);
 		});
 	}
+
+	public void RequestEquipListByPurchase(Action successCallback)
+	{
+		// Equip 구매로 인해 인벤토리를 갱신하기 위해 만든 함수다.
+		// 이게 갱신이 되어야 얻은 무기를 합성하거나 장착할 수 있어서 실패하면 에러로 넘긴다.
+		PlayFabClientAPI.GetUserInventory(new GetUserInventoryRequest(), (success) =>
+		{
+			EquipManager.instance.OnRecvRefreshEquipInventory(success.Inventory);
+			if (successCallback != null) successCallback.Invoke();
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
 	#endregion
 
 

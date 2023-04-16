@@ -65,9 +65,9 @@ public class ConsumeProductProcessor : MonoBehaviour
 	}
 
 	// 샵프로덕트에 컨슘이 들어있을때도 있다.
-	public static bool ConstainsConsumeGacha(ShopProductTableData shopProductTableData)
+	public static bool ContainsConsumeGacha(ShopProductTableData shopProductTableData)
 	{
-		// type만 검사하고 value까진 검사하지 않는다. 팔거라고 가정한 곳에서만 호출할테니 이렇게만 해도 된다.
+		// 여러가지 다 들어갈 수 있게 되면서 Type말고 Value도 검사해야한다.
 		if ((shopProductTableData.rewardType1 == "it" && shopProductTableData.rewardValue1.StartsWith("Cash_s") && shopProductTableData.rewardValue1.Contains("Gacha")) ||
 			(shopProductTableData.rewardType2 == "it" && shopProductTableData.rewardValue2.StartsWith("Cash_s") && shopProductTableData.rewardValue2.Contains("Gacha")) ||
 			(shopProductTableData.rewardType3 == "it" && shopProductTableData.rewardValue3.StartsWith("Cash_s") && shopProductTableData.rewardValue3.Contains("Gacha")) ||

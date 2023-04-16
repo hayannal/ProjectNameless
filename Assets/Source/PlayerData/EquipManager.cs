@@ -166,6 +166,63 @@ public class EquipManager : MonoBehaviour
 		RefreshCachedStatus();
 	}
 
+	public static bool ConstainsEquip(ShopProductTableData shopProductTableData)
+	{
+		if ((shopProductTableData.rewardType1 == "it" && shopProductTableData.rewardValue1.StartsWith("Equip")) ||
+			(shopProductTableData.rewardType2 == "it" && shopProductTableData.rewardValue2.StartsWith("Equip")) ||
+			(shopProductTableData.rewardType3 == "it" && shopProductTableData.rewardValue3.StartsWith("Equip")) ||
+			(shopProductTableData.rewardType4 == "it" && shopProductTableData.rewardValue4.StartsWith("Equip")) ||
+			(shopProductTableData.rewardType5 == "it" && shopProductTableData.rewardValue5.StartsWith("Equip")))
+			return true;
+
+		return false;
+	}
+
+	public void OnRecvRefreshEquipInventory(List<ItemInstance> userInventory)
+	{
+		for (int i = 0; i < _listEquipData.Count; ++i)
+			_listEquipData[i].Clear();
+
+		// 기존꺼를 찾아서 옮겨도 되는건데 인벤토리가 많아질수록 찾는 시간이 더 오래걸릴거 같아서 그냥 재구축하기로 한다.
+		// 합성창 같은거 열어두지 않는이상 EquipData를 캐싱하고 있는 곳은 없을거라서 새로 구축해도 상관없을거 같다.
+		for (int i = 0; i < userInventory.Count; ++i)
+		{
+			if (userInventory[i].ItemId.StartsWith("Equip") == false)
+				continue;
+
+			EquipLevelTableData equipLevelTableData = TableDataManager.instance.FindEquipLevelTableData(userInventory[i].ItemId);
+			if (equipLevelTableData == null)
+				continue;
+
+			EquipData newEquipData = new EquipData();
+			newEquipData.uniqueId = userInventory[i].ItemInstanceId;
+			newEquipData.equipId = userInventory[i].ItemId;
+			newEquipData.Initialize(userInventory[i].CustomData);
+			_listEquipData[newEquipData.cachedEquipTableData.equipType].Add(newEquipData);
+		}
+
+		// dictionary refresh
+		Dictionary<int, EquipData> dicNewEquippedData = new Dictionary<int, EquipData>();
+		Dictionary<int, EquipData>.Enumerator e = _dicEquippedData.GetEnumerator();
+		while (e.MoveNext())
+		{
+			EquipData equipData = e.Current.Value;
+			if (equipData == null)
+				continue;
+
+			EquipData newEquipData = FindEquipData(equipData.uniqueId, (eEquipSlotType)equipData.cachedEquipTableData.equipType);
+			if (newEquipData == null)
+				continue;
+			if (newEquipData.cachedEquipTableData.equipType != e.Current.Key)
+				continue;
+			dicNewEquippedData.Add(e.Current.Key, newEquipData);
+		}
+		_dicEquippedData = dicNewEquippedData;
+
+		// status
+		RefreshCachedStatus();
+	}
+
 	public void LateInitialize()
 	{
 		Timing.RunCoroutine(LoadProcess());

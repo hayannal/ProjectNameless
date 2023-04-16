@@ -264,8 +264,13 @@ public class RelayPackageBox : SimpleCashCanvas
 				ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_CompletePurchase"), 2.0f);
 
 				// 컨슘처리
-				if (ConsumeProductProcessor.ConstainsConsumeGacha(shopProductTableData))
+				if (ConsumeProductProcessor.ContainsConsumeGacha(shopProductTableData))
 					ConsumeProductProcessor.instance.ConsumeGacha(shopProductTableData);
+
+				// 다른 곳과 달리 장비 지정을 팔거라서 지정 장비를 가지고 있다면 인벤토리 리프레쉬를 시도한다.
+				// 실패한다면 로비로 돌아갈거고 재접하면 제대로 인벤 리스트를 받게 될거다.
+				if (EquipManager.ContainsEquip(shopProductTableData))
+					PlayFabApiManager.instance.RequestEquipListByPurchase(null);
 			}
 
 			CodelessIAPStoreListener.Instance.StoreController.ConfirmPendingPurchase(product);
