@@ -448,6 +448,7 @@ public class PetSearchGround : MonoBehaviour
 		if (Random.value < baseValue)
 			return true;
 
+		baseValue = 0.0f;
 		if (PetManager.instance.IsPetPass())
 			baseValue = (BattleInstanceManager.instance.GetCachedGlobalConstantInt("PetPassExtraChance") * 0.01f);
 		if (Random.value < baseValue)
