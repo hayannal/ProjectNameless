@@ -312,7 +312,7 @@ public class BossBattleEnterCanvas : MonoBehaviour
 		// 가격
 		int price = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MissionEnergyBossBattle");
 		priceText.text = price.ToString("N0");
-		bool disablePrice = (CurrencyData.instance.energy < price);
+		bool disablePrice = (CurrencyData.instance.ticket < price);
 		priceButtonImage.color = !disablePrice ? Color.white : ColorUtil.halfGray;
 		priceText.color = !disablePrice ? Color.white : Color.gray;
 		priceGrayscaleEffect.enabled = disablePrice;
