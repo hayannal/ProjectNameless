@@ -28,7 +28,7 @@ public class SubQuestData : MonoBehaviour
 		Proceeding,
 	}
 
-	public const int DailyMaxCount = 3;
+	public const int DailyMaxCount = 5;
 
 	public class QuestInfo
 	{
