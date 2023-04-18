@@ -247,6 +247,18 @@ public class GuideQuestInfo : MonoBehaviour
 
 	public static void OnClickQuickMenu(GuideQuestData.eQuestClearType questClearType)
 	{
+		if (StageManager.instance != null && StageManager.instance.repeatMode == false)
+		{
+			switch (questClearType)
+			{
+				case GuideQuestData.eQuestClearType.KillBossMonster:
+				case GuideQuestData.eQuestClearType.ClearStage:
+					return;
+			}
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("QuestUI_CannotQuickMenuInChallenge"), 2.0f);
+			return;
+		}
+
 		switch (questClearType)
 		{
 			case GuideQuestData.eQuestClearType.KillBossMonster:
