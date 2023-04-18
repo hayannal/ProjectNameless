@@ -39,6 +39,7 @@ public class MainCanvas : MonoBehaviour
 	public Transform cashEventButtonRootTransform;
 	public CashEventButton[] cashEventButtonList;
 
+	public Sprite[] equipTypeSpriteList;
 
 	public RectTransform playerAlarmRootTransform;
 	public RectTransform spellAlarmRootTransform;

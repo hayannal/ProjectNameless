@@ -154,6 +154,13 @@ public class RewardIcon : MonoBehaviour
 						if (equipGachaObject != null) equipGachaObject.SetActive(true);
 						countText.color = Color.white;
 						break;
+					case "Cash_sEquipTypeGacha411":
+						EquipCanvasListItem.RefreshGrade(4, blurImage, gradient, lineColorImage);
+						EquipCanvasListItem.RefreshRarity(1, equipRarityText, equipRarityGradient);
+						equipIconImage.sprite = MainCanvas.instance.equipTypeSpriteList[1];
+						equipRootObject.SetActive(true);
+						countText.color = Color.white;
+						break;
 				}
 				if (rewardValue.StartsWith("Spell_"))
 				{

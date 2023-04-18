@@ -70,11 +70,11 @@ public class RelayPackageBox : SimpleCashCanvas
 			}
 			switch (i)
 			{
-				case 0: if (_shopProductTableData.rewardType1 == "cu" || _shopProductTableData.rewardValue1.StartsWith("Cash_s")) rewardIconList[i].ShowOnlyIcon(true, 1.0f); break;
-				case 1: if (_shopProductTableData.rewardType2 == "cu" || _shopProductTableData.rewardValue2.StartsWith("Cash_s")) rewardIconList[i].ShowOnlyIcon(true, 1.0f); break;
-				case 2: if (_shopProductTableData.rewardType3 == "cu" || _shopProductTableData.rewardValue3.StartsWith("Cash_s")) rewardIconList[i].ShowOnlyIcon(true, 1.0f); break;
-				case 3: if (_shopProductTableData.rewardType4 == "cu" || _shopProductTableData.rewardValue4.StartsWith("Cash_s")) rewardIconList[i].ShowOnlyIcon(true, 1.0f); break;
-				case 4: if (_shopProductTableData.rewardType5 == "cu" || _shopProductTableData.rewardValue5.StartsWith("Cash_s")) rewardIconList[i].ShowOnlyIcon(true, 1.0f); break;
+				case 0: if (_shopProductTableData.rewardType1 == "cu" || (_shopProductTableData.rewardValue1.StartsWith("Cash_s") && _shopProductTableData.rewardValue1.Contains("EquipTypeGacha") == false)) rewardIconList[i].ShowOnlyIcon(true, 1.0f); break;
+				case 1: if (_shopProductTableData.rewardType2 == "cu" || (_shopProductTableData.rewardValue2.StartsWith("Cash_s") && _shopProductTableData.rewardValue2.Contains("EquipTypeGacha") == false)) rewardIconList[i].ShowOnlyIcon(true, 1.0f); break;
+				case 2: if (_shopProductTableData.rewardType3 == "cu" || (_shopProductTableData.rewardValue3.StartsWith("Cash_s") && _shopProductTableData.rewardValue3.Contains("EquipTypeGacha") == false)) rewardIconList[i].ShowOnlyIcon(true, 1.0f); break;
+				case 3: if (_shopProductTableData.rewardType4 == "cu" || (_shopProductTableData.rewardValue4.StartsWith("Cash_s") && _shopProductTableData.rewardValue4.Contains("EquipTypeGacha") == false)) rewardIconList[i].ShowOnlyIcon(true, 1.0f); break;
+				case 4: if (_shopProductTableData.rewardType5 == "cu" || (_shopProductTableData.rewardValue5.StartsWith("Cash_s") && _shopProductTableData.rewardValue5.Contains("EquipTypeGacha") == false)) rewardIconList[i].ShowOnlyIcon(true, 1.0f); break;
 			}
 		}
 

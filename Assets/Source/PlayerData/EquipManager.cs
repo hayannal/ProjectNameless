@@ -852,6 +852,68 @@ public class EquipManager : MonoBehaviour
 		return _listRandomObscuredId;
 	}
 
+	public string GetTypeGachaResult(int equipGrade, int equipRarity, int equipType)
+	{
+		// TypeGacha라서 등급별 확률이 고정이다.
+		int selectedGrade = equipGrade;
+		int selectedRarity = equipRarity;
+
+		// 등급이 결정되었으면 등급안에서 다시 굴려야한다.
+		if (_listGachaEquipId == null)
+			_listGachaEquipId = new List<RandomGachaEquipId>();
+		_listGachaEquipId.Clear();
+		
+		float sumWeight = 0.0f;
+		for (int i = 0; i < TableDataManager.instance.equipLevelTable.dataArray.Length; ++i)
+		{
+			if (TableDataManager.instance.equipLevelTable.dataArray[i].grade != selectedGrade)
+				continue;
+			EquipTableData equipTableData = GetCachedEquipTableData(TableDataManager.instance.equipLevelTable.dataArray[i].equipGroup);
+			if (equipTableData == null)
+				continue;
+			if (equipTableData.rarity != selectedRarity)
+				continue;
+			if (equipTableData.equipType != equipType)
+				continue;
+
+			float weight = equipTableData.equipGachaWeight;
+			sumWeight += weight;
+			RandomGachaEquipId newInfo = new RandomGachaEquipId();
+			newInfo.equipId = TableDataManager.instance.equipLevelTable.dataArray[i].equipId;
+			newInfo.sumWeight = sumWeight;
+			_listGachaEquipId.Add(newInfo);
+		}
+		if (_listGachaEquipId.Count == 0)
+			return "";
+
+		int index = -1;
+		float random = UnityEngine.Random.Range(0.0f, _listGachaEquipId[_listGachaEquipId.Count - 1].sumWeight);
+		for (int i = 0; i < _listGachaEquipId.Count; ++i)
+		{
+			if (random <= _listGachaEquipId[i].sumWeight)
+			{
+				index = i;
+				break;
+			}
+		}
+		if (index == -1)
+			return "";
+		return _listGachaEquipId[index].equipId;
+	}
+
+	public List<ObscuredString> GetRandomIdList(int count, int equipGrade, int equipRarity, int equipType)
+	{
+		_listRandomObscuredId.Clear();
+
+		for (int i = 0; i < count; ++i)
+		{
+			string randomEquipId = GetTypeGachaResult(equipGrade, equipRarity, equipType);
+			_listRandomObscuredId.Add(randomEquipId);
+		}
+
+		return _listRandomObscuredId;
+	}
+
 
 
 	public List<ItemInstance> OnRecvItemGrantResult(string jsonItemGrantResults, int expectCount = 0)

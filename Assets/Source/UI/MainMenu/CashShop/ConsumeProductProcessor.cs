@@ -157,6 +157,12 @@ public class ConsumeProductProcessor : MonoBehaviour
 			case "Cash_sSpell5Gacha":
 				ConsumeSpellGacha(firstCount, 5);
 				break;
+			case "Cash_sEquipTypeGacha411":
+				ConsumeEquipTypeGacha(firstCount, 4, 1, 1, CashShopData.eCashConsumeCountType.EquipTypeGacha411);
+				break;
+			case "Cash_sEquipTypeGacha415":
+				ConsumeEquipTypeGacha(firstCount, 4, 1, 5, CashShopData.eCashConsumeCountType.EquipTypeGacha415);
+				break;
 		}
 	}
 
@@ -272,6 +278,25 @@ public class ConsumeProductProcessor : MonoBehaviour
 			List<ObscuredString> listEquipId = EquipManager.instance.GetRandomIdList(itemCount);
 			_count = listEquipId.Count;
 			PlayFabApiManager.instance.RequestConsumeEquipGacha(listEquipId, OnRecvResultEquip);
+		});
+	}
+
+	void ConsumeEquipTypeGacha(int itemCount, int equipGrade, int equipRarity, int equipType, CashShopData.eCashConsumeCountType equipTypeGachaConsumeType)
+	{
+		UIInstanceManager.instance.ShowCanvasAsync("RandomBoxScreenCanvas", () =>
+		{
+			if (_dicConsumeItem.Count > 0)
+			{
+				RandomBoxScreenCanvas.instance.SetCloseCallback(() =>
+				{
+					_readyForConsume = true;
+				});
+			}
+
+			// 연출창 시작과 동시에 패킷을 보내고
+			List<ObscuredString> listEquipId = EquipManager.instance.GetRandomIdList(itemCount, equipGrade, equipRarity, equipType);
+			_count = listEquipId.Count;
+			PlayFabApiManager.instance.RequestConsumeEquipTypeGacha(listEquipId, equipGrade, equipRarity, equipType, equipTypeGachaConsumeType, OnRecvResultEquip);
 		});
 	}
 

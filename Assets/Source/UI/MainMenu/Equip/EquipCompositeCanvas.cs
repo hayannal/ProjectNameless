@@ -16,8 +16,6 @@ public class EquipCompositeCanvas : EquipShowCanvasBase
 		SameEquipType = 2,
 		AnyEquipType = 3,
 	}
-
-	public Sprite[] equipTypeSpriteList;
 	public Sprite equipIconSprite;
 
 	public CurrencySmallInfo currencySmallInfo;
@@ -287,7 +285,7 @@ public class EquipCompositeCanvas : EquipShowCanvasBase
 				break;
 			case eCompositeMaterialType.SameEquipType:
 				equipCanvasListItem.Initialize(selectedEquipData.cachedEquipTableData, selectedEquipData.cachedEquipLevelTableData);
-				equipCanvasListItem.equipIconImage.sprite = equipTypeSpriteList[selectedEquipData.cachedEquipTableData.equipType];
+				equipCanvasListItem.equipIconImage.sprite = MainCanvas.instance.equipTypeSpriteList[selectedEquipData.cachedEquipTableData.equipType];
 				break;
 			case eCompositeMaterialType.AnyEquipType:
 				equipCanvasListItem.Initialize(selectedEquipData.cachedEquipTableData, selectedEquipData.cachedEquipLevelTableData);
