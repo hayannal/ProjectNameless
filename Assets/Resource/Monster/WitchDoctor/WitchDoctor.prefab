@@ -34,6 +34,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4401909340318185849}
   m_Father: {fileID: 0}
@@ -198,15 +199,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startDelayRange: {x: 0, y: 0}
   startState: 3
-  useStateList: 0100000101
+  useStateList: 010000010100
   moveTimeRange: {x: 4, y: 4}
   refreshTickTimeRange: {x: 2, y: 2}
   desireDistance: 5
+  straightMoveTimeRange: {x: 0, y: 0}
+  straightRefreshTickTimeRange: {x: 0, y: 0}
+  straightRefreshTickWaitTime: 0
+  straightMoveType: 0
   customActionPlayType: 1
   customActionName: 
   customActionFadeDuration: 0.05
   chaseDistanceRange: {x: 1, y: 1}
   chaseCancelTimeRange: {x: 0, y: 0}
+  cancelLeadsToAttack: 0
+  useFarawayMode: 0
+  chaseTryCountChangeFaraway: 0
+  farawayModeChangeRate: 0
   attackActionPlayType: 0
   attackActionName: Attack
   attackActionFadeDuration: 0.05
@@ -225,6 +234,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: yi_liao_yuan_ren_001_ty
       objectReference: {fileID: 0}
+    - target: {fileID: 100102, guid: 5450648928fd5bc4c8be1d4938fc3844, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400100, guid: 5450648928fd5bc4c8be1d4938fc3844, type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 400100, guid: 5450648928fd5bc4c8be1d4938fc3844, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -238,6 +255,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400100, guid: 5450648928fd5bc4c8be1d4938fc3844, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 400100, guid: 5450648928fd5bc4c8be1d4938fc3844, type: 3}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
@@ -247,14 +268,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400100, guid: 5450648928fd5bc4c8be1d4938fc3844, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400100, guid: 5450648928fd5bc4c8be1d4938fc3844, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 400100, guid: 5450648928fd5bc4c8be1d4938fc3844, type: 3}
-      propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400100, guid: 5450648928fd5bc4c8be1d4938fc3844, type: 3}
