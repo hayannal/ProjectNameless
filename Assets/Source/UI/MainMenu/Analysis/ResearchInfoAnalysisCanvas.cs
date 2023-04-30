@@ -615,6 +615,7 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 		}
 
 		float companionRate = (float)totalSeconds / analysisTableData.companionPeriod;
+		if (PlayerData.instance.downloadConfirmed == false) companionRate = 0.0f;
 		int companionDropCount = (int)companionRate;
 		float companionDropRate = companionRate - companionDropCount;
 		if (companionDropRate > 0.0f)
@@ -643,6 +644,7 @@ public class ResearchInfoAnalysisCanvas : MonoBehaviour
 		}
 
 		float equipRate = (float)totalSeconds / analysisTableData.equipPeriod;
+		if (PlayerData.instance.downloadConfirmed == false) equipRate = 0.0f;
 		int equipDropCount = (int)equipRate;
 		float equipDropRate = equipRate - equipDropCount;
 		if (equipDropRate > 0.0f)
