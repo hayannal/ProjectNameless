@@ -46,6 +46,7 @@ public class CurrencyData : MonoBehaviour
 	public ObscuredInt bettingCount { get; set; }
 	public ObscuredInt brokenEnergy { get; set; }
 	public ObscuredInt goldBoxTargetReward { get; set; }
+	public ObscuredInt goldBoxTargetGrade { get; set; }
 	public ObscuredInt currentGoldBoxRoomReward { get; set; }
 	public ObscuredInt goldBoxRemainTurn { get; set; }
 	public List<ObscuredInt> listBetInfo { get; set; }
@@ -123,6 +124,14 @@ public class CurrencyData : MonoBehaviour
 			}
 		}
 
+		goldBoxTargetGrade = 0;
+		if (userReadOnlyData.ContainsKey("goldBoxValueGrade"))
+		{
+			int intValue = 0;
+			if (int.TryParse(userReadOnlyData["goldBoxValueGrade"].Value, out intValue))
+				goldBoxTargetGrade = intValue;
+		}
+
 		// server boost list
 		var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
 		listBetInfo = null;
@@ -176,6 +185,7 @@ public class CurrencyData : MonoBehaviour
 		if (bettingCount == 0 || goldBoxRemainTurn == 0)
 		{
 			goldBoxTargetReward = BattleInstanceManager.instance.GetCachedGlobalConstantInt("FirstGoldBox");
+			goldBoxTargetGrade = 4;
 		}
 	}
 

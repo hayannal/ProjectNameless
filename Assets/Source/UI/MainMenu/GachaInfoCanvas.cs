@@ -598,7 +598,7 @@ public class GachaInfoCanvas : MonoBehaviour
 		PrepareGoldBoxTarget();
 		int currentEnergy = CurrencyData.instance.energy;
 		_prevBrokenEnergy = CurrencyData.instance.brokenEnergy;
-		PlayFabApiManager.instance.RequestGacha(useEnergy, _resultGold, _resultDia, _resultEnergy, _resultBrokenEnergy, _resultEvent, _listResultEventItemIdForPacket, _reserveRoomType, _refreshTurn, _refreshNewTurn, _refreshNewGold, _eventPointRewardCount, _eventPointRewardCompleteCount, (refreshTurnComplete) =>
+		PlayFabApiManager.instance.RequestGacha(useEnergy, _resultGold, _resultDia, _resultEnergy, _resultBrokenEnergy, _resultEvent, _listResultEventItemIdForPacket, _reserveRoomType, _refreshTurn, _refreshNewTurn, _refreshNewGold, _refreshNewGoldGrade, _eventPointRewardCount, _eventPointRewardCompleteCount, (refreshTurnComplete) =>
 		{
 			GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.UseEnergy, useEnergy);
 
@@ -952,11 +952,13 @@ public class GachaInfoCanvas : MonoBehaviour
 	ObscuredBool _refreshTurn = false;
 	ObscuredInt _refreshNewTurn = 0;
 	ObscuredInt _refreshNewGold = 0;
+	ObscuredInt _refreshNewGoldGrade = 0;
 	void PrepareGoldBoxTarget()
 	{
 		_refreshTurn = false;
 		_refreshNewTurn = 0;
 		_refreshNewGold = 0;
+		_refreshNewGoldGrade = 0;
 
 		// 현재 맥스 층에 따른 베팅 테이블
 		StageBetTableData stageBetTableData = TableDataManager.instance.FindStageBetTableData(PlayerData.instance.currentRewardStage);
@@ -980,6 +982,12 @@ public class GachaInfoCanvas : MonoBehaviour
 		{
 			_refreshNewTurn = UnityEngine.Random.Range(BattleInstanceManager.instance.GetCachedGlobalConstantInt("GoldBoxTurnMin"), BattleInstanceManager.instance.GetCachedGlobalConstantInt("GoldBoxTurnMax") + 1);
 			_refreshNewGold = UnityEngine.Random.Range(stageBetTableData.goldBoxMin, stageBetTableData.goldBoxMax);
+			float newGoldRatio = (float)(_refreshNewGold - stageBetTableData.goldBoxMin) / (stageBetTableData.goldBoxMax - stageBetTableData.goldBoxMin);
+			if (newGoldRatio < 0.2f) _refreshNewGoldGrade = 0;
+			else if (newGoldRatio < 0.4f) _refreshNewGoldGrade = 1;
+			else if (newGoldRatio < 0.6f) _refreshNewGoldGrade = 2;
+			else if (newGoldRatio < 0.8f) _refreshNewGoldGrade = 3;
+			else _refreshNewGoldGrade = 4;
 		}
 	}
 	#endregion
@@ -1369,7 +1377,7 @@ public class GachaInfoCanvas : MonoBehaviour
 		if (_needRefreshTurn == false)
 			return;
 
-		GachaIndicatorCanvas.instance.SetValue(CurrencyData.instance.goldBoxTargetReward);
+		GachaIndicatorCanvas.instance.SetValue(CurrencyData.instance.goldBoxTargetReward, CurrencyData.instance.goldBoxTargetGrade);
 		GachaIndicatorCanvas.instance.gameObject.SetActive(false);
 		GachaIndicatorCanvas.instance.gameObject.SetActive(true);
 

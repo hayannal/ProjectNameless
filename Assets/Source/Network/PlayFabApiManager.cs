@@ -1202,7 +1202,7 @@ public class PlayFabApiManager : MonoBehaviour
 	#endregion
 
 	#region Gacha
-	public void RequestGacha(int useEnergy, int resultGold, int resultDia, int resultEnergy, int resultBrokenEnergy, int resultEventPoint, List<ObscuredString> listEventItemId, int reserveRoomType, bool refreshTurn, int newTurn, int newGold, int eventPointRewardCount, int eventPointRewardCompleteCount, Action<bool> successCallback)
+	public void RequestGacha(int useEnergy, int resultGold, int resultDia, int resultEnergy, int resultBrokenEnergy, int resultEventPoint, List<ObscuredString> listEventItemId, int reserveRoomType, bool refreshTurn, int newTurn, int newGold, int newGoldGrade, int eventPointRewardCount, int eventPointRewardCompleteCount, Action<bool> successCallback)
 	{
 		WaitingNetworkCanvas.Show(true);
 
@@ -1217,7 +1217,7 @@ public class PlayFabApiManager : MonoBehaviour
 		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "Gacha",
-			FunctionParameter = new { Cnt = CurrencyData.instance.bettingCount + 1, Bet = useEnergy, AddGo = resultGold, AddDi = resultDia, AddEn = resultEnergy, AddBrEn = resultBrokenEnergy, AddEv = resultEventPoint, Lst = listItemGrantRequest, LstCs = checkSum2, ResRoomTp = reserveRoomType, RefreshTurn = intRefreshTurn, NewTurn = newTurn, NewGold = newGold, Cp = checkPayback ? 1 : 0, EpRc = eventPointRewardCount, EpRcc = eventPointRewardCompleteCount, Cs = checkSum },
+			FunctionParameter = new { Cnt = CurrencyData.instance.bettingCount + 1, Bet = useEnergy, AddGo = resultGold, AddDi = resultDia, AddEn = resultEnergy, AddBrEn = resultBrokenEnergy, AddEv = resultEventPoint, Lst = listItemGrantRequest, LstCs = checkSum2, ResRoomTp = reserveRoomType, RefreshTurn = intRefreshTurn, NewTurn = newTurn, NewGold = newGold, NewGoldGrade = newGoldGrade, Cp = checkPayback ? 1 : 0, EpRc = eventPointRewardCount, EpRcc = eventPointRewardCompleteCount, Cs = checkSum },
 			GeneratePlayStreamEvent = true,
 		}, (success) =>
 		{
@@ -1270,6 +1270,7 @@ public class PlayFabApiManager : MonoBehaviour
 				{
 					CurrencyData.instance.goldBoxRemainTurn = newTurn;
 					CurrencyData.instance.goldBoxTargetReward = newGold;
+					CurrencyData.instance.goldBoxTargetGrade = newGoldGrade;
 					refreshTurnComplete = true;
 				}
 				else
