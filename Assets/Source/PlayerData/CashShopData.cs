@@ -27,6 +27,9 @@ public class CashShopData : MonoBehaviour
 	Dictionary<string, DateTime> _dicExpireTime = new Dictionary<string, DateTime>();
 	// 유효기간뿐만 아니라 한번 열린 이벤트를 바로 또다시 여는걸 방지하기 위해서 쿨타임도 가질 수 있다.
 	Dictionary<string, DateTime> _dicCoolTimeExpireTime = new Dictionary<string, DateTime>();
+	// 글로벌 쿨타임을 둬서 한번에 줄줄이 받지 않게 해본다.
+	public ObscuredBool globalEventCoolTimeApplied { get; set; }
+	public DateTime globalEventCoolTime { get; set; }
 
 	// 추가 정보들이 필요한 이벤트도 있다.
 	Dictionary<string, int> _dicContinuousProductStep = new Dictionary<string, int>();
@@ -814,6 +817,14 @@ public class CashShopData : MonoBehaviour
 		if (PlayerData.instance.downloadConfirmed == false)
 			return;
 
+		if (globalEventCoolTimeApplied)
+		{
+			if (ServerTime.UtcNow < globalEventCoolTime)
+				return;
+			else
+				globalEventCoolTimeApplied = false;
+		}
+
 		for (int i = 0; i < TableDataManager.instance.eventTypeTable.dataArray.Length; ++i)
 		{
 			if ((eEventStartCondition)TableDataManager.instance.eventTypeTable.dataArray[i].triggerCondition != eventStartCondition && (eEventStartCondition)TableDataManager.instance.eventTypeTable.dataArray[i].subTriggerCondition != eventStartCondition)
@@ -852,6 +863,13 @@ public class CashShopData : MonoBehaviour
 
 			PlayFabApiManager.instance.RequestOpenCashEvent(TableDataManager.instance.eventTypeTable.dataArray[i].id, TableDataManager.instance.eventTypeTable.dataArray[i].eventSub, generatedParameter, TableDataManager.instance.eventTypeTable.dataArray[i].givenTime, TableDataManager.instance.eventTypeTable.dataArray[i].coolTime, () =>
 			{
+				// 성공시 클라이언트 전용 글로벌 쿨타임을 적용하기로 한다.
+				if (UnityEngine.Random.value < 0.95f)
+				{
+					globalEventCoolTimeApplied = true;
+					globalEventCoolTime = ServerTime.UtcNow + TimeSpan.FromMinutes(UnityEngine.Random.Range(3.0f, 6.0f));
+				}
+
 				if (MainCanvas.instance != null && MainCanvas.instance.gameObject.activeSelf)
 					MainCanvas.instance.ShowCashEvent(TableDataManager.instance.eventTypeTable.dataArray[i].id, true, true);
 			});
