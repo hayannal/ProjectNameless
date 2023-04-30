@@ -128,7 +128,7 @@ public class MailCanvasListItem : MonoBehaviour
 					goldIconObject.SetActive(false);
 					diaIconObject.SetActive(false);
 					energyIconObject.SetActive(true);
-					countText.color = Color.white;
+					countText.color = GetEnergyTextColor();
 				}
 				countText.text = createInfo.cn.ToString("N0");
 				countText.gameObject.SetActive(true);
