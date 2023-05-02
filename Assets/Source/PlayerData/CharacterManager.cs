@@ -188,6 +188,13 @@ public class CharacterManager : MonoBehaviour
 		}
 		return highestLevel;
 	}
+
+	public bool IsEmptyTeamSlot()
+	{
+		if (_listTeamPositionId[(int)TeamManager.ePosition.Top] == "" || _listTeamPositionId[(int)TeamManager.ePosition.Mid] == "" || _listTeamPositionId[(int)TeamManager.ePosition.Bottom] == "")
+			return true;
+		return false;
+	}
 	#endregion
 
 
