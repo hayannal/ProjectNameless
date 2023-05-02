@@ -293,6 +293,10 @@ public class MainCanvas : MonoBehaviour
 		challengeButtonObject.SetActive(repeatMode);
 		bossBattleMenuRootObject.SetActive(!repeatMode);
 		StageManager.instance.InitializeStageFloor(stage, repeatMode);
+		yield return Timing.WaitForOneFrame;
+		while (StageManager.instance.processing || StageGround.instance.processing)
+			yield return Timing.WaitForOneFrame;
+		yield return Timing.WaitForOneFrame;
 		TeamManager.instance.HideForMoveMap(false);
 		FadeCanvas.instance.FadeIn(0.5f);
 
