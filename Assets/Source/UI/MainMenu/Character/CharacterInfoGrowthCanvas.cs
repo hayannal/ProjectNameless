@@ -49,6 +49,7 @@ public class CharacterInfoGrowthCanvas : MonoBehaviour
 	public Image maxButtonImage;
 	public Text maxButtonText;
 
+	public RectTransform organizeAlarmRootTransform;
 	public RectTransform trpAlarmRootTransform;
 	public RectTransform alarmRootTransform;
 
@@ -166,6 +167,7 @@ public class CharacterInfoGrowthCanvas : MonoBehaviour
 		}
 		RefreshStatus();
 		RefreshRequired();
+		RefreshOrganizeAlarm();
 	}
 
 	CharacterData _characterData;
@@ -336,6 +338,13 @@ public class CharacterInfoGrowthCanvas : MonoBehaviour
 		}
 	}
 	#endregion
+
+	public void RefreshOrganizeAlarm()
+	{
+		AlarmObject.Hide(organizeAlarmRootTransform);
+		if (CharacterManager.instance.IsEmptyTeamSlot() && CharacterManager.instance.listTeamPositionId.Contains(_actorId) == false)
+			AlarmObject.Show(organizeAlarmRootTransform);
+	}
 
 	public void OnClickStoryButton()
 	{

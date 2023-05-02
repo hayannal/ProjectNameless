@@ -136,6 +136,7 @@ public class TeamPositionCanvas : MonoBehaviour
 		{
 			ToastCanvas.instance.ShowToast(UIString.instance.GetString("CharacterUI_SelectedToast"), 2.0f);
 			CharacterListCanvas.instance.RefreshGrid();
+			CharacterInfoGrowthCanvas.instance.RefreshOrganizeAlarm();
 			TeamManager.instance.InitializeTeamMember(false);
 			gameObject.SetActive(false);
 		});
