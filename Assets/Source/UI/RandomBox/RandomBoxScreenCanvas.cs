@@ -362,7 +362,6 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 		// 캐시샵에서 열었던거라면 추가로 굴릴 수 있게 처리해야한다.
 		if (_cashShopProcess)
 		{
-			bottomInputLockObject.SetActive(false);
 			switch (_boxType)
 			{
 				case eBoxType.Spell: spellRetryRootObject.SetActive(true); break;
@@ -373,6 +372,7 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 			// 캐시샵 열고 처음 굴릴때는 안보이다 나타나는거니 초기화를 해주고
 			if (switchGroupObject.activeSelf == false)
 			{
+				bottomInputLockObject.SetActive(false);
 				switchGroupObject.SetActive(true);
 				if (alarmSwitch.isOn)
 					alarmSwitch.AnimateSwitch();
@@ -384,6 +384,7 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 				{
 					if (CurrencyData.instance.dia < _lastPrice)
 					{
+						bottomInputLockObject.SetActive(false);
 						alarmSwitch.AnimateSwitch();
 						return;
 					}
@@ -410,7 +411,7 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 
 	public void OnSwitchOffAutoGacha()
 	{
-
+		bottomInputLockObject.SetActive(false);
 	}
 	#endregion
 }
