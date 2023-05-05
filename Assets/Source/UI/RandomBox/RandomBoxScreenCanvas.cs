@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Michsky.UI.Hexart;
 using PlayFab.ClientModels;
 using MEC;
 using DG.Tweening;
@@ -19,6 +20,8 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 		Equip,
 	}
 
+	public CurrencySmallInfo currencySmallInfo;
+
 	public SpellBoxResultCanvas spellBoxResultCanvas;
 	public CharacterBoxResultCanvas characterBoxResultCanvas;
 	public EquipBoxResultCanvas equipBoxResultCanvas;
@@ -33,6 +36,13 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 	public Coffee.UIExtensions.UIEffect addColorEffect;
 
 	public GameObject exitObject;
+	public GameObject spellRetryRootObject;
+	public GameObject characterRetryRootObject;
+	public GameObject equipRetryRootObject;
+	public GameObject bottomInputLockObject;
+
+	public GameObject switchGroupObject;
+	public SwitchAnim alarmSwitch;
 
 	// 각각을 규격화 하기 어려우니 서브 캔버스로 구현해야할듯.
 	// x100 회 뽑기일수도 있으니 작게 나오는 그리드도 필요할거다.
@@ -52,6 +62,7 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 		equipBoxResultCanvas.gameObject.SetActive(false);
 	}
 
+	bool _cashShopProcess = false;
 	bool _consumeProcess = false;
 	void OnEnable()
 	{
@@ -59,6 +70,7 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 
 		if (CashShopTabCanvas.instance != null && CashShopTabCanvas.instance.gameObject.activeSelf)
 		{
+			_cashShopProcess = true;
 			StackCanvas.Push(gameObject);
 		}
 		else if (GachaCanvas.instance != null && GachaCanvas.instance.gameObject.activeSelf)
@@ -84,6 +96,7 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 	{
 		if (CashShopTabCanvas.instance != null && CashShopTabCanvas.instance.gameObject.activeSelf == false && StackCanvas.IsInStack(CashShopTabCanvas.instance.gameObject))
 		{
+			_cashShopProcess = false;
 			StackCanvas.Pop(gameObject);
 		}
 		else if (GachaCanvas.instance != null && GachaCanvas.instance.gameObject.activeSelf == false && StackCanvas.IsInStack(GachaCanvas.instance.gameObject))
@@ -100,20 +113,37 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 			MainCanvas.instance.OnEnterCharacterMenu(false);
 		}
 
-		openAnimator.enabled = false;
-		openReadyAnimator.enabled = false;
-		boxOpenEffectObject.SetActive(false);
-		boxImage.sprite = defaultBoxSprite;
-		addColorEffect.colorFactor = 0.0f;
-		boxImage.color = Color.white;
+		ResetBoxState();
+
+		bottomInputLockObject.SetActive(false);
+		spellRetryRootObject.SetActive(false);
+		characterRetryRootObject.SetActive(false);
+		equipRetryRootObject.SetActive(false);
+		switchGroupObject.SetActive(false);
 		exitObject.SetActive(false);
 		_recvResult = false;
+		_retryRemainTime = 0.0f;
 
 		if (_closeAction != null)
 		{
 			_closeAction();
 			_closeAction = null;
 		}
+	}
+
+	void ResetBoxState()
+	{
+		openAnimator.enabled = false;
+		openReadyAnimator.enabled = false;
+		boxOpenEffectObject.SetActive(false);
+		boxImage.sprite = defaultBoxSprite;
+		addColorEffect.colorFactor = 0.0f;
+		boxImage.color = Color.white;
+	}
+
+	void Update()
+	{
+		UpdateRetry();
 	}
 
 	public void OnClickBackground()
@@ -172,6 +202,65 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 			_tooLate = false;
 		}
 	}
+
+	#region Retry
+	public void OnRecvRetryResult(eBoxType boxType, List<ItemInstance> listItemInstance)
+	{
+		// currency
+		currencySmallInfo.RefreshInfo();
+
+		// 먼저 닫아야할 결과들을 닫아둔다.
+		ResetBoxState();
+		switch (boxType)
+		{
+			case eBoxType.Spell: spellBoxResultCanvas.gameObject.SetActive(false); break;
+			case eBoxType.Character: characterBoxResultCanvas.gameObject.SetActive(false); break;
+			case eBoxType.Equip: equipBoxResultCanvas.gameObject.SetActive(false); break;
+		}
+
+		_recvResult = true;
+		_boxType = boxType;
+		_listItemInstance = listItemInstance;
+
+		// 창이 열린채로 재시도 하는거라 기존 로직과는 달리 하단 버튼들을 비활성화 하는 처리가 필요하다
+		bottomInputLockObject.SetActive(true);
+
+		// OnEnable 하던거처럼 처리
+		objectRoot.SetActive(false);
+		Timing.RunCoroutine(OpenDropProcess());
+	}
+
+	float _retryRemainTime;
+	void UpdateRetry()
+	{
+		if (_retryRemainTime > 0.0f)
+		{
+			_retryRemainTime -= Time.deltaTime;
+			if (_retryRemainTime <= 0.0f)
+			{
+				_retryRemainTime = 0.0f;
+				RetryGacha();
+			}
+		}
+	}
+
+	int _lastPrice = 0;
+	CashShopSpellSmallListItem _spellSmallListItem;
+	public void SetLastItem(CashShopSpellSmallListItem item, int price)
+	{
+		_spellSmallListItem = item;
+		_lastPrice = price;
+	}
+	void RetryGacha()
+	{
+		switch (_boxType)
+		{
+			case eBoxType.Spell: _spellSmallListItem.OnClickButton(); break;
+			//case eBoxType.Character: characterBoxResultCanvas.gameObject.SetActive(false); break;
+			//case eBoxType.Equip: equipBoxResultCanvas.gameObject.SetActive(false); break;
+		}
+	}
+	#endregion
 
 	#region SpellBoxShow
 	List<string> _listNewSpellId = new List<string>();
@@ -264,4 +353,64 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 	{
 		_closeAction = closeCallback;
 	}
+
+	#region Retry
+	public void OnEndGachaGridProcess()
+	{
+		exitObject.SetActive(true);
+
+		// 캐시샵에서 열었던거라면 추가로 굴릴 수 있게 처리해야한다.
+		if (_cashShopProcess)
+		{
+			bottomInputLockObject.SetActive(false);
+			switch (_boxType)
+			{
+				case eBoxType.Spell: spellRetryRootObject.SetActive(true); break;
+				case eBoxType.Character: characterRetryRootObject.SetActive(true); break;
+				case eBoxType.Equip: equipRetryRootObject.SetActive(true); break;
+			}
+
+			// 캐시샵 열고 처음 굴릴때는 안보이다 나타나는거니 초기화를 해주고
+			if (switchGroupObject.activeSelf == false)
+			{
+				switchGroupObject.SetActive(true);
+				if (alarmSwitch.isOn)
+					alarmSwitch.AnimateSwitch();
+			}
+			else
+			{
+				// 두번째 굴릴때부터는 switch 상태가 켜져있는지 확인하고 연속가차를 실행한다.
+				if (alarmSwitch.isOn)
+				{
+					if (CurrencyData.instance.dia < _lastPrice)
+					{
+						alarmSwitch.AnimateSwitch();
+						return;
+					}
+
+					_retryRemainTime = 0.6f;
+				}
+			}
+		}
+	}
+	#endregion
+
+
+	#region Alarm
+	public void OnSwitchOnAutoGacha()
+	{
+		
+	}
+
+	IEnumerator<float> DelayedResetSwitch()
+	{
+		yield return Timing.WaitForOneFrame;
+		alarmSwitch.AnimateSwitch();
+	}
+
+	public void OnSwitchOffAutoGacha()
+	{
+
+	}
+	#endregion
 }

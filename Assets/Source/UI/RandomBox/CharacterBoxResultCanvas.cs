@@ -91,6 +91,6 @@ public class CharacterBoxResultCanvas : MonoBehaviour
 		}
 
 		if (RandomBoxScreenCanvas.instance != null)
-			RandomBoxScreenCanvas.instance.exitObject.SetActive(true);
+			RandomBoxScreenCanvas.instance.OnEndGachaGridProcess();
 	}
 }
