@@ -9,6 +9,7 @@ using MEC;
 
 public class PickUpCharacterListItem : MonoBehaviour
 {
+	public Text countText;
 	public Text priceText;
 	public Image characterImage;
 	public Text remainTimeText;
@@ -26,6 +27,7 @@ public class PickUpCharacterListItem : MonoBehaviour
 			characterImage.sprite = sprite;
 		});
 
+		countText.text = string.Format("X {0:N0}", info.count);
 		priceText.text = info.price.ToString("N0");
 
 		string gradeString = UIString.instance.GetString(string.Format("GameUI_CharGrade{0}", 2));

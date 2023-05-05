@@ -9,6 +9,7 @@ public class CashShopCharacterSmallListItem : MonoBehaviour
 {
 	public int index = 0;
 
+	public Text countText;
 	public Text priceText;
 
 	ShopActorTableData _shopActorTableData;
@@ -18,6 +19,7 @@ public class CashShopCharacterSmallListItem : MonoBehaviour
 		if (shopActorTableData == null)
 			return;
 
+		countText.text = string.Format("X {0:N0}", shopActorTableData.count);
 		priceText.text = shopActorTableData.price.ToString("N0");
 		_shopActorTableData = shopActorTableData;
 	}

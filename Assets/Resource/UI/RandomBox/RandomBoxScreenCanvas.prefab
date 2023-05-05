@@ -88,11 +88,11 @@ GameObject:
   - component: {fileID: 6530429012443344963}
   - component: {fileID: 1687197587362019998}
   - component: {fileID: 7138389668175906460}
-  - component: {fileID: 5861405396567833241}
+  - component: {fileID: 7240013213917119514}
   - component: {fileID: 6102834191038101040}
   - component: {fileID: 2449830891476731363}
   m_Layer: 5
-  m_Name: NameText
+  m_Name: CountText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -116,7 +116,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -12, y: 36}
+  m_SizeDelta: {x: -16, y: 36}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &1687197587362019998
 CanvasRenderer:
@@ -148,19 +148,19 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 20
+    m_FontSize: 24
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 2
     m_MaxSize: 24
-    m_Alignment: 5
+    m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: CharacterBox
---- !u!114 &5861405396567833241
+  m_Text: X 100
+--- !u!114 &7240013213917119514
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -169,10 +169,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 97794457944437668}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f12479a3eb790ef4abc68cb914116b15, type: 3}
+  m_Script: {fileID: 11500000, guid: f2e4156dac494ee49a9c96ef5e64b56f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uiStringKey: ShopUIName_CharacterBox
 --- !u!114 &6102834191038101040
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1554,7 +1553,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f12479a3eb790ef4abc68cb914116b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uiStringKey: GameUI_AutoGacha
+  uiStringKey: ShopUI_AutoGacha
 --- !u!1 &1151150011466874190
 GameObject:
   m_ObjectHideFlags: 0
@@ -10935,11 +10934,11 @@ GameObject:
   - component: {fileID: 5083003473792481925}
   - component: {fileID: 3015770712369033796}
   - component: {fileID: 572796095784175466}
-  - component: {fileID: 5875817502079982276}
+  - component: {fileID: 487470211879961223}
   - component: {fileID: 1169479276429844302}
   - component: {fileID: 2489724048085040763}
   m_Layer: 5
-  m_Name: NameText
+  m_Name: CountText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10963,7 +10962,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -12, y: 36}
+  m_SizeDelta: {x: -16, y: 36}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &3015770712369033796
 CanvasRenderer:
@@ -10995,19 +10994,19 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 20
+    m_FontSize: 24
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 2
     m_MaxSize: 24
-    m_Alignment: 5
+    m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: CharacterBox
---- !u!114 &5875817502079982276
+  m_Text: X 100
+--- !u!114 &487470211879961223
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -11016,10 +11015,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 6787233593379964278}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f12479a3eb790ef4abc68cb914116b15, type: 3}
+  m_Script: {fileID: 11500000, guid: f2e4156dac494ee49a9c96ef5e64b56f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uiStringKey: ShopUIName_MegaCharacterBox
 --- !u!114 &1169479276429844302
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11475,6 +11473,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   index: 1
+  countText: {fileID: 572796095784175466}
   priceText: {fileID: 1064983531495645343}
 --- !u!114 &7798143713480674076
 MonoBehaviour:
@@ -13958,6 +13957,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   index: 0
+  countText: {fileID: 7138389668175906460}
   priceText: {fileID: 7078107259790865334}
 --- !u!114 &6104160831571073212
 MonoBehaviour:
