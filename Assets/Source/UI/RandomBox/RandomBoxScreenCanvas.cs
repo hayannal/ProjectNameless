@@ -246,18 +246,18 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 
 	int _lastPrice = 0;
 	CashShopSpellSmallListItem _spellSmallListItem;
-	public void SetLastItem(CashShopSpellSmallListItem item, int price)
-	{
-		_spellSmallListItem = item;
-		_lastPrice = price;
-	}
+	CashShopCharacterSmallListItem _characterSmallListItem;
+	CashShopEquipSmallListItem _equipSmallListItem;
+	public void SetLastItem(CashShopSpellSmallListItem item, int price) { _spellSmallListItem = item; _lastPrice = price; }
+	public void SetLastItem(CashShopCharacterSmallListItem item, int price) { _characterSmallListItem = item; _lastPrice = price; }
+	public void SetLastItem(CashShopEquipSmallListItem item, int price) { _equipSmallListItem = item; _lastPrice = price; }
 	void RetryGacha()
 	{
 		switch (_boxType)
 		{
 			case eBoxType.Spell: _spellSmallListItem.OnClickButton(); break;
-			//case eBoxType.Character: characterBoxResultCanvas.gameObject.SetActive(false); break;
-			//case eBoxType.Equip: equipBoxResultCanvas.gameObject.SetActive(false); break;
+			case eBoxType.Character: _characterSmallListItem.OnClickButton(); break;
+			case eBoxType.Equip: _equipSmallListItem.OnClickButton(); break;
 		}
 	}
 	#endregion
@@ -391,6 +391,8 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 
 					_retryRemainTime = 0.6f;
 				}
+				else
+					bottomInputLockObject.SetActive(false);
 			}
 		}
 	}
