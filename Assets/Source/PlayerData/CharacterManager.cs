@@ -570,12 +570,11 @@ public class CharacterManager : MonoBehaviour
 			#endregion
 
 			// pp는 현재 가지고 있는 캐릭터들 안에서만 돌리면 끝이다.
-			for (int j = 0; j < TableDataManager.instance.GetGlobalConstantInt("GachaActorCount"); ++j)
+			// 장비나 스펠처럼 적혀있는 수량대로 뽑기로 하면서 캐릭터가 나오지 않으면 pp를 굴리는 형태로 바꾼다. 수량도 그러니 한개씩 처리.
+			if (string.IsNullOrEmpty(newActorId))
 			{
 				string ppActorId = GetRandomCharacterPpGachaResult();
-				int ppCount = UnityEngine.Random.Range(TableDataManager.instance.GetGlobalConstantInt("GachaActorPowerPointMin"), TableDataManager.instance.GetGlobalConstantInt("GachaActorPowerPointMax") + 1);
-				for (int k = 0; k < ppCount; ++k)
-					_listRandomObscuredId.Add(string.Format("{0}pp", ppActorId));
+				_listRandomObscuredId.Add(string.Format("{0}pp", ppActorId));
 			}
 		}
 		return _listRandomObscuredId;

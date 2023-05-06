@@ -35,6 +35,11 @@ public class PickUpCharacterListItem : MonoBehaviour
 		_eventExpireDateTime = new DateTime(info.ey, info.em, info.ed);
 	}
 
+	public CashShopData.PickUpCharacterInfo GetInfo()
+	{
+		return _info;
+	}
+
 	void Update()
 	{
 		UpdateRemainTime();
@@ -117,6 +122,9 @@ public class PickUpCharacterListItem : MonoBehaviour
 		}
 
 		YesNoCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("ShopUI_ConfirmPurchase"), () => {
+
+			// RandomBoxScreenCanvas 인스턴스가 생성되기 전일수도 있다.
+			RandomBoxScreenCanvas.s_lastPickUpState = true;
 
 			// 연출 및 보상 처리. 100개씩 뽑으면 느릴 수 있으니 패킷 대기 없이 바로 시작한다.
 			UIInstanceManager.instance.ShowCanvasAsync("RandomBoxScreenCanvas", () =>

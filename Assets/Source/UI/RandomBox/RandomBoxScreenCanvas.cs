@@ -37,7 +37,9 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 
 	public GameObject exitObject;
 	public GameObject spellRetryRootObject;
+	public GameObject pickUpCharacterRetryRootObject;
 	public GameObject characterRetryRootObject;
+	public GameObject pickUpEquipRetryRootObject;
 	public GameObject equipRetryRootObject;
 	public GameObject bottomInputLockObject;
 
@@ -117,12 +119,15 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 
 		bottomInputLockObject.SetActive(false);
 		spellRetryRootObject.SetActive(false);
+		pickUpCharacterRetryRootObject.SetActive(false);
 		characterRetryRootObject.SetActive(false);
+		pickUpEquipRetryRootObject.SetActive(false);
 		equipRetryRootObject.SetActive(false);
 		switchGroupObject.SetActive(false);
 		exitObject.SetActive(false);
 		_recvResult = false;
 		_retryRemainTime = 0.0f;
+		s_lastPickUpState = false;
 
 		if (_closeAction != null)
 		{
@@ -190,6 +195,8 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 	bool _tooLate;
 	public void OnRecvResult(eBoxType boxType, List<ItemInstance> listItemInstance)
 	{
+		currencySmallInfo.RefreshInfo();
+
 		_recvResult = true;
 		_boxType = boxType;
 		_listItemInstance = listItemInstance;
@@ -244,20 +251,36 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 		}
 	}
 
+	// 픽업인지 구분하는건 RandomBoxScreenCanvas 인스턴스 생성되기 전에 저장해놔야해서
+	// 아예 static으로 저장하기로 한다.
+	public static bool s_lastPickUpState { get; set; }
+
 	int _lastPrice = 0;
 	CashShopSpellSmallListItem _spellSmallListItem;
 	CashShopCharacterSmallListItem _characterSmallListItem;
 	CashShopEquipSmallListItem _equipSmallListItem;
-	public void SetLastItem(CashShopSpellSmallListItem item, int price) { _spellSmallListItem = item; _lastPrice = price; }
-	public void SetLastItem(CashShopCharacterSmallListItem item, int price) { _characterSmallListItem = item; _lastPrice = price; }
-	public void SetLastItem(CashShopEquipSmallListItem item, int price) { _equipSmallListItem = item; _lastPrice = price; }
+	PickUpCharacterSmallListItem _pickUpCharacterSmallListItem;
+	PickUpEquipSmallListItem _pickUpEquipSmallListItem;
+	public void SetLastItem(CashShopSpellSmallListItem item, int price) { _spellSmallListItem = item; _lastPrice = price; s_lastPickUpState = false; }
+	public void SetLastItem(CashShopCharacterSmallListItem item, int price) { _characterSmallListItem = item; _lastPrice = price; s_lastPickUpState = false; }
+	public void SetLastItem(CashShopEquipSmallListItem item, int price) { _equipSmallListItem = item; _lastPrice = price; s_lastPickUpState = false; }
+	public void SetLastItem(PickUpCharacterSmallListItem item, int price) { _pickUpCharacterSmallListItem = item; _lastPrice = price; s_lastPickUpState = true; }
+	public void SetLastItem(PickUpEquipSmallListItem item, int price) { _pickUpEquipSmallListItem = item; _lastPrice = price; s_lastPickUpState = true; }
 	void RetryGacha()
 	{
 		switch (_boxType)
 		{
-			case eBoxType.Spell: _spellSmallListItem.OnClickButton(); break;
-			case eBoxType.Character: _characterSmallListItem.OnClickButton(); break;
-			case eBoxType.Equip: _equipSmallListItem.OnClickButton(); break;
+			case eBoxType.Spell:
+				_spellSmallListItem.OnClickButton();
+				break;
+			case eBoxType.Character:
+				if (s_lastPickUpState) _pickUpCharacterSmallListItem.OnClickButton();
+				else _characterSmallListItem.OnClickButton();
+				break;
+			case eBoxType.Equip:
+				if (s_lastPickUpState) _pickUpEquipSmallListItem.OnClickButton();
+				else _equipSmallListItem.OnClickButton();
+				break;
 		}
 	}
 	#endregion
@@ -364,9 +387,17 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 		{
 			switch (_boxType)
 			{
-				case eBoxType.Spell: spellRetryRootObject.SetActive(true); break;
-				case eBoxType.Character: characterRetryRootObject.SetActive(true); break;
-				case eBoxType.Equip: equipRetryRootObject.SetActive(true); break;
+				case eBoxType.Spell:
+					spellRetryRootObject.SetActive(true);
+					break;
+				case eBoxType.Character:
+					if (s_lastPickUpState) { pickUpCharacterRetryRootObject.SetActive(false); pickUpCharacterRetryRootObject.SetActive(true); }
+					else characterRetryRootObject.SetActive(true);
+					break;
+				case eBoxType.Equip:
+					if (s_lastPickUpState) { pickUpEquipRetryRootObject.SetActive(false); pickUpEquipRetryRootObject.SetActive(true); }
+					else equipRetryRootObject.SetActive(true);
+					break;
 			}
 
 			// 캐시샵 열고 처음 굴릴때는 안보이다 나타나는거니 초기화를 해주고
