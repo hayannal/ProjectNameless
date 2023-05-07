@@ -51,6 +51,8 @@ public class GuideQuestData : MonoBehaviour
 		ClearGoldDefense = 29,  // 보물습격 클리어하기
 		ClearBossBattle = 30,	// 토벌 클리어하기
 
+		TeamSetting = 31,		// 동료를 팀에 편성하기
+
 		OpenSummonCanvas = 91,	// 소환창을 열기. 처음 튜토용으로 만들어둔거다.
 	}
 
@@ -256,6 +258,10 @@ public class GuideQuestData : MonoBehaviour
 				break;
 			case eQuestClearType.SpinChargeAlarm:
 				if (OptionManager.instance.energyAlarm == 1)
+					complete = true;
+				break;
+			case eQuestClearType.TeamSetting:
+				if (CharacterManager.instance.IsEmptyTeamSlot() == false)
 					complete = true;
 				break;
 		}

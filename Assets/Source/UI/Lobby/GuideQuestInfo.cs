@@ -294,6 +294,7 @@ public class GuideQuestInfo : MonoBehaviour
 				MainCanvas.instance.OnClickCashShopButton();
 				break;
 			case GuideQuestData.eQuestClearType.LevelUpCharacter:
+			case GuideQuestData.eQuestClearType.TeamSetting:
 				MainCanvas.instance.OnClickTeamButton();
 				break;
 			case GuideQuestData.eQuestClearType.GatherPet:

@@ -131,9 +131,13 @@ public class TeamPositionCanvas : MonoBehaviour
 					prevSwapIndex = i;
 			}
 		}
-		
+
+		bool prevEmptyTeamSetting = CharacterManager.instance.IsEmptyTeamSlot();
 		PlayFabApiManager.instance.RequestSelectTeamPosition(CharacterListCanvas.instance.selectedActorId, index, prevSwapIndex, () =>
 		{
+			if (prevEmptyTeamSetting && CharacterManager.instance.IsEmptyTeamSlot() == false)
+				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.TeamSetting);
+
 			ToastCanvas.instance.ShowToast(UIString.instance.GetString("CharacterUI_SelectedToast"), 2.0f);
 			CharacterListCanvas.instance.RefreshGrid();
 			CharacterInfoGrowthCanvas.instance.RefreshOrganizeAlarm();
