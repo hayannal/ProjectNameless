@@ -379,7 +379,10 @@ public class BossMonsterGaugeCanvas : MonoBehaviour
 			if (challengeStageTableData != null)
 			{
 				float diff = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.Attack) - challengeStageTableData.standardDef;
-				if (diff < challengeStageTableData.standardHp * BattleInstanceManager.instance.GetCachedGlobalConstantInt("FastBossClearRateLimit10000") * 0.0001f)
+				int rateLimit10000 = BattleInstanceManager.instance.GetCachedGlobalConstantInt("FastBossClearRateLimit10000");
+				if (changeStage < BattleInstanceManager.instance.GetCachedGlobalConstantInt("FastBossClearLowBase"))
+					rateLimit10000 *= 2;
+				if (diff < challengeStageTableData.standardHp * rateLimit10000 * 0.0001f)
 					return false;
 				//else
 				//	Debug.Log("FastBossClearRateLimit Available");
