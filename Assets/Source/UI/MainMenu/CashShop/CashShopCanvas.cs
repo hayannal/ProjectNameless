@@ -46,7 +46,7 @@ public class CashShopCanvas : MonoBehaviour
 		RefreshPickUpEquipRect();
 	}
 
-	public void RefreshPickUpCharacterRect()
+	public static bool IsUsablePickUpCharacter()
 	{
 		// 캐릭터의 경우엔 장비랑 달리 다 뽑았는지도 판단해야한다. 이런 상황에선 굴려봤자 의미없으니 하이드 시킨다.
 		CashShopData.PickUpCharacterInfo characterInfo = CashShopData.instance.GetCurrentPickUpCharacterInfo();
@@ -57,16 +57,28 @@ public class CashShopCanvas : MonoBehaviour
 			if (characterData != null && characterData.transcendPoint >= TableDataManager.instance.GetGlobalConstantInt("GachaActorMaxTrp"))
 				maxReached = true;
 		}
-		pickUpCharacterListItem.gameObject.SetActive(PlayerData.instance.downloadConfirmed && characterInfo != null && maxReached == false);
+		return (characterInfo != null && maxReached == false);
+	}
+
+	public void RefreshPickUpCharacterRect()
+	{
+		bool usablePickUp = IsUsablePickUpCharacter();
+		pickUpCharacterListItem.gameObject.SetActive(PlayerData.instance.downloadConfirmed && usablePickUp);
 		if (pickUpCharacterListItem.gameObject.activeSelf)
-			pickUpCharacterListItem.RefreshInfo(characterInfo);
+			pickUpCharacterListItem.RefreshInfo(CashShopData.instance.GetCurrentPickUpCharacterInfo());
+	}
+
+	public static bool IsUsablePickUpEquip()
+	{
+		CashShopData.PickUpEquipInfo equipInfo = CashShopData.instance.GetCurrentPickUpEquipInfo();
+		return (equipInfo != null);
 	}
 
 	public void RefreshPickUpEquipRect()
 	{
-		CashShopData.PickUpEquipInfo equipInfo = CashShopData.instance.GetCurrentPickUpEquipInfo();
-		pickUpEquipListItem.gameObject.SetActive(PlayerData.instance.downloadConfirmed && equipInfo != null);
+		bool usablePickUp = IsUsablePickUpEquip();
+		pickUpEquipListItem.gameObject.SetActive(PlayerData.instance.downloadConfirmed && usablePickUp);
 		if (pickUpEquipListItem.gameObject.activeSelf)
-			pickUpEquipListItem.RefreshInfo(equipInfo);
+			pickUpEquipListItem.RefreshInfo(CashShopData.instance.GetCurrentPickUpEquipInfo());
 	}
 }

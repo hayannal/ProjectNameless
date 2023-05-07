@@ -391,12 +391,36 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 					spellRetryRootObject.SetActive(true);
 					break;
 				case eBoxType.Character:
-					if (s_lastPickUpState) { pickUpCharacterRetryRootObject.SetActive(false); pickUpCharacterRetryRootObject.SetActive(true); }
-					else characterRetryRootObject.SetActive(true);
+					if (s_lastPickUpState)
+					{
+						pickUpCharacterRetryRootObject.SetActive(false);
+						if (CashShopCanvas.IsUsablePickUpCharacter() == false)
+						{
+							// 이벤트가 종료되거나 캐릭터를 다 뽑아서 굴릴 수 없다면 더이상 재굴림을 허용하지 않는다.
+							bottomInputLockObject.SetActive(false);
+							switchGroupObject.SetActive(false);
+							return;
+						}
+						pickUpCharacterRetryRootObject.SetActive(true);
+					}
+					else
+						characterRetryRootObject.SetActive(true);
 					break;
 				case eBoxType.Equip:
-					if (s_lastPickUpState) { pickUpEquipRetryRootObject.SetActive(false); pickUpEquipRetryRootObject.SetActive(true); }
-					else equipRetryRootObject.SetActive(true);
+					if (s_lastPickUpState)
+					{
+						pickUpEquipRetryRootObject.SetActive(false);
+						if (CashShopCanvas.IsUsablePickUpEquip() == false)
+						{
+							// 이벤트가 종료되면 더이상 재굴림을 허용하지 않는다.
+							bottomInputLockObject.SetActive(false);
+							switchGroupObject.SetActive(false);
+							return;
+						}
+						pickUpEquipRetryRootObject.SetActive(true);
+					}
+					else
+						equipRetryRootObject.SetActive(true);
 					break;
 			}
 
