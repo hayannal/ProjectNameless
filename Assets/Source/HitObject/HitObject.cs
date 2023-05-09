@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using ActorStatusDefine;
 using MecanimStateDefine;
 
@@ -1175,6 +1176,7 @@ public class HitObject : MonoBehaviour
 	Animator _animator;
 	HitObjectSphereCastRayPath _hitObjectSphereCastRayPath;
 
+	NavMeshModifier navMeshModifier { get; set; }
 	void Awake()
 	{
 		_animator = GetComponent<Animator>();
@@ -1182,6 +1184,16 @@ public class HitObject : MonoBehaviour
 
 	public void InitializeHitObject(MeHitObject meHit, Actor parentActor, StatusBase statusBase, float parentHitObjectCreateTime, int hitSignalIndexInAction, int repeatIndex, int repeatAddCountByLevelPack)
 	{
+		if (meHit.targetDetectType == eTargetDetectType.Collider && parentActor != null && parentActor.IsPlayerActor())
+		{
+			navMeshModifier = GetComponent<NavMeshModifier>();
+			if (navMeshModifier == null)
+			{
+				navMeshModifier = gameObject.AddComponent<NavMeshModifier>();
+				navMeshModifier.ignoreFromBuild = true;
+			}
+		}
+
 		_signal = meHit;
 		_createTime = Time.time;
 		_parentHitObjectCreateTime = parentHitObjectCreateTime;
