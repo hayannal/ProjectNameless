@@ -4699,7 +4699,7 @@ public class PlayFabApiManager : MonoBehaviour
 		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "EndGoldDefense",
-			FunctionParameter = new { Sel = selectedDifficulty, Fir = firstClear ? 1 : 0, AddDi = reward, Cs = checkSum },
+			FunctionParameter = new { Sel = selectedDifficulty, Fir = firstClear ? 1 : 0, AddGo = reward, Cs = checkSum },
 			GeneratePlayStreamEvent = true,
 		}, (success) =>
 		{
@@ -4710,7 +4710,7 @@ public class PlayFabApiManager : MonoBehaviour
 				WaitingNetworkCanvas.Show(false);
 
 				SubMissionData.instance.goldDefenseDailyCount += 1;
-				CurrencyData.instance.dia += reward;
+				CurrencyData.instance.gold += reward;
 				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.ClearGoldDefense);
 				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.UseTicket, useTicket);
 				CurrencyData.instance.UseTicket(useTicket);

@@ -258,8 +258,8 @@ public class GoldDefenseMissionCanvas : MonoBehaviour
 		int selectedDifficulty = GoldDefenseEnterCanvas.instance.selectedDifficulty;
 		int selectableMaxDifficulty = GoldDefenseEnterCanvas.instance.selectableMaxDifficulty;
 		bool firstClear = (selectedDifficulty == selectableMaxDifficulty && selectedDifficulty > SubMissionData.instance.goldDefenseClearLevel);
-		int addDia = GoldDefenseEnterCanvas.instance.expectedReward;
-		PlayFabApiManager.instance.RequestEndGoldDefenseMission(firstClear, selectedDifficulty, addDia, price, () =>
+		int addGold = GoldDefenseEnterCanvas.instance.expectedReward;
+		PlayFabApiManager.instance.RequestEndGoldDefenseMission(firstClear, selectedDifficulty, addGold, price, () =>
 		{
 			// 패킷 통과하면 다음 처리로 넘어간다.
 			Timing.RunCoroutine(ClearProcess(firstClear, selectedDifficulty));
