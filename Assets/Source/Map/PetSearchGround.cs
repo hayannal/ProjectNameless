@@ -60,6 +60,7 @@ public class PetSearchGround : MonoBehaviour
 		InitializePhase();
 	}
 
+	public int activePetStar { get; private set; }
 	GameObject _activePetObject;
 	void InitializePhase()
 	{
@@ -77,6 +78,9 @@ public class PetSearchGround : MonoBehaviour
 			_activePetObject = newPetActor.gameObject;
 			newPetActor.cachedTransform.position = playerPositionTransform.position;
 			newPetActor.cachedTransform.rotation = playerPositionTransform.rotation;
+
+			PetTableData petTableData = TableDataManager.instance.FindPetTableData(PetManager.instance.activePetId);
+			activePetStar = petTableData.star;
 		});
 
 		firstGetButtonTransform.gameObject.SetActive(false);
