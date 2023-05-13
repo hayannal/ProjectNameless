@@ -139,6 +139,9 @@ public class ActorStatus : MonoBehaviour
 		MonsterTableData monsterTableData = TableDataManager.instance.FindMonsterTableData(actor.actorId);
 		float standardHp = StageManager.instance.currentMonstrStandardHp;
 		float standardDef = StageManager.instance.currentMonstrStandardDef;
+		float evadeRate = StageManager.instance.currentMonsterEvadeRate;
+		float criticalDefenseRate = StageManager.instance.currentMonsterCriticalDefenseRate;
+		float strikeDefenseRate = StageManager.instance.currentMonsterStrikeDefenseRate;
 		if (actor.team.teamId == (int)Team.eTeamID.DefaultAlly)
 		{
 		}
@@ -149,6 +152,9 @@ public class ActorStatus : MonoBehaviour
 			{
 				standardHp = bossBattleDifficultyTableData.standardHp;
 				standardDef = bossBattleDifficultyTableData.standardDef;
+
+				// 우선 보스배틀에선 오버라이드가 없으니 초기화해두기로 한다.
+				evadeRate = criticalDefenseRate = strikeDefenseRate = 0.0f;
 			}
 		}
 		else if (BattleManager.instance != null && BattleManager.instance.IsNodeWar())
@@ -172,10 +178,21 @@ public class ActorStatus : MonoBehaviour
 			*/
 		}
 		_statusBase.valueList[(int)eActorStatus.MaxHp] = standardHp * monsterTableData.multiHp;
+		if (StageFloorInfoCanvas.instance != null && StageFloorInfoCanvas.instance.gameObject.activeSelf)
+		{
+			// 이 옵션은 장비로만 올리게 되어있어서 BattleInstanceManager.instance.playerActor에서 구해오지 않고 직접 EquipManager에서 구해와서 적용하기로 한다.
+			float hpDecreaseAddRate = 0.0f;
+			if (bossMonster) hpDecreaseAddRate = EquipManager.instance.cachedEquipStatusList.valueList[(int)eActorStatus.BossMonsterHpDecreaseAddRate];
+			else hpDecreaseAddRate = EquipManager.instance.cachedEquipStatusList.valueList[(int)eActorStatus.NormalMonsterHpDecreaseAddRate];
+			if (hpDecreaseAddRate > 0.0f)
+				_statusBase.valueList[(int)eActorStatus.MaxHp] *= (1.0f - hpDecreaseAddRate);
+		}
 		_statusBase.valueList[(int)eActorStatus.Attack] = 1.0f * monsterTableData.multiAtk;
 		_statusBase.valueList[(int)eActorStatus.Defense] = standardDef;
 		//_statusBase.valueList[(int)eActorStatus.AttackDelay] = monsterTableData.attackDelay;
-		//_statusBase.valueList[(int)eActorStatus.EvadeRate] = monsterTableData.evadeRate;
+		_statusBase.valueList[(int)eActorStatus.EvadeRate] = evadeRate;
+		_statusBase.valueList[(int)eActorStatus.CriticalDefenseRate] = criticalDefenseRate;
+		_statusBase.valueList[(int)eActorStatus.StrikeDefenseRate] = strikeDefenseRate;
 		_statusBase.valueList[(int)eActorStatus.MoveSpeed] = monsterTableData.moveSpeed;
 
 		//if (isServer)

@@ -13,6 +13,8 @@ namespace ActorStatusDefine {
 		AttackSpeedAddRate,
 		Defense,
 		EvadeRate,
+		CriticalDefenseRate,
+		StrikeDefenseRate,
 		MoveSpeed,
 
 		MonsterStatusAmount,
@@ -27,6 +29,8 @@ namespace ActorStatusDefine {
 		NormalMonsterDamageDecreaseAddRate,
 		BossMonsterDamageIncreaseAddRate,
 		BossMonsterDamageDecreaseAddRate,
+		NormalMonsterHpDecreaseAddRate,
+		BossMonsterHpDecreaseAddRate,
 		StrikeRate,
 		StrikeDamageAddRate,
 		InstantDeathRate,

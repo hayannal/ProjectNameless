@@ -137,8 +137,12 @@ public class BaseDamageAffector : AffectorBase {
 			{
 				float minimumCriticalRate = BattleInstanceManager.instance.GetCachedGlobalConstantFloat("MinimumCriticalRate");
 				criticalRate = Mathf.Max(criticalRate, minimumCriticalRate);
-				if (monsterActor != null && monsterActor.bossMonster)
-					criticalRate += affectorValueLevelTableData.fValue3;
+				if (monsterActor != null)
+				{
+					if (monsterActor.bossMonster)
+						criticalRate += affectorValueLevelTableData.fValue3;
+					criticalRate -= _actor.actorStatus.GetValue(eActorStatus.CriticalDefenseRate);
+				}
 			}
 			if (criticalRate > 0.0f && Random.value <= criticalRate)
 			{
@@ -313,6 +317,7 @@ public class BaseDamageAffector : AffectorBase {
 		{
 			float strikeExpectDamage = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MinimumStrikeDamageRate10000") * 0.0001f * _actor.actorStatus.GetValue(eActorStatus.MaxHp);
 			float strikeRate = hitParameter.statusBase.valueList[(int)eActorStatus.StrikeRate];
+			strikeRate -= _actor.actorStatus.GetValue(eActorStatus.StrikeDefenseRate);
 			if (damage < strikeExpectDamage && strikeRate > 0.0f && Random.value <= strikeRate)
 			{
 				float strikeDamageRate = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MinimumStrikeDamageRate10000") * 0.0001f;

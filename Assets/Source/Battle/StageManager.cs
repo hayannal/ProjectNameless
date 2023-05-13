@@ -55,6 +55,9 @@ public class StageManager : MonoBehaviour
 
 	public float currentMonstrStandardHp { get; set; }
 	public float currentMonstrStandardDef { get; set; }
+	public float currentMonsterEvadeRate { get; set; }
+	public float currentMonsterCriticalDefenseRate { get; set; }
+	public float currentMonsterStrikeDefenseRate { get; set; }
 
 	void Awake()
 	{
@@ -124,6 +127,10 @@ public class StageManager : MonoBehaviour
 		ParseSpawnInfo(stageTableData.spawnInfo);
 		currentMonstrStandardHp = stageTableData.standardHp;
 		currentMonstrStandardDef = stageTableData.standardDef;
+		currentMonsterEvadeRate = stageTableData.evadeRate;
+		currentMonsterCriticalDefenseRate = stageTableData.criticalDefenseRate;
+		currentMonsterStrikeDefenseRate = stageTableData.strikeDefenseRate;
+
 		_monsterSpawnPosition.x = stageTableData.monsterSpawnx;
 		_monsterSpawnPosition.z = stageTableData.monsterSpawnz;
 		_monsterSpawnPosition += GetSafeWorldOffset();

@@ -21,6 +21,18 @@ public class StageTableData
   public float standardDef { get { return _standardDef; } set { _standardDef = value; } }
   
   [SerializeField]
+  float _evadeRate;
+  public float evadeRate { get { return _evadeRate; } set { _evadeRate = value; } }
+  
+  [SerializeField]
+  float _criticalDefenseRate;
+  public float criticalDefenseRate { get { return _criticalDefenseRate; } set { _criticalDefenseRate = value; } }
+  
+  [SerializeField]
+  float _strikeDefenseRate;
+  public float strikeDefenseRate { get { return _strikeDefenseRate; } set { _strikeDefenseRate = value; } }
+  
+  [SerializeField]
   string[] _environmentSetting = new string[0];
   public string[] environmentSetting { get { return _environmentSetting; } set { _environmentSetting = value; } }
   
