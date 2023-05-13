@@ -114,7 +114,17 @@ public class EquipGroundCanvas : MonoBehaviour
 	#region UI
 	public void RefreshOptionViewButton()
 	{
-		optionViewButtonObject.SetActive(EquipManager.instance.cachedValue > 0);
+		// 옵션이 한개라도 활성화 되어야 옵션 보기 버튼을 활성화 시킨다.
+		bool showButton = false;
+		for (int i = 0; i < EquipManager.instance.cachedEquipStatusList.valueList.Length; ++i)
+		{
+			if (EquipManager.instance.cachedEquipStatusList.valueList[i] <= 0.0f)
+				continue;
+
+			showButton = true;
+			break;
+		}
+		optionViewButtonObject.SetActive(showButton);
 	}
 
 	public void OnClickAutoEquipButton()

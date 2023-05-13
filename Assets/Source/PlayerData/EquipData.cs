@@ -62,6 +62,9 @@ public class EquipData
 
 		for (int i = 0; i < EquipOptionCountMax; ++i)
 		{
+			if (IsGetAvailable(i) == false)
+				continue;
+
 			eActorStatus statusType = GetOption(i);
 			float value = GetOptionValue(i);
 			_equipStatusList.valueList[(int)statusType] += value;
