@@ -342,7 +342,7 @@ public class CharacterInfoGrowthCanvas : MonoBehaviour
 	public void RefreshOrganizeAlarm()
 	{
 		AlarmObject.Hide(organizeAlarmRootTransform);
-		if (CharacterManager.instance.HasEmptyTeamSlot() && CharacterManager.instance.listTeamPositionId.Contains(_actorId) == false)
+		if (_contains && CharacterManager.instance.HasEmptyTeamSlot() && CharacterManager.instance.listTeamPositionId.Contains(_actorId) == false)
 			AlarmObject.Show(organizeAlarmRootTransform);
 	}
 
