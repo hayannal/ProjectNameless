@@ -4563,7 +4563,7 @@ public class PlayFabApiManager : MonoBehaviour
 		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "EndRushDefense",
-			FunctionParameter = new { Sel = selectedDifficulty, Fir = firstClear ? 1 : 0, AddDi = reward, Cs = checkSum },
+			FunctionParameter = new { Sel = selectedDifficulty, Fir = firstClear ? 1 : 0, AddEn = reward, Cs = checkSum },
 			GeneratePlayStreamEvent = true,
 		}, (success) =>
 		{
@@ -4574,7 +4574,7 @@ public class PlayFabApiManager : MonoBehaviour
 				WaitingNetworkCanvas.Show(false);
 
 				SubMissionData.instance.rushDefenseDailyCount += 1;
-				CurrencyData.instance.dia += reward;
+				CurrencyData.instance.OnRecvRefillEnergy(reward);
 				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.ClearRushDefense);
 				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.UseTicket, useTicket);
 				CurrencyData.instance.UseTicket(useTicket);
@@ -4631,7 +4631,7 @@ public class PlayFabApiManager : MonoBehaviour
 		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
 		{
 			FunctionName = "EndBossDefense",
-			FunctionParameter = new { Sel = selectedDifficulty, Fir = firstClear ? 1 : 0, AddEn = reward, Cs = checkSum },
+			FunctionParameter = new { Sel = selectedDifficulty, Fir = firstClear ? 1 : 0, AddDi = reward, Cs = checkSum },
 			GeneratePlayStreamEvent = true,
 		}, (success) =>
 		{
@@ -4642,7 +4642,7 @@ public class PlayFabApiManager : MonoBehaviour
 				WaitingNetworkCanvas.Show(false);
 
 				SubMissionData.instance.bossDefenseDailyCount += 1;
-				CurrencyData.instance.OnRecvRefillEnergy(reward);
+				CurrencyData.instance.dia += reward;
 				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.ClearBossDefense);
 				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.UseTicket, useTicket);
 				CurrencyData.instance.UseTicket(useTicket);

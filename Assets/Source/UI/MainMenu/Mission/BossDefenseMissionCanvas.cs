@@ -254,8 +254,8 @@ public class BossDefenseMissionCanvas : MonoBehaviour
 		int selectedDifficulty = BossDefenseEnterCanvas.instance.selectedDifficulty;
 		int selectableMaxDifficulty = BossDefenseEnterCanvas.instance.selectableMaxDifficulty;
 		bool firstClear = (selectedDifficulty == selectableMaxDifficulty && selectedDifficulty > SubMissionData.instance.bossDefenseClearLevel);
-		int addEnergy = BossDefenseEnterCanvas.instance.expectedReward;
-		PlayFabApiManager.instance.RequestEndBossDefenseMission(firstClear, selectedDifficulty, addEnergy, price, () =>
+		int addDia = BossDefenseEnterCanvas.instance.expectedReward;
+		PlayFabApiManager.instance.RequestEndBossDefenseMission(firstClear, selectedDifficulty, addDia, price, () =>
 		{
 			// 패킷 통과하면 다음 처리로 넘어간다.
 			Timing.RunCoroutine(ClearProcess(firstClear, selectedDifficulty));
