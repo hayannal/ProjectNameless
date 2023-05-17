@@ -210,17 +210,17 @@ public class SpellManager : MonoBehaviour
 	}
 	List<RandomGachaSpellIdInfo> _listGachaSpellIdInfo = null;
 
-	List<int> _listTotalSpellGachaStep = new List<int>();
+	List<int> _listSpellGachaLevelAccumulatedCount = new List<int>();
 	public string GetRandomGachaResult()
 	{
-		string totalSpellGachaStep = BattleInstanceManager.instance.GetCachedGlobalConstantString("TotalSpellGachaStep");
-		if (_listTotalSpellGachaStep.Count == 0)
-			StringUtil.SplitIntList(totalSpellGachaStep, ref _listTotalSpellGachaStep);
+		string spellGachaLevelAccumulatedCount = BattleInstanceManager.instance.GetCachedGlobalConstantString("SpellGachaLevelAccumulatedCount");
+		if (_listSpellGachaLevelAccumulatedCount.Count == 0)
+			StringUtil.SplitIntList(spellGachaLevelAccumulatedCount, ref _listSpellGachaLevelAccumulatedCount);
 
 		int gachaStepIndex = -1;
-		for (int i = _listTotalSpellGachaStep.Count - 1; i >= 0; --i)
+		for (int i = _listSpellGachaLevelAccumulatedCount.Count - 1; i >= 0; --i)
 		{
-			if (spellTotalLevel >= _listTotalSpellGachaStep[i])
+			if (GetSumSpellCount() + _listRandomObscuredId.Count >= _listSpellGachaLevelAccumulatedCount[i])
 			{
 				gachaStepIndex = i;
 				break;
