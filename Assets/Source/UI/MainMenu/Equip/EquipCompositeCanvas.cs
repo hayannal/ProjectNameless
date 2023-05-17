@@ -163,6 +163,9 @@ public class EquipCompositeCanvas : EquipShowCanvasBase
 				else if (x.enhanceLevel < y.enhanceLevel) return 1;
 				if (x.mainStatusValue > y.mainStatusValue) return -1;
 				else if (x.mainStatusValue < y.mainStatusValue) return 1;
+				int stringCompare = string.Compare(x.cachedEquipTableData.equipGroup, y.cachedEquipTableData.equipGroup);
+				if (stringCompare < 0) return -1;
+				else if (stringCompare > 0) return 1;
 			}
 			return 0;
 		});
@@ -329,7 +332,7 @@ public class EquipCompositeCanvas : EquipShowCanvasBase
 			return;
 
 		EquipBoxResultCanvas.ShowSmallEquipInfo(materialSmallStatusInfo, equipData);
-		_materialSmallStatusInfoShowRemainTime = 2.0f;
+		_materialSmallStatusInfoShowRemainTime = 3.5f;
 	}
 
 	List<string> _listMultiSelectUniqueId = new List<string>();
