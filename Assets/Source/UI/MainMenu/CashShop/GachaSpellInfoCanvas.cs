@@ -9,6 +9,7 @@ public class GachaSpellInfoCanvas : MonoBehaviour
 
 	public Text skillTotalLevelText;
 	public Text currentSkillTotalLevelText;
+	public Text nextRemainCountText;
 
 	public GameObject contentItemPrefab;
 	public RectTransform contentRootRectTransform;
@@ -28,18 +29,18 @@ public class GachaSpellInfoCanvas : MonoBehaviour
 		contentItemPrefab.SetActive(false);
 	}
 
-	List<int> _listTotalSpellGachaStep = new List<int>();
+	List<int> _listSpellGachaLevelAccumulatedCount = new List<int>();
 	int _currentProbIndex;
 	void OnEnable()
 	{
-		string totalSpellGachaStep = BattleInstanceManager.instance.GetCachedGlobalConstantString("TotalSpellGachaStep");
-		if (_listTotalSpellGachaStep.Count == 0)
-			StringUtil.SplitIntList(totalSpellGachaStep, ref _listTotalSpellGachaStep);
+		string spellGachaLevelAccumulatedCount = BattleInstanceManager.instance.GetCachedGlobalConstantString("SpellGachaLevelAccumulatedCount");
+		if (_listSpellGachaLevelAccumulatedCount.Count == 0)
+			StringUtil.SplitIntList(spellGachaLevelAccumulatedCount, ref _listSpellGachaLevelAccumulatedCount);
 
 		int gachaStepIndex = -1;
-		for (int i = _listTotalSpellGachaStep.Count - 1; i >= 0; --i)
+		for (int i = _listSpellGachaLevelAccumulatedCount.Count - 1; i >= 0; --i)
 		{
-			if (SpellManager.instance.spellTotalLevel >= _listTotalSpellGachaStep[i])
+			if (SpellManager.instance.GetSumSpellCount() >= _listSpellGachaLevelAccumulatedCount[i])
 			{
 				gachaStepIndex = i;
 				break;
@@ -49,13 +50,16 @@ public class GachaSpellInfoCanvas : MonoBehaviour
 			return;
 
 		_currentProbIndex = gachaStepIndex;
+		_baseLevelIndex = gachaStepIndex;
 
 		RefreshSpellLevel();
 		RefreshGrid();
 	}
 
+	int _baseLevelIndex = 0;
 	void RefreshSpellLevel()
 	{
+		/*
 		int nextValue = 0;
 		int nextIndex = _currentProbIndex + 1;
 		if (nextIndex < _listTotalSpellGachaStep.Count)
@@ -66,7 +70,20 @@ public class GachaSpellInfoCanvas : MonoBehaviour
 		string leftString = UIString.instance.GetString("GameUI_Lv", _listTotalSpellGachaStep[_currentProbIndex]);
 		string rightString = UIString.instance.GetString("GameUI_Lv", nextValue - 1);
 		skillTotalLevelText.text = string.Format("{0}  -  {1}", leftString, rightString);
-		currentSkillTotalLevelText.text = UIString.instance.GetString("GameUI_Lv", SpellManager.instance.spellTotalLevel);
+		*/
+
+		skillTotalLevelText.text = UIString.instance.GetString("GameUI_Lv", _currentProbIndex + 1);
+
+
+		currentSkillTotalLevelText.text = UIString.instance.GetString("GameUI_Lv", _baseLevelIndex + 1);
+		nextRemainCountText.gameObject.SetActive(false);
+
+		if (_baseLevelIndex < _listSpellGachaLevelAccumulatedCount.Count - 1)
+		{
+			int remainCount = _listSpellGachaLevelAccumulatedCount[_baseLevelIndex + 1] - SpellManager.instance.GetSumSpellCount();
+			nextRemainCountText.SetLocalizedText(UIString.instance.GetString("SpellUI_NextRequired", remainCount));
+			nextRemainCountText.gameObject.SetActive(true);
+		}
 	}
 
 	List<GachaSpellInfoCanvasListItem> _listGachaSpellInfoCanvasListItem = new List<GachaSpellInfoCanvasListItem>();
@@ -96,7 +113,7 @@ public class GachaSpellInfoCanvas : MonoBehaviour
 
 	public void OnClickRightButton()
 	{
-		if (_currentProbIndex < _listTotalSpellGachaStep.Count - 1)
+		if (_currentProbIndex < _listSpellGachaLevelAccumulatedCount.Count - 1)
 		{
 			_currentProbIndex += 1;
 			RefreshSpellLevel();
