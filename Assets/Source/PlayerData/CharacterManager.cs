@@ -625,6 +625,7 @@ public class CharacterManager : MonoBehaviour
 			return null;
 		}
 
+		int prevHighestCharacterLevel = CharacterManager.instance.GetHighestCharacterLevel();
 		int addCharacterCount = 0;
 		for (int i = 0; i < listItemInstance.Count; ++i)
 		{
@@ -670,6 +671,10 @@ public class CharacterManager : MonoBehaviour
 
 		if (addCharacterCount > 0)
 			GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.GatherCharacter, addCharacterCount);
+
+		int highestCharacterLevel = GetHighestCharacterLevel();
+		if (prevHighestCharacterLevel == 0 && highestCharacterLevel > prevHighestCharacterLevel)
+			GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.LevelUpCharacter, highestCharacterLevel - prevHighestCharacterLevel);
 
 		// 두번째 루프 돌땐 pp들을 처리한다.
 		for (int i = 0; i < listItemInstance.Count; ++i)
@@ -749,6 +754,7 @@ public class CharacterManager : MonoBehaviour
 			}
 		}
 
+		int prevHighestCharacterLevel = CharacterManager.instance.GetHighestCharacterLevel();
 		if (rewardValue.Substring(rewardValue.Length - 2) != "pp")
 		{
 			if (currentCharacterData != null)
@@ -764,6 +770,10 @@ public class CharacterManager : MonoBehaviour
 				OnAddItem(newCharacterData);
 
 				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.GatherCharacter);
+
+				int highestCharacterLevel = GetHighestCharacterLevel();
+				if (prevHighestCharacterLevel == 0 && highestCharacterLevel > prevHighestCharacterLevel)
+					GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.LevelUpCharacter, highestCharacterLevel - prevHighestCharacterLevel);
 			}
 		}
 		else if (rewardValue.Substring(rewardValue.Length - 2) == "pp")
