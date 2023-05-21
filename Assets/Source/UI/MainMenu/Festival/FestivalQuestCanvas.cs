@@ -133,6 +133,29 @@ public class FestivalQuestCanvas : MonoBehaviour
 			if (FestivalData.instance.IsGetFestivalCollect(TableDataManager.instance.festivalCollectTable.dataArray[i].num))
 				continue;
 
+			int currentCount = FestivalData.instance.GetProceedingCount(TableDataManager.instance.festivalCollectTable.dataArray[i].typeId);
+			bool getable = (TableDataManager.instance.festivalCollectTable.dataArray[i].needCount <= currentCount);
+			if (!getable)
+				continue;
+
+			FestivalQuestCanvasListItem festivalCanvasListItem = _container.GetCachedItem(contentItemPrefab, contentRootRectTransform);
+			festivalCanvasListItem.Initialize(TableDataManager.instance.festivalCollectTable.dataArray[i]);
+			_listFestivalQuestCanvasListItem.Add(festivalCanvasListItem);
+		}
+
+		for (int i = 0; i < TableDataManager.instance.festivalCollectTable.dataArray.Length; ++i)
+		{
+			if (TableDataManager.instance.festivalCollectTable.dataArray[i].group != FestivalData.instance.festivalId)
+				continue;
+
+			if (FestivalData.instance.IsGetFestivalCollect(TableDataManager.instance.festivalCollectTable.dataArray[i].num))
+				continue;
+
+			int currentCount = FestivalData.instance.GetProceedingCount(TableDataManager.instance.festivalCollectTable.dataArray[i].typeId);
+			bool getable = (TableDataManager.instance.festivalCollectTable.dataArray[i].needCount <= currentCount);
+			if (getable)
+				continue;
+
 			FestivalQuestCanvasListItem festivalCanvasListItem = _container.GetCachedItem(contentItemPrefab, contentRootRectTransform);
 			festivalCanvasListItem.Initialize(TableDataManager.instance.festivalCollectTable.dataArray[i]);
 			_listFestivalQuestCanvasListItem.Add(festivalCanvasListItem);
