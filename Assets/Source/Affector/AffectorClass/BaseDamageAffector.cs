@@ -73,7 +73,7 @@ public class BaseDamageAffector : AffectorBase {
 		if (StageManager.instance != null && StageManager.instance.repeatMode && StageFloorInfoCanvas.instance != null && StageFloorInfoCanvas.instance.gameObject.activeSelf)
 		{
 			float maxHp = _actor.actorStatus.GetValue(eActorStatus.MaxHp);
-			float minValue = maxHp * 0.045f;
+			float minValue = maxHp * BattleInstanceManager.instance.GetCachedGlobalConstantInt("RepeatDamageMinValue10000") * 0.0001f;
 			if (damage < minValue)
 				damage = minValue;
 		}
