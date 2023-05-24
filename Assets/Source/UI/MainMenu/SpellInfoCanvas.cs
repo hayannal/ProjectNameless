@@ -20,6 +20,11 @@ public class SpellInfoCanvas : MonoBehaviour
 	public Text nameText;
 	public Text descText;
 
+	void Update()
+	{
+		UpdateAutoClose();
+	}
+
 	public void SetInfo(SkillTableData skillTableData, string levelString, string nameString, string descString, float cooltime)
 	{
 		skillIcon.SetInfo(skillTableData, false);
@@ -55,6 +60,7 @@ public class SpellInfoCanvas : MonoBehaviour
 			_okAction();
 			_okAction = null;
 		}
+		_autoCloseRemainTime = 0.0f;
 		#endregion
 
 		gameObject.SetActive(false);
@@ -94,11 +100,36 @@ public class SpellInfoCanvas : MonoBehaviour
 			float cooltime = skillTableData.useCooltimeOverriding ? skillLevelTableData.cooltime : skillTableData.cooltime;
 
 			SetInfo(skillTableData, "", nameString, descString, cooltime);
+
+			if (RandomBoxScreenCanvas.instance != null && RandomBoxScreenCanvas.instance.gameObject.activeSelf && RandomBoxScreenCanvas.instance.alarmSwitch.isOn)
+				_autoCloseRemainTime = 3.0f;
+			else
+				_autoCloseRemainTime = 0.0f;
+
 			++_showIndex;
 		}
 		else if (_showIndex == _listId.Count)
 		{
 
+		}
+	}
+	#endregion
+
+	#region Auto Close
+	float _autoCloseRemainTime = 0.0f;
+	void UpdateAutoClose()
+	{
+		if (RandomBoxScreenCanvas.instance != null && RandomBoxScreenCanvas.instance.gameObject.activeSelf && RandomBoxScreenCanvas.instance.alarmSwitch.isOn)
+		{
+			if (_autoCloseRemainTime > 0.0f)
+			{
+				_autoCloseRemainTime -= Time.deltaTime;
+				if (_autoCloseRemainTime <= 0.0f)
+				{
+					_autoCloseRemainTime = 0.0f;
+					OnClickBackground();
+				}
+			}
 		}
 	}
 	#endregion

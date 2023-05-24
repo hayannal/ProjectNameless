@@ -73,6 +73,12 @@ public class CharacterBoxShowCanvas : CharacterShowCanvasBase
 			_effectObject.SetActive(false);
 			_effectObject = null;
 		}
+		_autoCloseRemainTime = 0.0f;
+	}
+
+	void Update()
+	{
+		UpdateAutoClose();
 	}
 
 	Action _okAction;
@@ -133,6 +139,11 @@ public class CharacterBoxShowCanvas : CharacterShowCanvasBase
 	void OnAfterLoaded()
 	{
 		_effectObject = BattleInstanceManager.instance.GetCachedObject(effectPrefab, _rootOffsetPosition, Quaternion.identity, null);
+
+		if (RandomBoxScreenCanvas.instance != null && RandomBoxScreenCanvas.instance.gameObject.activeSelf && RandomBoxScreenCanvas.instance.alarmSwitch.isOn)
+			_autoCloseRemainTime = 3.0f;
+		else
+			_autoCloseRemainTime = 0.0f;
 	}
 	
 	public void OnClickConfirmButton()
@@ -147,4 +158,23 @@ public class CharacterBoxShowCanvas : CharacterShowCanvasBase
 			_okAction();
 		gameObject.SetActive(false);
 	}
+
+	#region Auto Close
+	float _autoCloseRemainTime = 0.0f;
+	void UpdateAutoClose()
+	{
+		if (RandomBoxScreenCanvas.instance != null && RandomBoxScreenCanvas.instance.gameObject.activeSelf && RandomBoxScreenCanvas.instance.alarmSwitch.isOn)
+		{
+			if (_autoCloseRemainTime > 0.0f)
+			{
+				_autoCloseRemainTime -= Time.deltaTime;
+				if (_autoCloseRemainTime <= 0.0f)
+				{
+					_autoCloseRemainTime = 0.0f;
+					OnClickConfirmButton();
+				}
+			}
+		}
+	}
+	#endregion
 }
