@@ -76,6 +76,16 @@ public class CashShopEnergyListItem : SimpleCashCanvas
 	}
 
 
+	public void OnClickCustomButton()
+	{
+		if (productId.Contains("gold") && CurrencyData.instance.CheckMaxGold())
+			return;
+
+		// 이건 다른 캐시상품도 마찬가지인데 클릭 즉시 간단한 패킷을 보내서 통신가능한 상태인지부터 확인한다.
+		PlayFabApiManager.instance.RequestNetworkOnce(OnResponse, null, true);
+	}
+
+
 
 	protected override void RequestServerPacket(Product product)
 	{
