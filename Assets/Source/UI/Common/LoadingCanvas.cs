@@ -20,6 +20,10 @@ public class LoadingCanvas : MonoBehaviour
 	}
 	static LoadingCanvas _instance = null;
 
+	public Image titleImage;
+	public Sprite defaultTitleNameSprite;
+	public Sprite korTitleNameSprite;
+
 	public GameObject progressObject;
 	public Image progressImage;
 	public Text progressText;
@@ -29,6 +33,7 @@ public class LoadingCanvas : MonoBehaviour
 	float _enableTime;
 	void OnEnable()
 	{
+		titleImage.sprite = (OptionManager.instance.language == "KOR") ? korTitleNameSprite : defaultTitleNameSprite;
 		_enableTime = Time.realtimeSinceStartup;
 	}
 
