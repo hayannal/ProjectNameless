@@ -86,6 +86,9 @@ public class FestivalRewardCanvasListItem : MonoBehaviour
 			return;
 		}
 
+		if (_festivalExchangeTableData.rewardType == "cu" && _festivalExchangeTableData.rewardValue == "GO" && CurrencyData.instance.CheckMaxGold())
+			return;
+
 		UIInstanceManager.instance.ShowCanvasAsync("FestivalExchangeConfirmCanvas", () =>
 		{
 			FestivalExchangeConfirmCanvas.instance.RefreshInfo(_festivalExchangeTableData);

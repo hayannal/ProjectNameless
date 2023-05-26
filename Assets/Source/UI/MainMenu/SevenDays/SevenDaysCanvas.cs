@@ -233,6 +233,9 @@ public class SevenDaysCanvas : MonoBehaviour
 			return;
 		}
 
+		if (sevenSumTableData.rewardType == "cu" && sevenSumTableData.rewardValue == "GO" && CurrencyData.instance.CheckMaxGold())
+			return;
+
 		_sevenSumTableData = sevenSumTableData;
 		PlayFabApiManager.instance.RequestGetSevenDaysSumReward(sevenSumTableData, OnRecvResult);
 	}

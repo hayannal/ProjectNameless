@@ -85,6 +85,9 @@ public class SevenDaysCanvasListItem : MonoBehaviour
 			return;
 		}
 
+		if (_sevenDaysRewardTableData.rewardType == "cu" && _sevenDaysRewardTableData.rewardValue == "GO" && CurrencyData.instance.CheckMaxGold())
+			return;
+
 		PlayFabApiManager.instance.RequestGetSevenDaysReward(_sevenDaysRewardTableData, OnRecvResult);
 	}
 
