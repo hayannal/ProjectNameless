@@ -56,4 +56,26 @@ public class SimpleCashEventCanvas : SimpleCashCanvas
 			gameObject.SetActive(false);
 		}
 	}
+
+	public void OnClickShortcutButton()
+	{
+		gameObject.SetActive(false);
+
+		// 다른 창들은 구매창이라서 바로가기가 필요없다. 바로가기 필요한 이벤트 위주로만 해둔다.
+		switch (cashEventId)
+		{
+			case "ev7":
+				MainCanvas.instance.OnClickGachaButton();
+				break;
+			case "ev8":
+				MainCanvas.instance.OnClickCharacterButton();
+				break;
+			case "ev9":
+				MainCanvas.instance.OnClickCashShopButton();
+				break;
+			case "ev10":
+				MainCanvas.instance.OnClickCashShopButton();
+				break;
+		}
+	}
 }
