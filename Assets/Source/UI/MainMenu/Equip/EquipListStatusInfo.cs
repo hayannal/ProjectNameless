@@ -187,10 +187,15 @@ public class EquipListStatusInfo : MonoBehaviour
 			MainCanvas.instance.RefreshEquipAlarmObject();
 
 			// 변경 완료를 알리고
-			UIInstanceManager.instance.ShowCanvasAsync("ChangePowerCanvas", () =>
+			int intPrevValue = (int)prevValue;
+			int intNextValue = (int)nextValue;
+			if (intPrevValue != intNextValue)
 			{
-				ChangePowerCanvas.instance.ShowInfo(prevValue, nextValue);
-			});
+				UIInstanceManager.instance.ShowCanvasAsync("ChangePowerCanvas", () =>
+				{
+					ChangePowerCanvas.instance.ShowInfo(prevValue, nextValue);
+				});
+			}
 		});
 	}
 
