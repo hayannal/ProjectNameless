@@ -90,7 +90,7 @@ public class TeleportTargetPositionAffector : AffectorBase
 					_actor.cachedTransform.position = _origPosition;
 				break;
 			case 1:
-				_actor.cachedTransform.position = new Vector3(_affectorValueLevelTableData.fValue3, 0.0f, _affectorValueLevelTableData.fValue4);
+				_actor.cachedTransform.position = new Vector3(_affectorValueLevelTableData.fValue3, 0.0f, _affectorValueLevelTableData.fValue4) + StageManager.instance.GetSafeWorldOffset();
 				break;
 			case 2:
 			case 3:
@@ -104,6 +104,7 @@ public class TeleportTargetPositionAffector : AffectorBase
 						Vector3 teleportPosition = GetNearestTeleportPosition(targetTransform.position, _affectorValueLevelTableData.iValue1 == 2);
 						if (BattleInstanceManager.instance.currentGround.IsInQuadBound(teleportPosition) == false)
 							teleportPosition = (Random.value > 0.5f ? new Vector3(0.0f, 0.0f, 3.5f) : new Vector3(0.0f, 0.0f, -4.5f));
+						teleportPosition += StageManager.instance.GetSafeWorldOffset();
 						_actor.cachedTransform.position = teleportPosition;
 						_actor.cachedTransform.rotation = Quaternion.LookRotation(targetTransform.position - teleportPosition);
 					}
