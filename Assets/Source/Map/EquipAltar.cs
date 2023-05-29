@@ -11,6 +11,8 @@ public class EquipAltar : MonoBehaviour
 	public DOTweenAnimation rotateTweenAnimation;
 	public GameObject emptyIconObject;
 	public ParticleSystem gradeParticleSystem;
+	public Image enhanceBackgroundImage;
+	public Text enhanceLevelText;
 	public Text rarityText;
 	public Coffee.UIExtensions.UIGradient rarityGradient;
 	public RectTransform alarmRootTransform;
@@ -72,8 +74,31 @@ public class EquipAltar : MonoBehaviour
 		main.startColor = GetGradeParticleColor(equipData.cachedEquipLevelTableData.grade);
 		gradeParticleSystem.gameObject.SetActive(true);
 		RefreshRarity(equipData.cachedEquipTableData.rarity);
+		RefreshEnhanceLevel(equipData.enhanceLevel, equipData.cachedEquipLevelTableData.grade);
 		emptyIconObject.SetActive(false);
 		AddressableAssetLoadManager.GetAddressableGameObject(equipData.cachedEquipTableData.prefabAddress, "Equip", OnLoadedEquip);
+	}
+
+	public void RefreshEnhanceLevel(int enhanceLevel, int grade)
+	{
+		enhanceBackgroundImage.gameObject.SetActive(enhanceLevel > 0);
+		enhanceBackgroundImage.color = GetLineGradeColor(grade);
+		enhanceLevelText.text = enhanceLevel.ToString();
+	}
+
+	public Color GetLineGradeColor(int grade)
+	{
+		switch (grade)
+		{
+			case 0: return new Color(0.5f, 0.5f, 0.5f);
+			case 1: return new Color(0.1f, 0.84f, 0.1f);
+			case 2: return new Color(0.0f, 0.51f, 1.0f);
+			case 3: return new Color(0.63f, 0.0f, 1.0f);
+			case 4: return new Color(1.0f, 0.5f, 0.0f);
+			case 5: return new Color(0.85f, 0.15f, 0.06f);
+			case 6: return new Color(0.93f, 0.93f, 0.29f);
+		}
+		return Color.gray;
 	}
 
 	public void RefreshRarity(int rarity)
