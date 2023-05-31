@@ -288,7 +288,7 @@ public class MonsterActor : Actor
 		UpdateDropSp();
 		#endregion
 
-		if (cachedTransform.position.y > 0.0f && cachedTransform.position.y < 100.0f && affectorProcessor.IsContinuousAffectorType(eAffectorType.Rush) == false)
+		if (MonsterAI.IsUsableRunAI() && cachedTransform.position.y > 0.0f)
 			cachedTransform.position = new Vector3(cachedTransform.position.x, 0.0f, cachedTransform.position.z);
 
 		//if (checkOverlapPositionFrameCount > 0)

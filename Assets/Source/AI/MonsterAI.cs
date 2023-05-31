@@ -98,7 +98,7 @@ public class MonsterAI : MonoBehaviour
 	}
 	#endregion
 
-	bool IsUsableRunAI()
+	public static bool IsUsableRunAI()
 	{
 		if (BossBattleMissionGround.instance != null && BossBattleMissionGround.instance.gameObject.activeSelf)
 			return false;
