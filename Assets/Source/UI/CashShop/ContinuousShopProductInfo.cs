@@ -50,8 +50,8 @@ public class ContinuousShopProductInfo : SimpleCashCanvas
 
 		_shopProductTableData = shopProductTableData;
 
-		blurImage.color = (shopProductTableData.free == false) ? new Color(0.945f, 0.945f, 0.094f, 0.42f) : new Color(0.094f, 0.945f, 0.871f, 0.42f);
-		backgroundImge.color = (shopProductTableData.free == false) ? new Color(1.0f, 1.0f, 1.0f, 0.42f) : new Color(0.0f, 1.0f, 0.749f, 0.42f);
+		blurImage.color = (shopProductTableData.free == false) ? new Color(0.65f, 0.65f, 0.65f, 0.2f) : new Color(0.44f, 0.44f, 0.44f, 0.5f);
+		backgroundImge.color = (shopProductTableData.free == false) ? new Color(1.0f, 1.0f, 1.0f, 0.82f) : new Color(1.0f, 1.0f, 1.0f, 0.68f);
 		backgroundImge.sprite = _simpleCashEventCanvas.backgroundSpriteList[(shopProductTableData.free == false) ? 0 : 1];
 
 		RefreshActive();
