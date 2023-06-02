@@ -14,6 +14,12 @@ public class RewardIcon : MonoBehaviour
 	public GameObject goldObject;
 	public GameObject diaObject;
 	public GameObject energyObject;
+	public GameObject goldMediumObject;
+	public GameObject diaMediumObject;
+	public GameObject energyMediumObject;
+	public GameObject goldLargeObject;
+	public GameObject diaLargeObject;
+	public GameObject energyLargeObject;
 	public GameObject sevenDaysObject;
 	public GameObject spellGachaObject;
 	public GameObject spellStarGachaObject;
@@ -66,6 +72,13 @@ public class RewardIcon : MonoBehaviour
 		goldObject.SetActive(false);
 		if (diaObject != null) diaObject.SetActive(false);
 		energyObject.SetActive(false);
+		if (goldMediumObject != null) goldMediumObject.SetActive(false);
+		if (diaMediumObject != null) diaMediumObject.SetActive(false);
+		if (energyMediumObject != null) energyMediumObject.SetActive(false);
+		if (goldLargeObject != null) goldLargeObject.SetActive(false);
+		if (diaLargeObject != null) diaLargeObject.SetActive(false);
+		if (energyLargeObject != null) energyLargeObject.SetActive(false);
+		if (goldMediumObject != null) goldMediumObject.SetActive(false);
 		if (sevenDaysObject != null) sevenDaysObject.SetActive(false);
 		if (spellGachaObject != null) spellGachaObject.SetActive(false);
 		if (spellStarGachaObject != null) spellStarGachaObject.SetActive(false);
@@ -89,14 +102,53 @@ public class RewardIcon : MonoBehaviour
 				{
 					case "GO":
 						goldObject.SetActive(true);
+						if (eventRewardId != "" && goldMediumObject != null && goldLargeObject != null)
+						{
+							if (rewardCount >= BattleInstanceManager.instance.GetCachedGlobalConstantInt("GoldRewardIconLargeBase"))
+							{
+								goldLargeObject.SetActive(true);
+								goldObject.SetActive(false);
+							}
+							else if (rewardCount >= BattleInstanceManager.instance.GetCachedGlobalConstantInt("GoldRewardIconMediumBase"))
+							{
+								goldMediumObject.SetActive(true);
+								goldObject.SetActive(false);
+							}
+						}
 						countText.color = _showOnlyIcon ? MailCanvasListItem.GetGoldTextColor() : Color.white;
 						break;
 					case "DI":
-						diaObject.SetActive(true);
+						if (diaObject != null) diaObject.SetActive(true);
+						if (eventRewardId != "" && diaMediumObject != null && diaLargeObject != null)
+						{
+							if (rewardCount >= BattleInstanceManager.instance.GetCachedGlobalConstantInt("DiaRewardIconLargeBase"))
+							{
+								diaLargeObject.SetActive(true);
+								if (diaObject != null) diaObject.SetActive(false);
+							}
+							else if (rewardCount >= BattleInstanceManager.instance.GetCachedGlobalConstantInt("DiaRewardIconMediumBase"))
+							{
+								diaMediumObject.SetActive(true);
+								if (diaObject != null) diaObject.SetActive(false);
+							}
+						}
 						countText.color = _showOnlyIcon ? MailCanvasListItem.GetDiaTextColor() : Color.white;
 						break;
 					case "EN":
 						energyObject.SetActive(true);
+						if (eventRewardId != "" && energyMediumObject != null && energyLargeObject != null)
+						{
+							if (rewardCount >= BattleInstanceManager.instance.GetCachedGlobalConstantInt("EnergyRewardIconLargeBase"))
+							{
+								energyLargeObject.SetActive(true);
+								energyObject.SetActive(false);
+							}
+							else if (rewardCount >= BattleInstanceManager.instance.GetCachedGlobalConstantInt("EnergyRewardIconMediumBase"))
+							{
+								energyMediumObject.SetActive(true);
+								energyObject.SetActive(false);
+							}
+						}
 						countText.color = _showOnlyIcon ? MailCanvasListItem.GetEnergyTextColor() : Color.white;
 						break;
 				}
