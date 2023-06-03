@@ -202,6 +202,31 @@ public class RushDefenseEnterCanvas : MonoBehaviour
 				ToastCanvas.instance.ShowToast(UIString.instance.GetString("EquipUI_CannotSelectMore"), 2.0f);
 				return;
 			}
+
+			/*
+			// 진입시 셀렉트 로직에서 불러오기가 막혀버리는 현상이 발생해서 주석처리 하기로 한다.
+			#region Stage Limit
+			if (_missionModeTableData.levelLimit > 0)
+			{
+				CharacterData characterData = CharacterManager.instance.GetCharacterData(actorId);
+				if (characterData != null && characterData.level < _missionModeTableData.levelLimit)
+				{
+					ToastCanvas.instance.ShowToast(UIString.instance.GetString("MissionUI_CannotEnterSelect"), 2.0f);
+					return;
+				}
+			}
+			else if (_missionModeTableData.transcendLimit > 0)
+			{
+				CharacterData characterData = CharacterManager.instance.GetCharacterData(actorId);
+				if (characterData != null && characterData.transcend < _missionModeTableData.transcendLimit)
+				{
+					ToastCanvas.instance.ShowToast(UIString.instance.GetString("MissionUI_CannotEnterSelect"), 2.0f);
+					return;
+				}
+			}
+			#endregion
+			*/
+
 			_listSelectedActorId.Add(actorId);
 		}
 
@@ -214,7 +239,7 @@ public class RushDefenseEnterCanvas : MonoBehaviour
 			if (showSelectObject)
 			{
 				int findIndex = _listSelectedActorId.IndexOf(_listMissionCanvasCharacterListItem[i].characterCanvasListItem.actorId);
-				_listMissionCanvasCharacterListItem[i].SetNumber(true, findIndex + 1);
+				_listMissionCanvasCharacterListItem[i].SetNumber(true, findIndex + 1, CheckLimitCondition(_listMissionCanvasCharacterListItem[i].characterCanvasListItem.actorId));
 			}
 			else
 			{
@@ -253,6 +278,26 @@ public class RushDefenseEnterCanvas : MonoBehaviour
 			selectResultText.SetLocalizedText(string.Format("{0}\n{1}", firstText, secondText));
 
 		selectResultText.text = string.Format("{0} / {1}", _listSelectedActorId.Count, SELECT_MAX);
+	}
+
+	bool CheckLimitCondition(string actorId)
+	{
+		if (_missionModeTableData == null)
+			return false;
+
+		if (_missionModeTableData.levelLimit > 0)
+		{
+			CharacterData characterData = CharacterManager.instance.GetCharacterData(actorId);
+			if (characterData != null && characterData.level < _missionModeTableData.levelLimit)
+				return true;
+		}
+		else if (_missionModeTableData.transcendLimit > 0)
+		{
+			CharacterData characterData = CharacterManager.instance.GetCharacterData(actorId);
+			if (characterData != null && characterData.transcend < _missionModeTableData.transcendLimit)
+				return true;
+		}
+		return false;
 	}
 
 	public void OnClickTitleInfoButton()
@@ -296,6 +341,21 @@ public class RushDefenseEnterCanvas : MonoBehaviour
 		if (missionModeTableData == null)
 			return;
 		_missionModeTableData = missionModeTableData;
+
+		#region Stage Limit
+		if (missionModeTableData.levelLimit > 0)
+		{
+			stagePenaltyText.SetLocalizedText(UIString.instance.GetString("MissionUI_LevelLimit", missionModeTableData.levelLimit));
+			stagePenaltyText.gameObject.SetActive(true);
+		}
+		else if (missionModeTableData.transcendLimit > 0)
+		{
+			stagePenaltyText.SetLocalizedText(UIString.instance.GetString("MissionUI_TranscendLimit", missionModeTableData.transcendLimit));
+			stagePenaltyText.gameObject.SetActive(true);
+		}
+		else
+			stagePenaltyText.gameObject.SetActive(false);
+		#endregion
 
 		for (int i = 0; i < _listMissionCanvasRewardIcon.Count; ++i)
 			_listMissionCanvasRewardIcon[i].gameObject.SetActive(false);
@@ -348,6 +408,17 @@ public class RushDefenseEnterCanvas : MonoBehaviour
 			_listMissionCanvasRewardIcon.Add(missionCanvasRewardIcon);
 			_expectedReward += missionModeTableData.rewardCount2;
 		}
+
+		// refresh limit condition
+		for (int i = 0; i < _listMissionCanvasCharacterListItem.Count; ++i)
+		{
+			if (_listMissionCanvasCharacterListItem[i].textRootObject.activeSelf == false && _listMissionCanvasCharacterListItem[i].redTextRootObject.activeSelf == false)
+				continue;
+
+			bool checkCondition = CheckLimitCondition(_listMissionCanvasCharacterListItem[i].characterCanvasListItem.actorId);
+			_listMissionCanvasCharacterListItem[i].textRootObject.SetActive(checkCondition == false);
+			_listMissionCanvasCharacterListItem[i].redTextRootObject.SetActive(checkCondition);
+		}
 	}
 
 
@@ -359,6 +430,21 @@ public class RushDefenseEnterCanvas : MonoBehaviour
 	{
 		if (_moveProcessed)
 			return;
+
+		bool checkLimitCondition = false;
+		for (int i = 0; i < _listMissionCanvasCharacterListItem.Count; ++i)
+		{
+			if (_listMissionCanvasCharacterListItem[i].redTextRootObject.activeSelf)
+			{
+				checkLimitCondition = true;
+				break;
+			}
+		}
+		if (checkLimitCondition)
+		{
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("MissionUI_CannotEnter"), 2.0f);
+			return;
+		}
 
 		int selectedActorCount = 0;
 		if (_listSelectedActorId != null)

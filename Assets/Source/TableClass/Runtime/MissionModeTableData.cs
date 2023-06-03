@@ -80,4 +80,12 @@ public class MissionModeTableData
   int _rewardCount2;
   public int rewardCount2 { get { return _rewardCount2; } set { _rewardCount2 = value; } }
   
+  [SerializeField]
+  int _levelLimit;
+  public int levelLimit { get { return _levelLimit; } set { _levelLimit = value; } }
+  
+  [SerializeField]
+  int _transcendLimit;
+  public int transcendLimit { get { return _transcendLimit; } set { _transcendLimit = value; } }
+  
 }
