@@ -49,6 +49,13 @@ public class OneOfThreeCanvas : SimpleCashEventCanvas
 			RefreshPrice(shopProductTableData.serverItemId, shopProductTableData.kor, shopProductTableData.eng);
 			iap3Button.productId = shopProductTableData.serverItemId;
 		}
+
+		RewardIcon[] listRewardIcon = GetComponentsInChildren<RewardIcon>(true);
+		for (int i = 0; i < listRewardIcon.Length; ++i)
+		{
+			listRewardIcon[i].ShowOnlyIcon(true);
+			listRewardIcon[i].ActivePunchAnimation(true);
+		}
 	}
 
 	int _buttonIndex;
