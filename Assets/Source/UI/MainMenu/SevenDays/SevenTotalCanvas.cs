@@ -49,7 +49,7 @@ public class SevenTotalCanvas : SimpleCashCanvas
 		}
 		for (int i = 0; i < smallRewardIconList.Length; ++i)
 		{
-			smallRewardIconList[i].ShowOnlyIcon(true, 1.1f);
+			smallRewardIconList[i].ShowOnlyIcon(true, 1.2f);
 			smallRewardIconList[i].ActivePunchAnimation(true);
 		}
 	}
