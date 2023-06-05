@@ -39,6 +39,7 @@ public class GachaInfoCanvas : MonoBehaviour
 	public GameObject switchGroupObject;
 	public SwitchAnim alarmSwitch;
 
+	public ButtonScale betButtonScale;
 	public Text betText;
 	public GameObject boostOnObject;
 	public RectTransform boostOnAlarmRootTransform;
@@ -298,6 +299,8 @@ public class GachaInfoCanvas : MonoBehaviour
 
 	public void OnClickBetMaxButton()
 	{
+		betButtonScale.PlayAnimation();
+
 		bool find = false;
 		for (int i = _listBetValue.Count - 1; i >= 0; --i)
 		{

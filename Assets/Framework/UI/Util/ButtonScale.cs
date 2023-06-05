@@ -126,7 +126,7 @@ public class ButtonScale : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
 	bool _clickAnimation = false;
 	GraphicRaycaster _graphicRaycaster;
-	void PlayAnimation()
+	public void PlayAnimation()
 	{
 		if (_button != null && _button.interactable == false)
 			return;
