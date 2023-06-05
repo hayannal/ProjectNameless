@@ -207,6 +207,16 @@ public class GachaInfoCanvas : MonoBehaviour
 		else
 		{
 			_nextFillDateTime = CurrencyData.instance.energyRechargeTime;
+			#region Temp Adjust
+			if (tempCurrentEnergy != -1 && _nextFillDateTime < ServerTime.UtcNow)
+			{
+				// 에너지가 60보다 아주 조금 큰 상태에서 에너지를 써서 60이하로 내려가면서 이벤트포인트로 에너지를 얻게될땐
+				// 실제론 에너지가 60보다 큰 상태로 유지될테니 에너지 재생 타이머를 걸필요가 없는데
+				// 마치 이벤트 결과 나오기 전까지는 에너지를 사용한거처럼 보여야해서
+				// 이렇게 임시로 에너지 채워지는 시간을 정해놓고 연출로만 보여주기로 한다.
+				_nextFillDateTime = ServerTime.UtcNow + TimeSpan.FromSeconds(BattleInstanceManager.instance.GetCachedGlobalConstantInt("TimeSecToGetOneEnergy"));
+			}
+			#endregion
 			_needUpdate = true;
 			_lastRemainTimeSecond = -1;
 			AlarmObject.Hide(alarmRootTransform);
@@ -245,6 +255,9 @@ public class GachaInfoCanvas : MonoBehaviour
 	int _lastCurrent;
 	void UpdateRefresh()
 	{
+		if (GachaCanvas.instance.inputLockObject)
+			return;
+
 		if (_needRefresh == false)
 			return;
 
