@@ -127,6 +127,7 @@ public class ConsumeProductProcessor : MonoBehaviour
 	}
 
 
+	const int SeparateCount = 50;
 	public void ProcessConsume()
 	{
 		if (_dicConsumeItem.Keys.Count == 0)
@@ -136,7 +137,13 @@ public class ConsumeProductProcessor : MonoBehaviour
 		e.MoveNext();
 		string firstKey = e.Current.Key;
 		int firstCount = _dicConsumeItem[firstKey];
-		_dicConsumeItem.Remove(firstKey);
+		if (firstCount <= SeparateCount)
+			_dicConsumeItem.Remove(firstKey);
+		else
+		{
+			_dicConsumeItem[firstKey] = firstCount - SeparateCount;
+			firstCount = SeparateCount;
+		}
 		switch (firstKey)
 		{
 			case "Cash_sSpellGacha":
