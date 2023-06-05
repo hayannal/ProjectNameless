@@ -140,7 +140,7 @@ public class CharacterBoxShowCanvas : CharacterShowCanvasBase
 	{
 		_effectObject = BattleInstanceManager.instance.GetCachedObject(effectPrefab, _rootOffsetPosition, Quaternion.identity, null);
 
-		if (RandomBoxScreenCanvas.instance != null && RandomBoxScreenCanvas.instance.gameObject.activeSelf && RandomBoxScreenCanvas.instance.alarmSwitch.isOn)
+		if (RandomBoxScreenCanvas.instance != null && RandomBoxScreenCanvas.instance.gameObject.activeSelf && RandomBoxScreenCanvas.instance.switchGroupObject.activeSelf && RandomBoxScreenCanvas.instance.alarmSwitch.isOn)
 			_autoCloseRemainTime = 3.0f;
 		else
 			_autoCloseRemainTime = 0.0f;

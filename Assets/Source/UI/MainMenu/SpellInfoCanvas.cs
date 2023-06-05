@@ -119,7 +119,7 @@ public class SpellInfoCanvas : MonoBehaviour
 	float _autoCloseRemainTime = 0.0f;
 	void UpdateAutoClose()
 	{
-		if (RandomBoxScreenCanvas.instance != null && RandomBoxScreenCanvas.instance.gameObject.activeSelf && RandomBoxScreenCanvas.instance.alarmSwitch.isOn)
+		if (RandomBoxScreenCanvas.instance != null && RandomBoxScreenCanvas.instance.gameObject.activeSelf && RandomBoxScreenCanvas.instance.switchGroupObject.activeSelf && RandomBoxScreenCanvas.instance.alarmSwitch.isOn)
 		{
 			if (_autoCloseRemainTime > 0.0f)
 			{
