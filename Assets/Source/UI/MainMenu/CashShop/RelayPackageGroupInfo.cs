@@ -6,6 +6,8 @@ public class RelayPackageGroupInfo : MonoBehaviour
 {
 	public static RelayPackageGroupInfo instance;
 
+	public GameObject imageRootObject;
+
 	public ScrollSnap scrollSnap;
 
 	public GameObject contentItemPrefab;
@@ -37,6 +39,7 @@ public class RelayPackageGroupInfo : MonoBehaviour
 		// 데이터를 받지 않은 상태라면 상품 아이콘 보여줄수가 없을거다. 그냥 하이드 시켜둔다.
 		if (PlayerData.instance.downloadConfirmed == false)
 		{
+			if (imageRootObject != null) imageRootObject.SetActive(false);
 			gameObject.SetActive(false);
 			return;
 		}
@@ -58,6 +61,7 @@ public class RelayPackageGroupInfo : MonoBehaviour
 		// 보여줄게 없다면 통째로 꺼두면 된다.
 		if (_listShowIndex.Count == 0)
 		{
+			if (imageRootObject != null) imageRootObject.SetActive(false);
 			gameObject.SetActive(false);
 			return;
 		}
@@ -69,6 +73,7 @@ public class RelayPackageGroupInfo : MonoBehaviour
 			_listRelayPackageBoxListItem.Add(relayPackageBox);
 		}
 
+		if (imageRootObject != null) imageRootObject.SetActive(true);
 		gameObject.SetActive(true);
 	}
 }
