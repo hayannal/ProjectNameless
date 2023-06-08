@@ -365,7 +365,7 @@ public class BossMonsterGaugeCanvas : MonoBehaviour
 	{
 		// 시간을 빨리 깨고나면 건너뛰기 할때는 해당 스테이지의 방어력을 계산해보고 건너뛰기로 한다.
 		//
-		int changeStage = PlayerData.instance.selectedStage;
+		int changeStage = StageManager.instance.currentFloor;
 		changeStage += BattleInstanceManager.instance.GetCachedGlobalConstantInt("FastClearJumpStep");
 
 		// 클리어는 MaxStage - 1까지 가능하다.
