@@ -407,6 +407,14 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 						characterRetryRootObject.SetActive(true);
 					break;
 				case eBoxType.Equip:
+					if (EquipManager.instance.IsInventoryVisualMax())
+					{
+						// 인벤이 꽉차도 
+						bottomInputLockObject.SetActive(false);
+						switchGroupObject.SetActive(false);
+						return;
+					}
+
 					if (s_lastPickUpState)
 					{
 						pickUpEquipRetryRootObject.SetActive(false);

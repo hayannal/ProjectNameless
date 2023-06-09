@@ -27,11 +27,11 @@ public class CashShopEquipSmallListItem : MonoBehaviour
 	int _count;
 	public void OnClickButton()
 	{
-		//if (EquipManager.instance.IsInventoryVisualMax())
-		//{
-		//	ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_ManageInventory"), 2.0f);
-		//	return;
-		//}
+		if (EquipManager.instance.IsInventoryVisualMax())
+		{
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_ManageInventory"), 2.0f);
+			return;
+		}
 
 		if (CurrencyData.instance.dia < _shopEquipTableData.price)
 		{

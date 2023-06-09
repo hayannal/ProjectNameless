@@ -39,7 +39,7 @@ public class EquipManager : MonoBehaviour
 		Amount,
 	}
 
-	public const int InventoryVisualMax = 300;
+	public const int InventoryVisualMax = 500;
 
 	public static int GetEnhanceLevelMaxByGrade(int grade)
 	{
