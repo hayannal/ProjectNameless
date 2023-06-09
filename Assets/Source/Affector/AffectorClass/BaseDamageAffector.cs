@@ -278,6 +278,12 @@ public class BaseDamageAffector : AffectorBase {
 			}
 		}
 
+		if (StageManager.instance != null && StageManager.instance.repeatMode == false && GoldDefenseMissionCanvas.instance != null && GoldDefenseMissionCanvas.instance.gameObject.activeSelf)
+		{
+			if (damage < 1.0f)
+				damage = 1.0f;
+		}
+
 		bool instantDeathApplied = false;
 		if (_actor.actorStatus.GetHP() == _actor.actorStatus.GetValue(eActorStatus.MaxHp))
 		{
