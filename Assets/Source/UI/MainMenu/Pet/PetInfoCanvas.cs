@@ -192,7 +192,14 @@ public class PetInfoCanvas : MonoBehaviour
 			if (highestStar < listPetData[i].cachedPetTableData.star)
 				highestStar = listPetData[i].cachedPetTableData.star;
 		}
-		string startPetSaleId = PetManager.instance.GetRandomResultByStar(highestStar + 1);
+		string startPetSaleId = PetManager.instance.GetRandomResultByStar(highestStar + 1, true);
+		// petSale 수량제한에 걸린다거나 하는 이유로 시작시킬 petId가 없으면 그냥 리턴한다.
+		// 그냥 리턴하면 매프레임 계속 연산하고 있을테니 쿨타임을 임시로 올리기로 한다.
+		if (startPetSaleId == "")
+		{
+			PetManager.instance.petSaleCoolTimeExpireTime = ServerTime.UtcNow + System.TimeSpan.FromHours(1);
+			return;
+		}
 		PetTableData petTableData = TableDataManager.instance.FindPetTableData(startPetSaleId);
 		_waitPacket = true;
 		int givenTime = BattleInstanceManager.instance.GetCachedGlobalConstantInt("PetSaleGivenTime");

@@ -452,18 +452,34 @@ public class PetManager : MonoBehaviour
 		return _listRandomObscuredId;
 	}
 
-	public string GetRandomResultByStar(int belowStar)
+	public string GetRandomResultByStar(int belowStar, bool forPetSale)
 	{
 		if (_listSearchPetIdInfo == null)
 			_listSearchPetIdInfo = new List<RandomSearchPetIdInfo>();
 		_listSearchPetIdInfo.Clear();
+
+		int maxPetCountStep = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxPetCountStep");
 
 		float sumWeight = 0.0f;
 		for (int i = 0; i < TableDataManager.instance.petTable.dataArray.Length; ++i)
 		{
 			if (TableDataManager.instance.petTable.dataArray[i].star > belowStar)
 				continue;
-			
+
+			if (forPetSale)
+			{
+				PetData petData = GetPetData(TableDataManager.instance.petTable.dataArray[i].petId);
+				if (petData != null)
+				{
+					PetCountTableData petCountTableData = TableDataManager.instance.FindPetCountTableData(TableDataManager.instance.petTable.dataArray[i].star, maxPetCountStep);
+					if (petCountTableData != null)
+					{
+						if (petData.count >= petCountTableData.max)
+							continue;
+					}
+				}
+			}
+
 			// meetWeight대신에 균등하게 굴린다. 인자로 들어오는 등급 이하라면 다 동등한 확률이다.
 			sumWeight += 1.0f;
 			RandomSearchPetIdInfo newInfo = new RandomSearchPetIdInfo();
@@ -520,7 +536,7 @@ public class PetManager : MonoBehaviour
 			{
 				// 특정 이하의 star만 원할때는 
 				for (int i = 0; i < count; ++i)
-					_listRandomObscuredId.Add(GetRandomResultByStar(belowStar));
+					_listRandomObscuredId.Add(GetRandomResultByStar(belowStar, false));
 			}
 		}
 
