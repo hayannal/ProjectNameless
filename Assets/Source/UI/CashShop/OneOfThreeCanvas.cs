@@ -53,6 +53,16 @@ public class OneOfThreeCanvas : SimpleCashEventCanvas
 		RewardIcon[] listRewardIcon = GetComponentsInChildren<RewardIcon>(true);
 		for (int i = 0; i < listRewardIcon.Length; ++i)
 		{
+			bool applyOnlyIcon = false;
+			EventRewardTableData eventRewardTableData = TableDataManager.instance.FindEventRewardTableData(listRewardIcon[i].eventRewardId, listRewardIcon[i].num);
+			if (eventRewardTableData != null)
+			{
+				if (eventRewardTableData.rewardType == "cu" || (eventRewardTableData.rewardValue.StartsWith("Cash_s") && eventRewardTableData.rewardValue.Contains("EquipTypeGacha") == false))
+					applyOnlyIcon = true;
+			}
+			if (applyOnlyIcon == false)
+				continue;
+
 			listRewardIcon[i].ShowOnlyIcon(true);
 			listRewardIcon[i].ActivePunchAnimation(true);
 		}
