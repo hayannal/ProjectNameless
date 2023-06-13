@@ -165,7 +165,9 @@ public class FindMonsterRoomGround : MonoBehaviour
 		yield return Timing.WaitForSeconds(0.15f);
 
 		// 성공이면 다이모션으로 넘어가면 되려나
-		bool success = (Random.value > 0.5f);
+		float successRatio = 0.5f;
+		if (CurrencyData.instance.eventPointId == "fr") successRatio = 0.8f;
+		bool success = (Random.value < successRatio);
 		if (success)
 		{
 			_listRandomObject[index].GetComponentInChildren<Animator>().Play("Die");
