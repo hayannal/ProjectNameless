@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Purchasing;
+using MEC;
 
 public class OneOfThreeCanvas : SimpleCashEventCanvas
 {
@@ -65,8 +66,146 @@ public class OneOfThreeCanvas : SimpleCashEventCanvas
 
 			listRewardIcon[i].ShowOnlyIcon(true);
 			listRewardIcon[i].ActivePunchAnimation(true);
+			listRewardIcon[i].iconRootTransform.GetComponent<Button>().enabled = false;
 		}
 	}
+
+
+
+
+	public void OnClickRewardButton(RewardIcon rewardIcon)
+	{
+		if (rewardIcon == null)
+			return;
+		if (rewardIcon.eventRewardId == "")
+			return;
+		EventRewardTableData eventRewardTableData = TableDataManager.instance.FindEventRewardTableData(rewardIcon.eventRewardId, rewardIcon.num);
+		if (eventRewardTableData == null)
+			return;
+
+		string rewardType = eventRewardTableData.rewardType;
+		string rewardValue = eventRewardTableData.rewardValue;
+
+		if (rewardType == "it")
+		{
+			if (rewardValue.StartsWith("Cash_s"))
+			{
+				ConsumeItemTableData consumeItemTableData = TableDataManager.instance.FindConsumeItemTableData(rewardValue);
+				if (consumeItemTableData != null)
+					TooltipCanvas.Show(true, TooltipCanvas.eDirection.Bottom, UIString.instance.GetString(consumeItemTableData.name), 120, rewardIcon.iconRootTransform, new Vector2(0.0f, -45.0f));
+			}
+			else
+			{
+				// 타입에 따라 상세정보창으로 가기로 한다.
+				switch (rewardType)
+				{
+					case "it":
+						if (rewardValue.StartsWith("Spell_"))
+						{
+							RewardIcon.ShowDetailInfo(rewardType, rewardValue);
+						}
+						else if (rewardValue.StartsWith("Actor"))
+						{
+							// 액터는 현재 패스
+						}
+						else if (rewardValue.StartsWith("Pet_"))
+						{
+							OnClickPetDetailButton(rewardValue);
+						}
+						else if (rewardValue.StartsWith("Equip"))
+						{
+							OnClickEquipDetailButton(rewardValue);
+						}
+						break;
+				}
+			}
+		}
+	}
+
+
+	#region Detail Info
+	public void OnClickPetDetailButton(string rewardValue)
+	{
+		Timing.RunCoroutine(ShowPetDetailCanvasProcess(rewardValue));
+	}
+
+	IEnumerator<float> ShowPetDetailCanvasProcess(string rewardValue)
+	{
+		FadeCanvas.instance.FadeOut(0.2f, 1.0f, true);
+		yield return Timing.WaitForSeconds(0.2f);
+
+		// 이거로 막아둔다.
+		DelayedLoadingCanvas.Show(true);
+
+		gameObject.SetActive(false);
+
+		while (gameObject.activeSelf)
+			yield return Timing.WaitForOneFrame;
+		yield return Timing.WaitForOneFrame;
+
+		// Pet
+		MainCanvas.instance.OnClickPetButton();
+
+		while ((PetListCanvas.instance != null && PetListCanvas.instance.gameObject.activeSelf) == false)
+			yield return Timing.WaitForOneFrame;
+		yield return Timing.WaitForOneFrame;
+
+		// 아무래도 카운트는 없는게 맞아보인다
+		int count = 0;
+		PetData petData = PetManager.instance.GetPetData(rewardValue);
+		if (petData != null) count = petData.count;
+		PetListCanvas.instance.OnClickListItem(rewardValue, count);
+
+		while ((PetInfoCanvas.instance != null && PetInfoCanvas.instance.gameObject.activeSelf) == false)
+			yield return Timing.WaitForOneFrame;
+
+		DelayedLoadingCanvas.Show(false);
+		FadeCanvas.instance.FadeIn(0.4f);
+	}
+
+	public void OnClickEquipDetailButton(string rewardValue)
+	{
+		Timing.RunCoroutine(ShowEquipDetailCanvasProcess(rewardValue));
+	}
+
+	IEnumerator<float> ShowEquipDetailCanvasProcess(string rewardValue)
+	{
+		FadeCanvas.instance.FadeOut(0.2f, 1.0f, true);
+		yield return Timing.WaitForSeconds(0.2f);
+
+		// 이거로 막아둔다.
+		DelayedLoadingCanvas.Show(true);
+
+		gameObject.SetActive(false);
+
+		while (gameObject.activeSelf)
+			yield return Timing.WaitForOneFrame;
+		yield return Timing.WaitForOneFrame;
+
+		MissionListCanvas.ShowCanvasAsyncWithPrepareGround("PickUpEquipDetailCanvas", null);
+
+		while ((PickUpEquipDetailCanvas.instance != null && PickUpEquipDetailCanvas.instance.gameObject.activeSelf) == false)
+			yield return Timing.WaitForOneFrame;
+		PickUpEquipDetailCanvas.instance.RefreshInfo(rewardValue);
+		PickUpEquipDetailCanvas.instance.SetRestoreCanvas(cashEventId);
+
+		DelayedLoadingCanvas.Show(false);
+		FadeCanvas.instance.FadeIn(0.4f);
+	}
+	#endregion
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	int _buttonIndex;
 	public void OnClickButton(int index)
@@ -122,20 +261,23 @@ public class OneOfThreeCanvas : SimpleCashEventCanvas
 				shopProductTableData = TableDataManager.instance.FindShopProductTableDataByServerItemId(product.definition.id);
 			if (shopProductTableData != null)
 			{
-				CurrencyData.instance.OnRecvProductReward(shopProductTableData.rewardType1, shopProductTableData.rewardValue1, shopProductTableData.rewardCount1);
-				CurrencyData.instance.OnRecvProductReward(shopProductTableData.rewardType2, shopProductTableData.rewardValue2, shopProductTableData.rewardCount2);
-				CurrencyData.instance.OnRecvProductReward(shopProductTableData.rewardType3, shopProductTableData.rewardValue3, shopProductTableData.rewardCount3);
-				CurrencyData.instance.OnRecvProductReward(shopProductTableData.rewardType4, shopProductTableData.rewardValue4, shopProductTableData.rewardCount4);
-				CurrencyData.instance.OnRecvProductReward(shopProductTableData.rewardType5, shopProductTableData.rewardValue5, shopProductTableData.rewardCount5);
+				CurrencyData.instance.OnRecvProductRewardExtendGachaAndItem(shopProductTableData);
 			}
 
 			WaitingNetworkCanvas.Show(false);
 			if (shopProductTableData != null)
 			{
-				UIInstanceManager.instance.ShowCanvasAsync("CommonRewardCanvas", () =>
-				{
-					CommonRewardCanvas.instance.RefreshReward(shopProductTableData);
-				});
+				// 대부분 다 팝업으로 되어있는걸 또 다시 커먼 리워드 창으로 보여줄 필요는 없을거 같으니 구매 완료로 처리해본다.
+				ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_CompletePurchase"), 2.0f);
+
+				// 컨슘처리
+				if (ConsumeProductProcessor.ContainsConsumeGacha(shopProductTableData))
+					ConsumeProductProcessor.instance.ConsumeGacha(shopProductTableData);
+
+				// RelayPackageBox 했던거처럼 지정 장비를 가지고 있다면 인벤토리 리프레쉬를 시도한다.
+				// 실패한다면 로비로 돌아갈거고 재접하면 제대로 인벤 리스트를 받게 될거다.
+				if (EquipManager.ContainsEquip(shopProductTableData))
+					PlayFabApiManager.instance.RequestEquipListByPurchase(null);
 			}
 
 			#region Default Process

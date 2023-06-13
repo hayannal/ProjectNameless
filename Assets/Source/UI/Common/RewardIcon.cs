@@ -304,6 +304,8 @@ public class RewardIcon : MonoBehaviour
 						FestivalRewardCanvas.instance.OnClickPetDetailButton(rewardValue);
 					if (CashShopTabCanvas.instance != null && CashShopTabCanvas.instance.gameObject.activeSelf)
 						CashShopPackageCanvas.instance.OnClickPetDetailButton(rewardValue);
+					if (ContinuousShopProductCanvas.instance != null && ContinuousShopProductCanvas.instance.gameObject.activeSelf)
+						ContinuousShopProductCanvas.instance.OnClickPetDetailButton(rewardValue);
 				}
 				else if (rewardValue.StartsWith("Equip"))
 				{
@@ -313,6 +315,8 @@ public class RewardIcon : MonoBehaviour
 						FestivalRewardCanvas.instance.OnClickEquipDetailButton(rewardValue);
 					if (CashShopTabCanvas.instance != null && CashShopTabCanvas.instance.gameObject.activeSelf)
 						CashShopPackageCanvas.instance.OnClickEquipDetailButton(rewardValue);
+					if (ContinuousShopProductCanvas.instance != null && ContinuousShopProductCanvas.instance.gameObject.activeSelf)
+						ContinuousShopProductCanvas.instance.OnClickEquipDetailButton(rewardValue);
 				}
 				break;
 		}

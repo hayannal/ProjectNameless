@@ -131,6 +131,11 @@ public class PickUpEquipDetailCanvas : EquipShowCanvasBase
 			while ((AttendanceCanvas.instance != null && AttendanceCanvas.instance.gameObject.activeSelf) == false)
 				yield return Timing.WaitForOneFrame;
 		}
+		else if (_restoreType.StartsWith("ev"))
+		{
+			CashEventButton.ShowEventCanvas(_restoreType);
+			_restoreType = "";
+		}
 		else
 		{
 			MainCanvas.instance.OnClickCashShopButton();

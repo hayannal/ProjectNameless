@@ -766,7 +766,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1496897217277038296}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
@@ -907,13 +907,13 @@ RectTransform:
   - {fileID: 1496897218918969377}
   - {fileID: 1496897218177917646}
   - {fileID: 1496897218157022548}
-  - {fileID: 1496897218498501931}
   - {fileID: 1496897217761240178}
   - {fileID: 1496897217766374753}
   - {fileID: 1496897217273231968}
   - {fileID: 360968980393115235}
   - {fileID: 1496897218245521652}
   - {fileID: 1496897217724443115}
+  - {fileID: 1496897218498501931}
   - {fileID: 1496897218887090575}
   - {fileID: 8868896204720754670}
   m_Father: {fileID: 3933936486711354077}
@@ -1068,7 +1068,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1496897217277038296}
-  m_RootOrder: 9
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1130,7 +1130,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1496897217277038296}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
@@ -1206,7 +1206,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1496897217277038296}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -1451,7 +1451,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1496897217277038296}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
@@ -1577,7 +1577,7 @@ RectTransform:
   - {fileID: 5825949521623916979}
   - {fileID: 5825949522422714766}
   m_Father: {fileID: 1496897217277038296}
-  m_RootOrder: 3
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -4324,7 +4324,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1496897217277038296}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
@@ -4816,7 +4816,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f12479a3eb790ef4abc68cb914116b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uiStringKey: EventName_NewFindLogin
+  uiStringKey: ShopUI_OnePlusTwoName
 --- !u!114 &8910675759338604859
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6059,6 +6059,36 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5836320690943369963, guid: e429daceb3f2a8444921989de8fbd24b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5836320690943369963, guid: e429daceb3f2a8444921989de8fbd24b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 2858966427520597294}
+    - target: {fileID: 5836320690943369963, guid: e429daceb3f2a8444921989de8fbd24b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnClickRewardButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 5836320690943369963, guid: e429daceb3f2a8444921989de8fbd24b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: OnePlusTwoCanvas, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5836320690943369963, guid: e429daceb3f2a8444921989de8fbd24b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
+      value: 
+      objectReference: {fileID: 3500096565262695630}
+    - target: {fileID: 5836320690943369963, guid: e429daceb3f2a8444921989de8fbd24b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: RewardIcon, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 6310291463505675391, guid: e429daceb3f2a8444921989de8fbd24b,
         type: 3}
       propertyPath: m_Name
@@ -6066,6 +6096,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e429daceb3f2a8444921989de8fbd24b, type: 3}
+--- !u!114 &3500096565262695630 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2617958483128448753, guid: e429daceb3f2a8444921989de8fbd24b,
+    type: 3}
+  m_PrefabInstance: {fileID: 1496897217118292543}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b0f9ed344476d844aed52885e341008, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &5825949522352624209 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4908890813111736430, guid: e429daceb3f2a8444921989de8fbd24b,
@@ -6194,6 +6236,36 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5836320690943369963, guid: e429daceb3f2a8444921989de8fbd24b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5836320690943369963, guid: e429daceb3f2a8444921989de8fbd24b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 2858966427520597294}
+    - target: {fileID: 5836320690943369963, guid: e429daceb3f2a8444921989de8fbd24b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnClickRewardButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 5836320690943369963, guid: e429daceb3f2a8444921989de8fbd24b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: OnePlusTwoCanvas, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5836320690943369963, guid: e429daceb3f2a8444921989de8fbd24b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
+      value: 
+      objectReference: {fileID: 3500096565605809937}
+    - target: {fileID: 5836320690943369963, guid: e429daceb3f2a8444921989de8fbd24b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: RewardIcon, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 6310291463505675391, guid: e429daceb3f2a8444921989de8fbd24b,
         type: 3}
       propertyPath: m_Name
@@ -6201,6 +6273,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e429daceb3f2a8444921989de8fbd24b, type: 3}
+--- !u!114 &3500096565605809937 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2617958483128448753, guid: e429daceb3f2a8444921989de8fbd24b,
+    type: 3}
+  m_PrefabInstance: {fileID: 1496897217324698080}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b0f9ed344476d844aed52885e341008, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &5825949522422714766 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4908890813111736430, guid: e429daceb3f2a8444921989de8fbd24b,
@@ -6329,6 +6413,36 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5836320690943369963, guid: e429daceb3f2a8444921989de8fbd24b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5836320690943369963, guid: e429daceb3f2a8444921989de8fbd24b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 2858966427520597294}
+    - target: {fileID: 5836320690943369963, guid: e429daceb3f2a8444921989de8fbd24b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnClickRewardButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 5836320690943369963, guid: e429daceb3f2a8444921989de8fbd24b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: OnePlusTwoCanvas, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5836320690943369963, guid: e429daceb3f2a8444921989de8fbd24b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
+      value: 
+      objectReference: {fileID: 3500096564807028524}
+    - target: {fileID: 5836320690943369963, guid: e429daceb3f2a8444921989de8fbd24b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: RewardIcon, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 6310291463505675391, guid: e429daceb3f2a8444921989de8fbd24b,
         type: 3}
       propertyPath: m_Name
@@ -6336,6 +6450,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e429daceb3f2a8444921989de8fbd24b, type: 3}
+--- !u!114 &3500096564807028524 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2617958483128448753, guid: e429daceb3f2a8444921989de8fbd24b,
+    type: 3}
+  m_PrefabInstance: {fileID: 1496897217585494493}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b0f9ed344476d844aed52885e341008, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &5825949521623916979 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4908890813111736430, guid: e429daceb3f2a8444921989de8fbd24b,
@@ -6464,6 +6590,36 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5836320690943369963, guid: e429daceb3f2a8444921989de8fbd24b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5836320690943369963, guid: e429daceb3f2a8444921989de8fbd24b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 2858966427520597294}
+    - target: {fileID: 5836320690943369963, guid: e429daceb3f2a8444921989de8fbd24b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnClickRewardButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 5836320690943369963, guid: e429daceb3f2a8444921989de8fbd24b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: OnePlusTwoCanvas, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5836320690943369963, guid: e429daceb3f2a8444921989de8fbd24b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
+      value: 
+      objectReference: {fileID: 3500096564999255762}
+    - target: {fileID: 5836320690943369963, guid: e429daceb3f2a8444921989de8fbd24b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: RewardIcon, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 6310291463505675391, guid: e429daceb3f2a8444921989de8fbd24b,
         type: 3}
       propertyPath: m_Name
@@ -6471,6 +6627,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e429daceb3f2a8444921989de8fbd24b, type: 3}
+--- !u!114 &3500096564999255762 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2617958483128448753, guid: e429daceb3f2a8444921989de8fbd24b,
+    type: 3}
+  m_PrefabInstance: {fileID: 1496897217926987811}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b0f9ed344476d844aed52885e341008, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &5825949522089154637 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4908890813111736430, guid: e429daceb3f2a8444921989de8fbd24b,
