@@ -316,7 +316,7 @@ public class CharacterLevelCanvas : MonoBehaviour
 	{
 		if (CurrencyData.instance.gold < _price)
 		{
-			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughGold"), 2.0f);
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_GoldAllUsed"), 2.0f);
 			return;
 		}
 
@@ -389,7 +389,7 @@ public class CharacterLevelCanvas : MonoBehaviour
 
 		if (CurrencyData.instance.gold < _price)
 		{
-			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughGold"), 2.0f);
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_GoldAllUsed"), 2.0f);
 			if (_pressed)
 			{
 				OnPressUpSync();
