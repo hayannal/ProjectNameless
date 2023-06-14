@@ -10,6 +10,8 @@ public class CashShopPackageCanvas : MonoBehaviour
 	public GameObject termsGroupObject;
 	public GameObject emptyTermsGroupObject;
 
+	public GameObject stageClearGroupObject;
+
 	void Awake()
 	{
 		instance = this;
@@ -19,6 +21,12 @@ public class CashShopPackageCanvas : MonoBehaviour
 	{
 		termsGroupObject.SetActive(OptionManager.instance.language == "KOR");
 		emptyTermsGroupObject.SetActive(OptionManager.instance.language != "KOR");
+	}
+
+	void OnDisable()
+	{
+		if (stageClearGroupObject.activeSelf == false)
+			stageClearGroupObject.SetActive(true);
 	}
 
 

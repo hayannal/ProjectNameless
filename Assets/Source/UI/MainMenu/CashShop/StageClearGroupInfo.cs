@@ -6,6 +6,8 @@ public class StageClearGroupInfo : MonoBehaviour
 {
 	public static StageClearGroupInfo instance;
 
+	public GameObject imageRootObject;
+
 	public ScrollSnap scrollSnap;
 
 	public GameObject contentItemPrefab;
@@ -53,6 +55,7 @@ public class StageClearGroupInfo : MonoBehaviour
 		// 보여줄게 없다면 통째로 꺼두면 된다.
 		if (_listShowIndex.Count == 0)
 		{
+			if (imageRootObject != null) imageRootObject.SetActive(false);
 			gameObject.SetActive(false);
 			return;
 		}
@@ -64,6 +67,7 @@ public class StageClearGroupInfo : MonoBehaviour
 			_listStageClearPackageBoxListItem.Add(stageClearPackageBox);
 		}
 
+		if (imageRootObject != null) imageRootObject.SetActive(true);
 		gameObject.SetActive(true);
 	}
 }
