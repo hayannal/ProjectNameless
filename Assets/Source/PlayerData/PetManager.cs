@@ -653,7 +653,7 @@ public class PetManager : MonoBehaviour
 			// 없는 펫이 추가될땐 스탯부터 다 다시 계산해야한다.
 			OnChangedStatus();
 
-			GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.GatherPet);
+			GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.GatherPet, rewardCount);
 		}
 	}
 	#endregion
