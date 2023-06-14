@@ -53,6 +53,10 @@ public class StageClearPackageBox : SimpleCashCanvas
 			_updateRefreshLineImage = true;
 		}
 
+		// for medium large icon
+		for (int i = 0; i < rewardIconList.Length; ++i)
+			rewardIconList[i].eventRewardId = "_none";
+
 		// reward icon list
 		for (int i = 0; i < rewardIconList.Length; ++i)
 		{
