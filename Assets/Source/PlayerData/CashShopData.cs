@@ -101,7 +101,9 @@ public class CashShopData : MonoBehaviour
 		Spell5Gacha = 7,
 		AnalysisBoost = 8,
 
+		EquipTypeGacha410,
 		EquipTypeGacha411,
+		EquipTypeGacha412,
 		EquipTypeGacha415,
 
 		Amount,
@@ -109,7 +111,7 @@ public class CashShopData : MonoBehaviour
 	List<ObscuredInt> _listCashConsumeCount = new List<ObscuredInt>();
 	List<string> _listCashConsumeCountKey = new List<string> { "Cash_sSpellGacha", "Cash_sCharacterGacha", "Cash_sEquipGacha", "Cash_sSevenTotal", "Cash_sFestivalTotal",
 		"Cash_sSpell3Gacha", "Cash_sSpell4Gacha", "Cash_sSpell5Gacha", "Cash_sAnalysisBoost",
-		"Cash_sEquipTypeGacha411", "Cash_sEquipTypeGacha415"
+		"Cash_sEquipTypeGacha410", "Cash_sEquipTypeGacha411", "Cash_sEquipTypeGacha412", "Cash_sEquipTypeGacha415"
 	};
 
 	public enum eCashItemCountType
@@ -745,8 +747,14 @@ public class CashShopData : MonoBehaviour
 			case "Cash_sAnalysisBoost":
 				PurchaseCount(eCashConsumeCountType.AnalysisBoost, count);
 				break;
+			case "Cash_sEquipTypeGacha410":
+				PurchaseCount(eCashConsumeCountType.EquipTypeGacha410, count);
+				break;
 			case "Cash_sEquipTypeGacha411":
 				PurchaseCount(eCashConsumeCountType.EquipTypeGacha411, count);
+				break;
+			case "Cash_sEquipTypeGacha412":
+				PurchaseCount(eCashConsumeCountType.EquipTypeGacha412, count);
 				break;
 			case "Cash_sEquipTypeGacha415":
 				PurchaseCount(eCashConsumeCountType.EquipTypeGacha415, count);
@@ -1460,7 +1468,7 @@ public class CashShopData : MonoBehaviour
 		// 다른 컨슘보다도 스텝이 길고 중요한 가차박스는 따로 검사한다.
 		if (GetConsumeCount(eCashConsumeCountType.SpellGacha) > 0 || GetConsumeCount(eCashConsumeCountType.CharacterGacha) > 0 || GetConsumeCount(eCashConsumeCountType.EquipGacha) > 0 ||
 			GetConsumeCount(eCashConsumeCountType.Spell3Gacha) > 0 || GetConsumeCount(eCashConsumeCountType.Spell4Gacha) > 0 || GetConsumeCount(eCashConsumeCountType.Spell5Gacha) > 0 ||
-			GetConsumeCount(eCashConsumeCountType.EquipTypeGacha411) > 0 || GetConsumeCount(eCashConsumeCountType.EquipTypeGacha415) > 0)
+			GetConsumeCount(eCashConsumeCountType.EquipTypeGacha410) > 0 || GetConsumeCount(eCashConsumeCountType.EquipTypeGacha411) > 0 || GetConsumeCount(eCashConsumeCountType.EquipTypeGacha412) > 0 || GetConsumeCount(eCashConsumeCountType.EquipTypeGacha415) > 0)
 		{
 			int count = GetConsumeCount(eCashConsumeCountType.SpellGacha);
 			if (count > 0)
@@ -1486,9 +1494,17 @@ public class CashShopData : MonoBehaviour
 			if (count > 0)
 				ConsumeProductProcessor.instance.AddConsumeGacha(_listCashConsumeCountKey[(int)eCashConsumeCountType.Spell5Gacha], count);
 
+			count = GetConsumeCount(eCashConsumeCountType.EquipTypeGacha410);
+			if (count > 0)
+				ConsumeProductProcessor.instance.AddConsumeGacha(_listCashConsumeCountKey[(int)eCashConsumeCountType.EquipTypeGacha410], count);
+
 			count = GetConsumeCount(eCashConsumeCountType.EquipTypeGacha411);
 			if (count > 0)
 				ConsumeProductProcessor.instance.AddConsumeGacha(_listCashConsumeCountKey[(int)eCashConsumeCountType.EquipTypeGacha411], count);
+
+			count = GetConsumeCount(eCashConsumeCountType.EquipTypeGacha412);
+			if (count > 0)
+				ConsumeProductProcessor.instance.AddConsumeGacha(_listCashConsumeCountKey[(int)eCashConsumeCountType.EquipTypeGacha412], count);
 
 			count = GetConsumeCount(eCashConsumeCountType.EquipTypeGacha415);
 			if (count > 0)

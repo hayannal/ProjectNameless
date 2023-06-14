@@ -164,8 +164,14 @@ public class ConsumeProductProcessor : MonoBehaviour
 			case "Cash_sSpell5Gacha":
 				ConsumeSpellGacha(firstCount, 5);
 				break;
+			case "Cash_sEquipTypeGacha410":
+				ConsumeEquipTypeGacha(firstCount, 4, 1, 0, CashShopData.eCashConsumeCountType.EquipTypeGacha410);
+				break;
 			case "Cash_sEquipTypeGacha411":
 				ConsumeEquipTypeGacha(firstCount, 4, 1, 1, CashShopData.eCashConsumeCountType.EquipTypeGacha411);
+				break;
+			case "Cash_sEquipTypeGacha412":
+				ConsumeEquipTypeGacha(firstCount, 4, 1, 2, CashShopData.eCashConsumeCountType.EquipTypeGacha412);
 				break;
 			case "Cash_sEquipTypeGacha415":
 				ConsumeEquipTypeGacha(firstCount, 4, 1, 5, CashShopData.eCashConsumeCountType.EquipTypeGacha415);
