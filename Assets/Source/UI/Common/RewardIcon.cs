@@ -206,6 +206,20 @@ public class RewardIcon : MonoBehaviour
 						if (equipGachaObject != null) equipGachaObject.SetActive(true);
 						countText.color = Color.white;
 						break;
+					case "Cash_sEquipTypeGacha314":
+						EquipCanvasListItem.RefreshGrade(3, blurImage, gradient, lineColorImage);
+						EquipCanvasListItem.RefreshRarity(1, equipRarityText, equipRarityGradient);
+						equipIconImage.sprite = MainCanvas.instance.equipTypeSpriteList[4];
+						equipRootObject.SetActive(true);
+						countText.color = Color.white;
+						break;
+					case "Cash_sEquipTypeGacha316":
+						EquipCanvasListItem.RefreshGrade(3, blurImage, gradient, lineColorImage);
+						EquipCanvasListItem.RefreshRarity(1, equipRarityText, equipRarityGradient);
+						equipIconImage.sprite = MainCanvas.instance.equipTypeSpriteList[6];
+						equipRootObject.SetActive(true);
+						countText.color = Color.white;
+						break;
 					case "Cash_sEquipTypeGacha410":
 						EquipCanvasListItem.RefreshGrade(4, blurImage, gradient, lineColorImage);
 						EquipCanvasListItem.RefreshRarity(1, equipRarityText, equipRarityGradient);
