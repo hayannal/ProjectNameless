@@ -233,7 +233,7 @@ public class PetSearchCanvas : MonoBehaviour
 	{
 		if (initialize)
 		{
-			ToastZigzagCanvas.instance.ShowToast(UIString.instance.GetString("PetUI_TouchLeftRight"), 1.5f, 0.8f, true);
+			ToastZigzagCanvas.instance.ShowToast(UIString.instance.GetString("PetUI_BattleInitialize"), 1.5f, 0.8f, true);
 			yield return Timing.WaitForSeconds(1.5f);
 
 			Vector3 localScale = countDownText.transform.localScale;
