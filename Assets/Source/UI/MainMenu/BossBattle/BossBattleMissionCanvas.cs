@@ -404,32 +404,62 @@ public class BossBattleMissionCanvas : MonoBehaviour
 				nextBossId = SubMissionData.instance.GetNextRandomBossId();
 
 			// 첫 클리어라면 
+			int addGold = 0;
+			int addDia = 0;
+			int addEnergy = 0;
+			BossBattleRewardTableData bossBattleRewardTableData = null;
 			if (_firstClear)
 			{
 				//DropProcessor.Drop(BattleInstanceManager.instance.cachedTransform, _bossRewardTableData.firstDropId, "", true, true);
 				//if (CheatingListener.detectedCheatTable)
 				//	return;
+
+				bossBattleRewardTableData = TableDataManager.instance.FindBossBattleRewardTableData(SubMissionData.instance.bossBattleId, _selectedDifficulty);
+				if (bossBattleRewardTableData != null)
+				{
+					if (bossBattleRewardTableData.rewardValue1 == CurrencyData.GoldCode())
+						addGold += bossBattleRewardTableData.rewardCount1;
+					else if (bossBattleRewardTableData.rewardValue1 == CurrencyData.DiamondCode())
+						addDia += bossBattleRewardTableData.rewardCount1;
+					else if (bossBattleRewardTableData.rewardValue1 == CurrencyData.EnergyCode())
+						addEnergy += bossBattleRewardTableData.rewardCount1;
+
+					if (bossBattleRewardTableData.rewardType2 == "cu")
+					{
+						if (bossBattleRewardTableData.rewardValue2 == CurrencyData.GoldCode())
+							addGold += bossBattleRewardTableData.rewardCount2;
+						else if (bossBattleRewardTableData.rewardValue2 == CurrencyData.DiamondCode())
+							addDia += bossBattleRewardTableData.rewardCount2;
+						else if (bossBattleRewardTableData.rewardValue2 == CurrencyData.EnergyCode())
+							addEnergy += bossBattleRewardTableData.rewardCount2;
+					}
+				}
+				else
+				{
+					// 없을수가 있나?
+					Debug.LogError("Invalid Call. BossBattleRewardTable is null.");
+				}
 			}
 
-			PlayFabApiManager.instance.RequestEndBossBattle(clear, nextBossId, _selectedDifficulty, price, (result, nextId) =>
+			PlayFabApiManager.instance.RequestEndBossBattle(clear, nextBossId, _selectedDifficulty, price, addGold, addDia, addEnergy, (result, nextId, itemGrantString) =>
 			{
 				// 정보를 갱신하기 전에 먼저 BattleResult를 보여준다.
 				UIInstanceManager.instance.ShowCanvasAsync("BossBattleResultCanvas", () =>
 				{
-					BossBattleResultCanvas.instance.RefreshInfo(true, _selectedDifficulty, _firstClear);
-					OnRecvEndBossBattle(result, _firstClear, nextId);
+					BossBattleResultCanvas.instance.RefreshInfo(true, _selectedDifficulty, _firstClear, bossBattleRewardTableData);
+					OnRecvEndBossBattle(result, _firstClear, nextId, itemGrantString);
 				});
 			});
 		}
 		else
 		{
-			PlayFabApiManager.instance.RequestEndBossBattle(false, 0, _selectedDifficulty, price, (result, nextId) =>
+			PlayFabApiManager.instance.RequestEndBossBattle(false, 0, _selectedDifficulty, price, 0, 0, 0, (result, nextId, itemGrantString) =>
 			{
 				// 정보를 갱신하기 전에 먼저 BattleResult를 보여준다.
 				UIInstanceManager.instance.ShowCanvasAsync("BossBattleResultCanvas", () =>
 				{
-					BossBattleResultCanvas.instance.RefreshInfo(false, _selectedDifficulty, false);
-					OnRecvEndBossBattle(result, false, nextId);
+					BossBattleResultCanvas.instance.RefreshInfo(false, _selectedDifficulty, false, null);
+					OnRecvEndBossBattle(result, false, nextId, itemGrantString);
 				});
 			});
 		}
@@ -440,7 +470,7 @@ public class BossBattleMissionCanvas : MonoBehaviour
 	int _selectedDifficulty;
 	int _clearDifficulty;
 	bool _firstClear;
-	void OnRecvEndBossBattle(bool clear, bool firstClear, int nextBossId)
+	void OnRecvEndBossBattle(bool clear, bool firstClear, int nextBossId, string itemGrantString)
 	{
 		// 반복클리어냐 아니냐에 따라 결과를 나누면 된다.
 		SubMissionData.instance.AddBossBattleCount();
@@ -453,6 +483,11 @@ public class BossBattleMissionCanvas : MonoBehaviour
 			{
 				//if (_bossRewardTableData.firstEnergy > 0)
 				//	CurrencyData.instance.OnRecvRefillEnergy(_bossRewardTableData.firstEnergy);
+
+				if (itemGrantString == "")
+					return;
+
+				EquipManager.instance.OnRecvItemGrantResult(itemGrantString, 0);
 			}
 		}
 	}

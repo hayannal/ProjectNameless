@@ -4771,7 +4771,7 @@ public class PlayFabApiManager : MonoBehaviour
 		}, null, null);
 	}
 
-	public void RequestEndBossBattle(bool clear, int nextBossId, int playLevel, int useTicket, Action<bool, int> successCallback)
+	public void RequestEndBossBattle(bool clear, int nextBossId, int playLevel, int useTicket, int addGold, int addDia, int addEnergy, Action<bool, int, string> successCallback)
 	{
 		string input = string.Format("{0}_{1}_{2}_{3}_{4}", (string)_serverEnterKeyForBossBattle, clear ? 1 : 0, nextBossId, playLevel, "rezslmnq");
 		string checkSum = CheckSum(input);
@@ -4800,7 +4800,14 @@ public class PlayFabApiManager : MonoBehaviour
 				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.UseTicket, useTicket);
 				CurrencyData.instance.UseTicket(useTicket);
 
-				if (successCallback != null) successCallback.Invoke(clear, nextBossId);
+				CurrencyData.instance.dia += addDia;
+				CurrencyData.instance.gold += addGold;
+				if (addEnergy > 0)
+					CurrencyData.instance.OnRecvRefillEnergy(addEnergy);
+
+				jsonResult.TryGetValue("itmRet", out object itmRet);
+
+				if (successCallback != null) successCallback.Invoke(clear, nextBossId, (string)itmRet);
 			}
 		}, (error) =>
 		{

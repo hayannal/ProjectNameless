@@ -93,6 +93,7 @@ public class TableDataManager : MonoBehaviour
 	public BossBattleTable bossBattleTable;
 	public BossExpTable bossExpTable;
 	public BossBattleDifficultyTable bossBattleDifficultyTable;
+	public BossBattleRewardTable bossBattleRewardTable;
 	public PointShopTable pointShopTable;
 	public PointShopAtkTable pointShopAtkTable;
 
@@ -792,6 +793,16 @@ public class TableDataManager : MonoBehaviour
 		{
 			if (bossBattleDifficultyTable.dataArray[i].difficulty == difficulty)
 				return bossBattleDifficultyTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public BossBattleRewardTableData FindBossBattleRewardTableData(int id, int difficulty)
+	{
+		for (int i = 0; i < bossBattleRewardTable.dataArray.Length; ++i)
+		{
+			if (bossBattleRewardTable.dataArray[i].num == id && bossBattleRewardTable.dataArray[i].difficulty == difficulty)
+				return bossBattleRewardTable.dataArray[i];
 		}
 		return null;
 	}

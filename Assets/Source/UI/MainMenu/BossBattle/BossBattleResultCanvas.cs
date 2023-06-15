@@ -14,6 +14,9 @@ public class BossBattleResultCanvas : MonoBehaviour
 	public Text difficultyText;
 	public Text resultText;
 
+	public GameObject topEmptyRectObject;
+	public GameObject middleEmptyRectObject;
+
 	public GameObject xpRewardGroupObject;
 	public Text xpLevelText;
 	public Text xpLevelExpText;
@@ -31,11 +34,26 @@ public class BossBattleResultCanvas : MonoBehaviour
 
 	public GameObject exitGroupObject;
 
+	public GameObject equipRewardGroupObject;
+
+	public GameObject contentItemPrefab;
+	public RectTransform contentRootRectTransform;
+
+	public class CustomItemContainer : CachedItemHave<RewardIcon>
+	{
+	}
+	CustomItemContainer _container = new CustomItemContainer();
+
 	void Awake()
 	{
 		instance = this;
 	}
-	
+
+	void Start()
+	{
+		contentItemPrefab.SetActive(false);
+	}
+
 	void OnEnable()
 	{
 		Time.timeScale = 0.0f;
@@ -56,13 +74,15 @@ public class BossBattleResultCanvas : MonoBehaviour
 	bool _firstClear;
 	bool _dailyBonusApplied;
 	bool _allKingClear;
-	public void RefreshInfo(bool clear, int selectedDifficulty, bool firstClear)
+	BossBattleRewardTableData _bossBattleRewardTableData;
+	public void RefreshInfo(bool clear, int selectedDifficulty, bool firstClear, BossBattleRewardTableData bossBattleRewardTableData)
 	{
 		_clear = clear;
 		_selectedDifficulty = selectedDifficulty;
 		_firstClear = firstClear;
 		_dailyBonusApplied = (SubMissionData.instance.bossBattleDailyCount <= BattleInstanceManager.instance.GetCachedGlobalConstantInt("BossBattleDailyCount"));
 		_allKingClear = false;
+		_bossBattleRewardTableData = bossBattleRewardTableData;
 		if (SubMissionData.instance.bossBattleId == BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxBossBattle"))
 		{
 			if ((SubMissionData.instance.bossBattleClearId + 1) == SubMissionData.instance.bossBattleId)
@@ -72,6 +92,9 @@ public class BossBattleResultCanvas : MonoBehaviour
 		difficultyText.text = string.Format("DIFFICULTY {0}", selectedDifficulty);
 		resultText.text = UIString.instance.GetString(clear ? "GameUI_Success" : "GameUI_Failure");
 		resultText.color = clear ? new Color(0.0f, 0.733f, 0.792f) : new Color(0.792f, 0.152f, 0.0f);
+
+		topEmptyRectObject.SetActive(_firstClear == false);
+		middleEmptyRectObject.SetActive(_firstClear == false);
 
 		gameObject.SetActive(true);
 
@@ -186,9 +209,47 @@ public class BossBattleResultCanvas : MonoBehaviour
 			yield return new WaitForSecondsRealtime(0.5f);
 		}
 
+		if (_firstClear)
+		{
+			// 난이도 첫 클리어라면 장비보상이 들어있을거다.
+			equipRewardGroupObject.SetActive(true);
+		}
+		else
+		{
+			SetPointRewardInfo();
+			pointRewardGroupObject.SetActive(true);
+		}
+	}
+
+	#region Equip
+	public void OnEventIncreaseEquip()
+	{
+		StartCoroutine(FirstRewardProcess());
+	}
+
+	IEnumerator FirstRewardProcess()
+	{
+		// standby
+		yield return new WaitForSecondsRealtime(0.1f);
+
+		// 첫 클리어 보상
+		RewardIcon rewardIconItem = _container.GetCachedItem(contentItemPrefab, contentRootRectTransform);
+		rewardIconItem.RefreshReward(_bossBattleRewardTableData.rewardType1, _bossBattleRewardTableData.rewardValue1, _bossBattleRewardTableData.rewardCount1);
+
+		if (string.IsNullOrEmpty(_bossBattleRewardTableData.rewardType2) == false)
+		{
+			yield return new WaitForSecondsRealtime(0.2f);
+
+			rewardIconItem = _container.GetCachedItem(contentItemPrefab, contentRootRectTransform);
+			rewardIconItem.RefreshReward(_bossBattleRewardTableData.rewardType2, _bossBattleRewardTableData.rewardValue2, _bossBattleRewardTableData.rewardCount2);
+		}
+
+		yield return new WaitForSecondsRealtime(0.2f);
+
 		SetPointRewardInfo();
 		pointRewardGroupObject.SetActive(true);
 	}
+	#endregion
 
 	#region Point
 	int _targetPoint;
