@@ -68,7 +68,14 @@ public class StageClearPackageBox : SimpleCashCanvas
 				case 3: rewardIconList[i].RefreshReward(_shopProductTableData.rewardType4, _shopProductTableData.rewardValue4, _shopProductTableData.rewardCount4); break;
 				case 4: rewardIconList[i].RefreshReward(_shopProductTableData.rewardType5, _shopProductTableData.rewardValue5, _shopProductTableData.rewardCount5); break;
 			}
-			rewardIconList[i].ShowOnlyIcon(true, 1.2f);
+			switch (i)
+			{
+				case 0: if (_shopProductTableData.rewardType1 == "cu" || (_shopProductTableData.rewardValue1.StartsWith("Cash_s") && _shopProductTableData.rewardValue1.Contains("EquipTypeGacha") == false)) rewardIconList[i].ShowOnlyIcon(true, 1.2f); break;
+				case 1: if (_shopProductTableData.rewardType2 == "cu" || (_shopProductTableData.rewardValue2.StartsWith("Cash_s") && _shopProductTableData.rewardValue2.Contains("EquipTypeGacha") == false)) rewardIconList[i].ShowOnlyIcon(true, 1.2f); break;
+				case 2: if (_shopProductTableData.rewardType3 == "cu" || (_shopProductTableData.rewardValue3.StartsWith("Cash_s") && _shopProductTableData.rewardValue3.Contains("EquipTypeGacha") == false)) rewardIconList[i].ShowOnlyIcon(true, 1.2f); break;
+				case 3: if (_shopProductTableData.rewardType4 == "cu" || (_shopProductTableData.rewardValue4.StartsWith("Cash_s") && _shopProductTableData.rewardValue4.Contains("EquipTypeGacha") == false)) rewardIconList[i].ShowOnlyIcon(true, 1.2f); break;
+				case 4: if (_shopProductTableData.rewardType5 == "cu" || (_shopProductTableData.rewardValue5.StartsWith("Cash_s") && _shopProductTableData.rewardValue5.Contains("EquipTypeGacha") == false)) rewardIconList[i].ShowOnlyIcon(true, 1.2f); break;
+			}
 		}
 
 		// 다른 캐시상품들과 달리 프리팹 하나에서 정보를 바꿔가며 내용을 구성하기 때문에 productId에는 최초꺼로 설정되어있다.
