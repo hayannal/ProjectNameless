@@ -178,20 +178,33 @@ public class ContinuousShopProductInfo : SimpleCashCanvas
 		}
 		if (shopProductTableData != null)
 		{
-			CurrencyData.instance.OnRecvProductReward(shopProductTableData.rewardType1, shopProductTableData.rewardValue1, shopProductTableData.rewardCount1);
-			CurrencyData.instance.OnRecvProductReward(shopProductTableData.rewardType2, shopProductTableData.rewardValue2, shopProductTableData.rewardCount2);
-			CurrencyData.instance.OnRecvProductReward(shopProductTableData.rewardType3, shopProductTableData.rewardValue3, shopProductTableData.rewardCount3);
-			CurrencyData.instance.OnRecvProductReward(shopProductTableData.rewardType4, shopProductTableData.rewardValue4, shopProductTableData.rewardCount4);
-			CurrencyData.instance.OnRecvProductReward(shopProductTableData.rewardType5, shopProductTableData.rewardValue5, shopProductTableData.rewardCount5);
+			CurrencyData.instance.OnRecvProductRewardExtendGachaAndItem(shopProductTableData);
 		}
 
 		WaitingNetworkCanvas.Show(false);
 		if (shopProductTableData != null)
 		{
-			UIInstanceManager.instance.ShowCanvasAsync("CommonRewardCanvas", () =>
+			if (shopProductTableData.free)
 			{
-				CommonRewardCanvas.instance.RefreshReward(shopProductTableData);
-			});
+				UIInstanceManager.instance.ShowCanvasAsync("CommonRewardCanvas", () =>
+				{
+					CommonRewardCanvas.instance.RefreshReward(shopProductTableData);
+				});
+			}
+			else
+			{
+				// 대부분 다 팝업으로 되어있는걸 또 다시 커먼 리워드 창으로 보여줄 필요는 없을거 같으니 구매 완료로 처리해본다.
+				ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_CompletePurchase"), 2.0f);
+
+				// 컨슘처리
+				if (ConsumeProductProcessor.ContainsConsumeGacha(shopProductTableData))
+					ConsumeProductProcessor.instance.ConsumeGacha(shopProductTableData);
+
+				// RelayPackageBox 했던거처럼 지정 장비를 가지고 있다면 인벤토리 리프레쉬를 시도한다.
+				// 실패한다면 로비로 돌아갈거고 재접하면 제대로 인벤 리스트를 받게 될거다.
+				if (EquipManager.ContainsEquip(shopProductTableData))
+					PlayFabApiManager.instance.RequestEquipListByPurchase(null);
+			}
 		}
 
 		if (infoInstance != null)
