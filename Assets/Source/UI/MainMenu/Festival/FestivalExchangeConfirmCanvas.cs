@@ -137,12 +137,16 @@ public class FestivalExchangeConfirmCanvas : MonoBehaviour
 			List<ItemInstance> listItemInstance = PetManager.instance.OnRecvItemGrantResult(itemGrantString, expectCount);
 			if (listItemInstance == null)
 				return;
+
+			MainCanvas.instance.RefreshMenuButton();
 		}
 		else if (rewardValue.StartsWith("Equip"))
 		{
 			List<ItemInstance> listItemInstance = EquipManager.instance.OnRecvItemGrantResult(itemGrantString, expectCount);
 			if (listItemInstance == null)
 				return;
+
+			MainCanvas.instance.RefreshMenuButton();
 		}
 	}
 }
