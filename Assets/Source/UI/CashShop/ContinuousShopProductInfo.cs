@@ -69,7 +69,7 @@ public class ContinuousShopProductInfo : SimpleCashCanvas
 			if (applyOnlyIcon == false)
 				continue;
 
-			listRewardIcon[i].ShowOnlyIcon(true);
+			listRewardIcon[i].ShowOnlyIcon(true, 1.4f);
 			listRewardIcon[i].ActivePunchAnimation(true);
 			listRewardIcon[i].iconRootTransform.GetComponent<Button>().enabled = false;
 		}
