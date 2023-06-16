@@ -24,6 +24,10 @@ public class FreePackageBox : MonoBehaviour
 
 		nameText.SetLocalizedText(UIString.instance.GetString(freePackageTableData.type == (int)FreePackageGroupInfo.eFreeType.Level ? "ShopUI_FreeLevelPackage" : "ShopUI_FreeStagePackage", freePackageTableData.conValue));
 
+		// for medium large icon
+		for (int i = 0; i < rewardIconList.Length; ++i)
+			rewardIconList[i].eventRewardId = "_none";
+
 		// reward icon list
 		for (int i = 0; i < rewardIconList.Length; ++i)
 		{
@@ -35,7 +39,7 @@ public class FreePackageBox : MonoBehaviour
 				case 3: rewardIconList[i].RefreshReward(_shopProductTableData.rewardType4, _shopProductTableData.rewardValue4, _shopProductTableData.rewardCount4); break;
 				case 4: rewardIconList[i].RefreshReward(_shopProductTableData.rewardType5, _shopProductTableData.rewardValue5, _shopProductTableData.rewardCount5); break;
 			}
-			rewardIconList[i].ShowOnlyIcon(true, 1.0f);
+			rewardIconList[i].ShowOnlyIcon(true, 1.2f);
 		}
 
 		string attackItemId = PassManager.ShopProductId2ItemId(_freePackageTableData.shopProductId);
