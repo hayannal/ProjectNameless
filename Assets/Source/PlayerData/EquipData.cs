@@ -30,7 +30,7 @@ public class EquipData
 	public void Initialize(Dictionary<string, string> customData)
 	{
 		bool lockState = false;
-		if (customData.ContainsKey(KeyLock))
+		if (customData != null && customData.ContainsKey(KeyLock))
 		{
 			int intValue = 0;
 			if (int.TryParse(customData[KeyLock], out intValue))
@@ -39,7 +39,7 @@ public class EquipData
 		_isLock = lockState;
 
 		int enhan = 0;
-		if (customData.ContainsKey(KeyEnhan))
+		if (customData != null && customData.ContainsKey(KeyEnhan))
 		{
 			int intValue = 0;
 			if (int.TryParse(customData[KeyEnhan], out intValue))
