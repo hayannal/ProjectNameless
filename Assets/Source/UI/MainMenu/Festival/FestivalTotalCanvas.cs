@@ -9,6 +9,8 @@ public class FestivalTotalCanvas : SimpleCashCanvas
 {
 	public static FestivalTotalCanvas instance;
 
+	public static int PointPerConsumeItem = 500;
+
 	public Text remainTimeText;
 
 	public Text[] priceTextList;

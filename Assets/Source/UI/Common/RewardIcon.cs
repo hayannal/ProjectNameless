@@ -159,6 +159,7 @@ public class RewardIcon : MonoBehaviour
 					case "Cash_sSevenTotal":
 						if (sevenDaysObject != null) sevenDaysObject.SetActive(true);
 						countText.color = Color.white;
+						countText.text = (rewardCount * SevenTotalCanvas.PointPerConsumeItem).ToString("N0");
 						break;
 					case "Cash_sFestivalTotal":
 						FestivalTypeTableData festivalTypeTableData = TableDataManager.instance.FindFestivalTypeTableData(FestivalData.instance.festivalId);
@@ -172,6 +173,7 @@ public class RewardIcon : MonoBehaviour
 							});
 						}
 						countText.color = Color.white;
+						countText.text = (rewardCount * FestivalTotalCanvas.PointPerConsumeItem).ToString("N0");
 						break;
 					case "Cash_sSpellGacha":
 						if (spellGachaObject != null) spellGachaObject.SetActive(true);

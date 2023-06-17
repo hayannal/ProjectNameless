@@ -9,6 +9,8 @@ public class SevenTotalCanvas : SimpleCashCanvas
 {
 	public static SevenTotalCanvas instance;
 
+	public static int PointPerConsumeItem = 100;
+
 	public Text remainTimeText;
 
 	public Text[] priceTextList;

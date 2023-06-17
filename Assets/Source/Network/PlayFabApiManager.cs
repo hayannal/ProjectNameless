@@ -2338,7 +2338,7 @@ public class PlayFabApiManager : MonoBehaviour
 				WaitingNetworkCanvas.Show(false);
 
 				CashShopData.instance.ConsumeCount(CashShopData.eCashConsumeCountType.SevenTotal, count);
-				MissionData.instance.sevenDaysSumPoint += count;
+				MissionData.instance.sevenDaysSumPoint += count * SevenTotalCanvas.PointPerConsumeItem;
 
 				if (successCallback != null) successCallback.Invoke();
 			}
@@ -2397,7 +2397,7 @@ public class PlayFabApiManager : MonoBehaviour
 				WaitingNetworkCanvas.Show(false);
 
 				CashShopData.instance.ConsumeCount(CashShopData.eCashConsumeCountType.FestivalTotal, count);
-				FestivalData.instance.festivalSumPoint += count;
+				FestivalData.instance.festivalSumPoint += count * FestivalTotalCanvas.PointPerConsumeItem;
 
 				if (successCallback != null) successCallback.Invoke();
 			}
