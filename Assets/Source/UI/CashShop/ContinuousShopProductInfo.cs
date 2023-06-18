@@ -234,7 +234,15 @@ public class ContinuousShopProductInfo : SimpleCashCanvas
 			if (product != null)
 			{
 				CashShopData.instance.PurchaseFlag(CashShopData.eCashConsumeFlagType.Ev4ContiNext);
-				PlayFabApiManager.instance.RequestConsumeContinuousNext(cashEventId, true, null);
+				PlayFabApiManager.instance.RequestConsumeContinuousNext(cashEventId, true, () =>
+				{
+					if (instance != null)
+					{
+						ContinuousShopProductCanvas continuousShopProductCanvas = instance.GetComponent<ContinuousShopProductCanvas>();
+						if (continuousShopProductCanvas != null)
+							continuousShopProductCanvas.RefreshActiveList();
+					}
+				});
 			}
 		}
 		bool closeCanvas = false;
