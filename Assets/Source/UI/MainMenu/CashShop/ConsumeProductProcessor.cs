@@ -78,12 +78,19 @@ public class ConsumeProductProcessor : MonoBehaviour
 		return false;
 	}
 
+	static bool ContainsConsumeGacha(string rewardType, string rewardValue)
+	{
+		if (rewardType == "it" && rewardValue.StartsWith("Cash_s") && rewardValue.Contains("Gacha"))
+			return true;
+		return false;
+	}
+
 	public void ConsumeGacha(ShopProductTableData shopProductTableData)
 	{
 		_dicConsumeItem.Clear();
 
 		// 주의. type만 검사하고 value까진 검사하지 않으니 컨슘 아닌거 넣으면 큰일난다.
-		if (shopProductTableData.rewardType1 == "it")
+		if (ContainsConsumeGacha(shopProductTableData.rewardType1, shopProductTableData.rewardValue1))
 		{
 			string value = shopProductTableData.rewardValue1;
 			if (_dicConsumeItem.ContainsKey(value))
@@ -91,7 +98,7 @@ public class ConsumeProductProcessor : MonoBehaviour
 			else
 				_dicConsumeItem.Add(value, shopProductTableData.rewardCount1);
 		}
-		if (shopProductTableData.rewardType2 == "it")
+		if (ContainsConsumeGacha(shopProductTableData.rewardType2, shopProductTableData.rewardValue2))
 		{
 			string value = shopProductTableData.rewardValue2;
 			if (_dicConsumeItem.ContainsKey(value))
@@ -99,7 +106,7 @@ public class ConsumeProductProcessor : MonoBehaviour
 			else
 				_dicConsumeItem.Add(value, shopProductTableData.rewardCount2);
 		}
-		if (shopProductTableData.rewardType3 == "it")
+		if (ContainsConsumeGacha(shopProductTableData.rewardType3, shopProductTableData.rewardValue3))
 		{
 			string value = shopProductTableData.rewardValue3;
 			if (_dicConsumeItem.ContainsKey(value))
@@ -107,7 +114,7 @@ public class ConsumeProductProcessor : MonoBehaviour
 			else
 				_dicConsumeItem.Add(value, shopProductTableData.rewardCount3);
 		}
-		if (shopProductTableData.rewardType4 == "it")
+		if (ContainsConsumeGacha(shopProductTableData.rewardType4, shopProductTableData.rewardValue4))
 		{
 			string value = shopProductTableData.rewardValue4;
 			if (_dicConsumeItem.ContainsKey(value))
@@ -115,7 +122,7 @@ public class ConsumeProductProcessor : MonoBehaviour
 			else
 				_dicConsumeItem.Add(value, shopProductTableData.rewardCount4);
 		}
-		if (shopProductTableData.rewardType5 == "it")
+		if (ContainsConsumeGacha(shopProductTableData.rewardType5, shopProductTableData.rewardValue5))
 		{
 			string value = shopProductTableData.rewardValue5;
 			if (_dicConsumeItem.ContainsKey(value))
