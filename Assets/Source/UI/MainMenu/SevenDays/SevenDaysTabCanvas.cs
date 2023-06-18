@@ -35,17 +35,35 @@ public class SevenDaysTabCanvas : MonoBehaviour
 	{
 		RefreshAlarmObject();
 
-		MainCanvas.instance.OnEnterCharacterMenu(true);
+		bool restore = StackCanvas.Push(gameObject, false, null, OnPopStack);
 
 		if (DragThresholdController.instance != null)
 			DragThresholdController.instance.ApplyUIDragThreshold();
+
+		if (restore)
+			return;
+
+		MainCanvas.instance.OnEnterCharacterMenu(true);
 	}
 
-	public bool ignoreStartEventFlag { get; set; }
 	void OnDisable()
 	{
 		if (DragThresholdController.instance != null)
 			DragThresholdController.instance.ResetUIDragThreshold();
+
+		if (StackCanvas.Pop(gameObject))
+			return;
+
+		OnPopStack();
+	}
+
+	public bool ignoreStartEventFlag { get; set; }
+	void OnPopStack()
+	{
+		if (StageManager.instance == null)
+			return;
+		if (MainSceneBuilder.instance == null)
+			return;
 
 		if (ignoreStartEventFlag)
 		{
