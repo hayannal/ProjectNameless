@@ -273,6 +273,9 @@ public class RelayPackageBox : SimpleCashCanvas
 				// 실패한다면 로비로 돌아갈거고 재접하면 제대로 인벤 리스트를 받게 될거다.
 				if (EquipManager.ContainsEquip(shopProductTableData))
 					PlayFabApiManager.instance.RequestEquipListByPurchase(null);
+
+				if (CashShopTabCanvas.instance != null && CashShopTabCanvas.instance.gameObject.activeSelf)
+					CashShopTabCanvas.instance.currencySmallInfo.RefreshInfo();
 			}
 
 			CodelessIAPStoreListener.Instance.StoreController.ConfirmPendingPurchase(product);

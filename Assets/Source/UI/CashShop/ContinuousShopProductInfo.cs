@@ -213,7 +213,10 @@ public class ContinuousShopProductInfo : SimpleCashCanvas
 		{
 			ContinuousShopProductCanvas continuousShopProductCanvas = instance.GetComponent<ContinuousShopProductCanvas>();
 			if (continuousShopProductCanvas != null)
+			{
 				continuousShopProductCanvas.RefreshActiveList();
+				continuousShopProductCanvas.currencySmallInfo.RefreshInfo();
+			}
 		}
 
 		string cashEventId = "";

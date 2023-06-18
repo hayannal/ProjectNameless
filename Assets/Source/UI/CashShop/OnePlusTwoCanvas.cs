@@ -7,6 +7,8 @@ using MEC;
 
 public class OnePlusTwoCanvas : SimpleCashEventCanvas
 {
+	public CurrencySmallInfo currencySmallInfo;
+
 	public GameObject[] priceObjectList;
 	public GameObject[] completeObjectList;
 	public GameObject[] blackObjectList;
@@ -252,6 +254,7 @@ public class OnePlusTwoCanvas : SimpleCashEventCanvas
 			}
 
 			RefreshButtonState();
+			currencySmallInfo.RefreshInfo();
 
 			// 공짜 아이템 획득 후 닫기로직 진행하면 된다.
 			if (blackObjectList[1].activeSelf && blackObjectList[2].activeSelf)
@@ -331,7 +334,10 @@ public class OnePlusTwoCanvas : SimpleCashEventCanvas
 					PlayFabApiManager.instance.RequestConsumeOnePlusTwoCash(cashEventId, () =>
 					{
 						if (instance != null)
+						{
 							instance.RefreshButtonState();
+							instance.currencySmallInfo.RefreshInfo();
+						}
 					});
 				}
 			}

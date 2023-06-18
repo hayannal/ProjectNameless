@@ -179,6 +179,9 @@ public class StageClearPackageBox : SimpleCashCanvas
 					StageClearGroupInfo.instance.gameObject.SetActive(false);
 					StageClearGroupInfo.instance.gameObject.SetActive(true);
 				}
+
+				if (CashShopTabCanvas.instance != null && CashShopTabCanvas.instance.gameObject.activeSelf)
+					CashShopTabCanvas.instance.currencySmallInfo.RefreshInfo();
 			}
 
 			CodelessIAPStoreListener.Instance.StoreController.ConfirmPendingPurchase(product);
