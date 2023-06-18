@@ -109,6 +109,12 @@ public class StageClearPackageBox : SimpleCashCanvas
 		if (CurrencyData.instance.CheckMaxGold())
 			return;
 
+		if (ConsumeProductProcessor.ContainsEquipGacha(_shopProductTableData) && EquipManager.instance.IsInventoryVisualMax())
+		{
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_ManageInventory"), 2.0f);
+			return;
+		}
+
 		// 이건 다른 캐시상품도 마찬가지인데 클릭 즉시 간단한 패킷을 보내서 통신가능한 상태인지부터 확인한다.
 		PlayFabApiManager.instance.RequestNetworkOnce(OnResponse, null, true);
 	}

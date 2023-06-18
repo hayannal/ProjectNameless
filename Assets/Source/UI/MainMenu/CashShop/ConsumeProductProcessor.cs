@@ -85,6 +85,19 @@ public class ConsumeProductProcessor : MonoBehaviour
 		return false;
 	}
 
+	public static bool ContainsEquipGacha(ShopProductTableData shopProductTableData)
+	{
+		// 여러가지 다 들어갈 수 있게 되면서 Type말고 Value도 검사해야한다.
+		if ((shopProductTableData.rewardType1 == "it" && shopProductTableData.rewardValue1 == "Cash_sEquipGacha") ||
+			(shopProductTableData.rewardType2 == "it" && shopProductTableData.rewardValue2 == "Cash_sEquipGacha") ||
+			(shopProductTableData.rewardType3 == "it" && shopProductTableData.rewardValue3 == "Cash_sEquipGacha") ||
+			(shopProductTableData.rewardType4 == "it" && shopProductTableData.rewardValue4 == "Cash_sEquipGacha") ||
+			(shopProductTableData.rewardType5 == "it" && shopProductTableData.rewardValue5 == "Cash_sEquipGacha"))
+			return true;
+
+		return false;
+	}
+
 	public void ConsumeGacha(ShopProductTableData shopProductTableData)
 	{
 		_dicConsumeItem.Clear();

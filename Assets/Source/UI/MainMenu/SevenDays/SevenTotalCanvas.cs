@@ -125,6 +125,19 @@ public class SevenTotalCanvas : SimpleCashCanvas
 			return;
 		}
 
+		if (CurrencyData.instance.CheckMaxGold())
+			return;
+
+		if (index < _listShopProductTableData.Count)
+		{
+			ShopProductTableData shopProductTableData = _listShopProductTableData[index];
+			if (shopProductTableData != null && ConsumeProductProcessor.ContainsEquipGacha(shopProductTableData) && EquipManager.instance.IsInventoryVisualMax())
+			{
+				ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_ManageInventory"), 2.0f);
+				return;
+			}
+		}
+
 		_buttonIndex = index;
 
 		// 실제 구매
