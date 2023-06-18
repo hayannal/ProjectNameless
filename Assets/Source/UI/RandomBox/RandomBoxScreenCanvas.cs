@@ -72,7 +72,9 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 
 		if (CashShopTabCanvas.instance != null && CashShopTabCanvas.instance.gameObject.activeSelf)
 		{
-			_cashShopProcess = true;
+			// 첫번째 굴림 탭에서만 cashShopProcess를 켜둔다.
+			if (CashShopCanvas.instance != null && CashShopCanvas.instance.gameObject.activeSelf)
+				_cashShopProcess = true;
 			StackCanvas.Push(gameObject);
 		}
 		else if (GachaCanvas.instance != null && GachaCanvas.instance.gameObject.activeSelf)
