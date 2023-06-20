@@ -54,6 +54,8 @@ public class CharacterCanvasListItem : MonoBehaviour
 
 		//bool mercenary = MercenaryData.IsMercenaryActor(actorId);
 		ActorTableData actorTableData = TableDataManager.instance.FindActorTableData(actorId);
+
+		characterImage.gameObject.SetActive(false);
 		AddressableAssetLoadManager.GetAddressableSprite(actorTableData.portraitAddress, "Icon", (sprite) =>
 		{
 			characterImage.sprite = null;
