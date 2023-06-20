@@ -249,8 +249,10 @@ public class OnePlusTwoCanvas : SimpleCashEventCanvas
 			{
 				CurrencyData.instance.OnRecvProductRewardExtendGachaAndItem(shopProductTableData);
 
-				// 인앱결제도 토스트로 하니 Free버튼도 토스트로 해본다.
-				ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_CompletePurchase"), 2.0f);
+				UIInstanceManager.instance.ShowCanvasAsync("CommonRewardCanvas", () =>
+				{
+					CommonRewardCanvas.instance.RefreshReward(shopProductTableData);
+				});
 			}
 
 			RefreshButtonState();
@@ -303,12 +305,15 @@ public class OnePlusTwoCanvas : SimpleCashEventCanvas
 			WaitingNetworkCanvas.Show(false);
 			if (shopProductTableData != null)
 			{
-				// 대부분 다 팝업으로 되어있는걸 또 다시 커먼 리워드 창으로 보여줄 필요는 없을거 같으니 구매 완료로 처리해본다.
-				ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_CompletePurchase"), 2.0f);
-
-				// 컨슘처리
-				if (ConsumeProductProcessor.ContainsConsumeGacha(shopProductTableData))
-					ConsumeProductProcessor.instance.ConsumeGacha(shopProductTableData);
+				UIInstanceManager.instance.ShowCanvasAsync("CommonRewardCanvas", () =>
+				{
+					CommonRewardCanvas.instance.RefreshReward(shopProductTableData, () =>
+					{
+						// 컨슘처리
+						if (ConsumeProductProcessor.ContainsConsumeGacha(shopProductTableData))
+							ConsumeProductProcessor.instance.ConsumeGacha(shopProductTableData);
+					});
+				});
 
 				// RelayPackageBox 했던거처럼 지정 장비를 가지고 있다면 인벤토리 리프레쉬를 시도한다.
 				// 실패한다면 로비로 돌아갈거고 재접하면 제대로 인벤 리스트를 받게 될거다.
