@@ -414,7 +414,9 @@ public class BossBattleMissionCanvas : MonoBehaviour
 				//if (CheatingListener.detectedCheatTable)
 				//	return;
 
-				bossBattleRewardTableData = TableDataManager.instance.FindBossBattleRewardTableData(SubMissionData.instance.bossBattleId, _selectedDifficulty);
+				int id = SubMissionData.instance.bossBattleId;
+				if (id == 0) id = 1;
+				bossBattleRewardTableData = TableDataManager.instance.FindBossBattleRewardTableData(id, _selectedDifficulty);
 				if (bossBattleRewardTableData != null)
 				{
 					if (bossBattleRewardTableData.rewardValue1 == CurrencyData.GoldCode())
