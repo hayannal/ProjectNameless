@@ -29,6 +29,8 @@ public class RushDefenseEnterCanvas : MonoBehaviour
 	public Text priceText;
 	public GameObject buttonObject;
 
+	public GameObject emptyCharacterObject;
+
 	public GameObject rewardContentItemPrefab;
 	public RectTransform rewardContentRootRectTransform;
 
@@ -167,6 +169,11 @@ public class RushDefenseEnterCanvas : MonoBehaviour
 				missionCanvasCharacterListItem.Initialize(_listTempCharacterData[i].actorId, _listTempCharacterData[i].level, _listTempCharacterData[i].transcend, true, OnClickListItem);
 				_listMissionCanvasCharacterListItem.Add(missionCanvasCharacterListItem);
 			}
+			emptyCharacterObject.SetActive(false);
+		}
+		else
+		{
+			emptyCharacterObject.SetActive(true);
 		}
 
 		if (_listSelectedActorId != null)
