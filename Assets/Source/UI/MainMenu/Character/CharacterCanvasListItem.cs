@@ -60,6 +60,7 @@ public class CharacterCanvasListItem : MonoBehaviour
 		{
 			characterImage.sprite = null;
 			characterImage.sprite = sprite;
+			characterImage.gameObject.SetActive(true);
 		});
 
 		levelObject.SetActive(level > 0);
