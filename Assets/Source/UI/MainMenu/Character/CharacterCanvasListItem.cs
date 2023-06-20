@@ -155,10 +155,12 @@ public class CharacterCanvasListItem : MonoBehaviour
 		levelObject.SetActive(false);
 		recommandedText.gameObject.SetActive(false);
 
+		characterImage.gameObject.SetActive(false);
 		AddressableAssetLoadManager.GetAddressableSprite("Portrait_Nobody", "Icon", (sprite) =>
 		{
 			characterImage.sprite = null;
 			characterImage.sprite = sprite;
+			characterImage.gameObject.SetActive(true);
 		});
 	}
 

@@ -285,10 +285,12 @@ public class RewardIcon : MonoBehaviour
 						EquipTableData equipTableData = EquipManager.instance.GetCachedEquipTableData(equipLevelTableData.equipGroup);
 						if (equipTableData != null)
 						{
+							equipIconImage.gameObject.SetActive(false);
 							AddressableAssetLoadManager.GetAddressableSprite(equipTableData.shotAddress, "Icon", (sprite) =>
 							{
 								equipIconImage.sprite = null;
 								equipIconImage.sprite = sprite;
+								equipIconImage.gameObject.SetActive(true);
 							});
 							EquipCanvasListItem.RefreshGrade(equipLevelTableData.grade, blurImage, gradient, lineColorImage);
 							EquipCanvasListItem.RefreshRarity(equipTableData.rarity, equipRarityText, equipRarityGradient);

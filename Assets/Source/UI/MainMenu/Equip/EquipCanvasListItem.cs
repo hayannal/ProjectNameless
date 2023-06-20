@@ -43,10 +43,12 @@ public class EquipCanvasListItem : MonoBehaviour
 
 	public void Initialize(EquipTableData equipTableData, EquipLevelTableData equipLevelTableData, int enhanceLevel = 0)
 	{
+		equipIconImage.gameObject.SetActive(false);
 		AddressableAssetLoadManager.GetAddressableSprite(equipTableData.shotAddress, "Icon", (sprite) =>
 		{
 			equipIconImage.sprite = null;
 			equipIconImage.sprite = sprite;
+			equipIconImage.gameObject.SetActive(true);
 		});
 
 		InitializeGrade(equipLevelTableData.grade, false);

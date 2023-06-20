@@ -28,10 +28,12 @@ public class PickUpEquipListItem : MonoBehaviour
 			return;
 
 		_info = info;
+		equipIconImage.gameObject.SetActive(false);
 		AddressableAssetLoadManager.GetAddressableSprite(equipTableData.shotAddress, "Icon", (sprite) =>
 		{
 			equipIconImage.sprite = null;
 			equipIconImage.sprite = sprite;
+			equipIconImage.gameObject.SetActive(true);
 		});
 		EquipCanvasListItem.RefreshRarity(equipTableData.rarity, rarityText, rarityGradient);
 
