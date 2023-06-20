@@ -459,6 +459,12 @@ public class PetSearchCanvas : MonoBehaviour
 
 	public void OnClickResultExitButton()
 	{
+		if (extraGetButtonObject.activeSelf)
+		{
+			OnClickResultExtraGetButton();
+			return;
+		}
+
 		SubMissionData.instance.readyToReopenMissionListCanvas = true;
 		SceneManager.LoadScene(0);
 	}
