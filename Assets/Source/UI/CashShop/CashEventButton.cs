@@ -90,6 +90,24 @@ public class CashEventButton : MonoBehaviour
 			return;
 		}
 
+		// hardcode ev4
+		if (id == "ev4")
+		{
+			if (PetSpriteContainer.instance == null)
+			{
+				DelayedLoadingCanvas.Show(true);
+				AddressableAssetLoadManager.GetAddressableGameObject("PetSpriteContainer", "", (prefab) =>
+				{
+					BattleInstanceManager.instance.GetCachedObject(prefab, null);
+					DelayedLoadingCanvas.Show(false);
+					UIInstanceManager.instance.ShowCanvasAsync(string.Format("{0}CashEventCanvas", id), null);
+				});
+			}
+			else
+				UIInstanceManager.instance.ShowCanvasAsync(string.Format("{0}CashEventCanvas", id), null);
+			return;
+		}
+
 		UIInstanceManager.instance.ShowCanvasAsync(string.Format("{0}CashEventCanvas", id), null);
 	}
 }
