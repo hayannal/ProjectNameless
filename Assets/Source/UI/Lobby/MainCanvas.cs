@@ -804,12 +804,12 @@ public class MainCanvas : MonoBehaviour
 			if (disableOnComplete)
 			{
 				GuideQuestInfo.instance.gameObject.SetActive(false);
-				//SubQuestInfo.instance.gameObject.SetActive(false);
+				SubQuestInfo.instance.gameObject.SetActive(false);
 			}
 			else
 			{
 				GuideQuestInfo.instance.CloseInfo();
-				//SubQuestInfo.instance.CloseInfo();
+				SubQuestInfo.instance.CloseInfo();
 			}
 		});
 	}
