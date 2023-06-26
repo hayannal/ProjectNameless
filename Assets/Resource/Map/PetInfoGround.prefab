@@ -26,48 +26,11 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.3, z: -0.5}
   m_LocalScale: {x: 4, y: 4, z: 4}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 987782952944905437}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4466413151108144343
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1968404964152679303}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 42be1333196b01d4998a895e26b123a5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  propertyName: _ColorIntensity
-  curve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0.8
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1.5
-      value: 1.25
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 0
-    m_PostInfinity: 0
-    m_RotationOrder: 4
-  useSharedMaterials: 1
 --- !u!1 &2729405121164646017
 GameObject:
   m_ObjectHideFlags: 0
@@ -97,6 +60,7 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2903750385956079478}
   m_Father: {fileID: 987782952944905437}
@@ -150,6 +114,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
+  m_PresetInfoIsWorld: 0
 --- !u!114 &7419502127525900861
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -194,6 +159,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5132675037275959800}
   - {fileID: 3269684010194416198}
@@ -245,6 +211,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1971615249056961695}
   - {fileID: 1620508277876769707}
@@ -289,6 +256,7 @@ Transform:
   m_LocalRotation: {x: 0.3006641, y: 0.5334802, z: -0.7265453, w: -0.3116599}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 987782952944905437}
   m_RootOrder: 2
@@ -352,6 +320,7 @@ Light:
   m_UseColorTemperature: 0
   m_BoundingSphereOverride: {x: 0, y: -3.6315996e-22, z: 9.63e-43, w: -3.6416525e-22}
   m_UseBoundingSphereOverride: 0
+  m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
 --- !u!114 &4874361756744931707
@@ -445,6 +414,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Plane_12_40_1_3
       objectReference: {fileID: 0}
+    - target: {fileID: 3387970142948236693, guid: 541c9d11bd657ef4ea3743ee7fd1e80c,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: d34e8a15e7b13b548a49395685840185, type: 2}
     - target: {fileID: 6769088632136942588, guid: 541c9d11bd657ef4ea3743ee7fd1e80c,
         type: 3}
       propertyPath: m_RootOrder
@@ -638,6 +612,44 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1968812337928854103}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4466413151108144343
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1968404964152679303}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42be1333196b01d4998a895e26b123a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  propertyName: _ColorIntensity
+  curve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.8
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1.5
+      value: 1.25
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 0
+    m_PostInfinity: 0
+    m_RotationOrder: 4
+  useSharedMaterials: 1
 --- !u!4 &1971615247919943563 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4000010041873884, guid: 710da7c61f73c2b4cb1071c1523e924d,
