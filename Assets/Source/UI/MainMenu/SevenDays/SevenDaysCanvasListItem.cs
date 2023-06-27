@@ -25,6 +25,7 @@ public class SevenDaysCanvasListItem : MonoBehaviour
 
 		// 리워드
 		sevenDaysRewardIcon.RefreshReward("it", "Cash_sSevenTotal", sevenDaysRewardTableData.sumPoint);
+		sevenDaysRewardIcon.countText.text = sevenDaysRewardTableData.sumPoint.ToString("N0");
 		rewardIcon.RefreshReward(sevenDaysRewardTableData.rewardType, sevenDaysRewardTableData.rewardValue, sevenDaysRewardTableData.rewardCount);
 		nameText.SetLocalizedText(UIString.instance.GetString(sevenDaysRewardTableData.descriptionId, sevenDaysRewardTableData.needCount));
 
