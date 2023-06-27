@@ -457,7 +457,15 @@ public class BossDefenseEnterCanvas : MonoBehaviour
 			return;
 		}
 
-		if (selectedActorCount < SELECT_MAX && selectedActorCount < _listMissionCanvasCharacterListItem.Count)
+		// selectable max count
+		int selectableMaxCount = 0;
+		for (int i = 0; i < _listMissionCanvasCharacterListItem.Count; ++i)
+		{
+			bool checkCondition = CheckLimitCondition(_listMissionCanvasCharacterListItem[i].characterCanvasListItem.actorId);
+			if (checkCondition == false) selectableMaxCount += 1;
+		}
+
+		if (selectedActorCount < SELECT_MAX && selectedActorCount < selectableMaxCount)
 		{
 			YesNoCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("MissionUI_SelectMoreConfirm"), () =>
 			{
