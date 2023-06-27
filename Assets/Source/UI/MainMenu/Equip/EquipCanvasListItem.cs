@@ -81,6 +81,7 @@ public class EquipCanvasListItem : MonoBehaviour
 		{
 			equipIconImage.sprite = null;
 			equipIconImage.sprite = sprite;
+			equipIconImage.color = new Color(1.0f, 1.0f, 1.0f, 0.9f);
 		});
 	}
 

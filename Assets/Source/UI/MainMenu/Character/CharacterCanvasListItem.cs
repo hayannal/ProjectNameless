@@ -163,6 +163,7 @@ public class CharacterCanvasListItem : MonoBehaviour
 		{
 			characterImage.sprite = null;
 			characterImage.sprite = sprite;
+			characterImage.color = new Color(1.0f, 1.0f, 1.0f, 0.9f);
 			characterImage.gameObject.SetActive(true);
 		});
 	}
