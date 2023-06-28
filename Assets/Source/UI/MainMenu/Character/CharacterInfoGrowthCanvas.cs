@@ -539,6 +539,11 @@ public class CharacterInfoGrowthCanvas : MonoBehaviour
 
 		// for quest
 		_prevHighestCharacterLevel = CharacterManager.instance.GetHighestCharacterLevel();
+
+		// 간혹 캐릭터 레벨이 1인데 세븐데이즈 항목 카운트는 0일때가 있어서 예외처리 한번 해본다.
+		int missionProceedingCount = MissionData.instance.GetProceedingCount((int)GuideQuestData.eQuestClearType.LevelUpCharacter);
+		if (missionProceedingCount < _prevHighestCharacterLevel)
+			_prevHighestCharacterLevel = missionProceedingCount;
 	}
 
 	public void OnPressLevelUp()
