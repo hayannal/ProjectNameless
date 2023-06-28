@@ -308,7 +308,7 @@ public class BossBattleMissionCanvas : MonoBehaviour
 				AffectorValueLevelTableData healAffectorValue = new AffectorValueLevelTableData();
 				healAffectorValue.fValue3 = BattleInstanceManager.instance.GetCachedGlobalConstantInt("BossBattleRegenHpRatio100") * 0.01f;
 				BattleInstanceManager.instance.playerActor.affectorProcessor.ExecuteAffectorValueWithoutTable(eAffectorType.Heal, healAffectorValue, BattleInstanceManager.instance.playerActor, false);
-				BattleInstanceManager.instance.GetCachedObject(BossBattleMissionGround.instance.healEffectPrefab, BattleInstanceManager.instance.playerActor.cachedTransform.position, Quaternion.identity);
+				BattleInstanceManager.instance.GetCachedObject(BossBattleMissionGround.instance.healEffectPrefab, BattleInstanceManager.instance.playerActor.cachedTransform.position, Quaternion.identity, BattleInstanceManager.instance.playerActor.cachedTransform);
 
 				float hpRatio = BattleInstanceManager.instance.playerActor.actorStatus.GetHPRatio();
 				_prevHpRatio = hpRatio;
