@@ -115,7 +115,7 @@ public class RewardIcon : MonoBehaviour
 								goldObject.SetActive(false);
 							}
 						}
-						countText.color = _showOnlyIcon ? MailCanvasListItem.GetGoldTextColor() : Color.white;
+						countText.color = MailCanvasListItem.GetGoldTextColor();
 						break;
 					case "DI":
 						if (diaObject != null) diaObject.SetActive(true);
@@ -132,7 +132,7 @@ public class RewardIcon : MonoBehaviour
 								if (diaObject != null) diaObject.SetActive(false);
 							}
 						}
-						countText.color = _showOnlyIcon ? MailCanvasListItem.GetDiaTextColor() : Color.white;
+						countText.color = MailCanvasListItem.GetDiaTextColor();
 						break;
 					case "EN":
 						energyObject.SetActive(true);
@@ -149,7 +149,7 @@ public class RewardIcon : MonoBehaviour
 								energyObject.SetActive(false);
 							}
 						}
-						countText.color = _showOnlyIcon ? MailCanvasListItem.GetEnergyTextColor() : Color.white;
+						countText.color = MailCanvasListItem.GetEnergyTextColor();
 						break;
 				}
 				break;
