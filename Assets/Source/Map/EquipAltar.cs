@@ -222,6 +222,24 @@ public class EquipAltar : MonoBehaviour
 		}
 	}
 
+	public void OnClickButton()
+	{
+		if (emptyIconObject.activeSelf)
+			return;
+
+		if (EquipListCanvas.instance != null && EquipListCanvas.instance.gameObject.activeSelf == false)
+		{
+			EquipListCanvas.instance.gameObject.SetActive(true);
+			EquipListCanvas.instance.RefreshInfo(positionIndex);
+			return;
+		}
+
+		UIInstanceManager.instance.ShowCanvasAsync("EquipListCanvas", () =>
+		{
+			EquipListCanvas.instance.RefreshInfo(positionIndex);
+		});
+	}
+
 	#region AlarmObject
 	public void RefreshAlarmObject()
 	{
