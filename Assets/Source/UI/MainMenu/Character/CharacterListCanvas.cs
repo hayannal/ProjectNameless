@@ -38,7 +38,10 @@ public class CharacterListCanvas : CharacterShowCanvasBase
 	{
 		if (PlayerData.instance.openFlagShowCharacterCanvas == false)
 		{
-			OnClickCanvasInfoButton();
+			UIInstanceManager.instance.ShowCanvasAsync("EventInfoCanvas", () =>
+			{
+				EventInfoCanvas.instance.ShowCanvas(true, UIString.instance.GetString("TutorialUI_CharacterName"), UIString.instance.GetString("TutorialUI_CharacterDesc"), UIString.instance.GetString("TutorialUI_CharacterMore"), null, 0.785f);
+			});
 			PlayFabApiManager.instance.RequestCompleteOpenCanvasEvent(0);
 		}
 
@@ -225,7 +228,7 @@ public class CharacterListCanvas : CharacterShowCanvasBase
 	{
 		UIInstanceManager.instance.ShowCanvasAsync("EventInfoCanvas", () =>
 		{
-			EventInfoCanvas.instance.ShowCanvas(true, UIString.instance.GetString("TutorialUI_CharacterName"), UIString.instance.GetString("TutorialUI_CharacterDesc"), UIString.instance.GetString("TutorialUI_CharacterMore"), null, 0.785f);
+			EventInfoCanvas.instance.ShowCanvas(true, UIString.instance.GetString("TutorialUI_CharacterName"), UIString.instance.GetString("TutorialUI_CharacterDesc"), UIString.instance.GetString("TutorialUI_CharacterMore"), null, 0.785f, false);
 		});
 	}
 }

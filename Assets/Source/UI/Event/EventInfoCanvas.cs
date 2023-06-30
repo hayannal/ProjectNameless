@@ -18,7 +18,7 @@ public class EventInfoCanvas : MonoBehaviour
 		instance = this;
 	}
 
-	public void ShowCanvas(bool show, string title, string message, string tooltip, System.Action okAction = null, float backgroundImageAlpha = 0.585f)
+	public void ShowCanvas(bool show, string title, string message, string tooltip, System.Action okAction = null, float backgroundImageAlpha = 0.585f, bool ignoreBackgroundButton = true)
 	{
 		gameObject.SetActive(show);
 		if (show == false)
@@ -29,6 +29,8 @@ public class EventInfoCanvas : MonoBehaviour
 		backgroundImage.color = new Color(backgroundImage.color.r, backgroundImage.color.g, backgroundImage.color.b, backgroundImageAlpha);
 		_tooltip = tooltip;
 		_okAction = okAction;
+
+		_ignoreBackgroundButton = ignoreBackgroundButton;
 	}
 
 	string _tooltip;
@@ -40,6 +42,17 @@ public class EventInfoCanvas : MonoBehaviour
 	public void OnClickExitButton()
 	{
 		// 서버통신 하고 닫아야할때가 많으니 여기선 바로 닫지 않도록 하려고 했는데 안닫으니 반응이 느려보인다. 닫고 처리한다.
+		gameObject.SetActive(false);
+		if (_okAction != null)
+			_okAction();
+	}
+
+	bool _ignoreBackgroundButton;
+	public void OnClickBackgroundButton()
+	{
+		if (_ignoreBackgroundButton)
+			return;
+
 		gameObject.SetActive(false);
 		if (_okAction != null)
 			_okAction();
