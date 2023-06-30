@@ -828,6 +828,13 @@ public class CashShopData : MonoBehaviour
 	}
 
 	#region Event Start
+	class RandomEventTypeInfo
+	{
+		public EventTypeTableData tableData;
+		public string generatedParameter;
+		public float sumWeight;
+	}
+	List<RandomEventTypeInfo> _listTempEventInfo = new List<RandomEventTypeInfo>();
 	public void CheckStartEvent(eEventStartCondition eventStartCondition)
 	{
 		if (PlayerData.instance.downloadConfirmed == false)
@@ -841,6 +848,8 @@ public class CashShopData : MonoBehaviour
 				globalEventCoolTimeApplied = false;
 		}
 
+		float sumWeight = 0.0f;
+		_listTempEventInfo.Clear();
 		for (int i = 0; i < TableDataManager.instance.eventTypeTable.dataArray.Length; ++i)
 		{
 			if ((eEventStartCondition)TableDataManager.instance.eventTypeTable.dataArray[i].triggerCondition != eventStartCondition && (eEventStartCondition)TableDataManager.instance.eventTypeTable.dataArray[i].subTriggerCondition != eventStartCondition)
@@ -860,11 +869,11 @@ public class CashShopData : MonoBehaviour
 					continue;
 			}
 
-			if (TableDataManager.instance.eventTypeTable.dataArray[i].prob < 1.0f)
-			{
-				if (UnityEngine.Random.value > TableDataManager.instance.eventTypeTable.dataArray[i].prob)
-					continue;
-			}
+			//if (TableDataManager.instance.eventTypeTable.dataArray[i].prob < 1.0f)
+			//{
+			//	if (UnityEngine.Random.value > TableDataManager.instance.eventTypeTable.dataArray[i].prob)
+			//		continue;
+			//}
 
 			string generatedParameter = "";
 			if (CheckSubCondition(TableDataManager.instance.eventTypeTable.dataArray[i].eventSub, ref generatedParameter) == false)
@@ -873,26 +882,46 @@ public class CashShopData : MonoBehaviour
 				continue;
 			}
 
-			// 아직 이벤트가 다 완성된게 아니니 우선 이거로 막아둔다.
-			//if ((eEventStartCondition)TableDataManager.instance.eventTypeTable.dataArray[i].triggerCondition != eEventStartCondition.SpinZero)
-			//	continue;
-
-			PlayFabApiManager.instance.RequestOpenCashEvent(TableDataManager.instance.eventTypeTable.dataArray[i].id, TableDataManager.instance.eventTypeTable.dataArray[i].eventSub, generatedParameter, TableDataManager.instance.eventTypeTable.dataArray[i].givenTime, TableDataManager.instance.eventTypeTable.dataArray[i].coolTime, () =>
-			{
-				// 성공시 클라이언트 전용 글로벌 쿨타임을 적용하기로 한다.
-				if (UnityEngine.Random.value < 0.95f)
-				{
-					globalEventCoolTimeApplied = true;
-					globalEventCoolTime = ServerTime.UtcNow + TimeSpan.FromMinutes(UnityEngine.Random.Range(3.0f, 6.0f));
-				}
-
-				if (MainCanvas.instance != null && MainCanvas.instance.gameObject.activeSelf)
-					MainCanvas.instance.ShowCashEvent(TableDataManager.instance.eventTypeTable.dataArray[i].id, true, true);
-			});
-
-			// 이벤트는 중복해서 열리지 않게 하기 위해 한개라도 열었으면 break 시키는게 맞을거 같다.
-			break;
+			sumWeight += TableDataManager.instance.eventTypeTable.dataArray[i].prob;
+			RandomEventTypeInfo newInfo = new RandomEventTypeInfo();
+			newInfo.tableData = TableDataManager.instance.eventTypeTable.dataArray[i];
+			newInfo.generatedParameter = generatedParameter;
+			newInfo.sumWeight = sumWeight;
+			_listTempEventInfo.Add(newInfo);
 		}
+		if (_listTempEventInfo.Count == 0)
+			return;
+
+		int index = -1;
+		float random = UnityEngine.Random.Range(0.0f, _listTempEventInfo[_listTempEventInfo.Count - 1].sumWeight);
+		for (int i = 0; i < _listTempEventInfo.Count; ++i)
+		{
+			if (random <= _listTempEventInfo[i].sumWeight)
+			{
+				index = i;
+				break;
+			}
+		}
+		if (index == -1)
+			return;
+
+		RandomEventTypeInfo selectedInfo = _listTempEventInfo[index];
+		if (selectedInfo == null)
+			return;
+		//Debug.LogFormat("1111 {0} {1}", index, _listTempEventInfo.Count);
+
+		PlayFabApiManager.instance.RequestOpenCashEvent(selectedInfo.tableData.id, selectedInfo.tableData.eventSub, selectedInfo.generatedParameter, selectedInfo.tableData.givenTime, selectedInfo.tableData.coolTime, () =>
+		{
+			// 성공시 클라이언트 전용 글로벌 쿨타임을 적용하기로 한다.
+			if (UnityEngine.Random.value < 0.95f)
+			{
+				globalEventCoolTimeApplied = true;
+				globalEventCoolTime = ServerTime.UtcNow + TimeSpan.FromMinutes(UnityEngine.Random.Range(3.0f, 6.0f));
+			}
+
+			if (MainCanvas.instance != null && MainCanvas.instance.gameObject.activeSelf)
+				MainCanvas.instance.ShowCashEvent(selectedInfo.tableData.id, true, true);
+		});
 	}
 
 	public void OnOpenCashEvent(string openEventId, string eventSub, string generatedParameter)
