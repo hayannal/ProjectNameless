@@ -36,6 +36,12 @@ public class CharacterListCanvas : CharacterShowCanvasBase
 
 	void Start()
 	{
+		if (PlayerData.instance.openFlagShowCharacterCanvas == false)
+		{
+			OnClickCanvasInfoButton();
+			PlayFabApiManager.instance.RequestCompleteOpenCanvasEvent(0);
+		}
+
 		contentItemPrefab.SetActive(false);
 	}
 
@@ -212,5 +218,14 @@ public class CharacterListCanvas : CharacterShowCanvasBase
 			if (_listTempCharacterData[i].IsAlarmState())
 				_listCharacterCanvasListItem[i].ShowAlarm(true);
 		}
+	}
+
+
+	public void OnClickCanvasInfoButton()
+	{
+		UIInstanceManager.instance.ShowCanvasAsync("EventInfoCanvas", () =>
+		{
+			EventInfoCanvas.instance.ShowCanvas(true, UIString.instance.GetString("TutorialUI_CharacterName"), UIString.instance.GetString("TutorialUI_CharacterDesc"), UIString.instance.GetString("TutorialUI_CharacterMore"), null, 0.785f);
+		});
 	}
 }

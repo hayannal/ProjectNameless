@@ -74,6 +74,10 @@ public class PlayerData : MonoBehaviour
 	public bool tutorialFlagShowSummonCanvas { get; set; }
 	public bool tutorialFlagClearGuideQuest { get; set; }
 	#endregion
+	#region Main Menu Info Popup
+	// 혹시 창들마다 설명창 넣을까봐 독립으로 해둔다.
+	public bool openFlagShowCharacterCanvas { get; set; }
+	#endregion
 
 	// 네트워크 오류로 인해 씬을 재시작할때는 타이틀 떠서 진입하듯 초기 프로세스들을 검사해야한다.
 	public bool checkRestartScene { get; set; }
@@ -164,6 +168,7 @@ public class PlayerData : MonoBehaviour
 		downloadRewarded = false;
 		tutorialFlagShowSummonCanvas = true;
 		tutorialFlagClearGuideQuest = false;
+		openFlagShowCharacterCanvas = false;
 		displayName = "";
 		vtd = 0;
 
@@ -341,6 +346,15 @@ public class PlayerData : MonoBehaviour
 		}
 		#endregion
 
+		#region Show Canvas Event
+		openFlagShowCharacterCanvas = false;
+		if (userReadOnlyData.ContainsKey("openFlagCanvasEvent0"))
+		{
+			if (string.IsNullOrEmpty(userReadOnlyData["openFlagCanvasEvent0"].Value) == false)
+				openFlagShowCharacterCanvas = true;
+		}
+		#endregion
+
 		displayName = "";
 		if (string.IsNullOrEmpty(playerProfile.DisplayName) == false)
 			displayName = playerProfile.DisplayName;
@@ -438,6 +452,18 @@ public class PlayerData : MonoBehaviour
 				break;
 		}
 		PlayFabApiManager.instance.RequestCompleteTutorialStep(step);
+	}
+	#endregion
+
+	#region Show Canvas Event
+	public void OnCompleteShowCanvasEvent(int index)
+	{
+		switch (index)
+		{
+			case 0:
+				openFlagShowCharacterCanvas = true;
+				break;
+		}
 	}
 	#endregion
 }

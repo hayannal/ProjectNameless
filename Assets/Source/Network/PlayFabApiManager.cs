@@ -1524,6 +1524,30 @@ public class PlayFabApiManager : MonoBehaviour
 	}
 	#endregion
 
+	#region Open Canvas Event
+	public void RequestCompleteOpenCanvasEvent(int index)
+	{
+		ExecuteCloudScriptRequest request = new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "CompleteOpenCanvasEvent",
+			FunctionParameter = new { Idx = index },
+			GeneratePlayStreamEvent = true,
+		};
+		Action action = () =>
+		{
+			PlayFabClientAPI.ExecuteCloudScript(request, (success) =>
+			{
+				RetrySendManager.instance.OnSuccess();
+				PlayerData.instance.OnCompleteShowCanvasEvent(index);
+			}, (error) =>
+			{
+				RetrySendManager.instance.OnFailure();
+			});
+		};
+		RetrySendManager.instance.RequestAction(action, false);
+	}
+	#endregion
+
 	#region Support
 	public void RequestRefreshInquiryList(Action<string> successCallback)
 	{
