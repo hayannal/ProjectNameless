@@ -53,7 +53,9 @@ public class RelayPackageGroupInfo : MonoBehaviour
 		// 사고나면 다음꺼가 보이는 식으로 한다.
 		for (int i = 0; i < TableDataManager.instance.relayPackTable.dataArray.Length; ++i)
 		{
-			if (i > 7 && TableDataManager.instance.relayPackTable.dataArray[i].num > (CashShopData.instance.relayPackagePurchasedNum + 1))
+			if (i > 11 && TableDataManager.instance.relayPackTable.dataArray[i].num > (CashShopData.instance.relayPackagePurchasedNum + 1))
+				continue;
+			if (i > 7 && CashShopData.instance.relayPackagePurchasedNum <= 7)
 				continue;
 
 			_listShowIndex.Add(i);
