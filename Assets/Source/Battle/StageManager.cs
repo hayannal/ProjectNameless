@@ -723,12 +723,15 @@ public class StageManager : MonoBehaviour
 			OnOffFastBossClear(false);
 			MainCanvas.instance.challengeButtonObject.SetActive(true);
 			MainCanvas.instance.bossBattleMenuRootObject.SetActive(false);
+			MainCanvas.instance.inputRectObject.SetActive(true);
 		}
 		InitializeStageFloor(PlayerData.instance.selectedStage, true);
 		TeamManager.instance.HideForMoveMap(false);
 		SoundManager.instance.PlayLobbyBgm();
 		if (EquipSkillSlotCanvas.instance != null && EquipSkillSlotCanvas.instance.gameObject.activeSelf)
 			EquipSkillSlotCanvas.instance.gameObject.SetActive(false);
+		if (BossInfoDetailCanvas.instance != null && BossInfoDetailCanvas.instance.gameObject.activeSelf)
+			BossInfoDetailCanvas.instance.gameObject.SetActive(false);
 		FadeCanvas.instance.FadeIn(0.5f, true);
 
 		// restore

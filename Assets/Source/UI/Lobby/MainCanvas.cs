@@ -244,6 +244,9 @@ public class MainCanvas : MonoBehaviour
 
 		challengeButtonObject.SetActive(false);
 		bossBattleMenuRootObject.SetActive(true);
+		inputRectObject.SetActive(false);
+		if (BossInfoDetailCanvas.instance != null && BossInfoDetailCanvas.instance.gameObject.activeSelf)
+			BossInfoDetailCanvas.instance.gameObject.SetActive(false);
 		StageManager.instance.OnOffFastBossClear(false);
 		StageManager.instance.InitializeStageFloor(PlayerData.instance.selectedStage, false);
 		TeamManager.instance.HideForMoveMap(false);
@@ -292,6 +295,9 @@ public class MainCanvas : MonoBehaviour
 
 		challengeButtonObject.SetActive(repeatMode);
 		bossBattleMenuRootObject.SetActive(!repeatMode);
+		inputRectObject.SetActive(repeatMode);
+		if (BossInfoDetailCanvas.instance != null && BossInfoDetailCanvas.instance.gameObject.activeSelf)
+			BossInfoDetailCanvas.instance.gameObject.SetActive(false);
 		StageManager.instance.InitializeStageFloor(stage, repeatMode);
 		yield return Timing.WaitForOneFrame;
 		while (StageManager.instance.processing || StageGround.instance.processing)

@@ -13,8 +13,18 @@ public class EquipStatusDetailCanvasListItem : MonoBehaviour
 	public void Initialize(eActorStatus statusType, float value)
 	{
 		nameText.SetLocalizedText(UIString.instance.GetString(string.Format("Op_{0}", statusType.ToString())));
-		valueText.text = string.Format("{0:0.##}%", value * 100.0f);
-		detailButtonObject.SetActive(statusType == eActorStatus.StrikeRate);
+
+		switch (statusType)
+		{
+			case eActorStatus.Defense:
+				valueText.text = string.Format("{0:N0}", value);
+				break;
+			default:
+				valueText.text = string.Format("{0:0.##}%", value * 100.0f);
+				break;
+		}
+
+		if (detailButtonObject != null) detailButtonObject.SetActive(statusType == eActorStatus.StrikeRate);
 	}
 
 	public void OnClickDetailButton()
