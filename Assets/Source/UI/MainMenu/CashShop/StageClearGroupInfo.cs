@@ -34,6 +34,7 @@ public class StageClearGroupInfo : MonoBehaviour
 
 	List<int> _listShowIndex = new List<int>();
 	List<StageClearPackageBox> _listStageClearPackageBoxListItem = new List<StageClearPackageBox>();
+	int _prevItemCount;
 	void OnEnable()
 	{
 		for (int i = 0; i < _listStageClearPackageBoxListItem.Count; ++i)
@@ -66,6 +67,14 @@ public class StageClearGroupInfo : MonoBehaviour
 			stageClearPackageBox.RefreshInfo(TableDataManager.instance.stageClearTable.dataArray[_listShowIndex[i]]);
 			_listStageClearPackageBoxListItem.Add(stageClearPackageBox);
 		}
+
+		if (_listStageClearPackageBoxListItem.Count != _prevItemCount)
+		{
+			int currentPanel = scrollSnap.CurrentPanel;
+			scrollSnap.Setup();
+			scrollSnap.GoToPanel(currentPanel);
+		}
+		_prevItemCount = _listStageClearPackageBoxListItem.Count;
 
 		if (imageRootObject != null) imageRootObject.SetActive(true);
 		gameObject.SetActive(true);

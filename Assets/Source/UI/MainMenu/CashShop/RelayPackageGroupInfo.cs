@@ -34,6 +34,7 @@ public class RelayPackageGroupInfo : MonoBehaviour
 
 	List<int> _listShowIndex = new List<int>();
 	List<RelayPackageBox> _listRelayPackageBoxListItem = new List<RelayPackageBox>();
+	int _prevItemCount;
 	void OnEnable()
 	{
 		// 데이터를 받지 않은 상태라면 상품 아이콘 보여줄수가 없을거다. 그냥 하이드 시켜둔다.
@@ -72,6 +73,14 @@ public class RelayPackageGroupInfo : MonoBehaviour
 			relayPackageBox.RefreshInfo(TableDataManager.instance.relayPackTable.dataArray[_listShowIndex[i]]);
 			_listRelayPackageBoxListItem.Add(relayPackageBox);
 		}
+
+		if (_listRelayPackageBoxListItem.Count != _prevItemCount)
+		{
+			int currentPanel = scrollSnap.CurrentPanel;
+			scrollSnap.Setup();
+			scrollSnap.GoToPanel(currentPanel);
+		}
+		_prevItemCount = _listRelayPackageBoxListItem.Count;
 
 		if (imageRootObject != null) imageRootObject.SetActive(true);
 		gameObject.SetActive(true);
