@@ -916,7 +916,7 @@ public class CashShopData : MonoBehaviour
 			if (UnityEngine.Random.value < 0.95f)
 			{
 				globalEventCoolTimeApplied = true;
-				globalEventCoolTime = ServerTime.UtcNow + TimeSpan.FromMinutes(UnityEngine.Random.Range(3.0f, 6.0f));
+				globalEventCoolTime = ServerTime.UtcNow + TimeSpan.FromMinutes(UnityEngine.Random.Range(2.0f, 5.0f));
 			}
 
 			if (MainCanvas.instance != null && MainCanvas.instance.gameObject.activeSelf)
