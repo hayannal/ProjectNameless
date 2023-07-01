@@ -1361,7 +1361,7 @@ public class PlayFabApiManager : MonoBehaviour
 		});
 	}
 
-	public void RequestReceiveMailPresent(string id, int receiveDay, string type, int addDia, int addGold, int addEnergy, Action<bool> successCallback)
+	public void RequestReceiveMailPresent(string id, int receiveDay, string type, int addDia, int addGold, int addEnergy, int addTicket, Action<bool> successCallback)
 	{
 		WaitingNetworkCanvas.Show(true);
 
@@ -1388,6 +1388,8 @@ public class PlayFabApiManager : MonoBehaviour
 					CurrencyData.instance.gold += addGold;
 					if (addEnergy > 0)
 						CurrencyData.instance.OnRecvRefillEnergy(addEnergy);
+					if (addTicket > 0)
+						CurrencyData.instance.OnRecvRefillTicket(addTicket);
 
 					if (successCallback != null) successCallback.Invoke(failure);
 				}
