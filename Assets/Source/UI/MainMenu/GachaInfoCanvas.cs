@@ -448,7 +448,10 @@ public class GachaInfoCanvas : MonoBehaviour
 
 		// reward 
 		eventPointRewardIcon.RefreshReward(_currentEventPointRewardTableData.rewardType1, _currentEventPointRewardTableData.rewardValue1, _currentEventPointRewardTableData.rewardCount1);
+		eventPointRewardIcon.countText.color = Color.white;
 		eventPointSubRewardIcon.RefreshReward(_currentEventPointRewardTableData.rewardType2, _currentEventPointRewardTableData.rewardValue2, _currentEventPointRewardTableData.rewardCount2);
+		eventPointSubRewardIcon.countText.color = Color.white;
+
 		// hardcode ev7
 		bool subReward = CashShopData.instance.IsShowEvent("ev7");
 		eventPointSubRewardIcon.cachedTransform.parent.gameObject.SetActive(subReward);
@@ -1270,7 +1273,9 @@ public class GachaInfoCanvas : MonoBehaviour
 
 					// reward
 					eventPointRewardIcon.RefreshReward(TableDataManager.instance.eventPointRewardTable.dataArray[i + 1].rewardType1, TableDataManager.instance.eventPointRewardTable.dataArray[i + 1].rewardValue1, TableDataManager.instance.eventPointRewardTable.dataArray[i + 1].rewardCount1);
+					eventPointRewardIcon.countText.color = Color.white;
 					eventPointSubRewardIcon.RefreshReward(TableDataManager.instance.eventPointRewardTable.dataArray[i + 1].rewardType2, TableDataManager.instance.eventPointRewardTable.dataArray[i + 1].rewardValue2, TableDataManager.instance.eventPointRewardTable.dataArray[i + 1].rewardCount2);
+					eventPointSubRewardIcon.countText.color = Color.white;
 					// hardcode ev7
 					bool subReward = CashShopData.instance.IsShowEvent("ev7");
 					eventPointSubRewardIcon.cachedTransform.parent.gameObject.SetActive(subReward);
