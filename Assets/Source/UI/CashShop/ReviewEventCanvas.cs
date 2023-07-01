@@ -14,7 +14,7 @@ public class ReviewEventCanvas : SimpleCashEventCanvas
 	void OnEnable()
 	{
 		SetInfo();
-		MainCanvas.instance.OnEnterCharacterMenu(true);
+		//MainCanvas.instance.OnEnterCharacterMenu(true);
 
 		if (DragThresholdController.instance != null)
 			DragThresholdController.instance.ApplyUIDragThreshold();
@@ -25,7 +25,7 @@ public class ReviewEventCanvas : SimpleCashEventCanvas
 		if (DragThresholdController.instance != null)
 			DragThresholdController.instance.ResetUIDragThreshold();
 
-		MainCanvas.instance.OnEnterCharacterMenu(false);
+		//MainCanvas.instance.OnEnterCharacterMenu(false);
 	}
 
 	public void OnClickMarketButton()
