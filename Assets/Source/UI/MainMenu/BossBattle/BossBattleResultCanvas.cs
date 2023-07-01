@@ -359,6 +359,7 @@ public class BossBattleResultCanvas : MonoBehaviour
 	{
 		SubMissionData.instance.readyToPreloadBossBattleEnterCanvas = true;
 		SubMissionData.instance.readyToReopenMissionListCanvas = true;
+		Screen.sleepTimeout = SleepTimeout.SystemSetting;
 		SceneManager.LoadScene(0);
 	}
 }

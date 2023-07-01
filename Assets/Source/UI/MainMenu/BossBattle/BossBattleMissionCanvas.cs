@@ -107,6 +107,7 @@ public class BossBattleMissionCanvas : MonoBehaviour
 			PlayFabApiManager.instance.RequestCancelBossBattle();
 			SavePlayerPrefs();
 			SubMissionData.instance.readyToReopenMissionListCanvas = true;
+			Screen.sleepTimeout = SleepTimeout.SystemSetting;
 			SceneManager.LoadScene(0);
 		});
 	}
