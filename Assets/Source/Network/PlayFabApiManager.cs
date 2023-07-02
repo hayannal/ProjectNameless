@@ -4799,7 +4799,7 @@ public class PlayFabApiManager : MonoBehaviour
 		}, null, null);
 	}
 
-	public void RequestEndBossBattle(bool clear, int nextBossId, int playLevel, int useTicket, int addGold, int addDia, int addEnergy, Action<bool, int, string> successCallback)
+	public void RequestEndBossBattle(bool clear, int nextBossId, int playLevel, int useTicket, int useTicketForQuest, int addGold, int addDia, int addEnergy, Action<bool, int, string> successCallback)
 	{
 		string input = string.Format("{0}_{1}_{2}_{3}_{4}", (string)_serverEnterKeyForBossBattle, clear ? 1 : 0, nextBossId, playLevel, "rezslmnq");
 		string checkSum = CheckSum(input);
@@ -4825,8 +4825,9 @@ public class PlayFabApiManager : MonoBehaviour
 					SubMissionData.instance.bossBattleDailyCount += 1;
 					GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.ClearBossBattle);
 				}
-				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.UseTicket, useTicket);
-				CurrencyData.instance.UseTicket(useTicket);
+				GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.UseTicket, useTicketForQuest);
+				if (useTicket > 0)
+					CurrencyData.instance.UseTicket(useTicket);
 
 				CurrencyData.instance.dia += addDia;
 				CurrencyData.instance.gold += addGold;

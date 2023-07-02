@@ -384,6 +384,7 @@ public class BossBattleMissionCanvas : MonoBehaviour
 		SoundManager.instance.StopBGM(3.0f);
 
 		int price = BattleInstanceManager.instance.GetCachedGlobalConstantInt("MissionEnergyBossBattle");
+		int useTicketForQuest = price;
 
 		// 패킷 준비
 		_selectedDifficulty = BossBattleEnterCanvas.instance.selectedDifficulty;
@@ -442,9 +443,12 @@ public class BossBattleMissionCanvas : MonoBehaviour
 					// 없을수가 있나?
 					Debug.LogError("Invalid Call. BossBattleRewardTable is null.");
 				}
+
+				// 첫클리어에서는 티켓이 소모되지 않는다. 그래도 퀘스트엔 적용되어야한다.
+				price = 0;
 			}
 
-			PlayFabApiManager.instance.RequestEndBossBattle(clear, nextBossId, _selectedDifficulty, price, addGold, addDia, addEnergy, (result, nextId, itemGrantString) =>
+			PlayFabApiManager.instance.RequestEndBossBattle(clear, nextBossId, _selectedDifficulty, price, useTicketForQuest, addGold, addDia, addEnergy, (result, nextId, itemGrantString) =>
 			{
 				// 정보를 갱신하기 전에 먼저 BattleResult를 보여준다.
 				UIInstanceManager.instance.ShowCanvasAsync("BossBattleResultCanvas", () =>
@@ -456,7 +460,7 @@ public class BossBattleMissionCanvas : MonoBehaviour
 		}
 		else
 		{
-			PlayFabApiManager.instance.RequestEndBossBattle(false, 0, _selectedDifficulty, price, 0, 0, 0, (result, nextId, itemGrantString) =>
+			PlayFabApiManager.instance.RequestEndBossBattle(false, 0, _selectedDifficulty, price, useTicketForQuest, 0, 0, 0, (result, nextId, itemGrantString) =>
 			{
 				// 정보를 갱신하기 전에 먼저 BattleResult를 보여준다.
 				UIInstanceManager.instance.ShowCanvasAsync("BossBattleResultCanvas", () =>

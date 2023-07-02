@@ -16,6 +16,7 @@ public class BossBattleResultCanvas : MonoBehaviour
 
 	public GameObject topEmptyRectObject;
 	public GameObject middleEmptyRectObject;
+	public GameObject lastMiddleEmptyRectObject;
 
 	public GameObject xpRewardGroupObject;
 	public Text xpLevelText;
@@ -35,6 +36,7 @@ public class BossBattleResultCanvas : MonoBehaviour
 	public GameObject exitGroupObject;
 
 	public GameObject equipRewardGroupObject;
+	public GameObject returnTicketTextObject;
 
 	public GameObject contentItemPrefab;
 	public RectTransform contentRootRectTransform;
@@ -95,6 +97,7 @@ public class BossBattleResultCanvas : MonoBehaviour
 
 		topEmptyRectObject.SetActive(_firstClear == false);
 		middleEmptyRectObject.SetActive(_firstClear == false);
+		lastMiddleEmptyRectObject.SetActive(_firstClear && _dailyBonusApplied == false);
 
 		gameObject.SetActive(true);
 
@@ -212,6 +215,7 @@ public class BossBattleResultCanvas : MonoBehaviour
 		if (_firstClear)
 		{
 			// 난이도 첫 클리어라면 장비보상이 들어있을거다.
+			returnTicketTextObject.SetActive(false);
 			equipRewardGroupObject.SetActive(true);
 		}
 		else
@@ -243,6 +247,10 @@ public class BossBattleResultCanvas : MonoBehaviour
 			rewardIconItem = _container.GetCachedItem(contentItemPrefab, contentRootRectTransform);
 			rewardIconItem.RefreshReward(_bossBattleRewardTableData.rewardType2, _bossBattleRewardTableData.rewardValue2, _bossBattleRewardTableData.rewardCount2);
 		}
+
+		yield return new WaitForSecondsRealtime(0.2f);
+
+		returnTicketTextObject.SetActive(true);
 
 		yield return new WaitForSecondsRealtime(0.2f);
 
