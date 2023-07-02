@@ -70,6 +70,7 @@ public class SevenDaysCanvasListItem : MonoBehaviour
 	{
 		if (MissionData.instance.IsOpenDay(_sevenDaysRewardTableData.day) == false)
 		{
+			SevenDaysCanvas.instance.OnNotOpened(_sevenDaysRewardTableData.day);
 			ToastCanvas.instance.ShowToast(UIString.instance.GetString("SevenDaysUI_NotOpened"), 2.0f);
 			return;
 		}

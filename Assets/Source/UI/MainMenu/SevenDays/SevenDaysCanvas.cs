@@ -21,6 +21,7 @@ public class SevenDaysCanvas : MonoBehaviour
 	// 하단 탭
 	public Transform[] buttonImageTransformList;
 	public Transform[] lockImageTransformList;
+	public Text[] lockTextList;
 	public RectTransform[] dayAlarmRootTransformList;
 
 	public GameObject contentItemPrefab;
@@ -60,6 +61,7 @@ public class SevenDaysCanvas : MonoBehaviour
 	void Update()
 	{
 		UpdateRemainTime();
+		UpdateLockRemainTime();
 	}
 
 	void SetRemainTimeInfo()
@@ -257,6 +259,59 @@ public class SevenDaysCanvas : MonoBehaviour
 	}
 	#endregion
 
+	#region NotOpened
+	public void OnNotOpened(int day)
+	{
+		SevenDaysTypeTableData sevenDaysTypeTableData = TableDataManager.instance.FindSevenDaysTypeTableData(MissionData.instance.sevenDaysId);
+		if (sevenDaysTypeTableData == null)
+			return;
+		DateTime startTime = MissionData.instance.sevenDaysExpireTime - TimeSpan.FromSeconds(sevenDaysTypeTableData.givenTime);
+		TimeSpan delta = ServerTime.UtcNow - startTime;
+
+		if (delta.Days + 2 == day)
+		{
+			_lockTextIndex = day - 1;
+			if (_lockTextIndex > lockTextList.Length)
+				return;
+			_dayLockReleaseDateTime = startTime + TimeSpan.FromDays(day - 1);
+			showLockRemainTime = 5.0f;
+			lockTextList[_lockTextIndex].gameObject.SetActive(true);
+		}
+	}
+
+	int _lockTextIndex = -1;
+	DateTime _dayLockReleaseDateTime;
+	float showLockRemainTime = 0.0f;
+	int _lastLockRemainTimeSecond;
+	void UpdateLockRemainTime()
+	{
+		if (showLockRemainTime <= 0.0f)
+			return;
+		if (_lockTextIndex == -1)
+			return;
+
+		if (ServerTime.UtcNow < _dayLockReleaseDateTime)
+		{
+			TimeSpan remainTime = _dayLockReleaseDateTime - ServerTime.UtcNow;
+			if (_lastLockRemainTimeSecond != (int)remainTime.TotalSeconds)
+			{
+				if (remainTime.Days > 0)
+					lockTextList[_lockTextIndex].text = string.Format("{0}d {1:00}:{2:00}:{3:00}", remainTime.Days, remainTime.Hours, remainTime.Minutes, remainTime.Seconds);
+				else
+					lockTextList[_lockTextIndex].text = string.Format("{0:00}:{1:00}:{2:00}", remainTime.Hours, remainTime.Minutes, remainTime.Seconds);
+				_lastLockRemainTimeSecond = (int)remainTime.TotalSeconds;
+			}
+		}
+
+		showLockRemainTime -= Time.deltaTime;
+		if (showLockRemainTime <= 0.0f)
+		{
+			showLockRemainTime = 0.0f;
+			lockTextList[_lockTextIndex].gameObject.SetActive(false);
+		}
+	}
+	#endregion
+
 
 	#region Detail Info
 	// 시간이 없어서 후다닥 급조해서 세븐데이즈와 페스티벌에만 자세히 넘어가서 보기를 구현했는데
@@ -349,6 +404,8 @@ public class SevenDaysCanvas : MonoBehaviour
 		{
 			buttonImageTransformList[i].localScale = (i == index) ? new Vector3(1.5f, 1.5f, 1.0f) : Vector3.one;
 		}
+		for (int i = 0; i < lockTextList.Length; ++i)
+			lockTextList[i].gameObject.SetActive(false);
 		RefreshGrid(index + 1);
 
 		_lastIndex = index;
@@ -358,6 +415,9 @@ public class SevenDaysCanvas : MonoBehaviour
 	{
 		for (int i = 0; i < lockImageTransformList.Length; ++i)
 			lockImageTransformList[i].gameObject.SetActive(MissionData.instance.IsOpenDay(i + 1) == false);
+
+		for (int i = 0; i < lockTextList.Length; ++i)
+			lockTextList[i].gameObject.SetActive(false);
 	}
 
 	public void RefreshDayAlarmObject()
