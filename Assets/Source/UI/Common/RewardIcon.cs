@@ -260,6 +260,7 @@ public class RewardIcon : MonoBehaviour
 						InitializeOtherGrade(7);
 						spellRootObject.SetActive(true);
 						spellStarText.text = skillTableData.star.ToString();
+						countText.color = Color.white;
 					}
 				}
 				else if (rewardValue.StartsWith("Actor"))
@@ -275,6 +276,7 @@ public class RewardIcon : MonoBehaviour
 						InitializeOtherGrade(8);
 						petRootObject.SetActive(true);
 						petStarText.text = petTableData.star.ToString();
+						countText.color = Color.white;
 					}
 				}
 				else if (rewardValue.StartsWith("Equip"))
@@ -295,6 +297,7 @@ public class RewardIcon : MonoBehaviour
 							EquipCanvasListItem.RefreshGrade(equipLevelTableData.grade, blurImage, gradient, lineColorImage);
 							EquipCanvasListItem.RefreshRarity(equipTableData.rarity, equipRarityText, equipRarityGradient);
 							equipRootObject.SetActive(true);
+							countText.color = Color.white;
 						}
 					}
 				}
