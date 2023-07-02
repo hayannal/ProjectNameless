@@ -1841,7 +1841,7 @@ public class PlayFabApiManager : MonoBehaviour
 			HandleCommonError(error);
 		});
 	}
-	public void RequestCompleteGuideQuest(int currentGuideQuestIndex, string rewardType, int key, int addDia, int addGold, int addEnergy, List<ObscuredString> listEventItemId, Action successCallback)
+	public void RequestCompleteGuideQuest(int currentGuideQuestIndex, string rewardType, int key, int addDia, int addGold, int addEnergy, int addTicket, List<ObscuredString> listEventItemId, Action successCallback)
 	{
 		WaitingNetworkCanvas.Show(true);
 
@@ -1873,6 +1873,8 @@ public class PlayFabApiManager : MonoBehaviour
 				CurrencyData.instance.gold += addGold;
 				if (addEnergy > 0)
 					CurrencyData.instance.OnRecvRefillEnergy(addEnergy);
+				if (addTicket > 0)
+					CurrencyData.instance.OnRecvRefillTicket(addTicket);
 
 				if (listEventItemId.Count > 0 && listItemGrantRequest.Count > 0)
 				{

@@ -334,6 +334,7 @@ public class GuideQuestInfo : MonoBehaviour
 		int addGold = 0;
 		int addDia = 0;
 		int addEnergy = 0;
+		int addTicket = 0;
 		if (_listResultEventItemIdForPacket == null)
 			_listResultEventItemIdForPacket = new List<ObscuredString>();
 		_listResultEventItemIdForPacket.Clear();
@@ -353,6 +354,8 @@ public class GuideQuestInfo : MonoBehaviour
 			}
 			else if (guideQuestTableData.rewardValue == CurrencyData.EnergyCode())
 				addEnergy += guideQuestTableData.rewardCount;
+			else if (guideQuestTableData.rewardValue == CurrencyData.TicketCode())
+				addTicket += guideQuestTableData.rewardCount;
 		}
 		else if (guideQuestTableData.rewardType == "it")
 		{
@@ -360,7 +363,7 @@ public class GuideQuestInfo : MonoBehaviour
 				_listResultEventItemIdForPacket.Add(guideQuestTableData.rewardValue);
 		}
 
-		PlayFabApiManager.instance.RequestCompleteGuideQuest(GuideQuestData.instance.currentGuideQuestIndex, guideQuestTableData.rewardType, guideQuestTableData.key, addDia, addGold, addEnergy, _listResultEventItemIdForPacket, () =>
+		PlayFabApiManager.instance.RequestCompleteGuideQuest(GuideQuestData.instance.currentGuideQuestIndex, guideQuestTableData.rewardType, guideQuestTableData.key, addDia, addGold, addEnergy, addTicket, _listResultEventItemIdForPacket, () =>
 		{
 			infoRootTweenAnimation.gameObject.SetActive(false);
 			smallBackButtonRootObject.SetActive(false);

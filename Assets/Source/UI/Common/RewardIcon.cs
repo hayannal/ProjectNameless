@@ -14,6 +14,7 @@ public class RewardIcon : MonoBehaviour
 	public GameObject goldObject;
 	public GameObject diaObject;
 	public GameObject energyObject;
+	public GameObject ticketObject;
 	public GameObject goldMediumObject;
 	public GameObject diaMediumObject;
 	public GameObject energyMediumObject;
@@ -72,6 +73,7 @@ public class RewardIcon : MonoBehaviour
 		goldObject.SetActive(false);
 		if (diaObject != null) diaObject.SetActive(false);
 		energyObject.SetActive(false);
+		if (ticketObject != null) ticketObject.SetActive(false);
 		if (goldMediumObject != null) goldMediumObject.SetActive(false);
 		if (diaMediumObject != null) diaMediumObject.SetActive(false);
 		if (energyMediumObject != null) energyMediumObject.SetActive(false);
@@ -150,6 +152,10 @@ public class RewardIcon : MonoBehaviour
 							}
 						}
 						countText.color = MailCanvasListItem.GetEnergyTextColor();
+						break;
+					case "TI":
+						if (ticketObject != null) ticketObject.SetActive(true);
+						countText.color = Color.white;
 						break;
 				}
 				break;
