@@ -264,10 +264,15 @@ public class PetSearchCanvas : MonoBehaviour
 		// 
 		PetSearchGround.instance.ShowPetGauge();
 		battleStartTransform.gameObject.SetActive(true);
-		_inputRemainTime = HeartInputTime;
+
+		float defaultHeartInputTime = 5.0f;
+		defaultHeartInputTime = BattleInstanceManager.instance.GetCachedGlobalConstantInt("PetBattle01Time10") * 0.1f;
+		if (secondRound) defaultHeartInputTime = BattleInstanceManager.instance.GetCachedGlobalConstantInt("PetBattle02Time10") * 0.1f;
+		if (extraChance) defaultHeartInputTime = BattleInstanceManager.instance.GetCachedGlobalConstantInt("PetBattle03Time10") * 0.1f;
+		_inputRemainTime = _inputRemainTimeMax = defaultHeartInputTime;
 		timerObject.SetActive(true);
 
-		ToastZigzagCanvas.instance.ShowToast(UIString.instance.GetString("PetUI_TouchLeftRight"), HeartInputTime);
+		ToastZigzagCanvas.instance.ShowToast(UIString.instance.GetString("PetUI_TouchLeftRight"), defaultHeartInputTime);
 
 		// 공격 버튼을 활성화시켜둔다.
 		attackLeftButtonObject.SetActive(true);
@@ -290,7 +295,7 @@ public class PetSearchCanvas : MonoBehaviour
 		battleStartTransform.localScale = Vector3.one;
 	}
 
-	const float HeartInputTime = 5.0f;
+	float _inputRemainTimeMax;
 	float _inputRemainTime;
 	void UpdateTimerImage()
 	{
@@ -303,7 +308,7 @@ public class PetSearchCanvas : MonoBehaviour
 				timerObject.SetActive(false);
 				OnEndAttackTime();
 			}
-			timerImage.fillAmount = _inputRemainTime / HeartInputTime;
+			timerImage.fillAmount = _inputRemainTime / _inputRemainTimeMax;
 		}
 	}
 
