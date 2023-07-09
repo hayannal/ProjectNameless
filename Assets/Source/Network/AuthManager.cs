@@ -227,6 +227,7 @@ public class AuthManager : MonoBehaviour
 		playerStatisticNames.Add("goldBoxValue");
 		playerStatisticNames.Add("analysisExp");
 		playerStatisticNames.Add("analysisBoost");
+
 		playerStatisticNames.Add("guideQuestIndex");
 		playerStatisticNames.Add("energyUseForPayback");
 		playerStatisticNames.Add("sevenDaysSumPoint");
@@ -237,6 +238,8 @@ public class AuthManager : MonoBehaviour
 		playerStatisticNames.Add("rushDefenseClearLevel");
 		playerStatisticNames.Add("bossDefenseClearLevel");
 		playerStatisticNames.Add("goldDefenseClearLevel");
+
+		playerStatisticNames.Add("robotDefenseClearLevel");
 		playerStatisticNames.Add("bossBattleClearLevel");
 		playerStatisticNames.Add("bossBattlePoint");
 		playerStatisticNames.Add("bossBattleAttackLevel");

@@ -13,10 +13,6 @@ public class MissionListCanvas : MonoBehaviour
 	public Text fillRemainTimeText;
 	#endregion
 
-	#region Energy
-	public Text energyText;
-	#endregion
-
 	public Text petMenuRemainCount;
 	public Text petTodayResetRemainTimeText;
 	public Text petSearchEnergyText;
@@ -53,72 +49,26 @@ public class MissionListCanvas : MonoBehaviour
 	void Awake()
 	{
 		instance = this;
-
-		#region Energy
-		_canvas = GetComponent<Canvas>();
-		#endregion
 	}
 
-	Canvas _canvas;
 	void OnEnable()
 	{
-		#region Energy
-		RefreshEnergy();
-		#endregion
 		#region Ticket
 		RefreshTicket();
 		#endregion
+
 		RefreshInfo();
-
-		bool restore = StackCanvas.Push(gameObject, false, null, OnPopStack);
-
-		if (DragThresholdController.instance != null)
-			DragThresholdController.instance.ApplyUIDragThreshold();
-
-		if (restore)
-			return;
-
-		MainCanvas.instance.OnEnterCharacterMenu(true);
-	}
-
-	void OnDisable()
-	{
-		if (DragThresholdController.instance != null)
-			DragThresholdController.instance.ResetUIDragThreshold();
-
-		if (StackCanvas.Pop(gameObject))
-			return;
-
-		OnPopStack();
-	}
-
-	void OnPopStack()
-	{
-		if (StageManager.instance == null)
-			return;
-		if (MainSceneBuilder.instance == null)
-			return;
-
-		MainCanvas.instance.OnEnterCharacterMenu(false);
 	}
 
 	void Update()
 	{
 		UpdateResetRemainTime();
-		UpdateEnergy();
 
 		#region Ticket
 		UpdateFillRemainTime();
 		UpdateRefresh();
 		#endregion
 	}
-
-	#region Energy
-	public void RefreshEnergy()
-	{
-		energyText.text = CurrencyData.instance.energy.ToString("N0");
-	}
-	#endregion
 
 	public static bool IsAlarmPetSearch()
 	{
@@ -458,20 +408,6 @@ public class MissionListCanvas : MonoBehaviour
 			if (bossDefenseProcess) bossDefenseTodayResetRemainTimeText.text = "";
 			if (goldDefenseProcess) goldDefenseTodayResetRemainTimeText.text = "";
 			if (bossBattleProcess) bossBattleTodayResetRemainTimeText.text = "";
-		}
-	}
-
-	int _lastEnergySecond = -1;
-	void UpdateEnergy()
-	{
-		if (CurrencyData.instance.energy >= CurrencyData.instance.energyMax)
-			return;
-
-		if (_lastEnergySecond != (int)Time.time)
-		{
-			//Debug.Log(_lastEnergySecond);
-			RefreshEnergy();
-			_lastEnergySecond = (int)Time.time;
 		}
 	}
 

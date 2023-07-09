@@ -30,7 +30,8 @@ public class SubMissionData : MonoBehaviour
 	{
 		RushDefense = 1,
 		BossDefense = 2,
-		GoldDefense = 3
+		GoldDefense = 3,
+		RobotDefense = 4,
 	}
 
 	#region Rush Defense
@@ -49,6 +50,12 @@ public class SubMissionData : MonoBehaviour
 	public ObscuredInt goldDefenseClearLevel { get; set; }
 	public ObscuredInt goldDefenseSelectedLevel { get; set; }
 	public ObscuredInt goldDefenseDailyCount { get; set; }
+	#endregion
+
+	#region Robot Defense
+	public ObscuredInt robotDefenseClearLevel { get; set; }
+	public ObscuredInt robotDefenseSelectedLevel { get; set; }
+	public ObscuredInt robotDefenseDailyCount { get; set; }
 	#endregion
 
 	#region Boss Battle
@@ -200,6 +207,42 @@ public class SubMissionData : MonoBehaviour
 			if (playerStatistics[i].StatisticName == "goldDefenseClearLevel")
 			{
 				goldDefenseClearLevel = playerStatistics[i].Value;
+				break;
+			}
+		}
+		#endregion
+
+		#region Robot Defense
+		robotDefenseDailyCount = 0;
+		if (userReadOnlyData.ContainsKey("robotDefenseCount"))
+		{
+			int intValue = 0;
+			if (int.TryParse(userReadOnlyData["robotDefenseCount"].Value, out intValue))
+				robotDefenseDailyCount = intValue;
+		}
+
+		if (userReadOnlyData.ContainsKey("lasRobDefDat"))
+		{
+			if (string.IsNullOrEmpty(userReadOnlyData["lasRobDefDat"].Value) == false)
+				OnRecvDailyRobotDefenseInfo(userReadOnlyData["lasRobDefDat"].Value);
+		}
+		else
+			robotDefenseDailyCount = 0;
+
+		robotDefenseSelectedLevel = 0;
+		if (userReadOnlyData.ContainsKey("robotDefenseSelectedLevel"))
+		{
+			int intValue = 0;
+			if (int.TryParse(userReadOnlyData["robotDefenseSelectedLevel"].Value, out intValue))
+				robotDefenseSelectedLevel = intValue;
+		}
+
+		robotDefenseClearLevel = 0;
+		for (int i = 0; i < playerStatistics.Count; ++i)
+		{
+			if (playerStatistics[i].StatisticName == "robotDefenseClearLevel")
+			{
+				robotDefenseClearLevel = playerStatistics[i].Value;
 				break;
 			}
 		}
@@ -395,6 +438,28 @@ public class SubMissionData : MonoBehaviour
 		{
 			DateTime universalTime = lastGoldDefenseTime.ToUniversalTime();
 			OnRecvDailyGoldDefenseInfo(universalTime);
+		}
+	}
+	#endregion
+
+	#region Robot Defense
+	void OnRecvDailyRobotDefenseInfo(DateTime lastRobotDefenseTime)
+	{
+		if (ServerTime.UtcNow.Year == lastRobotDefenseTime.Year && ServerTime.UtcNow.Month == lastRobotDefenseTime.Month && ServerTime.UtcNow.Day == lastRobotDefenseTime.Day)
+		{
+			// 유효하면 읽어놨던 count값을 유지하고
+		}
+		else
+			robotDefenseDailyCount = 0;
+	}
+
+	public void OnRecvDailyRobotDefenseInfo(string lastRobotDefenseTimeString)
+	{
+		DateTime lastRobotDefenseTime = new DateTime();
+		if (DateTime.TryParse(lastRobotDefenseTimeString, out lastRobotDefenseTime))
+		{
+			DateTime universalTime = lastRobotDefenseTime.ToUniversalTime();
+			OnRecvDailyRobotDefenseInfo(universalTime);
 		}
 	}
 	#endregion
@@ -624,6 +689,7 @@ public class SubMissionData : MonoBehaviour
 		rushDefenseDailyCount = 0;
 		bossDefenseDailyCount = 0;
 		goldDefenseDailyCount = 0;
+		robotDefenseDailyCount = 0;
 		bossBattleDailyCount = 0;
 
 		if (MainCanvas.instance != null)

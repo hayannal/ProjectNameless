@@ -461,7 +461,7 @@ public class MainCanvas : MonoBehaviour
 		if (PlayerData.instance.CheckConfirmDownload() == false)
 			return;
 
-		UIInstanceManager.instance.ShowCanvasAsync("MissionListCanvas", null);
+		UIInstanceManager.instance.ShowCanvasAsync("MissionTabCanvas", null);
 	}
 	#endregion
 
@@ -580,7 +580,7 @@ public class MainCanvas : MonoBehaviour
 
 	public static bool IsAlarmMission()
 	{
-		if (MissionListCanvas.IsAlarmPetSearch() || MissionListCanvas.IsAlarmFortuneWheel() || MissionListCanvas.IsAlarmRushDefense() || MissionListCanvas.IsAlarmBossDefense() || MissionListCanvas.IsAlarmBossBattle())
+		if (MissionTabCanvas.IsAlarmMission() || MissionTabCanvas.IsAlarmAdventure())
 			return true;
 		return false;
 	}
