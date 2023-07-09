@@ -117,7 +117,7 @@ public class BossDefenseMissionCanvas : MonoBehaviour
 			}
 			OnValueChangedToggle(_listCharacterToggleButton[i].actorId);
 			BossDefenseMissionGround.instance.OnClickBox(lastPositionIndex);
-			yield return Timing.WaitForSeconds(0.5f);
+			yield return Timing.WaitForSeconds(0.3f);
 		}
 
 		if (listRemainIndex.Count == 0)
@@ -138,7 +138,7 @@ public class BossDefenseMissionCanvas : MonoBehaviour
 			}
 			OnValueChangedToggle(actorId);
 			BossDefenseMissionGround.instance.OnClickBox(emptyPositionIndex);
-			yield return Timing.WaitForSeconds(0.5f);
+			yield return Timing.WaitForSeconds(0.3f);
 		}
 
 		autoPositionProcessed = false;
