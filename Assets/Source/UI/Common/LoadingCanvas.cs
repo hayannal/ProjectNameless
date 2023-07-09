@@ -83,6 +83,14 @@ public class LoadingCanvas : MonoBehaviour
 			MainCanvas.instance.OnClickContentsButton();
 			SubMissionData.instance.readyToReopenMissionListCanvas = false;
 		}
+		if (SubMissionData.instance.readyToReopenAdventureListCanvas)
+		{
+			UIInstanceManager.instance.ShowCanvasAsync("MissionTabCanvas", () =>
+			{
+				MissionTabCanvas.instance.defaulMenuButtonIndex = 1;
+			});
+			SubMissionData.instance.readyToReopenAdventureListCanvas = false;
+		}
 		// 다음 토벌 보스를 로딩해야하는거면
 		if (SubMissionData.instance.readyToPreloadBossBattleEnterCanvas)
 		{

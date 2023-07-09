@@ -27,12 +27,13 @@ public class MissionTabCanvas : MonoBehaviour
 		instance = this;
 	}
 
+	public int defaulMenuButtonIndex { get; set; }
+
 	// Start is called before the first frame update
 	void Start()
 	{
 		#region Tab Button
-		// 항상 게임을 처음 켤땐 0번탭을 보게 해준다.
-		OnValueChangedToggle(0);
+		OnValueChangedToggle(defaulMenuButtonIndex);
 		#endregion
 	}
 
