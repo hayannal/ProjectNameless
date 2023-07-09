@@ -410,7 +410,7 @@ public class GachaInfoCanvas : MonoBehaviour
 			if (TableDataManager.instance.eventPointRewardTable.dataArray[i].eventPointId != currentEventPointId)
 				continue;
 
-			if (CurrencyData.instance.eventPoint < TableDataManager.instance.eventPointRewardTable.dataArray[i].requiredAccumulatedEventPoint)
+			if (CurrencyData.instance.eventPoint < TableDataManager.instance.eventPointRewardTable.dataArray[i].requiredAccumulatedEventPoint && TableDataManager.instance.eventPointRewardTable.dataArray[i].num <= eventPointTypeTableData.lastRewardNum)
 			{
 				_currentEventPointRewardTableData = TableDataManager.instance.eventPointRewardTable.dataArray[i];
 				currentMax = _currentEventPointRewardTableData.requiredEventPoint;
