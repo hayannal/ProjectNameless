@@ -26,6 +26,7 @@ Transform:
   m_LocalRotation: {x: 0.18301274, y: -0.6830127, z: 0.18301274, w: 0.6830127}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8786829026502431174}
   m_RootOrder: 0
@@ -64,6 +65,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8786829026502431228}
   m_Father: {fileID: 0}
@@ -77,7 +79,7 @@ NavMeshAgent:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8480396166258042111}
   m_Enabled: 1
-  m_AgentTypeID: -902729914
+  m_AgentTypeID: -334000983
   m_Radius: 0.65
   m_Speed: 3.5
   m_Acceleration: 8
@@ -213,7 +215,7 @@ MonoBehaviour:
   commonPoolPreloadObjectList: []
   selfPassivePreloadObjectList: []
   gaugeOffsetY: 0.3
-  monsterHpGaugeWidth: 1
+  monsterHpGaugeWidth: 1.2
 --- !u!114 &4501653515894391790
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -234,6 +236,7 @@ MonoBehaviour:
   desireDistance: 5
   straightMoveTimeRange: {x: 0, y: 0}
   straightRefreshTickTimeRange: {x: 0, y: 0}
+  straightRefreshTickWaitTime: 0
   straightMoveType: 0
   customActionPlayType: 1
   customActionName: 
@@ -263,6 +266,10 @@ PrefabInstance:
       value: Hell Creeper
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 5121d60b4e6ef2c4d8fa5facbe333eb1, type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: 5121d60b4e6ef2c4d8fa5facbe333eb1, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -275,6 +282,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 5121d60b4e6ef2c4d8fa5facbe333eb1, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: 5121d60b4e6ef2c4d8fa5facbe333eb1, type: 3}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
@@ -284,14 +295,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 5121d60b4e6ef2c4d8fa5facbe333eb1, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: 5121d60b4e6ef2c4d8fa5facbe333eb1, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: 5121d60b4e6ef2c4d8fa5facbe333eb1, type: 3}
-      propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 5121d60b4e6ef2c4d8fa5facbe333eb1, type: 3}
@@ -316,15 +319,15 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 96c63e371900ea84c92fe51a8e72e357, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5121d60b4e6ef2c4d8fa5facbe333eb1, type: 3}
---- !u!4 &8786829026502431228 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 400000, guid: 5121d60b4e6ef2c4d8fa5facbe333eb1,
-    type: 3}
-  m_PrefabInstance: {fileID: 8786829026502298492}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8786829026502431174 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400058, guid: 5121d60b4e6ef2c4d8fa5facbe333eb1,
+    type: 3}
+  m_PrefabInstance: {fileID: 8786829026502298492}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &8786829026502431228 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 400000, guid: 5121d60b4e6ef2c4d8fa5facbe333eb1,
     type: 3}
   m_PrefabInstance: {fileID: 8786829026502298492}
   m_PrefabAsset: {fileID: 0}
