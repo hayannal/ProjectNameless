@@ -147,7 +147,7 @@ public class ConsumeProductProcessor : MonoBehaviour
 	}
 
 
-	const int SeparateCount = 50;
+	const int SeparateCount = 75;
 	public void ProcessConsume()
 	{
 		if (_dicConsumeItem.Keys.Count == 0)

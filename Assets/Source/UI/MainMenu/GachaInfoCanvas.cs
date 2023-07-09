@@ -617,7 +617,9 @@ public class GachaInfoCanvas : MonoBehaviour
 		PrepareGoldBoxTarget();
 		int currentEnergy = CurrencyData.instance.energy;
 		_prevBrokenEnergy = CurrencyData.instance.brokenEnergy;
-		PlayFabApiManager.instance.RequestGacha(useEnergy, _resultGold, _resultDia, _resultEnergy, _resultBrokenEnergy, _resultEvent, _listResultEventItemIdForPacket, _reserveRoomType, _refreshTurn, _refreshNewTurn, _refreshNewGold, _refreshNewGoldGrade, _eventPointRewardCount, _eventPointRewardCompleteCount, (refreshTurnComplete) =>
+		PlayFabApiManager.instance.RequestGacha(useEnergy, _resultGold, _resultDia, _resultEnergy, _resultBrokenEnergy, _resultEvent,
+			_listResultEventItemIdForPacket, _resultAddSpellGachaForPacket, _resultAddCharacterGachaForPacket, _resultAddEquipGachaForPacket,
+			_reserveRoomType, _refreshTurn, _refreshNewTurn, _refreshNewGold, _refreshNewGoldGrade, _eventPointRewardCount, _eventPointRewardCompleteCount, (refreshTurnComplete) =>
 		{
 			GuideQuestData.instance.OnQuestEvent(GuideQuestData.eQuestClearType.UseEnergy, useEnergy);
 
@@ -781,7 +783,11 @@ public class GachaInfoCanvas : MonoBehaviour
 	ObscuredInt _reserveRoomType;
 	List<string> _listResultItemValue;
 	List<int> _listResultItemCount;
+	// 한번에 이벤트 달성시 100개 이상 전달되기도 해야해서 이렇게 modify 형태로 나눠서 보내기로 한다.
 	List<ObscuredString> _listResultEventItemIdForPacket;
+	ObscuredInt _resultAddSpellGachaForPacket;
+	ObscuredInt _resultAddCharacterGachaForPacket;
+	ObscuredInt _resultAddEquipGachaForPacket;
 
 	// 검증용 카운트
 	ObscuredInt _eventPointRewardCount;
@@ -809,6 +815,7 @@ public class GachaInfoCanvas : MonoBehaviour
 		// 리셋
 		// 결과에 따라 미리미리 랜덤 굴릴것들은 굴려놔야 패킷으로 보낼 수 있다.
 		_resultGold = _resultDia = _resultEnergy = _resultBrokenEnergy = _resultEvent = 0;
+		_resultAddSpellGachaForPacket = _resultAddCharacterGachaForPacket = _resultAddEquipGachaForPacket = 0;
 		_reserveRoomType = 0;
 		if (_listResultEventItemIdForPacket == null)
 			_listResultEventItemIdForPacket = new List<ObscuredString>();
@@ -923,7 +930,19 @@ public class GachaInfoCanvas : MonoBehaviour
 						case "it":
 							// 하나는 패킷용이고
 							for (int j = 0; j < rewardTableData.rewardCount1; ++j)
-								_listResultEventItemIdForPacket.Add(rewardTableData.rewardValue1);
+							{
+								if (_listResultEventItemIdForPacket.Contains(rewardTableData.rewardValue1))
+								{
+									switch (rewardTableData.rewardValue1)
+									{
+										case "Cash_sSpellGacha": _resultAddSpellGachaForPacket += 1; break;
+										case "Cash_sCharacterGacha": _resultAddCharacterGachaForPacket += 1; break;
+										case "Cash_sEquipGacha": _resultAddEquipGachaForPacket += 1; break;
+									}
+								}
+								else
+									_listResultEventItemIdForPacket.Add(rewardTableData.rewardValue1);
+							}
 							// 하나는 결과 보여주는 용도다.
 							_listResultItemValue.Add(rewardTableData.rewardValue1);
 							_listResultItemCount.Add(rewardTableData.rewardCount1);
@@ -947,7 +966,19 @@ public class GachaInfoCanvas : MonoBehaviour
 								break;
 							case "it":
 								for (int j = 0; j < rewardTableData.rewardCount2; ++j)
-									_listResultEventItemIdForPacket.Add(rewardTableData.rewardValue2);
+								{
+									if (_listResultEventItemIdForPacket.Contains(rewardTableData.rewardValue2))
+									{
+										switch (rewardTableData.rewardValue2)
+										{
+											case "Cash_sSpellGacha": _resultAddSpellGachaForPacket += 1; break;
+											case "Cash_sCharacterGacha": _resultAddCharacterGachaForPacket += 1; break;
+											case "Cash_sEquipGacha": _resultAddEquipGachaForPacket += 1; break;
+										}
+									}
+									else
+										_listResultEventItemIdForPacket.Add(rewardTableData.rewardValue2);
+								}
 								_listResultItemValue.Add(rewardTableData.rewardValue2);
 								_listResultItemCount.Add(rewardTableData.rewardCount2);
 								break;
