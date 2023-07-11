@@ -306,7 +306,7 @@ public class CharacterManager : MonoBehaviour
 		int totalCharacterWithTranscendCount = 0;
 		for (int i = 0; i < TableDataManager.instance.actorTable.dataArray.Length; ++i)
 		{
-			if (TableDataManager.instance.actorTable.dataArray[i].actorId == CharacterData.s_PlayerActorId)
+			if (TableDataManager.instance.actorTable.dataArray[i].actorId == CharacterData.s_PlayerActorId || TableDataManager.instance.actorTable.dataArray[i].actorId == CharacterData.s_DroneActorId)
 				continue;
 			CharacterData characterData = GetCharacterData(TableDataManager.instance.actorTable.dataArray[i].actorId);
 			if (characterData != null)
@@ -423,7 +423,7 @@ public class CharacterManager : MonoBehaviour
 		{
 			for (int i = 0; i < TableDataManager.instance.actorTable.dataArray.Length; ++i)
 			{
-				if (TableDataManager.instance.actorTable.dataArray[i].actorId == CharacterData.s_PlayerActorId)
+				if (TableDataManager.instance.actorTable.dataArray[i].actorId == CharacterData.s_PlayerActorId || TableDataManager.instance.actorTable.dataArray[i].actorId == CharacterData.s_DroneActorId)
 					continue;
 				if (TableDataManager.instance.actorTable.dataArray[i].actorId == pickUpCharacterId)
 					continue;
@@ -449,7 +449,7 @@ public class CharacterManager : MonoBehaviour
 		sumWeight = 0.0f;
 		for (int i = 0; i < TableDataManager.instance.actorTable.dataArray.Length; ++i)
 		{
-			if (TableDataManager.instance.actorTable.dataArray[i].actorId == CharacterData.s_PlayerActorId)
+			if (TableDataManager.instance.actorTable.dataArray[i].actorId == CharacterData.s_PlayerActorId || TableDataManager.instance.actorTable.dataArray[i].actorId == CharacterData.s_DroneActorId)
 				continue;
 			if (TableDataManager.instance.actorTable.dataArray[i].grade != selectedGrade)
 				continue;
@@ -504,7 +504,7 @@ public class CharacterManager : MonoBehaviour
 		float sumWeight = 0.0f;
 		for (int i = 0; i < TableDataManager.instance.actorTable.dataArray.Length; ++i)
 		{
-			if (TableDataManager.instance.actorTable.dataArray[i].actorId == CharacterData.s_PlayerActorId)
+			if (TableDataManager.instance.actorTable.dataArray[i].actorId == CharacterData.s_PlayerActorId || TableDataManager.instance.actorTable.dataArray[i].actorId == CharacterData.s_DroneActorId)
 				continue;
 			CharacterData characterData = GetCharacterData(TableDataManager.instance.actorTable.dataArray[i].actorId);
 			if (characterData == null && _listTempNewCharacterId.Contains(TableDataManager.instance.actorTable.dataArray[i].actorId) == false)

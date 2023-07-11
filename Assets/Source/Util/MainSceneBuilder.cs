@@ -758,9 +758,10 @@ public class MainSceneBuilder : MonoBehaviour
 		}
 		*/
 
-		// 캐릭터는 언제나 같은 번들안에 있을테니 마지막 번호 하나만 검사하기로 한다.
+		// 캐릭터는 언제나 같은 번들안에 있을테니 마지막 번호 하나만 검사하기로 했는데
+		// 하필 마지막 자리에 드론캐릭터가 추가되면서 그 전꺼로 검사하기로 한다.
 		// 다운로드 되어있어서 캐싱할 수 있을때만 프리로드를 걸어둔다.
-		string portraitKey = TableDataManager.instance.actorTable.dataArray[TableDataManager.instance.actorTable.dataArray.Length - 1].portraitAddress;
+		string portraitKey = TableDataManager.instance.actorTable.dataArray[TableDataManager.instance.actorTable.dataArray.Length - 2].portraitAddress;
 		AsyncOperationHandle<long> handle = Addressables.GetDownloadSizeAsync(portraitKey);
 		yield return handle;
 		long downloadSize = handle.Result;
@@ -769,6 +770,8 @@ public class MainSceneBuilder : MonoBehaviour
 		{
 			for (int i = 0; i < TableDataManager.instance.actorTable.dataArray.Length; ++i)
 			{
+				if (TableDataManager.instance.actorTable.dataArray[i].actorId == CharacterData.s_DroneActorId)
+					continue;
 				/*
 				if (MercenaryData.IsMercenaryActor(TableDataManager.instance.actorTable.dataArray[i].actorId))
 					continue;

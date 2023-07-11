@@ -135,7 +135,7 @@ public class CharacterListCanvas : CharacterShowCanvasBase
 		int noGainCount = 0;
 		for (int i = 0; i < TableDataManager.instance.actorTable.dataArray.Length; ++i)
 		{
-			if (TableDataManager.instance.actorTable.dataArray[i].actorId == CharacterData.s_PlayerActorId)
+			if (TableDataManager.instance.actorTable.dataArray[i].actorId == CharacterData.s_PlayerActorId || TableDataManager.instance.actorTable.dataArray[i].actorId == CharacterData.s_DroneActorId)
 				continue;
 			if (CharacterManager.instance.ContainsActor(TableDataManager.instance.actorTable.dataArray[i].actorId) == false)
 			{
@@ -176,7 +176,7 @@ public class CharacterListCanvas : CharacterShowCanvasBase
 
 		for (int i = 0; i < TableDataManager.instance.actorTable.dataArray.Length; ++i)
 		{
-			if (TableDataManager.instance.actorTable.dataArray[i].actorId == CharacterData.s_PlayerActorId)
+			if (TableDataManager.instance.actorTable.dataArray[i].actorId == CharacterData.s_PlayerActorId || TableDataManager.instance.actorTable.dataArray[i].actorId == CharacterData.s_DroneActorId)
 				continue;
 			if (CharacterManager.instance.ContainsActor(TableDataManager.instance.actorTable.dataArray[i].actorId))
 				continue;

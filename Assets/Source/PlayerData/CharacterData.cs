@@ -7,6 +7,7 @@ using PlayFab.DataModels;
 public class CharacterData
 {
 	public static string s_PlayerActorId = "Actor0245";
+	public static string s_DroneActorId = "Actor1046";
 
 	public ObscuredString uniqueId;
 	public ObscuredString actorId;
