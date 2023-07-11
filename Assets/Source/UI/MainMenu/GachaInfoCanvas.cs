@@ -479,7 +479,13 @@ public class GachaInfoCanvas : MonoBehaviour
 			return;
 		if (WaitingNetworkCanvas.IsShow())
 			return;
+		if (DelayedLoadingCanvas.IsShow())
+			return;
 		if (CommonRewardCanvas.instance != null && CommonRewardCanvas.instance.gameObject.activeSelf)
+			return;
+		if (EventPointCompleteCanvas.instance != null && EventPointCompleteCanvas.instance.gameObject.activeSelf)
+			return;
+		if (RandomBoxScreenCanvas.instance != null && RandomBoxScreenCanvas.instance.gameObject.activeSelf)
 			return;
 
 		bool send = false;
@@ -792,6 +798,8 @@ public class GachaInfoCanvas : MonoBehaviour
 	// 검증용 카운트
 	ObscuredInt _eventPointRewardCount;
 	ObscuredInt _eventPointRewardCompleteCount;
+	// 이벤트 포인트 클리어시 되돌려받는 에너지
+	int _eventPointcompleteEnergyReward;
 
 	void PrepareGacha()
 	{
@@ -826,7 +834,7 @@ public class GachaInfoCanvas : MonoBehaviour
 		if (_listResultItemCount == null)
 			_listResultItemCount = new List<int>();
 		_listResultItemCount.Clear();
-		_eventPointRewardCount = _eventPointRewardCompleteCount = 0;
+		_eventPointRewardCount = _eventPointRewardCompleteCount = _eventPointcompleteEnergyReward = 0;
 		int betRate = _listBetValue[_currentBetRateIndex];
 
 		// 현재 맥스 층에 따른 베팅 테이블
@@ -990,6 +998,11 @@ public class GachaInfoCanvas : MonoBehaviour
 					// 혹시 이번이 보상의 마지막 단계인지 확인을 해보자.
 					if (_currentEventPointTypeTableData.lastRewardNum == _currentEventPointRewardTableData.num && targetEventPoint >= _currentEventPointRewardTableData.requiredAccumulatedEventPoint)
 					{
+						// 에너지를 리턴받기로 했다.
+						int diff = targetEventPoint - _currentEventPointRewardTableData.requiredAccumulatedEventPoint;
+						_eventPointcompleteEnergyReward = (int)(diff * BattleInstanceManager.instance.GetCachedGlobalConstantInt("EventpointEnergy10") * 0.1f);
+						_resultEnergy += _eventPointcompleteEnergyReward;
+
 						_eventPointRewardCompleteCount += 1;
 						break;
 					}
@@ -1325,7 +1338,20 @@ public class GachaInfoCanvas : MonoBehaviour
 					if (lastReward)
 					{
 						_currentEventPointRewardTableData = TableDataManager.instance.eventPointRewardTable.dataArray[i];
-						EndEventPointProcess();
+
+						// 포인트이벤트 클리어로 인한 에너지 보상이 0보다 크면 별도의 창을 보여주고
+						if (_eventPointcompleteEnergyReward > 0)
+						{
+							UIInstanceManager.instance.ShowCanvasAsync("EventPointCompleteCanvas", () =>
+							{
+								EventPointCompleteCanvas.instance.SetInfo(true, _eventPointcompleteEnergyReward, () =>
+								{
+									EndEventPointProcess();
+								});
+							});
+						}
+						else
+							EndEventPointProcess();
 						yield break;
 					}
 				}
