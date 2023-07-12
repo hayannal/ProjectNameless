@@ -320,16 +320,7 @@ public class SubQuestData : MonoBehaviour
 		// 진행중인 퀘스트는 건드리지 않기로 하고 오늘의 완료횟수만 초기화하기로 한다.
 		todayQuestRewardedCount = 0;
 
-		// 대신 리스트를 갱신할거기 때문에 진행중인 퀘스트가 남아있다면
-		if (currentQuestStep == eQuestStep.Proceeding)
-		{
-			// 인덱스만 0번으로 옮겨놓고 다음날에도 계속 사용하기로 한다.
-			currentQuestIndex = 0;
-			//currentQuestStep = eQuestStep.Select;
-			//currentQuestProceedingCount = 0;
-		}
-
-		// 이 타이밍에 다음날 새로 열리는 퀘스트 갱신처리도 함께 해준다.
+		// 진행중인 퀘가 있다면 알아서 등록하면서 0번으로 옮겨서 등록하게 될거다.
 		RegisterQuestList();
 	}
 
