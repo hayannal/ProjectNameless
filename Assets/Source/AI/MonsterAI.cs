@@ -756,7 +756,11 @@ public class MonsterAI : MonoBehaviour
 		if (pathFinderController.agent.pathPending)
 			pathFinderController.agent.ResetPath();
 
-		if (pathFinderController.agent.destination.x != StageManager.instance.monsterTargetPosition.x || pathFinderController.agent.destination.z != StageManager.instance.monsterTargetPosition.z)
+		Vector3 targetPosition = StageManager.instance.monsterTargetPosition;
+		if (RobotDefenseMissionGround.instance != null && RobotDefenseMissionGround.instance.gameObject.activeSelf && RobotDefenseMissionGround.IsOtherSide(actor.actorId))
+			targetPosition = RobotDefenseMissionGround.instance.GetMonsterTargetPosition(targetPosition);
+
+		if (pathFinderController.agent.destination.x != targetPosition.x || pathFinderController.agent.destination.z != targetPosition.z)
 		{
 			if (StageManager.instance != null && StageManager.instance.noNavStage)
 			{
@@ -768,7 +772,7 @@ public class MonsterAI : MonoBehaviour
 			else
 			{
 				if (pathFinderController.agent.isOnNavMesh)
-					pathFinderController.agent.destination = StageManager.instance.monsterTargetPosition;
+					pathFinderController.agent.destination = targetPosition;
 			}
 		}
 	}

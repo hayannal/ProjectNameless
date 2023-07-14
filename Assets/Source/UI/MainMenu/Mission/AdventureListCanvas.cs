@@ -53,21 +53,9 @@ public class AdventureListCanvas : MonoBehaviour
 					return;
 				}
 
-				//if (CharacterManager.instance.listCharacterData.Count < RobotDefenseEnterCanvas.MINIMUM_COUNT)
-				//{
-				//	ToastCanvas.instance.ShowToast(UIString.instance.GetString("MissionUI_RobotDefenseMemberLimit"), 2.0f);
-				//	return;
-				//}
-
-				if (IsAlarmRobotDefense() == false)
+				if (CharacterManager.instance.listCharacterData.Count < RobotDefenseEnterCanvas.MINIMUM_COUNT)
 				{
-					ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_TodayCountComplete"), 2.0f);
-					return;
-				}
-
-				if (CurrencyData.instance.ticket < BattleInstanceManager.instance.GetCachedGlobalConstantInt("MissionEnergyRobotDefense"))
-				{
-					ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_NotEnoughTicket"), 2.0f);
+					ToastCanvas.instance.ShowToast(UIString.instance.GetString("MissionUI_RobotDefenseMemberLimit"), 2.0f);
 					return;
 				}
 

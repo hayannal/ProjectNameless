@@ -53,9 +53,14 @@ public class SubMissionData : MonoBehaviour
 	#endregion
 
 	#region Robot Defense
+	public ObscuredInt robotDefenseKillCount { get; set; }
 	public ObscuredInt robotDefenseClearLevel { get; set; }
-	public ObscuredInt robotDefenseSelectedLevel { get; set; }
+	public ObscuredInt robotDefenseRepeatClearCount { get; set; }
 	public ObscuredInt robotDefenseDailyCount { get; set; }
+	// 드론 카운트 레벨
+	public ObscuredInt robotDefenseDroneCountLevel { get; set; }
+	// 드론 공격력 레벨
+	public ObscuredInt robotDefenseDroneAttackLevel { get; set; }
 	#endregion
 
 	#region Boss Battle
@@ -82,7 +87,10 @@ public class SubMissionData : MonoBehaviour
 	public ObscuredBool readyToReopenAdventureListCanvas { get; set; }
 
 	// 토벌 추가하면서 공격력이 들어가게 되었다.
-	public ObscuredInt cachedValue { get; set; }
+	public ObscuredInt cachedValueByBossBattle { get; set; }
+
+	// 드론전투에서도 공격력이 들어가게 되었다.
+	public ObscuredInt cachedValueByRobotDefense { get; set; }
 
 	public void OnRecvSubMissionData(Dictionary<string, UserDataRecord> userReadOnlyData, List<StatisticValue> playerStatistics)
 	{
@@ -230,12 +238,20 @@ public class SubMissionData : MonoBehaviour
 		else
 			robotDefenseDailyCount = 0;
 
-		robotDefenseSelectedLevel = 0;
-		if (userReadOnlyData.ContainsKey("robotDefenseSelectedLevel"))
+		robotDefenseKillCount = 0;
+		if (userReadOnlyData.ContainsKey("robotDefenseKillCount"))
 		{
 			int intValue = 0;
-			if (int.TryParse(userReadOnlyData["robotDefenseSelectedLevel"].Value, out intValue))
-				robotDefenseSelectedLevel = intValue;
+			if (int.TryParse(userReadOnlyData["robotDefenseKillCount"].Value, out intValue))
+				robotDefenseKillCount = intValue;
+		}
+
+		robotDefenseRepeatClearCount = 0;
+		if (userReadOnlyData.ContainsKey("robotDefenseRepeatClearCount"))
+		{
+			int intValue = 0;
+			if (int.TryParse(userReadOnlyData["robotDefenseRepeatClearCount"].Value, out intValue))
+				robotDefenseRepeatClearCount = intValue;
 		}
 
 		robotDefenseClearLevel = 0;
@@ -334,12 +350,13 @@ public class SubMissionData : MonoBehaviour
 
 	void RefreshCachedStatus()
 	{
-		cachedValue = 0;
+		cachedValueByBossBattle = 0;
+		cachedValueByRobotDefense = 0;
 
 		// boss battle level status
 		PointShopAtkTableData pointShopAtkTableData = TableDataManager.instance.FindPointShopAtkTableData(bossBattleAttackLevel);
 		if (pointShopAtkTableData != null)
-			cachedValue = pointShopAtkTableData.accumulatedAtk;
+			cachedValueByBossBattle = pointShopAtkTableData.accumulatedAtk;
 	}
 
 	public void OnChangedStatus()
@@ -461,6 +478,33 @@ public class SubMissionData : MonoBehaviour
 		{
 			DateTime universalTime = lastRobotDefenseTime.ToUniversalTime();
 			OnRecvDailyRobotDefenseInfo(universalTime);
+		}
+	}
+
+	public void StepUpRobotDefense(int useKillCount)
+	{
+		int currentStep = robotDefenseClearLevel + 1;
+		bool repeatMode = (currentStep > BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxRobotDefense"));
+
+		RobotDefenseStepTableData robotDefenseStepTableData = null;
+		if (repeatMode)
+			robotDefenseStepTableData = TableDataManager.instance.FindRobotDefenseStepTableData(RobotDefenseEnterCanvas.RobotDefenseRepeatStep);
+		else
+			robotDefenseStepTableData = TableDataManager.instance.FindRobotDefenseStepTableData(currentStep);
+		if (robotDefenseStepTableData == null)
+			return;
+		if (robotDefenseStepTableData.monCount != useKillCount)
+			return;
+
+		robotDefenseKillCount -= useKillCount;
+
+		if (repeatMode)
+		{
+			robotDefenseRepeatClearCount += 1;
+		}
+		else
+		{
+			robotDefenseClearLevel += 1;
 		}
 	}
 	#endregion

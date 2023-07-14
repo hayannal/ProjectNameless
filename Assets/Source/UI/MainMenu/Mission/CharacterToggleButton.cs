@@ -50,5 +50,12 @@ public class CharacterToggleButton : MonoBehaviour
 				return;
 			GoldDefenseMissionCanvas.instance.OnValueChangedToggle(actorId);
 		}
+
+		if (RobotDefenseMissionCanvas.instance != null && RobotDefenseMissionCanvas.instance.gameObject.activeSelf)
+		{
+			if (RobotDefenseMissionCanvas.instance.autoPositionProcessed)
+				return;
+			RobotDefenseMissionCanvas.instance.OnValueChangedToggle(actorId);
+		}
 	}
 }

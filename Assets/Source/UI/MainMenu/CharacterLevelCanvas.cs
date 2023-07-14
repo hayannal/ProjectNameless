@@ -249,8 +249,10 @@ public class CharacterLevelCanvas : MonoBehaviour
 			if (EquipManager.instance.inventoryItemCount > 0)
 				StatusDetailCanvas.instance.AddStatus("GameUI_Equipment", EquipManager.instance.cachedValue);
 			StatusDetailCanvas.instance.AddStatus("GameUI_Analysis", AnalysisData.instance.cachedValue);
-			if (SubMissionData.instance.cachedValue > 0)
-				StatusDetailCanvas.instance.AddStatus("GameUI_BossBattle", SubMissionData.instance.cachedValue);
+			if (SubMissionData.instance.cachedValueByBossBattle > 0)
+				StatusDetailCanvas.instance.AddStatus("GameUI_BossBattle", SubMissionData.instance.cachedValueByBossBattle);
+			if (SubMissionData.instance.cachedValueByRobotDefense > 0)
+				StatusDetailCanvas.instance.AddStatus("GameUI_RobotDefense", SubMissionData.instance.cachedValueByRobotDefense);
 			if (PassManager.instance.cachedValue > 0)
 				StatusDetailCanvas.instance.AddStatus("GameUI_PassAtk", PassManager.instance.cachedValue);
 		});

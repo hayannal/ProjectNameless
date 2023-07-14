@@ -95,13 +95,13 @@ public class StageManager : MonoBehaviour
 	}
 
 	#region Mission
-	public void InitializeMissionStage(int stage)
+	public void InitializeMissionStage(int stage, bool repeat = false)
 	{
 		StageTableData stageTableData = TableDataManager.instance.FindStageTableData(stage);
 		if (stageTableData == null)
 			return;
 
-		repeatMode = false;
+		repeatMode = repeat;
 
 		// StageGround가 심리스 형태의 로드를 관리하기 때문에 지형 로딩에 대해서는 일임한다.
 		StageGround.instance.InitializeGround(stageTableData, false, true);
@@ -528,10 +528,12 @@ public class StageManager : MonoBehaviour
 		worldOffsetState ^= true;
 	}
 
-	public void OnDieMonster()
+	public void OnDieMonster(bool dieForReuse = false)
 	{
 		if (_failureProcessed)
 			return;
+		if (RobotDefenseMissionCanvas.instance != null && RobotDefenseMissionCanvas.instance.gameObject.activeSelf)
+			RobotDefenseMissionCanvas.instance.OnDieMonster(dieForReuse);
 		if (_spawnFinished == false)
 			return;
 		List<MonsterActor> listMonsterActor = BattleInstanceManager.instance.GetLiveMonsterList();
@@ -540,9 +542,18 @@ public class StageManager : MonoBehaviour
 
 		if (repeatMode)
 		{
+			if (RobotDefenseMissionCanvas.instance != null && RobotDefenseMissionCanvas.instance.gameObject.activeSelf)
+			{
+
+			}
+
+
 			BattleInstanceManager.instance.FinalizePathFinderAgent();
 			ResetInfo();
-			_remainDelayTime = RepeatModeInterval;
+			float defaultInterval = RepeatModeInterval;
+			if (RobotDefenseMissionCanvas.instance != null && RobotDefenseMissionCanvas.instance.gameObject.activeSelf)
+				defaultInterval = 0.5f;
+			_remainDelayTime = defaultInterval;
 		}
 		else
 		{
@@ -642,15 +653,27 @@ public class StageManager : MonoBehaviour
 		for (int i = listMonsterActor.Count - 1; i >= 0; --i)
 		{
 			Vector3 position = listMonsterActor[i].cachedTransform.position;
-			float deltaZ = monsterTargetPosition.z - position.z;
-			//(listMonsterActor[i].pathFinderController.agent.hasPath && listMonsterActor[i].pathFinderController.agent.pathStatus == UnityEngine.AI.NavMeshPathStatus.PathComplete)
-			if (Mathf.Abs(deltaZ) < 1.0f)
+			bool reuse = false;
+			if (RobotDefenseMissionCanvas.instance != null && RobotDefenseMissionCanvas.instance.gameObject.activeSelf)
+			{
+				float deltaZ = monsterTargetPosition.z - position.z;
+				if (deltaZ > -0.1f)
+					reuse = true;
+			}
+			else
+			{
+				float deltaZ = monsterTargetPosition.z - position.z;
+				//(listMonsterActor[i].pathFinderController.agent.hasPath && listMonsterActor[i].pathFinderController.agent.pathStatus == UnityEngine.AI.NavMeshPathStatus.PathComplete)
+				if (Mathf.Abs(deltaZ) < 1.0f)
+					reuse = true;
+			}
+			if (reuse)
 			{
 				MonsterActor monsterActor = listMonsterActor[i];
 				monsterActor.actorStatus.SetHpRatio(0.0f);
 				monsterActor.DisableForNodeWar();
 				// Die 호출을 해서 마지막 시점을 알려야한다.
-				OnDieMonster();
+				OnDieMonster(true);
 				monsterActor.gameObject.SetActive(false);
 			}
 		}

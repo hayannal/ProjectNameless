@@ -4768,6 +4768,76 @@ public class PlayFabApiManager : MonoBehaviour
 			HandleCommonError(error);
 		});
 	}
+
+	public void RequestEndRobotDefenseMission(int killCount, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string input = string.Format("{0}_{1}_{2}_{3}_{4}_{5}", (int)SubMissionData.instance.robotDefenseDailyCount, (int)SubMissionData.instance.robotDefenseClearLevel, (int)SubMissionData.instance.robotDefenseRepeatClearCount, (int)SubMissionData.instance.robotDefenseKillCount, killCount, "irzqljma");
+		string checkSum = CheckSum(input);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "EndRobotDefense",
+			FunctionParameter = new { Kil = killCount, Cs = checkSum },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			string resultString = (string)success.FunctionResult;
+			bool failure = (resultString == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				SubMissionData.instance.robotDefenseDailyCount += 1;
+				SubMissionData.instance.robotDefenseKillCount += killCount;
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
+
+	public void RequestRobotDefenseStepUp(int useKillCount, List<ObscuredString> listEventItemId, Action successCallback)
+	{
+		WaitingNetworkCanvas.Show(true);
+
+		string checkSum = "";
+		var serializer = PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
+		checkSum = CheckSum(string.Format("{0}_{1}_{2}_{3}_{4}", useKillCount, (int)SubMissionData.instance.robotDefenseClearLevel, (int)SubMissionData.instance.robotDefenseRepeatClearCount, (int)SubMissionData.instance.robotDefenseKillCount, "rosqzalm"));
+		string checkSum2 = "";
+		List<ItemGrantRequest> listItemGrantRequest = GenerateGrantRequestInfo(listEventItemId, ref checkSum2);
+		PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest()
+		{
+			FunctionName = "StepUpRobotDefense",
+			FunctionParameter = new { UseKil = useKillCount, ClLv = (int)SubMissionData.instance.robotDefenseClearLevel, RpCnt = (int)SubMissionData.instance.robotDefenseRepeatClearCount, Cs = checkSum, Lst = listItemGrantRequest, LstCs = checkSum2 },
+			GeneratePlayStreamEvent = true,
+		}, (success) =>
+		{
+			PlayFab.Json.JsonObject jsonResult = (PlayFab.Json.JsonObject)success.FunctionResult;
+			jsonResult.TryGetValue("retErr", out object retErr);
+			bool failure = ((retErr.ToString()) == "1");
+			if (!failure)
+			{
+				WaitingNetworkCanvas.Show(false);
+
+				SubMissionData.instance.StepUpRobotDefense(useKillCount);
+				
+				if (listEventItemId.Count > 0 && listItemGrantRequest.Count > 0)
+				{
+					// RequestGacha 처리했던거럼 똑같이 컨슘만 있을거라 이렇게 처리한다.
+					for (int i = 0; i < listEventItemId.Count; ++i)
+						CashShopData.instance.OnRecvConsumeItem(listEventItemId[i], 1);
+				}
+
+				if (successCallback != null) successCallback.Invoke();
+			}
+		}, (error) =>
+		{
+			HandleCommonError(error);
+		});
+	}
 	#endregion
 
 

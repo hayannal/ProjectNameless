@@ -93,6 +93,10 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 		{
 			StackCanvas.Push(gameObject);
 		}
+		else if (MissionTabCanvas.instance != null && MissionTabCanvas.instance.gameObject.activeSelf)
+		{
+			StackCanvas.Push(gameObject);
+		}
 		else if (MainCanvas.instance.IsHideState() == false)
 		{
 			_consumeProcess = true;
@@ -124,6 +128,10 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 			StackCanvas.Pop(gameObject);
 		}
 		else if (FestivalTabCanvas.instance != null && FestivalTabCanvas.instance.gameObject.activeSelf == false && StackCanvas.IsInStack(FestivalTabCanvas.instance.gameObject))
+		{
+			StackCanvas.Pop(gameObject);
+		}
+		else if (MissionTabCanvas.instance != null && MissionTabCanvas.instance.gameObject.activeSelf == false && StackCanvas.IsInStack(MissionTabCanvas.instance.gameObject))
 		{
 			StackCanvas.Pop(gameObject);
 		}
