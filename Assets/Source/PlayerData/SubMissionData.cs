@@ -263,6 +263,28 @@ public class SubMissionData : MonoBehaviour
 				break;
 			}
 		}
+
+		robotDefenseDroneCountLevel = 1;
+		if (userReadOnlyData.ContainsKey("robotDefenseDroneCountLevel"))
+		{
+			int intValue = 0;
+			if (int.TryParse(userReadOnlyData["robotDefenseDroneCountLevel"].Value, out intValue))
+				robotDefenseDroneCountLevel = intValue;
+		}
+
+		robotDefenseDroneAttackLevel = 1;
+		if (userReadOnlyData.ContainsKey("robotDefenseDroneAttackLevel"))
+		{
+			int intValue = 0;
+			if (int.TryParse(userReadOnlyData["robotDefenseDroneAttackLevel"].Value, out intValue))
+				robotDefenseDroneAttackLevel = intValue;
+		}
+
+		if (DroneUpgradeCanvas.GetRemainDronePoint() < 0)
+		{
+			// 음수가 나왔다는건 뭔가 이상하다는거다. 포인트 분배한 레벨을 강제로 1로 만들어버린다.
+			robotDefenseDroneCountLevel = robotDefenseDroneAttackLevel = 1;
+		}
 		#endregion
 
 		#region Boss Battle
@@ -506,6 +528,12 @@ public class SubMissionData : MonoBehaviour
 		{
 			robotDefenseClearLevel += 1;
 		}
+	}
+
+	public void OnLevelUpRobotDefenseAtkLevel(int targetLevel)
+	{
+		robotDefenseDroneAttackLevel = targetLevel;
+		OnChangedStatus();
 	}
 	#endregion
 

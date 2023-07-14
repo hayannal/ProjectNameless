@@ -310,7 +310,7 @@ public class RobotDefenseMissionCanvas : MonoBehaviour
 	void InitializeDronePositionInfo()
 	{
 		_droneSpawnCount = 0;
-		_droneSpawnMaxCount = 1 + SubMissionData.instance.robotDefenseDroneCountLevel;
+		_droneSpawnMaxCount = SubMissionData.instance.robotDefenseDroneCountLevel;
 
 		selectPositionText.SetLocalizedText(UIString.instance.GetString("MissionUI_SelectPositionDrone"));
 		dronePositionCountText.text = string.Format("{0} / {1}", _droneSpawnCount, _droneSpawnMaxCount);
@@ -363,7 +363,7 @@ public class RobotDefenseMissionCanvas : MonoBehaviour
 		{
 			++_reuseCount;
 			if (_reuseCount >= FinishMonsterCount)
-				StartCoroutine(FinishProcess());
+				ClearMission();
 			return;
 		}
 
@@ -380,6 +380,11 @@ public class RobotDefenseMissionCanvas : MonoBehaviour
 
 
 	#region ClearMission
+	public void ClearMission()
+	{
+		StartCoroutine(FinishProcess());
+	}
+
 	bool _finishProcessed = false;
 	IEnumerator FinishProcess()
 	{
@@ -390,7 +395,8 @@ public class RobotDefenseMissionCanvas : MonoBehaviour
 
 		UIInstanceManager.instance.ShowCanvasAsync("VictoryResultCanvas", () =>
 		{
-			VictoryResultCanvas.instance.victoryText.text = "FINISH";
+			if (_reuseCount >= FinishMonsterCount)
+				VictoryResultCanvas.instance.victoryText.text = "FINISH";
 		});
 		yield return new WaitForSecondsRealtime(1.3f);
 

@@ -370,7 +370,7 @@ public class RobotDefenseEnterCanvas : MonoBehaviour
 				DOTween.To(() => monsterKillSlider.value, x => monsterKillSlider.value = x, ratio, valueChangeTime).SetEase(Ease.OutQuad).OnComplete(() =>
 				{
 					monsterKillSlider.value = ratio;
-					monsterKillSliderImage.color = (ratio < 1.0f) ? Color.white : EquipListStatusInfo.GetGaugeColor(true);
+					monsterKillSliderImage.color = (ratio < 1.0f) ? Color.white : new Color(1.0f, 1.0f, 0.15f);
 					RefreshAlarmObject();
 				});
 			}
@@ -383,7 +383,7 @@ public class RobotDefenseEnterCanvas : MonoBehaviour
 			float ratio = (float)SubMissionData.instance.robotDefenseKillCount / _robotDefenseStepTableData.monCount;
 			if (ratio > 1.0f) ratio = 1.0f;
 			monsterKillSlider.value = ratio;
-			monsterKillSliderImage.color = (ratio < 1.0f) ? Color.white : EquipListStatusInfo.GetGaugeColor(true);
+			monsterKillSliderImage.color = (ratio < 1.0f) ? Color.white : new Color(1.0f, 1.0f, 0.15f);
 		}
 
 		// 현재 선택된 난이도에 따른 보상을 보여준다.
@@ -451,6 +451,8 @@ public class RobotDefenseEnterCanvas : MonoBehaviour
 
 	public static bool IsUpgradableDrone()
 	{
+		if (DroneUpgradeCanvas.GetRemainDronePoint() > 0)
+			return true;
 		return false;
 	}
 

@@ -544,16 +544,22 @@ public class StageManager : MonoBehaviour
 		{
 			if (RobotDefenseMissionCanvas.instance != null && RobotDefenseMissionCanvas.instance.gameObject.activeSelf)
 			{
-
+				if (RobotDefenseMissionCanvas.instance.repeatSpawnFinished)
+				{
+					RobotDefenseMissionCanvas.instance.ClearMission();
+				}
+				else
+				{
+					ResetInfo();
+					_remainDelayTime = 0.5f;
+				}
 			}
-
-
-			BattleInstanceManager.instance.FinalizePathFinderAgent();
-			ResetInfo();
-			float defaultInterval = RepeatModeInterval;
-			if (RobotDefenseMissionCanvas.instance != null && RobotDefenseMissionCanvas.instance.gameObject.activeSelf)
-				defaultInterval = 0.5f;
-			_remainDelayTime = defaultInterval;
+			else
+			{
+				BattleInstanceManager.instance.FinalizePathFinderAgent();
+				ResetInfo();
+				_remainDelayTime = RepeatModeInterval;
+			}
 		}
 		else
 		{
