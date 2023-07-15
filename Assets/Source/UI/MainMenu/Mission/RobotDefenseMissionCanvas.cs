@@ -89,6 +89,7 @@ public class RobotDefenseMissionCanvas : MonoBehaviour
 		//MainCanvas.instance.OnEnterCharacterMenu(false);
 	}
 
+	float totalTime = 60.0f * 5.0f;
 	public bool repeatSpawnFinished { get; set; }
 	float _repeatSpawnRemainTime;
 	void Update()
@@ -104,6 +105,13 @@ public class RobotDefenseMissionCanvas : MonoBehaviour
 				repeatSpawnFinished = true;
 			}
 		}
+	}
+
+	public float GetStandardHpByPlayTime()
+	{
+		int minStandardHp = BattleInstanceManager.instance.GetCachedGlobalConstantInt("RobotDefenseStandardHpMin");
+		int maxStandardHp = BattleInstanceManager.instance.GetCachedGlobalConstantInt("RobotDefenseStandardHpMax");
+		return (maxStandardHp - minStandardHp) * (1.0f - (_repeatSpawnRemainTime / totalTime)) + minStandardHp;
 	}
 
 	#region Auto Position
@@ -311,6 +319,7 @@ public class RobotDefenseMissionCanvas : MonoBehaviour
 	{
 		_droneSpawnCount = 0;
 		_droneSpawnMaxCount = SubMissionData.instance.robotDefenseDroneCountLevel;
+		totalTime = BattleInstanceManager.instance.GetCachedGlobalConstantInt("RobotDefenseTimeSec");
 
 		selectPositionText.SetLocalizedText(UIString.instance.GetString("MissionUI_SelectPositionDrone"));
 		dronePositionCountText.text = string.Format("{0} / {1}", _droneSpawnCount, _droneSpawnMaxCount);
@@ -342,7 +351,7 @@ public class RobotDefenseMissionCanvas : MonoBehaviour
 			dronePositionText.gameObject.SetActive(false);
 			selectPositionText.gameObject.SetActive(false);
 			RobotDefenseMissionGround.instance.OnFinishSelect();
-			_repeatSpawnRemainTime = 60.0f * 5.0f;
+			_repeatSpawnRemainTime = totalTime;
 			return;
 		}
 	}

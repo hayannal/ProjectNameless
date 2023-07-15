@@ -148,6 +148,12 @@ public class ActorStatus : MonoBehaviour
 		if (actor.team.teamId == (int)Team.eTeamID.DefaultAlly)
 		{
 		}
+		else if (RobotDefenseMissionCanvas.instance != null && RobotDefenseMissionCanvas.instance.gameObject.activeSelf)
+		{
+			standardHp = RobotDefenseMissionCanvas.instance.GetStandardHpByPlayTime();
+			standardDef = 0.0f;
+			evadeRate = criticalDefenseRate = strikeDefenseRate = 0.0f;
+		}
 		else if (BossBattleMissionCanvas.instance != null && BossBattleMissionCanvas.instance.gameObject.activeSelf)
 		{
 			BossBattleDifficultyTableData bossBattleDifficultyTableData = TableDataManager.instance.FindBossBattleDifficultyTableData(BossBattleEnterCanvas.instance.selectedDifficulty);
