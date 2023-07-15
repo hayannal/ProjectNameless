@@ -112,6 +112,7 @@ public class RobotDefenseMissionCanvas : MonoBehaviour
 	{
 		int minStandardHp = BattleInstanceManager.instance.GetCachedGlobalConstantInt("RobotDefenseStandardHpMin");
 		int maxStandardHp = BattleInstanceManager.instance.GetCachedGlobalConstantInt("RobotDefenseStandardHpMax");
+		//Debug.LogFormat("Ratio = {0}", (1.0f - (_repeatSpawnRemainTime / totalTime)));
 		return (maxStandardHp - minStandardHp) * (1.0f - (_repeatSpawnRemainTime / totalTime)) + minStandardHp;
 	}
 
