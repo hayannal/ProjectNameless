@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using CodeStage.AntiCheat.ObscuredTypes;
 
 public class DroneUpgradeCanvas : MonoBehaviour
 {
@@ -12,9 +13,13 @@ public class DroneUpgradeCanvas : MonoBehaviour
 	public Transform countTextTransform;
 	public Text countLevelText;
 	public Text countValueText;
+	public Text countPriceText;
 	public Text atkLevelText;
 	public Text atkValueText;
 	public Text remainPointText;
+
+	public GameObject countLevelUpImageEffectObject;
+	public GameObject atkLevelUpImageEffectObject;
 
 	public Transform countAlarmRootTransform;
 	public Transform atkAlarmRootTransform;
@@ -24,19 +29,23 @@ public class DroneUpgradeCanvas : MonoBehaviour
 		instance = this;
 	}
 
+	ObscuredInt _countLevelUpPrice;
 	void OnEnable()
 	{
+		_countLevelUpPrice = BattleInstanceManager.instance.GetCachedGlobalConstantInt("RobotDefenseCountUpRequired");
 		SetInfo();
 	}
 
 	public static int GetRemainDronePoint()
 	{
+		int accum = 0;
 		RobotDefenseStepTableData robotDefenseStepTableData = TableDataManager.instance.FindRobotDefenseStepTableData(SubMissionData.instance.robotDefenseClearLevel);
-		if (robotDefenseStepTableData == null)
-			return 0;
+		if (robotDefenseStepTableData != null)
+			accum = robotDefenseStepTableData.droneAccumulatedPoint;
+
 		int useCount = SubMissionData.instance.robotDefenseDroneCountLevel - 1;
 		int useAtk = SubMissionData.instance.robotDefenseDroneAttackLevel - 1;
-		return robotDefenseStepTableData.droneAccumulatedPoint - useCount - useAtk;
+		return accum - useCount * BattleInstanceManager.instance.GetCachedGlobalConstantInt("RobotDefenseCountUpRequired") - useAtk;
 	}
 
 	void SetInfo()
@@ -59,9 +68,10 @@ public class DroneUpgradeCanvas : MonoBehaviour
 			countLevelText.text = UIString.instance.GetString("GameUI_Lv", countLevel);
 			countValueText.text = string.Format("{0} / {1}", countLevel, s_DroneCountMax);
 
-			if (remainDronePoint > 0)
+			if (remainDronePoint >= _countLevelUpPrice)
 				AlarmObject.Show(countAlarmRootTransform);
 		}
+		countPriceText.text = _countLevelUpPrice.ToString("N0");
 		#endregion
 
 		#region Atk
@@ -74,7 +84,7 @@ public class DroneUpgradeCanvas : MonoBehaviour
 		else
 		{
 			// level
-			atkLevelText.text = UIString.instance.GetString("GameUI_Lv", countLevel);
+			atkLevelText.text = UIString.instance.GetString("GameUI_Lv", atkLevel);
 			atkValueText.text = SubMissionData.instance.cachedValueByRobotDefense.ToString("N0");
 
 			if (remainDronePoint > 0)
@@ -101,7 +111,7 @@ public class DroneUpgradeCanvas : MonoBehaviour
 			return;
 		}
 
-		if (GetRemainDronePoint() == 0)
+		if (GetRemainDronePoint() < _countLevelUpPrice)
 		{
 			ToastCanvas.instance.ShowToast(UIString.instance.GetString("MissionUI_NotEnoughDronePoint"), 2.0f);
 			return;
@@ -109,11 +119,12 @@ public class DroneUpgradeCanvas : MonoBehaviour
 
 		YesNoCanvas.instance.ShowCanvas(true, UIString.instance.GetString("SystemUI_Info"), UIString.instance.GetString("PointShopUI_LevelUpConfirm"), () =>
 		{
-			PlayFabApiManager.instance.RequestLevelUpRobotDefenseCount(SubMissionData.instance.robotDefenseDroneCountLevel + 1, 1, () =>
+			PlayFabApiManager.instance.RequestLevelUpRobotDefenseCount(SubMissionData.instance.robotDefenseDroneCountLevel + 1, _countLevelUpPrice, () =>
 			{
 				// toast
 				ToastCanvas.instance.ShowToast(UIString.instance.GetString("MissionUI_DroneCountComplete"), 2.0f);
 
+				countLevelUpImageEffectObject.SetActive(true);
 				SetInfo();
 				RobotDefenseEnterCanvas.instance.RefreshAlarmObject();
 			});
@@ -140,6 +151,7 @@ public class DroneUpgradeCanvas : MonoBehaviour
 			_prevCombatValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
 			PlayFabApiManager.instance.RequestLevelUpRobotDefenseAttack(SubMissionData.instance.robotDefenseDroneAttackLevel + 1, 1, () =>
 			{
+				atkLevelUpImageEffectObject.SetActive(true);
 				SetInfo();
 				RobotDefenseEnterCanvas.instance.RefreshAlarmObject();
 
