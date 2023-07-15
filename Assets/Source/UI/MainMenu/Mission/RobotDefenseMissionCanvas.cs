@@ -17,6 +17,7 @@ public class RobotDefenseMissionCanvas : MonoBehaviour
 	public Text selectPositionText;
 	public Text dronePositionText;
 	public Text dronePositionCountText;
+	public GameObject droneBonusTextObject;
 	public GameObject autoPositionButtonObject;
 
 	public GameObject toggleContentItemPrefab;
@@ -313,20 +314,39 @@ public class RobotDefenseMissionCanvas : MonoBehaviour
 
 
 	#region Drone Position
+	ObscuredBool _applyBonus = false;
 	int _droneSpawnCount;
 	int _droneSpawnMaxCount;
 	void InitializeDronePositionInfo()
 	{
+		_applyBonus = false;
+		if (SubMissionData.instance.robotDefenseClearLevel == 0)
+		{
+			RobotDefenseStepTableData robotDefenseStepTableData = TableDataManager.instance.FindRobotDefenseStepTableData(1);
+			if (SubMissionData.instance.robotDefenseKillCount < robotDefenseStepTableData.monCount)
+				_applyBonus = true;
+		}
+
 		_droneSpawnCount = 0;
 		_droneSpawnMaxCount = SubMissionData.instance.robotDefenseDroneCountLevel;
+		if (_applyBonus) _droneSpawnMaxCount = 10;
 		totalTime = BattleInstanceManager.instance.GetCachedGlobalConstantInt("RobotDefenseTimeSec");
 
 		selectPositionText.SetLocalizedText(UIString.instance.GetString("MissionUI_SelectPositionDrone"));
-		dronePositionCountText.text = string.Format("{0} / {1}", _droneSpawnCount, _droneSpawnMaxCount);
+		dronePositionCountText.text = string.Format("{0} / {1}", _droneSpawnCount, GetCountMaxString());
 		dronePositionCountText.gameObject.SetActive(true);
 		dronePositionText.gameObject.SetActive(true);
+		droneBonusTextObject.SetActive(_applyBonus);
 		RobotDefenseMissionGround.instance.InitializeDronePosition();
 		autoPositionButtonObject.SetActive(true);
+	}
+
+	string GetCountMaxString()
+	{
+		if (_applyBonus)
+			return string.Format("<color=#68FF4C>{0}</color>", _droneSpawnMaxCount);
+
+		return _droneSpawnMaxCount.ToString("N0");
 	}
 
 	public void OnSpawnDrone(int positionIndex)
@@ -335,7 +355,7 @@ public class RobotDefenseMissionCanvas : MonoBehaviour
 		autoPositionButtonObject.SetActive(false);
 
 		_droneSpawnCount += 1;
-		dronePositionCountText.text = string.Format("{0} / {1}", _droneSpawnCount, _droneSpawnMaxCount);
+		dronePositionCountText.text = string.Format("{0} / {1}", _droneSpawnCount, GetCountMaxString());
 
 		// 선택한 정보를 기억해둔다.
 		if (_listAutoDronePositionLastInfo.Contains(positionIndex) == false)
@@ -349,6 +369,7 @@ public class RobotDefenseMissionCanvas : MonoBehaviour
 			// 모두 스폰한거다. 플레이 시작.
 			dronePositionCountText.gameObject.SetActive(false);
 			dronePositionText.gameObject.SetActive(false);
+			droneBonusTextObject.SetActive(false);
 			selectPositionText.gameObject.SetActive(false);
 			RobotDefenseMissionGround.instance.OnFinishSelect();
 			_repeatSpawnRemainTime = totalTime;
