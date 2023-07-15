@@ -253,7 +253,7 @@ public class GuideQuestData : MonoBehaviour
 		{
 			case eQuestClearType.EnhancePlayer:
 				// 최대 레벨에 막히는거면 어떻게 통과시켜주지? 우선 1개씩만 해서 못찍는 상황을 만들지 않기로 해본다.
-				if (PlayerData.instance.playerLevel >= BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxPlayerLevel"))
+				if (PlayerData.instance.playerLevel >= (BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxPlayerLevel") - 1))
 					complete = true;
 				break;
 			case eQuestClearType.SpinChargeAlarm:

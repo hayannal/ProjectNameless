@@ -278,7 +278,7 @@ public class PlayFabApiManager : MonoBehaviour
 		PlayerData.instance.OnRecvServerTableData(loginResult.InfoResultPayload.TitleData);
 		AnalysisData.instance.OnRecvAnalysisData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 		GuideQuestData.instance.OnRecvGuideQuestData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
-		SubQuestData.instance.OnRecvQuestData(loginResult.InfoResultPayload.UserReadOnlyData);
+		SubQuestData.instance.OnRecvQuestData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 		MissionData.instance.OnRecvMissionData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 		SubMissionData.instance.OnRecvSubMissionData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);
 		FestivalData.instance.OnRecvFestivalData(loginResult.InfoResultPayload.UserReadOnlyData, loginResult.InfoResultPayload.PlayerStatistics);

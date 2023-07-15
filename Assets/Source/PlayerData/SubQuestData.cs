@@ -71,8 +71,8 @@ public class SubQuestData : MonoBehaviour
 		return result;
 	}
 
-
-	public void OnRecvQuestData(Dictionary<string, UserDataRecord> userReadOnlyData)
+	int _cachedPlayerLevelForRegister;
+	public void OnRecvQuestData(Dictionary<string, UserDataRecord> userReadOnlyData, List<StatisticValue> playerStatistics)
 	{
 		// PlayerData.ResetData 호출되면 다시 여기로 들어올테니 플래그들 초기화 시켜놓는다.
 		_checkUnfixedQuestListInfo = false;
@@ -127,6 +127,16 @@ public class SubQuestData : MonoBehaviour
 
 		_lastCachedQuestIndex = -1;
 		_listSubQuestInfo = null;
+
+		_cachedPlayerLevelForRegister = 1;
+		for (int i = 0; i < playerStatistics.Count; ++i)
+		{
+			if (playerStatistics[i].StatisticName == "playerLevel")
+			{
+				_cachedPlayerLevelForRegister = playerStatistics[i].Value;
+				break;
+			}
+		}
 
 		// 클라 구동 후 퀘스트는 하루에 한번 미리 정해둔다.
 		CheckUnfixedQuestListInfo();
@@ -287,8 +297,18 @@ public class SubQuestData : MonoBehaviour
 	List<int> _listTempIndex = new List<int>();
 	void CreateQuestPair(ref int questType1, ref int questNeedCountIndex1, ref int questType2, ref int questNeedCountIndex2)
 	{
-		// 타입도 달라야하고 난이도도 달라야한다. 첫번째꺼는 테이블에서 랜덤으로 뽑고
-		int firstIndex = UnityEngine.Random.Range(0, TableDataManager.instance.subQuestTable.dataArray.Length);
+		// 타입도 달라야하고 난이도도 달라야한다. 첫번째꺼는 테이블에서 랜덤으로 뽑되 트레이닝의 경우 맥스렙 -5까지만 받을 수 있게 해둔다.
+		_listTempIndex.Clear();
+		for (int i = 0; i < TableDataManager.instance.subQuestTable.dataArray.Length; ++i)
+		{
+			if ((GuideQuestData.eQuestClearType)TableDataManager.instance.subQuestTable.dataArray[i].type == GuideQuestData.eQuestClearType.EnhancePlayer)
+			{
+				if (_cachedPlayerLevelForRegister >= (BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxPlayerLevel") - 3))
+					continue;
+			}
+			_listTempIndex.Add(i);
+		}
+		int firstIndex = _listTempIndex[UnityEngine.Random.Range(0, _listTempIndex.Count)];
 		questType1 = TableDataManager.instance.subQuestTable.dataArray[firstIndex].type;
 		questNeedCountIndex1 = UnityEngine.Random.Range(0, TableDataManager.instance.subQuestTable.dataArray[firstIndex].needCount.Length);
 
@@ -298,6 +318,11 @@ public class SubQuestData : MonoBehaviour
 		{
 			if (firstIndex == i)
 				continue;
+			if ((GuideQuestData.eQuestClearType)TableDataManager.instance.subQuestTable.dataArray[i].type == GuideQuestData.eQuestClearType.EnhancePlayer)
+			{
+				if (_cachedPlayerLevelForRegister >= (BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxPlayerLevel") - 3))
+					continue;
+			}
 			_listTempIndex.Add(i);
 		}
 		int secondIndex = _listTempIndex[UnityEngine.Random.Range(0, _listTempIndex.Count)];
@@ -321,6 +346,7 @@ public class SubQuestData : MonoBehaviour
 		todayQuestRewardedCount = 0;
 
 		// 진행중인 퀘가 있다면 알아서 등록하면서 0번으로 옮겨서 등록하게 될거다.
+		_cachedPlayerLevelForRegister = PlayerData.instance.playerLevel;
 		RegisterQuestList();
 	}
 
