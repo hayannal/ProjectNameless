@@ -98,6 +98,7 @@ public class TableDataManager : MonoBehaviour
 	public PointShopAtkTable pointShopAtkTable;
 
 	public RobotDefenseStepTable robotDefenseStepTable;
+	public DroneAtkTable droneAtkTable;
 
 	void Awake()
 	{
@@ -835,6 +836,16 @@ public class TableDataManager : MonoBehaviour
 		{
 			if (robotDefenseStepTable.dataArray[i].step == step)
 				return robotDefenseStepTable.dataArray[i];
+		}
+		return null;
+	}
+
+	public DroneAtkTableData FindDroneAtkTableData(int level)
+	{
+		for (int i = 0; i < droneAtkTable.dataArray.Length; ++i)
+		{
+			if (droneAtkTable.dataArray[i].level == level)
+				return droneAtkTable.dataArray[i];
 		}
 		return null;
 	}

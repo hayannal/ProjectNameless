@@ -4887,7 +4887,7 @@ public class PlayFabApiManager : MonoBehaviour
 			{
 				WaitingNetworkCanvas.Show(false);
 
-				SubMissionData.instance.robotDefenseDroneAttackLevel = targetLevel;
+				SubMissionData.instance.OnLevelUpRobotDefenseAtkLevel(targetLevel);
 
 				if (successCallback != null) successCallback.Invoke();
 			}

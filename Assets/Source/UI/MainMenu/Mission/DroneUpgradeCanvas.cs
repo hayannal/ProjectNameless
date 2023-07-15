@@ -66,7 +66,7 @@ public class DroneUpgradeCanvas : MonoBehaviour
 
 		#region Atk
 		int atkLevel = SubMissionData.instance.robotDefenseDroneAttackLevel;
-		if (atkLevel >= TableDataManager.instance.GetGlobalConstantInt("MaxDroneAttackLevel"))
+		if (atkLevel >= TableDataManager.instance.GetGlobalConstantInt("MaxDroneAtkLevel"))
 		{
 			// level
 			atkLevelText.text = UIString.instance.GetString("GameUI_Lv", "Max");
@@ -75,7 +75,7 @@ public class DroneUpgradeCanvas : MonoBehaviour
 		{
 			// level
 			atkLevelText.text = UIString.instance.GetString("GameUI_Lv", countLevel);
-			atkValueText.text = "0";
+			atkValueText.text = SubMissionData.instance.cachedValueByRobotDefense.ToString("N0");
 
 			if (remainDronePoint > 0)
 				AlarmObject.Show(atkAlarmRootTransform);
@@ -115,6 +115,7 @@ public class DroneUpgradeCanvas : MonoBehaviour
 				ToastCanvas.instance.ShowToast(UIString.instance.GetString("MissionUI_DroneCountComplete"), 2.0f);
 
 				SetInfo();
+				RobotDefenseEnterCanvas.instance.RefreshAlarmObject();
 			});
 		});
 	}
@@ -122,7 +123,7 @@ public class DroneUpgradeCanvas : MonoBehaviour
 	float _prevCombatValue;
 	public void OnClickAtkLevelUpButton()
 	{
-		if (SubMissionData.instance.robotDefenseDroneAttackLevel >= TableDataManager.instance.GetGlobalConstantInt("MaxDroneAttackLevel"))
+		if (SubMissionData.instance.robotDefenseDroneAttackLevel >= TableDataManager.instance.GetGlobalConstantInt("MaxDroneAtkLevel"))
 		{
 			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_MaxReachToast"), 2.0f);
 			return;
@@ -140,6 +141,7 @@ public class DroneUpgradeCanvas : MonoBehaviour
 			PlayFabApiManager.instance.RequestLevelUpRobotDefenseAttack(SubMissionData.instance.robotDefenseDroneAttackLevel + 1, 1, () =>
 			{
 				SetInfo();
+				RobotDefenseEnterCanvas.instance.RefreshAlarmObject();
 
 				float nextValue = BattleInstanceManager.instance.playerActor.actorStatus.GetValue(ActorStatusDefine.eActorStatus.CombatPower);
 				if (nextValue > _prevCombatValue)

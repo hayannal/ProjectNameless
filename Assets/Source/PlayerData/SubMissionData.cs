@@ -379,6 +379,11 @@ public class SubMissionData : MonoBehaviour
 		PointShopAtkTableData pointShopAtkTableData = TableDataManager.instance.FindPointShopAtkTableData(bossBattleAttackLevel);
 		if (pointShopAtkTableData != null)
 			cachedValueByBossBattle = pointShopAtkTableData.accumulatedAtk;
+
+		// robot defense level status
+		DroneAtkTableData droneAtkTableData = TableDataManager.instance.FindDroneAtkTableData(robotDefenseDroneAttackLevel);
+		if (droneAtkTableData != null)
+			cachedValueByRobotDefense = droneAtkTableData.accumulatedAtk;
 	}
 
 	public void OnChangedStatus()
