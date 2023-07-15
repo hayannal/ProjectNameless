@@ -61,6 +61,22 @@ public class AdventureListCanvas : MonoBehaviour
 
 				UIInstanceManager.instance.ShowCanvasAsync("RobotDefenseEnterCanvas", null);
 				break;
+
+			case 7:
+				if (BattleInstanceManager.instance.GetCachedGlobalConstantInt("RankingDefenseOn") == 0)
+				{
+					ToastCanvas.instance.ShowToast(UIString.instance.GetString("SystemUI_WaitUpdate"), 2.0f);
+					return;
+				}
+
+				//if (CharacterManager.instance.listCharacterData.Count < RobotDefenseEnterCanvas.MINIMUM_COUNT)
+				//{
+				//	ToastCanvas.instance.ShowToast(UIString.instance.GetString("MissionUI_RankingDefenseMemberLimit"), 2.0f);
+				//	return;
+				//}
+
+				UIInstanceManager.instance.ShowCanvasAsync("RankingDefenseEnterCanvas", null);
+				break;
 		}
 	}
 
