@@ -9,6 +9,7 @@ public class DroneUpgradeCanvas : MonoBehaviour
 	public static DroneUpgradeCanvas instance;
 
 	public static int s_DroneCountMax = 22;
+	public static int s_DroneDefaultCount = 3;
 
 	public Transform countTextTransform;
 	public Text countLevelText;
@@ -36,6 +37,16 @@ public class DroneUpgradeCanvas : MonoBehaviour
 		SetInfo();
 	}
 
+	public static int Level2DroneCount(int level)
+	{
+		return level + s_DroneDefaultCount - 1;
+	}
+
+	public static int DroneCountMaxLevel()
+	{
+		return s_DroneCountMax - s_DroneDefaultCount + 1;
+	}
+
 	public static int GetRemainDronePoint()
 	{
 		int accum = 0;
@@ -57,7 +68,7 @@ public class DroneUpgradeCanvas : MonoBehaviour
 
 		#region Count
 		int countLevel = SubMissionData.instance.robotDefenseDroneCountLevel;
-		if (countLevel >= s_DroneCountMax)
+		if (countLevel >= DroneCountMaxLevel())
 		{
 			// level
 			countLevelText.text = UIString.instance.GetString("GameUI_Lv", "Max");
@@ -66,7 +77,7 @@ public class DroneUpgradeCanvas : MonoBehaviour
 		{
 			// level
 			countLevelText.text = UIString.instance.GetString("GameUI_Lv", countLevel);
-			countValueText.text = string.Format("{0} / {1}", countLevel, s_DroneCountMax);
+			countValueText.text = string.Format("{0} / {1}", Level2DroneCount(countLevel), s_DroneCountMax);
 
 			if (remainDronePoint >= _countLevelUpPrice)
 				AlarmObject.Show(countAlarmRootTransform);
@@ -105,7 +116,7 @@ public class DroneUpgradeCanvas : MonoBehaviour
 
 	public void OnClickCountLevelUpButton()
 	{
-		if (SubMissionData.instance.robotDefenseDroneCountLevel >= s_DroneCountMax)
+		if (SubMissionData.instance.robotDefenseDroneCountLevel >= DroneCountMaxLevel())
 		{
 			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_MaxReachToast"), 2.0f);
 			return;

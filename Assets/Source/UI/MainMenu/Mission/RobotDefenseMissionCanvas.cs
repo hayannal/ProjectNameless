@@ -329,7 +329,7 @@ public class RobotDefenseMissionCanvas : MonoBehaviour
 		}
 
 		_droneSpawnCount = 0;
-		_droneSpawnMaxCount = SubMissionData.instance.robotDefenseDroneCountLevel;
+		_droneSpawnMaxCount = DroneUpgradeCanvas.Level2DroneCount(SubMissionData.instance.robotDefenseDroneCountLevel);
 		if (_applyBonus) _droneSpawnMaxCount = 10;
 		totalTime = BattleInstanceManager.instance.GetCachedGlobalConstantInt("RobotDefenseTimeSec");
 
