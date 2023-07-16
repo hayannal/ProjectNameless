@@ -204,6 +204,11 @@ public class ActorStatus : MonoBehaviour
 		_statusBase.valueList[(int)eActorStatus.StrikeDefenseRate] = strikeDefenseRate;
 		_statusBase.valueList[(int)eActorStatus.MoveSpeed] = monsterTableData.moveSpeed;
 
+		if (RobotDefenseMissionCanvas.instance != null && RobotDefenseMissionCanvas.instance.gameObject.activeSelf)
+		{
+			_statusBase.valueList[(int)eActorStatus.MoveSpeed] *= (BattleInstanceManager.instance.GetCachedGlobalConstantInt("RobotDefenseMoveSpeedRate100") * 0.01f);
+		}
+
 		//if (isServer)
 		_statusBase._hp = _lastMaxHp = GetValue(eActorStatus.MaxHp);
 		if (nodeWarCachingMonster)
