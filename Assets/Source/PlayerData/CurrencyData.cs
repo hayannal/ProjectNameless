@@ -411,7 +411,7 @@ public class CurrencyData : MonoBehaviour
 		if (ignoreCanvas)
 			return;
 
-		if (MissionListCanvas.instance != null && MissionListCanvas.instance.gameObject.activeSelf)
+		if (MissionListCanvas.instance != null && MissionListCanvas.instance.gameObject.activeSelf && MissionTabCanvas.instance != null && MissionTabCanvas.instance.gameObject.activeSelf)
 			MissionListCanvas.instance.RefreshTicket();
 	}
 	#endregion

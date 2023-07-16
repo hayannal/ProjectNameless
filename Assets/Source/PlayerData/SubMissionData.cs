@@ -774,10 +774,10 @@ public class SubMissionData : MonoBehaviour
 			MainCanvas.instance.RefreshMissionAlarmObject();
 
 		// 여기는 0회때랑 1회때랑 처리 로직이 다르기때문에 창을 갱신해주는게 맞다.
-		if (MissionListCanvas.instance != null && MissionListCanvas.instance.gameObject.activeSelf)
+		if (MissionTabCanvas.instance != null && MissionTabCanvas.instance.gameObject.activeSelf)
 		{
-			MissionListCanvas.instance.gameObject.SetActive(false);
-			MissionListCanvas.instance.gameObject.SetActive(true);
+			MissionTabCanvas.instance.gameObject.SetActive(false);
+			MissionTabCanvas.instance.gameObject.SetActive(true);
 		}
 		if (FortuneWheelCanvas.instance != null && FortuneWheelCanvas.instance.gameObject.activeSelf)
 		{
