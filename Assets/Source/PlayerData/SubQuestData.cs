@@ -303,7 +303,7 @@ public class SubQuestData : MonoBehaviour
 		{
 			if ((GuideQuestData.eQuestClearType)TableDataManager.instance.subQuestTable.dataArray[i].type == GuideQuestData.eQuestClearType.EnhancePlayer)
 			{
-				if (_cachedPlayerLevelForRegister >= (BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxPlayerLevel") - 3))
+				if (_cachedPlayerLevelForRegister >= (BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxPlayerLevel") - 10))
 					continue;
 			}
 			_listTempIndex.Add(i);
@@ -320,7 +320,7 @@ public class SubQuestData : MonoBehaviour
 				continue;
 			if ((GuideQuestData.eQuestClearType)TableDataManager.instance.subQuestTable.dataArray[i].type == GuideQuestData.eQuestClearType.EnhancePlayer)
 			{
-				if (_cachedPlayerLevelForRegister >= (BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxPlayerLevel") - 3))
+				if (_cachedPlayerLevelForRegister >= (BattleInstanceManager.instance.GetCachedGlobalConstantInt("MaxPlayerLevel") - 10))
 					continue;
 			}
 			_listTempIndex.Add(i);
