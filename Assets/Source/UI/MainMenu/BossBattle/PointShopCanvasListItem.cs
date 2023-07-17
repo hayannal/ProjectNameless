@@ -27,12 +27,21 @@ public class PointShopCanvasListItem : MonoBehaviour
 
 		_pointShopTableData = pointShopTableData;
 
-		minMaxText.text = string.Format("{0:N0}\n{1:N0}", pointShopTableData.min, pointShopTableData.max);
+		minMaxText.text = string.Format("{0}\n{1}", GetPriceString(pointShopTableData.min), GetPriceString(pointShopTableData.max));
 		priceText.text = string.Format("{0:N0} P", _pointShopTableData.price);
 
 		AlarmObject.Hide(alarmRootTransform);
 		if (lastProduct && pointShopTableData != null && SubMissionData.instance.bossBattlePoint >= pointShopTableData.price)
 			AlarmObject.Show(alarmRootTransform);
+	}
+
+	string GetPriceString(int price)
+	{
+		if (price >= 100000)
+			return string.Format("<size=20>{0:N0}</size>", price);
+		if (price >= 10000)
+			return string.Format("<size=22>{0:N0}</size>", price);
+		return string.Format("{0:N0}", price);
 	}
 
 	public void OnClickButton()
