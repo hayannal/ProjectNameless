@@ -61,6 +61,8 @@ public class SubMissionData : MonoBehaviour
 	public ObscuredInt robotDefenseDroneCountLevel { get; set; }
 	// 드론 공격력 레벨
 	public ObscuredInt robotDefenseDroneAttackLevel { get; set; }
+	// 쿨타임
+	public DateTime robotDefenseCoolExpireTime { get; set; }
 	#endregion
 
 	#region Boss Battle
@@ -278,6 +280,12 @@ public class SubMissionData : MonoBehaviour
 			int intValue = 0;
 			if (int.TryParse(userReadOnlyData["robotDefenseDroneAttackLevel"].Value, out intValue))
 				robotDefenseDroneAttackLevel = intValue;
+		}
+
+		if (userReadOnlyData.ContainsKey("robotDefenseCoolExpDat"))
+		{
+			if (string.IsNullOrEmpty(userReadOnlyData["robotDefenseCoolExpDat"].Value) == false)
+				OnRecvRobotDefenseCoolTimeInfo(userReadOnlyData["robotDefenseCoolExpDat"].Value);
 		}
 
 		if (DroneUpgradeCanvas.GetRemainDronePoint() < 0)
@@ -505,6 +513,16 @@ public class SubMissionData : MonoBehaviour
 		{
 			DateTime universalTime = lastRobotDefenseTime.ToUniversalTime();
 			OnRecvDailyRobotDefenseInfo(universalTime);
+		}
+	}
+
+	public void OnRecvRobotDefenseCoolTimeInfo(string lastRobotDefenseCoolExpireTimeString)
+	{
+		DateTime lastRobotDefenseCoolExpireTime = new DateTime();
+		if (DateTime.TryParse(lastRobotDefenseCoolExpireTimeString, out lastRobotDefenseCoolExpireTime))
+		{
+			DateTime universalTime = lastRobotDefenseCoolExpireTime.ToUniversalTime();
+			robotDefenseCoolExpireTime = universalTime;
 		}
 	}
 

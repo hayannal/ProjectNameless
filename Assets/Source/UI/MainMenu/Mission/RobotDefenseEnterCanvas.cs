@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -25,6 +26,10 @@ public class RobotDefenseEnterCanvas : MonoBehaviour
 
 	public GameObject selectStartText;
 	public Text selectResultText;
+
+	public Image enterButtonImage;
+	public Text enterText;
+	public Text enterRemainCountText;
 
 	public RewardIcon rewardIcon1;
 	public RewardIcon rewardIcon2;
@@ -56,6 +61,7 @@ public class RobotDefenseEnterCanvas : MonoBehaviour
 		RefreshInfo();
 		RefreshStep();
 		RefreshAlarmObject();
+		RefreshCoolTime();
 		RefreshGrid(true);
 
 		StackCanvas.Push(gameObject);
@@ -75,6 +81,7 @@ public class RobotDefenseEnterCanvas : MonoBehaviour
 	void Update()
 	{
 		UpdateTargetKillValue();
+		UpdateRemainCoolTime();
 	}
 
 	ObscuredInt _currentStep;
@@ -94,8 +101,8 @@ public class RobotDefenseEnterCanvas : MonoBehaviour
 
 		}
 
-		
-		
+
+		enterRemainCountText.text = (BattleInstanceManager.instance.GetCachedGlobalConstantInt("RobotDefenseDailyCount") - SubMissionData.instance.robotDefenseDailyCount).ToString();
 
 		/*
 		// 패널티를 구할땐 그냥 스테이지 테이블에서 구해오면 안되고 선택된 난이도의 1층을 구해와서 처리해야한다.
@@ -468,6 +475,50 @@ public class RobotDefenseEnterCanvas : MonoBehaviour
 	}
 
 
+	void RefreshCoolTime()
+	{
+		bool applyCoolTime = (ServerTime.UtcNow < SubMissionData.instance.robotDefenseCoolExpireTime);
+		enterButtonImage.color = !applyCoolTime ? Color.white : ColorUtil.halfGray;
+		enterText.color = !applyCoolTime ? Color.white : Color.gray;
+
+		if (applyCoolTime)
+		{
+			_needUpdate = true;
+			_coolExpireDateTime = SubMissionData.instance.robotDefenseCoolExpireTime;
+			enterText.text = "";
+		}
+		else
+		{
+			_needUpdate = false;
+			enterText.text = "ENTER";
+		}
+	}
+
+	bool _needUpdate = false;
+	DateTime _coolExpireDateTime;
+	int _lastRemainTimeSecond = -1;
+	void UpdateRemainCoolTime()
+	{
+		if (_needUpdate == false)
+			return;
+
+		if (ServerTime.UtcNow < _coolExpireDateTime)
+		{
+			TimeSpan remainTime = _coolExpireDateTime - ServerTime.UtcNow;
+			if (_lastRemainTimeSecond != (int)remainTime.TotalSeconds)
+			{
+				enterText.text = string.Format("{0:00}:{1:00}:{2:00}", remainTime.Hours, remainTime.Minutes, remainTime.Seconds);
+				_lastRemainTimeSecond = (int)remainTime.TotalSeconds;
+			}
+		}
+		else
+		{
+			_needUpdate = false;
+			RefreshCoolTime();
+		}
+	}
+
+
 
 	List<string> _listSelectedActorId;
 	public List<string> listSelectedActorId { get { return _listSelectedActorId; } }
@@ -479,6 +530,12 @@ public class RobotDefenseEnterCanvas : MonoBehaviour
 		if (AdventureListCanvas.IsAlarmRobotDefense() == false)
 		{
 			ToastCanvas.instance.ShowToast(UIString.instance.GetString("GameUI_TodayCountComplete"), 2.0f);
+			return;
+		}
+
+		if (_needUpdate)
+		{
+			ToastCanvas.instance.ShowToast(UIString.instance.GetString("MissionUI_RobotDefenseCoolTime"), 2.0f);
 			return;
 		}
 
