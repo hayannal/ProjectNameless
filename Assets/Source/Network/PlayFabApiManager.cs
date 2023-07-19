@@ -4792,7 +4792,8 @@ public class PlayFabApiManager : MonoBehaviour
 				SubMissionData.instance.robotDefenseKillCount += killCount;
 
 				// 서버쪽에서도 알아서 한시간 넣을거다.
-				SubMissionData.instance.robotDefenseCoolExpireTime = ServerTime.UtcNow + TimeSpan.FromHours(1);
+				int addTime = BattleInstanceManager.instance.GetCachedGlobalConstantInt("RobotDefenseCoolSec");
+				SubMissionData.instance.robotDefenseCoolExpireTime = ServerTime.UtcNow + TimeSpan.FromSeconds(addTime);
 
 				if (successCallback != null) successCallback.Invoke();
 			}
