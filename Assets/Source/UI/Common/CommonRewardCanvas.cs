@@ -248,7 +248,7 @@ public class CommonRewardCanvas : MonoBehaviour
 			RewardIcon rewardIconItem = _container.GetCachedItem(contentItemPrefab, contentRootRectTransform);
 			rewardIconItem.RefreshReward(_listCommonRewardData[i].type, _listCommonRewardData[i].value, _listCommonRewardData[i].count);
 			_listRewardIcon.Add(rewardIconItem);
-			yield return Timing.WaitForSeconds(0.2f);
+			yield return Timing.WaitForSeconds((_listCommonRewardData.Count < 10) ? 0.2f : 0.1f);
 		}
 
 		exitObject.SetActive(true);
