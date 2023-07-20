@@ -67,6 +67,8 @@ public class TeleportTargetPositionAffector : AffectorBase
 
 		if (this == null)
 			yield break;
+		if (_actor == null)
+			yield break;
 
 		_actor.baseCharacterController.movement.useGravity = true;
 
