@@ -996,10 +996,10 @@ public class GachaInfoCanvas : MonoBehaviour
 					_eventPointRewardCount += 1;
 
 					// 혹시 이번이 보상의 마지막 단계인지 확인을 해보자.
-					if (_currentEventPointTypeTableData.lastRewardNum == _currentEventPointRewardTableData.num && targetEventPoint >= _currentEventPointRewardTableData.requiredAccumulatedEventPoint)
+					if (_currentEventPointTypeTableData.lastRewardNum == rewardTableData.num && targetEventPoint >= rewardTableData.requiredAccumulatedEventPoint)
 					{
 						// 에너지를 리턴받기로 했다.
-						int diff = targetEventPoint - _currentEventPointRewardTableData.requiredAccumulatedEventPoint;
+						int diff = targetEventPoint - rewardTableData.requiredAccumulatedEventPoint;
 						_eventPointcompleteEnergyReward = (int)(diff * BattleInstanceManager.instance.GetCachedGlobalConstantInt("EventpointEnergy10") * 0.1f);
 						_resultEnergy += _eventPointcompleteEnergyReward;
 
