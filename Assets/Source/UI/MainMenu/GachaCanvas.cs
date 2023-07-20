@@ -21,6 +21,8 @@ public class GachaCanvas : ResearchShowCanvasBase
 	public Text subResultText;
 	public GameObject maxObject;
 
+	public GameObject skipObject;
+
 	void Awake()
 	{
 		instance = this;
@@ -163,6 +165,13 @@ public class GachaCanvas : ResearchShowCanvasBase
 			_lastValue = currentValueInt;
 			subResultText.text = _lastValue.ToString("N0");
 		}
+	}
+	#endregion
+
+	#region Skip
+	public void OnClickSkipButton()
+	{
+		GachaInfoCanvas.instance.OnClickSkipButton();
 	}
 	#endregion
 }

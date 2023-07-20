@@ -1168,6 +1168,8 @@ public class GachaInfoCanvas : MonoBehaviour
 		}
 	}
 
+	int _eventPointRewardAnimationCount;
+	const int SkipBase = 5;
 	Color _defaultGaugeColor;
 	IEnumerator<float> EventPointProcess()
 	{
@@ -1183,6 +1185,10 @@ public class GachaInfoCanvas : MonoBehaviour
 			yield break;
 		}
 
+		#region Skip
+		_skipOn = false;
+		_eventPointRewardAnimationCount = 0;
+		#endregion
 		if (CurrencyData.instance.eventPoint < _currentEventPointRewardTableData.requiredAccumulatedEventPoint)
 		{
 			// 이벤트 포인트가 축적만 되고 보상까지 도달하지 않았을때는 연출로만 나오고 끝나는 형태로 짠다.
@@ -1294,6 +1300,14 @@ public class GachaInfoCanvas : MonoBehaviour
 
 				yield return Timing.WaitForSeconds(0.2f);
 
+				#region Skip
+				if (_skipOn)
+				{
+					// skip이 눌러지면 이 프로세스는 종료시키는게 맞다.
+					yield break;
+				}
+				#endregion
+
 				// 보상 아이콘 점프 애니메이션
 				eventPointRewardEffectObject.SetActive(true);
 				eventPointRewardRootObject.transform.DOScale(new Vector3(1.7f, 1.7f, 1.7f), 0.25f).SetEase(Ease.OutQuad).OnComplete(() =>
@@ -1303,6 +1317,14 @@ public class GachaInfoCanvas : MonoBehaviour
 
 				// 대기
 				yield return Timing.WaitForSeconds(0.6f);
+
+				#region Skip
+				if (_skipOn)
+				{
+					// skip이 눌러지면 이 프로세스는 종료시키는게 맞다.
+					yield break;
+				}
+				#endregion
 
 				// 다음번 항목이 있으면 갱신해주면 된다.
 				bool lastReward = false;
@@ -1329,6 +1351,15 @@ public class GachaInfoCanvas : MonoBehaviour
 					eventPointRewardConditionCountText.text = string.Format("0 / {0:N0}", TableDataManager.instance.eventPointRewardTable.dataArray[i + 1].requiredEventPoint);
 					_updateAdjustConditionCountRootObject = true;
 					_updateEventPointCountTextRemainTime = 0.05f;
+
+					#region Skip
+					++_eventPointRewardAnimationCount;
+					if (_eventPointRewardAnimationCount >= SkipBase)
+					{
+						GachaCanvas.instance.skipObject.SetActive(true);
+
+					}
+					#endregion
 				}
 				else
 				{
@@ -1337,6 +1368,9 @@ public class GachaInfoCanvas : MonoBehaviour
 					// 가차 절차가 끝나자마자 Update에서 갱신 패킷을 보내게 될 것이다.
 					if (lastReward)
 					{
+						if (GachaCanvas.instance.skipObject.activeSelf)
+							GachaCanvas.instance.skipObject.SetActive(false);
+
 						_currentEventPointRewardTableData = TableDataManager.instance.eventPointRewardTable.dataArray[i];
 
 						// 포인트이벤트 클리어로 인한 에너지 보상이 0보다 크면 별도의 창을 보여주고
@@ -1359,7 +1393,59 @@ public class GachaInfoCanvas : MonoBehaviour
 		}
 	}
 
+	#region Skip
+	bool _skipOn;
+	public void OnClickSkipButton()
+	{
+		_skipOn = true;
+		GachaCanvas.instance.skipObject.SetActive(false);
+
+		// 연출 초기화
+		if (_tweenReferenceForGauge != null)
+			_tweenReferenceForGauge.Kill();
+
+		gaugeImageColorTweenAnimation.DOPause();
+		eventPointIconTweenAnimation.DOPause();
+		gaugeImage.color = _defaultGaugeColor;
+		eventPointIconTweenAnimation.transform.localScale = Vector3.one;
+
+		// 즉시 UI부터 갱신하고
+		RefreshEventPoint();
+
+		// 맥스 돌파인지 체크가 먼저다. 포인트이벤트 클리어로 인한 에너지 보상이 0보다 크면 별도의 창을 보여주고
+		if (_eventPointcompleteEnergyReward > 0)
+		{
+			UIInstanceManager.instance.ShowCanvasAsync("EventPointCompleteCanvas", () =>
+			{
+				EventPointCompleteCanvas.instance.SetInfo(true, _eventPointcompleteEnergyReward, () =>
+				{
+					ShowEventPointResult();
+				});
+			});
+		}
+		else
+			ShowEventPointResult();
+	}
+	#endregion
+
 	void EndEventPointProcess()
+	{
+		#region Skip
+		if (_skipOn)
+		{
+			// skip중에는 직접 결과창 보여주는 처리 할거기 때문에 자동으로 호출되는 부분에서의 skip은 아무것도 하지 않고 그냥 넘긴다.
+			// 이래야 두번 처리 안될 수 있다.
+			return;
+		}
+		#endregion
+
+		if (GachaCanvas.instance.skipObject.activeSelf)
+			GachaCanvas.instance.skipObject.SetActive(false);
+
+		ShowEventPointResult();
+	}
+
+	void ShowEventPointResult()
 	{
 		UIInstanceManager.instance.ShowCanvasAsync("CommonRewardCanvas", () =>
 		{
