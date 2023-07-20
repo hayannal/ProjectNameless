@@ -381,6 +381,8 @@ public class RobotDefenseEnterCanvas : MonoBehaviour
 					RefreshAlarmObject();
 				});
 			}
+			else
+				monsterKillSliderImage.color = new Color(1.0f, 1.0f, 0.15f);
 
 			s_killCountAddValue = 0;
 		}
