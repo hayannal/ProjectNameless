@@ -24,9 +24,16 @@ public class GachaObjects : MonoBehaviour
 	public DOTweenAnimation gachaResultTweenAnimation;
 	public Transform gachaResultTransform;
 
+	public Text stageText;
+
 	void Awake()
 	{
 		instance = this;
+	}
+
+	void OnEnable()
+	{
+		stageText.text = string.Format("STAGE <size=18>{0}</size>", StageManager.instance.currentFloor);
 	}
 
 	class RandomGachaEffectInfo
