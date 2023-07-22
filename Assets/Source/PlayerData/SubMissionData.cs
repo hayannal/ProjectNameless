@@ -282,6 +282,7 @@ public class SubMissionData : MonoBehaviour
 				robotDefenseDroneAttackLevel = intValue;
 		}
 
+		robotDefenseCoolExpireTime = new DateTime();
 		if (userReadOnlyData.ContainsKey("robotDefenseCoolExpDat"))
 		{
 			if (string.IsNullOrEmpty(userReadOnlyData["robotDefenseCoolExpDat"].Value) == false)
