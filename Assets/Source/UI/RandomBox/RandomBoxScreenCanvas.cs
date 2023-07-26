@@ -97,6 +97,10 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 		{
 			StackCanvas.Push(gameObject);
 		}
+		else if (RobotDefenseEnterCanvas.instance != null && RobotDefenseEnterCanvas.instance.gameObject.activeSelf)
+		{
+			StackCanvas.Push(gameObject);
+		}
 		else if (MainCanvas.instance.IsHideState() == false)
 		{
 			_consumeProcess = true;
@@ -132,6 +136,10 @@ public class RandomBoxScreenCanvas : MonoBehaviour
 			StackCanvas.Pop(gameObject);
 		}
 		else if (MissionTabCanvas.instance != null && MissionTabCanvas.instance.gameObject.activeSelf == false && StackCanvas.IsInStack(MissionTabCanvas.instance.gameObject))
+		{
+			StackCanvas.Pop(gameObject);
+		}
+		else if (RobotDefenseEnterCanvas.instance != null && RobotDefenseEnterCanvas.instance.gameObject.activeSelf == false && StackCanvas.IsInStack(RobotDefenseEnterCanvas.instance.gameObject))
 		{
 			StackCanvas.Pop(gameObject);
 		}
