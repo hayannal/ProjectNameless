@@ -75,6 +75,11 @@ public class EquipManager : MonoBehaviour
 	EquipStatusList _cachedEquipStatusList = new EquipStatusList();
 	public EquipStatusList cachedEquipStatusList { get { return _cachedEquipStatusList; } }
 
+	#region First Equip Bonus
+	public bool firstEquipBonusApplied { get; set; }
+	const string firstEquipBonusId = "Equip035102";
+	#endregion
+
 	// 하나의 리스트로 관리하려고 하다가 아무리봐도 타입별 리스트로 관리하는게 이득이라 바꿔둔다.
 	//List<EquipData> _listEquipData = new List<EquipData>();
 	//public List<EquipData> listEquipData { get { return _listEquipData; } }
@@ -135,6 +140,15 @@ public class EquipManager : MonoBehaviour
 
 		// status
 		RefreshCachedStatus();
+
+		#region First Equip Bonus
+		firstEquipBonusApplied = false;
+		if (userReadOnlyData.ContainsKey("firstEquipBonusApplied"))
+		{
+			if (string.IsNullOrEmpty(userReadOnlyData["firstEquipBonusApplied"].Value) == false)
+				firstEquipBonusApplied = true;
+		}
+		#endregion
 
 		/*
 		// reconstruct
@@ -671,6 +685,7 @@ public class EquipManager : MonoBehaviour
 			}
 		}
 		#region PickUp Equip
+		bool lockRarityByPickUp = false;
 		if (applyPickUpEquip)
 		{
 			CashShopData.PickUpEquipInfo info = CashShopData.instance.GetCurrentPickUpEquipInfo();
@@ -683,6 +698,7 @@ public class EquipManager : MonoBehaviour
 					{
 						if (TableDataManager.instance.gachaEquipTable.dataArray[i].rarity == 2)
 						{
+							lockRarityByPickUp = true;
 							index = i;
 							break;
 						}
@@ -695,6 +711,7 @@ public class EquipManager : MonoBehaviour
 					{
 						if (TableDataManager.instance.gachaEquipTable.dataArray[i].rarity == 1)
 						{
+							lockRarityByPickUp = true;
 							index = i;
 							break;
 						}
@@ -790,6 +807,32 @@ public class EquipManager : MonoBehaviour
 				break;
 			}
 		}
+		#region First Equip Bonus
+		if (firstEquipBonusApplied == false)
+		{
+			if (lockRarityByPickUp)
+			{
+				// 픽업으로 인해 레어리티가 고정된 상태라면
+				// 후보중에 보너스 장비가 있는지 검사 후 인덱스를 할당하고
+				for (int i = 0; i < _listGachaEquipId.Count; ++i)
+				{
+					if (_listGachaEquipId[i].equipId == firstEquipBonusId)
+					{
+						// 다음번 굴림을 위해 플래그부터 걸어두고 변경. 그러니 리스트에 없으면 다음번에 적용하기로 한다.
+						firstEquipBonusApplied = true;
+						index = i;
+						break;
+					}
+				}
+			}
+			else
+			{
+				// 고정되지 않은 상태라면 다음번 굴림을 위해 플래그부터 걸어두고 리턴
+				firstEquipBonusApplied = true;
+				return firstEquipBonusId;
+			}
+		}
+		#endregion
 		if (index == -1)
 			return "";
 		return _listGachaEquipId[index].equipId;
