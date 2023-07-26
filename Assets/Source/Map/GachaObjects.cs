@@ -33,7 +33,7 @@ public class GachaObjects : MonoBehaviour
 
 	void OnEnable()
 	{
-		stageText.text = string.Format("STAGE <size=18>{0}</size>", StageManager.instance.currentFloor);
+		stageText.text = string.Format("STAGE <size=18>{0}</size>", PlayerData.instance.currentRewardStage);
 	}
 
 	class RandomGachaEffectInfo
