@@ -32,6 +32,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7994403372109426936}
   - {fileID: 9094285852494114440}
@@ -159,6 +160,7 @@ MonoBehaviour:
   - {fileID: 1055051040182790, guid: 094ffd73bb905364c92e61ed61bdc713, type: 3}
   - {fileID: 4889162779089639392, guid: a5579696a5d581d4abe14274bfe218e4, type: 3}
   - {fileID: 1378867140979838, guid: 387acdb8ebcedc342b2e0673dbcde49f, type: 3}
+  - {fileID: 1026045528767240, guid: e9844a56350dcf545bb30a56fdfaad37, type: 3}
   selfPassivePreloadObjectList: []
   gaugeOffsetY: 0
   cachingObjectList:
@@ -193,6 +195,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5728469560097159082}
   m_RootOrder: 1
@@ -211,18 +214,6 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
---- !u!114 &790299123728072766
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7994403372109393048}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8220ce0fa80a49849a394145ade07766, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &4331064759521679246
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -303,6 +294,18 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 4331064759521679246}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &790299123728072766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7994403372109393048}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8220ce0fa80a49849a394145ade07766, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &7994403372109426936 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5974829685593663350, guid: 83319bfb2238122488491b00a81f56d7,
