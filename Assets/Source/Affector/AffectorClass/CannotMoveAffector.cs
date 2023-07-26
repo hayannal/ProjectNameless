@@ -41,9 +41,11 @@ public class CannotMoveAffector : AffectorBase
 
 		if (_actor.IsMonsterActor())
 		{
-			MonsterActor monsterActor = _actor as MonsterActor;
-			if (monsterActor != null)
-				monsterActor.AdjustMass(10.0f);
+			//MonsterActor monsterActor = _actor as MonsterActor;
+			//if (monsterActor != null)
+			//	monsterActor.AdjustMass(10.0f);
+
+			_affectorProcessor.dontClearOnDisable = true;
 		}
 		_actor.actorStatus.OnChangedStatus(ActorStatusDefine.eActorStatus.MoveSpeed);
 	}
@@ -83,9 +85,11 @@ public class CannotMoveAffector : AffectorBase
 
 		if (_actor.IsMonsterActor())
 		{
-			MonsterActor monsterActor = _actor as MonsterActor;
-			if (monsterActor != null)
-				monsterActor.ResetAdjustMass();
+			//MonsterActor monsterActor = _actor as MonsterActor;
+			//if (monsterActor != null)
+			//	monsterActor.ResetAdjustMass();
+
+			_affectorProcessor.dontClearOnDisable = false;
 		}
 	}
 
